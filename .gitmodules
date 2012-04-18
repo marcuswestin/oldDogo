@@ -10,3 +10,27 @@
 [submodule "dependencies/blowtorch"]
 	path = dependencies/blowtorch
 	url = git@github.com:marcuswestin/blowtorch.git
+[submodule "node_modules/validator"]
+	path = node_modules/validator
+	url = https://github.com/chriso/node-validator.git
+[submodule "node_modules/uuid"]
+	path = node_modules/uuid
+	url = https://github.com/broofa/node-uuid.git
+[submodule "node_modules/mysql"]
+	path = node_modules/mysql
+	url = https://github.com/felixge/node-mysql.git
+[submodule "node_modules/redis"]
+	path = node_modules/redis
+	url = git@github.com:marcuswestin/node_redis.git
+[submodule "node_modules/std"]
+	path = node_modules/std
+	url = git@github.com:marcuswestin/std.js.git
+[submodule "node_modules/imap"]
+	path = node_modules/imap
+	url = https://github.com/mscdex/node-imap.git
+[submodule "node_modules/request"]
+	path = node_modules/request
+	url = https://github.com/mikeal/request.git
+[submodule "node_modules/express"]
+	path = node_modules/express
+	url = https://github.com/visionmedia/express.git
