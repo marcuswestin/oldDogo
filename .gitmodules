@@ -22,9 +22,6 @@
 [submodule "node_modules/redis"]
 	path = node_modules/redis
 	url = git@github.com:marcuswestin/node_redis.git
-[submodule "node_modules/std"]
-	path = node_modules/std
-	url = git@github.com:marcuswestin/std.js.git
 [submodule "node_modules/imap"]
 	path = node_modules/imap
 	url = https://github.com/mscdex/node-imap.git

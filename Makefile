@@ -1,3 +1,9 @@
+.PHONY: tests
+tests:
+	# Running tests
+	rm -f test/._*
+	./node_modules/mocha/bin/mocha --bail --reporter list
+
 setup:
 	git submodule init
 	git submodule sync
@@ -13,4 +19,4 @@ setup:
 	npm install express@2.5.8
 
 run-instapop:
-	node_modules/fun/bin/fun instapop/instapop.fun --port=9090
+	node_modules/fun/bin/fun instapop/instapop.fun
