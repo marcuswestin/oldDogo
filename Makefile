@@ -11,3 +11,6 @@ setup:
 	cd node_modules/validator && npm install .
 	cd node_modules/request && npm install .
 	npm install express@2.5.8
+
+run-instapop:
+	node_modules/fun/bin/fun instapop/instapop.fun --port=9090
