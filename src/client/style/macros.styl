@@ -1,0 +1,46 @@
+box-shadow(offsetX=0, offsetY=1px, blur=2px, color=rgba(0,0,0,0.5), inout=null)
+	box-shadow inout color offsetX offsetY blur;
+	-webkit-box-shadow inout color offsetX offsetY blur;
+	-moz-box-shadow inout color offsetX offsetY blur;
+
+box-shadow-none()
+	box-shadow none;
+	-webkit-box-shadow none;
+	-moz-box-shadow none;
+
+box-sizing(sizing)
+	-moz-box-sizing sizing;
+	-webkit-box-sizing: sizing;
+	box-sizing: sizing;
+
+gradient(colorFrom, colorTo)
+	background colorFrom;
+	background -webkit-gradient(linear, left top, left bottom, from(colorFrom), to(colorTo) );
+	background -moz-linear-gradient(top, colorFrom, colorTo);
+
+border-radius(r1, r2=r1, r3=r1, r4=r2)
+	border-radius r1 r2 r3 r4;
+	-webkit-border-radius r1 r2 r3 r4;
+	-moz-border-radius r1 r2 r3 r4;
+
+transition(property, duration=1s)
+	transition: property duration;
+	-moz-transition: property duration;
+	-webkit-transition: property duration;
+	-o-transition: property duration;
+
+image(url, width, height, xOffset=0, yOffset=0, repeat=no-repeat)
+	width width;
+	height height;
+	background transparent xOffset yOffset repeat;
+	background-image url('/static/img/'+url);
+	display inline-block;
+
+disable-select()
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;

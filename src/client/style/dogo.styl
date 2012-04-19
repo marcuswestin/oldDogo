@@ -1,0 +1,26 @@
+@import "./macros"
+
+gradientLight = #D6DDE2
+gradientDark = #B0BAC2
+
+html
+	gradient(#222, #000); height 100%;
+
+.link
+	text-decoration underline; color blue;
+
+.list
+	.header
+		height 22px; 
+		gradient(gradientLight, gradientDark); borderTop 1px solid #E3E9ED; border-bottom 1px solid #8797A3;
+		text-shadow 0 1px 1px #333; color:#fff; font-size 16px; padding 0 4px;
+	.item
+		border-bottom 1px solid #E0E0E0; height 37px; padding 10px 4px 2px; font-size 24px; vertical-align center;
+	.item:last
+		borderBottom none;
+
+.footer
+	position absolute; bottom 0; width 100%;
+	.item
+		width 25%; float left; text-align center;
+		height 50px;
