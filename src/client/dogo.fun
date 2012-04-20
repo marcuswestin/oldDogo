@@ -12,6 +12,12 @@ state = {
 
 localstorage.persist(state, 'state8')
 
+renderReloadButton = template() {
+	<div style={ position:'absolute', top:0, right:0, background:'red'}>'R'</div ontouchstart=handler() {
+		<script> location.reload() </script>
+	}>
+}
+
 renderConversation = template(conv) {
 	<div class="back">"Back"</div #tap.button(handler() { state.currentConversation set: null })>
 	<div class="conversation">
@@ -53,6 +59,8 @@ renderSignup = template() {
 }
 
 <div style={ width:320, height:460, margin:'0 auto', overflow:'auto', background:'#fff', position:'relative' }>
+	renderReloadButton()
+	
 	if (state.currentConversation) {
 		renderConversation(state.currentConversation)
 	} else if (state.sentVerificationSmsTo) {
