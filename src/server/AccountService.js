@@ -13,7 +13,9 @@ module.exports = proto(null,
 				facebook.get('me/friends', { access_token:fbAccessToken }, bind(this, function(err, res) {
 					if (err) { return callback(err) }
 					var fbFriends = res.data
-					if (account) {
+					if (res.error || !fbFriends) {
+						callback(res.error || 'Facebook connect failed')
+					} else if (account) {
 						this._claimAccount(fbAccount, fbFriends, callback)
 					} else {
 						this._createClaimedAccount(fbAccount, fbFriends, callback)
