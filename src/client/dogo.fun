@@ -2,8 +2,27 @@ import localstorage
 import xhr
 import "./bridge"
 import tap
+import console
 
 <link rel="stylesheet/stylus" type="css" href="./style/dogo.styl" />
+
+<script bridge=bridge>
+	window.onerror = function(e) {
+		alert('error: ' + e)
+		console.log('error:', e)
+	}
+	window.console = {
+		log: function() {
+			var args = []
+			for (var i=0; i<arguments.length; i++) {
+				var arg = arguments[i]
+				if (arg && arg.asJSONObject) { arg = arg.asJSONObject() }
+				args.push(arg)
+			}
+			bridge.evaluate()._send({ command:'console.log', data:args })
+		}
+	}
+</script>
 
 state = {
 	version: '0.1',
@@ -13,7 +32,7 @@ state = {
 localstorage.persist(state, 'state8')
 
 renderReloadButton = template() {
-	<div style={ position:'absolute', top:0, right:0, background:'red'}>'R'</div ontouchstart=handler() {
+	<div style={ position:'absolute', top:0, right:0, background:'red'}>'R'</div ontouchend=handler() {
 		<script> location.reload() </script>
 	}>
 }
