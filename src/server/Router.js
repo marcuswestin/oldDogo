@@ -35,9 +35,8 @@ module.exports = proto(null,
 			router.get('/claim', misc.claim.bind(this))
 			router.get('/api/ping', misc.ping)
 			
-			router.post('/api/authentication', rest.postAuthentication.bind(this))
-			router.post('/api/session', rest.postSession.bind(this))
-			router.post('/api/conversation', filter.session.bind(this), rest.postConversation.bind(this))
+			router.post('/api/sessions', rest.postSession.bind(this))
+			router.post('/api/conversations', filter.session.bind(this), rest.postConversation.bind(this))
 			router.get('/api/conversations', filter.session.bind(this), rest.getConversations.bind(this))
 			router.post('/api/messages', filter.session.bind(this), rest.postMessage.bind(this))
 		},
@@ -51,12 +50,12 @@ module.exports = proto(null,
 			},
 			postSession: function(req, res) {
 				var body = req.body, session = req.session
-				this.sessionService.createSession(body.fb_access_token, bind(this, this.respond, req, res))
+				this.sessionService.createSession(body.facebook_access_token, bind(this, this.respond, req, res))
 			},
 			postConversation: function(req, res) {
 				var body = req.body, session = req.session
-				if (!body.with_fb_account_id) { return this.respond('Missing fb account id') }
-				this.messageService.createConversation(session.accountId, body.with_fb_account_id, bind(this, this.respond, req, res))
+				if (!body.with_facebook_account_id) { return this.respond('Missing fb account id') }
+				this.messageService.createConversation(session.accountId, body.with_facebook_account_id, bind(this, this.respond, req, res))
 			},
 			getConversations: function(req, res) {
 				var body = req.body, session = req.session
@@ -64,7 +63,7 @@ module.exports = proto(null,
 			},
 			postMessage: function(req, res) {
 				var body = req.body, session = req.session
-				this.messageService.sendMessage(session.accountId, body.conversation_id, body.body, bind(this, this.respond, req, res))
+				this.messageService.sendMessage(session.accountId, body.to_facebook_account_id, body.body, bind(this, this.respond, req, res))
 			}
 		},
 		misc: {

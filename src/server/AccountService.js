@@ -23,7 +23,7 @@ module.exports = proto(null,
 				}))
 			})
 		},
-		withFacebookContact:function(accountId, contactFbAccountId, callback) {
+		withFacebookContactId:function(accountId, contactFbAccountId, callback) {
 			this._selectFacebookContact(this.db, accountId, contactFbAccountId, function(err, fbContact) {
 				if (err) { return callback(err) }
 				var accountFbId = fbContact.contact_facebook_id
