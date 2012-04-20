@@ -1,28 +1,11 @@
 import localstorage
 import xhr
-import "./bridge"
 import tap
 import console
+import "./bridge"
+import "./util"
 
 <link rel="stylesheet/stylus" type="css" href="./style/dogo.styl" />
-
-<script bridge=bridge>
-	window.onerror = function(e) {
-		alert('error: ' + e)
-		console.log('error:', e)
-	}
-	window.console = {
-		log: function() {
-			var args = []
-			for (var i=0; i<arguments.length; i++) {
-				var arg = arguments[i]
-				if (arg && arg.asJSONObject) { arg = arg.asJSONObject() }
-				args.push(arg)
-			}
-			bridge.evaluate()._send({ command:'console.log', data:args })
-		}
-	}
-</script>
 
 state = {
 	version: '0.1',
@@ -30,12 +13,6 @@ state = {
 }
 
 localstorage.persist(state, 'state8')
-
-renderReloadButton = template() {
-	<div style={ position:'absolute', top:0, right:0, background:'red'}>'R'</div ontouchend=handler() {
-		<script> location.reload() </script>
-	}>
-}
 
 renderConversation = template(conv) {
 	<div class="back">"Back"</div #tap.button(handler() { state.currentConversation set: null })>
@@ -78,7 +55,7 @@ renderSignup = template() {
 }
 
 <div style={ width:320, height:460, margin:'0 auto', overflow:'auto', background:'#fff', position:'relative' }>
-	renderReloadButton()
+	util.renderReloadButton()
 	
 	if (state.currentConversation) {
 		renderConversation(state.currentConversation)
