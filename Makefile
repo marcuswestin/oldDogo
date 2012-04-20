@@ -19,5 +19,8 @@ setup:
 	npm install express@2.5.8
 	cd dependencies/facebook-ios-sdk && scripts/build_facebook_ios_sdk_static_lib.sh
 
+run-dev:
+	node_modules/fun/bin/fun src/client/dogo.fun --port=9090
+
 run-instapop:
 	node_modules/fun/bin/fun instapop/instapop.fun

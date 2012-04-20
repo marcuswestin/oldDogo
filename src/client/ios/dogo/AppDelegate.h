@@ -12,5 +12,6 @@
 @interface AppDelegate : BTAppDelegate <FBSessionDelegate>
 
 @property (nonatomic, retain) Facebook *facebook;
+@property (nonatomic, copy) ResponseCallback facebookConnectResponseCallback;
 
 @end

@@ -7,10 +7,7 @@ import tap
 
 state = {
 	version: '0.1',
-	authToken: null,
-	conversations: null,
-	currentConversation: null,
-	currentTool: 'text'
+	authToken: null
 }
 
 localstorage.persist(state, 'state8')
@@ -43,27 +40,15 @@ renderConversationList = template() {
 }
 
 renderSignup = template() {
-	phoneNumber = "+14156015654"
 	request = null
 	<div style={ marginTop:150, textAlign:'center' }>
-		<input data=phoneNumber placeholder="Your phone number" style={ padding:10, width:280 } />
-		<button>"Go"</button style={ width:140, height:40, marginTop:10 } #tap.button(handler() {
-			bridge.hackPhoneNumber set: phoneNumber.copy()
-			request set: xhr.post('/api/authentication', { phone_number:phoneNumber }, handler(event) {
-				if (event.response) {
-					state.authToken set: event.response.dev.authToken
-				}
+		<button>"Facebook connect"</button style={ width:140, height:40, marginTop:10 } #tap.button(handler() {
+			bridge.command('facebook_connect', null, handler(event) {
+				<script event=event>
+					console.log(event)
+				</script>
 			})
 		})>
-		if (request.loading) { <div>"Loading..."</div> }
-		if (request.error) {
-			<pre>request.error</pre>
-		}
-		if (request.response.dev.authLink) {
-			<div class="link">"Auto-auth (dev)"</div #tap.button(handler() {
-				bridge.command('openUrl', { url:request.response.dev.authLink })
-			})>
-		}
 	</div>
 }
 

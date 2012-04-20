@@ -10,11 +10,36 @@
 
 @implementation AppDelegate
 
-@synthesize facebook;
+@synthesize facebook, facebookConnectResponseCallback;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    facebook = [[Facebook alloc] initWithAppId:@"219049001532833" andDelegate:self];
-    
+    if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
+        facebook = [[Facebook alloc] initWithAppId:@"219049001532833" andDelegate:self];
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    return [facebook handleOpenURL:url]; 
+}
+
+// Commands
+
+- (void)handleCommand:(NSString *)command data:(NSDictionary *)data responseCallback:(ResponseCallback)responseCallback {
+    if ([command isEqualToString:@"facebook_connect"]) {
+        self.facebookConnectResponseCallback = responseCallback;
+        [self fbLogin];
+    } else if ([command isEqualToString:@"console.log"]) {
+        NSLog(@"console.log %@", data);
+    }
+}
+
+
+// Facebook login lifecycle
+
+- (void) fbLogin {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     if ([defaults objectForKey:@"FBAccessTokenKey"] 
         && [defaults objectForKey:@"FBExpirationDateKey"]) {
@@ -23,20 +48,12 @@
     }
     
     if ([facebook isSessionValid]) {
-        NSLog(@"Launched with valid fb session");
+        self.facebookConnectResponseCallback(nil, nil);
     } else {
         NSLog(@"Launched without valid fb session - get one");
         [facebook authorize:nil];
     }
-    
-    return YES;
 }
-
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-    return [facebook handleOpenURL:url]; 
-}
-
-// Facebook login lifecycle
 
 /**
  * Called when the user successfully logged in.
@@ -47,6 +64,8 @@
     [defaults setObject:[facebook accessToken] forKey:@"FBAccessTokenKey"];
     [defaults setObject:[facebook expirationDate] forKey:@"FBExpirationDateKey"];
     [defaults synchronize];
+    
+    self.facebookConnectResponseCallback(nil, nil);
 }
 
 /**
