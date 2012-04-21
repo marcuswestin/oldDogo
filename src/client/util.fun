@@ -1,6 +1,6 @@
 util = {
 	
-	renderReloadButton = template() {
+	renderDevBar = template() {
 		<div style={ position:'absolute', top:0, right:0, background:'red'}>'R'</div ontouchend=handler() {
 			<script> location.reload() </script>
 		}>

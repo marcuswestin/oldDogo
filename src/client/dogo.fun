@@ -1,4 +1,3 @@
-import localstorage
 import xhr
 import tap
 import console
@@ -7,12 +6,8 @@ import "./util"
 
 <link rel="stylesheet/stylus" type="css" href="./style/dogo.styl" />
 
-state = {
-	version: '0.1',
-	authToken: null
-}
-
-localstorage.persist(state, 'state8')
+stateReq = bridge.command('state.load')
+state = stateReq.response
 
 renderConversation = template(conv) {
 	<div class="back">"Back"</div #tap.button(handler() { state.currentConversation set: null })>
@@ -45,7 +40,7 @@ renderSignup = template() {
 	request = null
 	<div style={ marginTop:150, textAlign:'center' }>
 		<button>"Facebook connect"</button style={ width:140, height:40, marginTop:10 } #tap.button(handler() {
-			bridge.command('facebook_connect', null, handler(event) {
+			bridge.command('facebook.connect', null, handler(event) {
 				<script event=event>
 					console.log(event)
 				</script>
@@ -55,7 +50,9 @@ renderSignup = template() {
 }
 
 <div style={ width:320, height:460, margin:'0 auto', overflow:'auto', background:'#fff', position:'relative' }>
-	util.renderReloadButton()
+	util.renderDevBar()
+	
+	stateReq
 	
 	if (state.currentConversation) {
 		renderConversation(state.currentConversation)

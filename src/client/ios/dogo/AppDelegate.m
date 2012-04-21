@@ -10,11 +10,19 @@
 
 @implementation AppDelegate
 
-@synthesize facebook, facebookConnectResponseCallback;
+@synthesize facebook, facebookConnectResponseCallback, state;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
+        state = [[State alloc] init];
         facebook = [[Facebook alloc] initWithAppId:@"219049001532833" andDelegate:self];
+        
+        NSDictionary* facebookSession = [state get:@"facebook.session"];
+        if (facebookSession) {
+            facebook.accessToken = [facebookSession objectForKey:@"accessToken"];
+            NSNumber* expirationDate = [facebookSession objectForKey:@"expirationDate"];
+            facebook.expirationDate = [NSDate dateWithTimeIntervalSince1970:[expirationDate doubleValue]];
+        }
         return YES;
     } else {
         return NO;
@@ -25,47 +33,38 @@
     return [facebook handleOpenURL:url]; 
 }
 
+
+
 // Commands
 
-- (void)handleCommand:(NSString *)command data:(NSDictionary *)data responseCallback:(ResponseCallback)responseCallback {
-    if ([command isEqualToString:@"facebook_connect"]) {
+- (void)handleCommand:(NSString *)command data:(id)data responseCallback:(ResponseCallback)responseCallback {
+    if ([command isEqualToString:@"facebook.connect"]) {
         self.facebookConnectResponseCallback = responseCallback;
-        [self fbLogin];
+        [facebook authorize:nil];
+    } else if ([command isEqualToString:@"state.load"]) {
+        responseCallback(nil, [state load]);
+    } else if ([command isEqualToString:@"state.set"]) {
+        [state set:[data objectForKey:@"key"] value:[data objectForKey:@"value"]];
+        responseCallback(nil, nil);
     } else if ([command isEqualToString:@"console.log"]) {
         NSLog(@"console.log %@", data);
     }
 }
 
 
-// Facebook login lifecycle
 
-- (void) fbLogin {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    if ([defaults objectForKey:@"FBAccessTokenKey"] 
-        && [defaults objectForKey:@"FBExpirationDateKey"]) {
-        facebook.accessToken = [defaults objectForKey:@"FBAccessTokenKey"];
-        facebook.expirationDate = [defaults objectForKey:@"FBExpirationDateKey"];
-    }
-    
-    if ([facebook isSessionValid]) {
-        self.facebookConnectResponseCallback(nil, nil);
-    } else {
-        NSLog(@"Launched without valid fb session - get one");
-        [facebook authorize:nil];
-    }
-}
-
+// Facebook
 /**
  * Called when the user successfully logged in.
  */
 - (void)fbDidLogin {
     NSLog(@"fbDidLogin");
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:[facebook accessToken] forKey:@"FBAccessTokenKey"];
-    [defaults setObject:[facebook expirationDate] forKey:@"FBExpirationDateKey"];
-    [defaults synchronize];
-    
-    self.facebookConnectResponseCallback(nil, nil);
+    NSMutableDictionary* facebookSession = [NSMutableDictionary dictionary];
+    NSNumber* expirationDate = [NSNumber numberWithDouble:[facebook.expirationDate timeIntervalSince1970]];
+    [facebookSession setObject:facebook.accessToken forKey:@"accessToken"];
+    [facebookSession setObject:expirationDate forKey:@"expirationDate"];
+    [state set:@"facebook.session" value:facebookSession];
+    self.facebookConnectResponseCallback(nil, facebookSession);
 }
 
 /**
