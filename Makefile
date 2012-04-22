@@ -20,7 +20,8 @@ setup:
 	cd dependencies/facebook-ios-sdk && scripts/build_facebook_ios_sdk_static_lib.sh
 
 run-dev:
-	node_modules/fun/bin/fun src/client/dogo.fun --port=9090
+	node scripts/run-server --dev --log=false --port=9090 --dbPassword=dogo
+	# node_modules/fun/bin/fun src/client/dogo.fun --port=9090
 
 run-instapop:
 	node_modules/fun/bin/fun instapop/instapop.fun
