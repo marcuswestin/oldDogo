@@ -17,6 +17,9 @@ bridge = {
 				} else if (response) {
 					result.set(['response'], fun.expressions.fromJsValue(response))
 				}
+				if (responseHandler) {
+					responseHandler.evaluate().invoke(null, result)
+				}
 			})
 		</script>
 		return result
