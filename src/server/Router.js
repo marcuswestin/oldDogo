@@ -19,7 +19,6 @@ module.exports = proto(null,
 		},
 		_configureRouter:function() {
 			var router = this._router
-			
 			if (this._opts.log) { router.use(express.logger()) }
 			router.use(express.bodyParser())
 		},
@@ -35,7 +34,7 @@ module.exports = proto(null,
 			router.get('/claim', misc.claim.bind(this))
 			router.get('/api/ping', misc.ping)
 			
-			router.post('/api/sessions', rest.postSession.bind(this))
+			router.post('/api/sessions', rest.postSessions.bind(this))
 			router.post('/api/conversations', filter.session.bind(this), rest.postConversation.bind(this))
 			router.get('/api/conversations', filter.session.bind(this), rest.getConversations.bind(this))
 			router.post('/api/messages', filter.session.bind(this), rest.postMessage.bind(this))
@@ -48,7 +47,7 @@ module.exports = proto(null,
 				var body = req.body, session = req.session
 				this.sessionService.createAuthentication(body.phone_number, bind(this, this.respond, req, res))
 			},
-			postSession: function(req, res) {
+			postSessions: function(req, res) {
 				var body = req.body, session = req.session
 				this.sessionService.createSession(body.facebook_access_token, bind(this, this.respond, req, res))
 			},

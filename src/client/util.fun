@@ -1,8 +1,11 @@
 util = {
 	
 	renderDevBar = template() {
-		<div style={ position:'absolute', top:0, right:0, background:'red'}>'R'</div ontouchend=handler() {
+		<div style={ position:'absolute', top:0, right:11, background:'red'}>'R'</div onclick=handler() {
 			<script> location.reload() </script>
+		}>
+		<div style={ position:'absolute', top:0, right:0, background:'blue'}>'X'</div onclick=handler() {
+			bridge.command('state.reset')
 		}>
 	}
 
@@ -10,7 +13,7 @@ util = {
 
 <script bridge=bridge>
 	window.onerror = function(e) {
-		alert('error: ' + e)
+		alert('window.onerror: ' + e)
 		console.log('error:', e)
 	}
 	window.console = {
