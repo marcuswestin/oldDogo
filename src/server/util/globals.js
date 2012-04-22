@@ -6,7 +6,7 @@ bind = require('fun/node_modules/std/bind')
 slice = require('fun/node_modules/std/slice')
 
 ListPromise = require('fun/node_modules/std/ListPromise')
-txCallback = require('./util/txCallback')
+txCallback = require('./txCallback')
 
 getId = function(model) {
 	return typeof model == 'number' ? model : model.id

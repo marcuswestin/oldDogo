@@ -1,5 +1,3 @@
-var Message = require('../data/Message')
-
 module.exports = proto(null,
 	function(database, accountService) {
 		this.db = database

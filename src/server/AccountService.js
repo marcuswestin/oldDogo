@@ -1,5 +1,5 @@
 var uuid = require('uuid'),
-	facebook = require('../util/facebook')
+	facebook = require('./util/facebook')
 
 module.exports = proto(null,
 	function(database) {

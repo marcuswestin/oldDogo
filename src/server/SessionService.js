@@ -1,7 +1,7 @@
 var uuid = require('uuid'),
 	redis = require('redis'),
 	time = require('fun/node_modules/std/time'),
-	facebook = require('../util/facebook')
+	facebook = require('./util/facebook')
 
 module.exports = proto(null,
 	function(accountService, addressService, smsService) {

@@ -1,4 +1,4 @@
-require('../src/globals')
+require('../src/server/util/globals')
 
 var exec = require('child_process').exec,
 	path = require('path')

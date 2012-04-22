@@ -1,10 +1,10 @@
-require('../src/globals')
+require('./util/globals')
 
-var Database = require('../src/server/Database'),
-	AccountService = require('../src/server/AccountService'),
-	SessionService = require('../src/server/SessionService'),
-	MessageService = require('../src/server/MessageService'),
-	Router = require('../src/server/Router')
+var Database = require('./Database'),
+	AccountService = require('./AccountService'),
+	SessionService = require('./SessionService'),
+	MessageService = require('./MessageService'),
+	Router = require('./Router')
 
 var argv = require('fun/node_modules/optimist').argv,
 	merge = require('fun/node_modules/std/merge')

@@ -11,6 +11,10 @@
 DROP DATABASE IF EXISTS dogo_test;
 CREATE DATABASE dogo_test;
 USE dogo_test;
+-- DROP DATABASE IF EXISTS dogo;
+-- CREATE DATABASE dogo;
+-- USE dogo;
+
 
 set foreign_key_checks = 0;
 
