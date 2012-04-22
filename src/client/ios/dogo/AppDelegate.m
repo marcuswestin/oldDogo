@@ -10,19 +10,23 @@
 
 @implementation AppDelegate
 
-@synthesize facebook, facebookConnectResponseCallback, state;
+@synthesize facebook, facebookConnectResponseCallback, state, net;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
         state = [[State alloc] init];
-        facebook = [[Facebook alloc] initWithAppId:@"219049001532833" andDelegate:self];
+        net = [[Net alloc] init];
         
-        NSDictionary* facebookSession = [state get:@"facebook.session"];
+        facebook = [[Facebook alloc] initWithAppId:@"219049001532833" andDelegate:self];
+        NSDictionary* facebookSession = [state get:@"facebook_session"];
         if (facebookSession) {
-            facebook.accessToken = [facebookSession objectForKey:@"accessToken"];
-            NSNumber* expirationDate = [facebookSession objectForKey:@"expirationDate"];
+            facebook.accessToken = [facebookSession objectForKey:@"access_token"];
+            NSNumber* expirationDate = [facebookSession objectForKey:@"expiration_date"];
             facebook.expirationDate = [NSDate dateWithTimeIntervalSince1970:[expirationDate doubleValue]];
         }
+        
+        [[self.webView scrollView] setBounces:NO];
+        
         return YES;
     } else {
         return NO;
@@ -46,6 +50,10 @@
     } else if ([command isEqualToString:@"state.set"]) {
         [state set:[data objectForKey:@"key"] value:[data objectForKey:@"value"]];
         responseCallback(nil, nil);
+    } else if ([command isEqualToString:@"state.reset"]) {
+        [state reset];
+    } else if ([command isEqualToString:@"net.request"]) {
+        [net request:data responseCallback:responseCallback];
     } else if ([command isEqualToString:@"console.log"]) {
         NSLog(@"console.log %@", data);
     }
@@ -61,9 +69,9 @@
     NSLog(@"fbDidLogin");
     NSMutableDictionary* facebookSession = [NSMutableDictionary dictionary];
     NSNumber* expirationDate = [NSNumber numberWithDouble:[facebook.expirationDate timeIntervalSince1970]];
-    [facebookSession setObject:facebook.accessToken forKey:@"accessToken"];
-    [facebookSession setObject:expirationDate forKey:@"expirationDate"];
-    [state set:@"facebook.session" value:facebookSession];
+    [facebookSession setObject:facebook.accessToken forKey:@"access_token"];
+    [facebookSession setObject:expirationDate forKey:@"expiration_date"];
+    [state set:@"facebook_session" value:facebookSession];
     self.facebookConnectResponseCallback(nil, facebookSession);
 }
 

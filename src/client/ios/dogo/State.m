@@ -15,9 +15,7 @@ static NSString* STATE_KEY = @"dogo.state";
 - (id)init {
     if (self = [super init]) {
         if (![self load]) {
-            NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-            [defaults setObject:[NSDictionary dictionary] forKey:STATE_KEY];
-            [defaults synchronize];
+            [self reset];
         }
     }
     return self;
@@ -39,6 +37,12 @@ static NSString* STATE_KEY = @"dogo.state";
     NSMutableDictionary* state = [NSMutableDictionary dictionaryWithDictionary:[defaults objectForKey:STATE_KEY]];
     [state setObject:value forKey:key];
     [defaults setObject:state forKey:STATE_KEY];
+    [defaults synchronize];
+}
+
+- (void)reset {
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:[NSDictionary dictionary] forKey:STATE_KEY];
     [defaults synchronize];
 }
 

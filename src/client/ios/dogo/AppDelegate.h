@@ -9,11 +9,13 @@
 #import "BTAppDelegate.h"
 #import "FBConnect.h"
 #import "State.h"
+#import "Net.h"
 
 @interface AppDelegate : BTAppDelegate <FBSessionDelegate>
 
 @property (nonatomic, retain) Facebook *facebook;
 @property (nonatomic, copy) ResponseCallback facebookConnectResponseCallback;
 @property (atomic, strong) State* state;
+@property (atomic, strong) Net* net;
 
 @end

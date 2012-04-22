@@ -13,6 +13,7 @@
 - (void) set:(NSString*)key value:(id)value;
 - (id) get:(NSString*)key;
 - (NSDictionary*) load;
+- (void) reset;
 
 
 @end

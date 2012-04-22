@@ -30,6 +30,7 @@
 		2CD1A089153FB85D008949F2 /* FBDialog.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2CD1A07C153FB85D008949F2 /* FBDialog.bundle */; };
 		2CD1A08A153FB85D008949F2 /* libfacebook_ios_sdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD1A082153FB85D008949F2 /* libfacebook_ios_sdk.a */; };
 		2CDB811515434EB80005A558 /* State.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB811415434EB80005A558 /* State.m */; };
+		2CDB811D15438D3A0005A558 /* Net.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB811C15438D3A0005A558 /* Net.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -89,6 +90,8 @@
 		2CD1A088153FB85D008949F2 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
 		2CDB811315434EB80005A558 /* State.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = State.h; sourceTree = "<group>"; };
 		2CDB811415434EB80005A558 /* State.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = State.m; sourceTree = "<group>"; };
+		2CDB811B15438D3A0005A558 /* Net.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Net.h; sourceTree = "<group>"; };
+		2CDB811C15438D3A0005A558 /* Net.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Net.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,6 +143,8 @@
 				2CD1A03D153FB6B1008949F2 /* AppDelegate.m */,
 				2CDB811315434EB80005A558 /* State.h */,
 				2CDB811415434EB80005A558 /* State.m */,
+				2CDB811B15438D3A0005A558 /* Net.h */,
+				2CDB811C15438D3A0005A558 /* Net.m */,
 				2CD1A079153FB85D008949F2 /* facebook-ios-sdk */,
 				2CD1A048153FB7B6008949F2 /* blowtorch-ios-sdk */,
 				2CD1A034153FB6B0008949F2 /* Supporting Files */,
@@ -330,6 +335,7 @@
 				2CD1A076153FB7B6008949F2 /* NSFileManager+Tar.m in Sources */,
 				2CD1A077153FB7B6008949F2 /* WebViewJavascriptBridge.m in Sources */,
 				2CDB811515434EB80005A558 /* State.m in Sources */,
+				2CDB811D15438D3A0005A558 /* Net.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
