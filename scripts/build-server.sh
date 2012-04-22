@@ -1,5 +1,6 @@
 BUILD=dogo-server-`date +%s`
 DIR=/tmp/build/$BUILD
+FILE=$DIR.tar.gz
 
 mkdir -p $DIR
 
@@ -14,6 +15,6 @@ cp -r node_modules/uuid $DIR/node_modules
 cp -r node_modules/fun/node_modules/std $DIR/node_modules
 cp -r node_modules/fun/node_modules/optimist $DIR/node_modules
 
-tar -czvf $DIR.tar.gz $DIR
+cd $DIR && cd .. && tar -czvf $FILE $BUILD
 
-echo "Built $DIR"
+echo "Built $FILE"
