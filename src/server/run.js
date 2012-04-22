@@ -6,8 +6,8 @@ var Database = require('./Database'),
 	MessageService = require('./MessageService'),
 	Router = require('./Router')
 
-var argv = require('fun/node_modules/optimist').argv,
-	merge = require('fun/node_modules/std/merge')
+var argv = require('optimist').argv,
+	merge = require('std/merge')
 
 var opts = { log:true, dev:false, port:9090, dbPassword:'' }
 for (var key in opts) {

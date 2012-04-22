@@ -1,11 +1,11 @@
-proto = require('fun/node_modules/std/proto')
-create = require('fun/node_modules/std/create')
-each = require('fun/node_modules/std/each')
-map = require('fun/node_modules/std/map')
-bind = require('fun/node_modules/std/bind')
-slice = require('fun/node_modules/std/slice')
+proto = require('std/proto')
+create = require('std/create')
+each = require('std/each')
+map = require('std/map')
+bind = require('std/bind')
+slice = require('std/slice')
 
-ListPromise = require('fun/node_modules/std/ListPromise')
+ListPromise = require('std/ListPromise')
 txCallback = require('./txCallback')
 
 getId = function(model) {
