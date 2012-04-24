@@ -19,7 +19,7 @@ module.exports = proto(null,
 		},
 		_configureRouter:function() {
 			var router = this._router
-			if (this._opts.log) { router.use(express.logger()) }
+			if (this._opts.log) { router.use(express.logger({ format: ':method :url' })) }
 			router.use(express.bodyParser())
 		},
 		_createRoutes: function() {
