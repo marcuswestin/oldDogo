@@ -35,8 +35,10 @@ module.exports = proto(null,
 			router.get('/api/ping', misc.ping)
 			
 			router.post('/api/sessions', rest.postSessions.bind(this))
+			router.post('/api/sessions/refresh', rest.refreshSession.bind(this))
 			router.post('/api/conversations', filter.session.bind(this), rest.postConversation.bind(this))
 			router.get('/api/conversations', filter.session.bind(this), rest.getConversations.bind(this))
+			router.get('/api/contacts', filter.session.bind(this), rest.getContacts.bind(this))
 			router.post('/api/messages', filter.session.bind(this), rest.postMessage.bind(this))
 		},
 		redirect:function(path) {
@@ -44,25 +46,32 @@ module.exports = proto(null,
 		},
 		rest: {
 			postAuthentication: function(req, res, next) {
-				var body = req.body, session = req.session
+				var body = req.body
 				this.sessionService.createAuthentication(body.phone_number, bind(this, this.respond, req, res))
 			},
 			postSessions: function(req, res) {
-				var body = req.body, session = req.session
-				this.sessionService.createSession(body.facebook_access_token, bind(this, this.respond, req, res))
+				var body = req.body
+				this.sessionService.createSessionWithFacebookAccessToken(body.facebook_access_token, bind(this, this.respond, req, res))
+			},
+			refreshSession: function(req, res) {
+				var body = req.body
+				this.sessionService.refreshSessionWithAuthToken(body.authToken, bind(this, this.respond, req, res))
 			},
 			postConversation: function(req, res) {
-				var body = req.body, session = req.session
+				var body = req.body
 				if (!body.with_facebook_account_id) { return this.respond('Missing fb account id') }
-				this.messageService.createConversation(session.accountId, body.with_facebook_account_id, bind(this, this.respond, req, res))
+				this.messageService.createConversation(req.session.accountId, body.with_facebook_account_id, bind(this, this.respond, req, res))
 			},
 			getConversations: function(req, res) {
-				var body = req.body, session = req.session
-				this.messageService.listConversations(session.accountId, bind(this, this.respond, req, res))
+				var body = req.body
+				this.messageService.listConversations(req.session.accountId, bind(this, this.respond, req, res))
+			},
+			getContacts: function(req, res) {
+				this.accountService.getContacts(req.session.accountId, bind(this, this.respond, req, res))
 			},
 			postMessage: function(req, res) {
-				var body = req.body, session = req.session
-				this.messageService.sendMessage(session.accountId, body.to_facebook_account_id, body.body, bind(this, this.respond, req, res))
+				var body = req.body
+				this.messageService.sendMessage(req.session.accountId, body.to_facebook_account_id, body.body, bind(this, this.respond, req, res))
 			}
 		},
 		misc: {
@@ -87,26 +96,10 @@ module.exports = proto(null,
 		},
 		filters: {
 			session: function(req, res, next) {
-				var authorization = req.headers.authorization
-				if (!authorization) { return next('Unauthorized') }
-				
-				try {
-					var parts = authorization.split(' '),
-						scheme = parts[0],
-						credentials = new Buffer(parts[1], 'base64').toString().split(':'),
-						sessionAccountId = credentials[0],
-						sessionToken = credentials[1]
-				} catch(e) {
-					console.warn(e)
-					return next('Error parsing basic auth: '+ authorization)
-				}
-				
-			    if (scheme != 'Basic') { return next('Unknown auth scheme - expected "Basic"') }
-				
-				this.sessionService.authenticateSession(sessionToken, sessionAccountId, function(err, accountId) {
+				this.sessionService.authenticateRequest(req, function(err, accountId) {
 					if (err) { return next(err) }
 					req.session = { accountId:accountId }
-					next(null)
+					next()
 				})
 			}
 		},

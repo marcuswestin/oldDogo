@@ -18,7 +18,7 @@ var api = {
 			params = {}
 		}
 
-		var auth = api.session ? (api.session + '@') : ''
+		var auth = api.authToken ? (api.authToken + '@') : ''
 		var url = 'http://'+auth+'localhost:'+port+'/api/'+path
 		var body = params ? JSON.stringify(params) : ''
 		var headers = { 'Content-Type':'application/json', 'Content-Length':body.length }
@@ -87,10 +87,10 @@ describe('Facebook connect', function() {
 		this.timeout(5000)
 		api.post('sessions', { facebook_access_token:fbUser.access_token }, function(err, res) {
 			check(err)
-			is(res.session)
+			is(res.authToken)
 			is(res.account)
 			is(res.account.facebook_id, fbUser.id)
-			api.session = res.session
+			api.authToken = res.authToken
 			done()
 		})
 	})

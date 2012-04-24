@@ -4,33 +4,67 @@ var uuid = require('uuid'),
 	facebook = require('./util/facebook')
 
 module.exports = proto(null,
-	function(accountService, addressService, smsService) {
+	function(accountService) {
 		this.accountService = accountService
-		this.addressService = this.accountService.addressService
-		this.smsService = smsService
 		this._redis = redis.createClient()
 	}, {
-		createSession: function(fbAccessToken, callback) {
+		createSessionWithFacebookAccessToken: function(fbAccessToken, callback) {
 			facebook.get('me', { access_token:fbAccessToken }, bind(this, function(err, res) {
 				if (err) { return callback(err) }
 				this.accountService.lookupOrCreateByFacebookAccount(res, fbAccessToken, bind(this, function(err, account) {
 					if (err) { return callback(err) }
-					var sessionToken = uuid.v4(),
-						expiration = 1 * time.day
-					this.setex('sess:'+sessionToken, expiration, account.id, function(err) {
+					this.createSessionForAccountId(account.id, function(err, authToken) {
 						if (err) { return callback(err) }
-						var session = account.id+':'+sessionToken
-						callback(null, { account:account, session:session })
+						callback(null, { authToken:authToken, account:account })
 					})
 				}))
 			}))
 		},
-		authenticateSession: function(sessionToken, sessionAccountId, callback) {
+		createSessionForAccountId: function(accountId, callback) {
+			var sessionToken = uuid.v4(),
+				expiration = 1 * time.day
+			
+			this.setex('sess:'+sessionToken, expiration, accountId, function(err) {
+				if (err) { return callback(err) }
+				var authToken = accountId+':'+sessionToken
+				callback(null, authToken)
+			})
+		},
+		refreshSessionWithAuthToken: function(authToken, callback) {
+			var parts = authToken.split(':')
+			this._authenticateSession(parts[1], parts[0], bind(this, function(err, accountId) {
+				if (err) { return callback(err) }
+				this.accountService.getAccount(accountId, function(err, account) {
+					if (err) { return callback(err) }
+					callback(null, { authToken:authToken, account:account })
+				})
+			}))
+		},
+		_authenticateSession: function(sessionToken, sessionAccountId, callback) {
 			this.get('sess:'+sessionToken, function(err, accountId) {
 				if (err) { return callback(err) }
 				if (!accountId || (accountId != sessionAccountId)) { return callback('Unauthorized') }
 				callback(null, accountId)
 			})
+		},
+		authenticateRequest: function(req, callback) {
+			var authorization = req.headers.authorization
+			if (!authorization) { return next('Unauthorized') }
+
+			try {
+				var parts = authorization.split(' '),
+				scheme = parts[0],
+				credentials = new Buffer(parts[1], 'base64').toString().split(':'),
+				sessionAccountId = credentials[0],
+				sessionToken = credentials[1]
+			} catch(e) {
+				console.warn(e)
+				return next('Error parsing basic auth: '+ authorization)
+			}
+
+			if (scheme != 'Basic') { return next('Unknown auth scheme - expected "Basic"') }
+			
+			this._authenticateSession(sessionToken, sessionAccountId, callback)
 		},
 		setex:function(key, exp, val, cb) {
 			var stackTrace = new Error(),

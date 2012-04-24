@@ -34,6 +34,15 @@ module.exports = proto(null,
 				})
 			})
 		},
+		getAccount: function(accountId, callback) {
+			this._selectAccount(this.db, accountId, callback)
+		},
+		getContacts: function(accountId, callback) {
+			this._selectContacts(this.db, accountId, function(err, contacts) {
+				if (err) { return callback(err) }
+				callback(null, { contacts:contacts })
+			})
+		},
 		_createClaimedAccount:function(fbAccount, fbFriends, callback) {
 			console.log('create new account with', fbFriends.length, 'friends')
 			this.db.transact(this, function(tx) {
@@ -85,6 +94,9 @@ module.exports = proto(null,
 			conn.selectOne(this,
 				'SELECT * FROM facebook_contact WHERE account_id=? AND contact_facebook_id=?',
 				[accountId, fbContactFbAccountId], callback)
+		},
+		_selectContacts: function(conn, accountId, callback) {
+			conn.select(this, 'SELECT * FROM facebook_contact WHERE account_id=?', [accountId], callback)
 		},
 		_selectAccountByFacebookId: function(conn, fbAccountId, callback) {
 			conn.selectOne(this, 'SELECT * FROM account WHERE facebook_id=?', [fbAccountId], callback)
