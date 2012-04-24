@@ -128,7 +128,7 @@ module.exports = proto(null,
 			}
 			
 			headers['Content-Type'] = contentType
-			headers['Content-Length'] = content.length
+			// headers['Content-Length'] = content.length
 			
 			res.writeHead(code, headers)
 			res.end(content)
