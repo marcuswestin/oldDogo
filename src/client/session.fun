@@ -20,4 +20,9 @@ session = {
 		// 	}
 		// })
 	}
+	
+	clear: handler() {
+		session.authToken set:null
+		session.account set:null
+	}
 }

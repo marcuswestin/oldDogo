@@ -20,6 +20,7 @@ util = {
 		}>
 		<div style={ position:'absolute', top:0, right:0, background:'blue'}>'X'</div onclick=handler() {
 			bridge.command('state.reset')
+			session.clear()
 		}>
 	}
 

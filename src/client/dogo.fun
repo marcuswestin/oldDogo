@@ -89,9 +89,7 @@ renderSignup = template() {
 			foo = null
 			<div class="button login">"Login"</div #tap.button(handler() {
 				bridge.command('facebook.connect', null, handler(event) {
-					alert(event)
 					if (!event.error) {
-						alert('send')
 						sessionReq set: net.post('sessions', { facebook_access_token:event.response.accessToken }, handler(event) {
 							if (!event.error) {
 								res = event.response

@@ -11,13 +11,13 @@ bridge = {
 			if (!__hackFirstExecution) { return }
 			var message = { command: command.asString(), data:(data && data.asJSONObject()) }
 			module.evaluate()._send(message, function(error, response) {
-				result.set(['loading'], fun.expressions.No)
+				fun.set(result, 'loading', fun.expressions.No)
 				if (error) {
-					result.set(['error'], fun.expressions.fromJsValue(error))
+					fun.set(result, 'error', fun.expressions.fromJsValue(error))
 				} else if (response) {
-					result.set(['response'], fun.expressions.fromJsValue(response))
+					fun.set(result, 'response', fun.expressions.fromJsValue(response))
 				}
-				if (responseHandler) {
+				if (responseHandler && !responseHandler.isNull()) {
 					responseHandler.evaluate().invoke([result])
 				}
 			})
