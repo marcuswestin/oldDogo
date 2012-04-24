@@ -9,7 +9,7 @@ bridge = {
 		result = { loading:true, error:null, response:null }
 		<script command=command data=data responseHandler=responseHandler module=bridge result=result>
 			if (!__hackFirstExecution) { return }
-			var message = { command: command.asString(), data: data && data.asJSONObject() }
+			var message = { command: command.asString(), data:(data && data.asJSONObject()) }
 			module.evaluate()._send(message, function(error, response) {
 				result.set(['loading'], fun.expressions.No)
 				if (error) {
@@ -18,7 +18,7 @@ bridge = {
 					result.set(['response'], fun.expressions.fromJsValue(response))
 				}
 				if (responseHandler) {
-					responseHandler.evaluate().invoke(null, result)
+					responseHandler.evaluate().invoke([result])
 				}
 			})
 		</script>
@@ -50,7 +50,9 @@ bridge = {
 	function onWebViewJavascriptBridgeReady() {
 		WebViewJavascriptBridge.setMessageHandler(function(message) {
 			setTimeout(function() {
-				message = JSON.parse(message)
+				try { message = JSON.parse(message) }
+				catch(e) { console.log("Bad JSON", message) }
+				
 				var responseId = message.responseId,
 					callback = callbacks[responseId]
 				delete callbacks[responseId]

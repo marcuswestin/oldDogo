@@ -2,7 +2,7 @@
 @import "./colors"
 
 html
-	gradient(#2c2, #0c0); height 100%;
+	gradient(color2, color1); height 100%;
 
 .head
 	height 100%;
@@ -10,3 +10,18 @@ html
 	.title
 		text-shadow 0 1px 0 headTxtSh; color:#fff; font-size 16px; padding 0 4px;
 		font-size 20px; text-align center; padding 8px 0 0 0; font-weight 600;
+
+.login.button
+	font-weight bold; font-size 22px; text-shadow 0 1px 0 #999; width 120px; margin 160px auto; padding 6px 8px 8px; box-shadow 0 1px 0 #999;
+.login.button.tap-active
+	text-shadow none; box-shadow 0 0 0;
+
+.button
+	padding 4px 8px 6px; border-radius 10px; gradient(color4, color5); border 3px solid #fff; color #fff; text-align center;
+.button.tap-active
+	gradient(color5, color5);
+
+.contacts
+	padding 0 10px 10px;
+	.face
+		float left;

@@ -5,51 +5,101 @@ import ./util
 import ui/lists
 import viewport
 import alert
-import ./net
+import ./session
 
 <link rel="stylesheet/stylus" type="css" href="./style/dogo.styl" />
 
-stateReq = bridge.command('state.load')
-state = stateReq.response
+headSize = 45
+size = {
+	height:viewport.size.height
+	width:viewport.size.width is > 800 ? 800 : viewport.size.width
+}
+scroller = lists.makeScroller(size, { headSize:45 })
 
-renderConversation = template(conv) {
-	<div class="back">"Back"</div #tap.button(handler() { state.currentConversation set: null })>
-	<div class="conversation">
-		conv
-	</div>
-	<div class="footer">
-		<div class="item">"Text"</div>
-		<div class="item">"Camera"</div>
-		<div class="item">"Draw"</div>
-		<div class="item">"Voice"</div>
-	</div>
+// session.load()
+
+// renderConversation = template(conv) {
+// 	<div class="back">"Back"</div #tap.button(handler() { state.currentConversation set: null })>
+// 	<div class="conversation">
+// 		conv
+// 	</div>
+// 	<div class="footer">
+// 		<div class="item">"Text"</div>
+// 		<div class="item">"Camera"</div>
+// 		<div class="item">"Draw"</div>
+// 		<div class="item">"Voice"</div>
+// 	</div>
+// }
+
+renderConvo = template(convo) {
+	'Convo' convo
+}
+
+renderContact = template(contact) {
+	'Contact' contact
+}
+
+face = template(contact) {
+	<div class="face" style={
+		width:50 height:50
+		background:'url("https://graph.facebook.com/'+contact.contact_facebook_id+'/picture")'
+	}/>
 }
 
 renderConversationList = template() {
 	<div class="list">
-		if (state.conversations.length) {
+		convosReq = net.get('conversations')
+		contactsReq = net.get('contacts')
+
+		<div class="conversations">
 			<div class="header">"Conversations"</div>
-			for conversation in state.conversations {
-				<div class="item conversation">conversation</div #tap.button(handler() {
-					state.currentConversation set: conversation
+			if convosReq.loading { 'Loading...' }
+			if convosReq.error { 'Error: 'convosReq.error }
+			for convo in convosReq.response.conversations {
+				<div class="item conversation">convo</div #tap.button(handler() {
+					scroller.push({ convo:convo })
 				})>
 			}
-		}
-		<div class="header">"Start a conversation"</div>
+		</div>
+		
+		<div class="contacts">
+			<div class="header">"Contacts"</div>
+			if contactsReq.loading { 'Loading...' }
+			if contactsReq.error { 'Error ' contactsReq.error }
+			for contact in contactsReq.response.contacts {
+				<div class="item contact">face(contact)</div #tap.listItem(handler() {
+					scroller.push({ contact:contact })
+				})>
+			}
+		</div>
 	</div>
 }
 
+image = template(name) {
+	<img src="http://blowtorch-payload/image/"+name />
+} 
+
 renderSignup = template() {
 	request = null
-	<div style={ paddingTop:150, textAlign:'center' }>
+	<div style={ textAlign:'center' }>
 		sessionReq = null
 		if sessionReq.loading {
 			'Loading...'
 		} else {
-			<button>"Facebook connect"</button style={ width:140, height:40, marginTop:10 } #tap.button(handler() {
+			foo = null
+			<div class="button login">"Login"</div #tap.button(handler() {
 				bridge.command('facebook.connect', null, handler(event) {
+					alert(event)
 					if (!event.error) {
-						sessionReq set: net.post('sessions', { facebook_access_token:event.response.access_token })
+						alert('send')
+						sessionReq set: net.post('sessions', { facebook_access_token:event.response.accessToken }, handler(event) {
+							if (!event.error) {
+								res = event.response
+								session.authToken set: res.authToken
+								session.account set: res.account
+								bridge.command('state.set', { key:'session', value:res })
+							}
+						})
 					}
 				})
 			})>
@@ -63,29 +113,22 @@ renderSignup = template() {
 	</div>
 }
 
-headSize = 45
-scroller = lists.makeScroller(viewport.size, { headSize:45 })
-scroller.renderHead(template() {
-	<div class="head">
-		util.renderDevBar()
-		<div class="title">'Dogo'</div>
-	</div>
-})
-scroller.renderBody([template() {
-	<div style={ background:'#fff' minHeight:viewport.size.height-headSize height:900 }>
-		if state.session {
-			
+<div style=size style={ margin:'0 auto' }>
+	scroller.renderHead(template() {
+		<div class="head">
+			util.renderDevBar()
+			<div class="title">scroller.view.title</div>
+		</div>
+	})
+	scroller.renderBody(template(view) {
+		if view.convo {
+			// renderConvo(view.convo)
+		} else if view.contact {
+			// renderContact(view.contact)
+		} else if session.authToken {
+			renderConversationList()
 		} else {
 			renderSignup()
 		}
-		// if (state.currentConversation) {
-		// 	renderConversation(state.currentConversation)
-		// } else if (state.sentVerificationSmsTo) {
-		// 	"We sent a verification SMS to "state.sentVerificationSmsTo". Please be patient"
-		// } else if (state.authToken) {
-		// 	renderConversationList()
-		// } else {
-		// 	renderSignup()
-		// }
-	</div>
-}])
+	})
+</div>

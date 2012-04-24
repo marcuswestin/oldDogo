@@ -20,7 +20,6 @@
     [request setHTTPBody:[params JSONData]];
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     [[AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id responseJson) {
-        NSLog(@"net.request success %@", responseJson);
         responseCallback(nil, responseJson);
     } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *err, id responseJson) {
         NSLog(@"net.request ERROR %@ %@", err, responseJson);

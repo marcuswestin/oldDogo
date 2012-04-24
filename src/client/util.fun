@@ -1,6 +1,20 @@
+import ./net
+import ./session
+
 util = {
 	
 	renderDevBar = template() {
+		<div style={ position:'absolute', top:0, right:33, background:'yellow'}>'L'</div onclick=handler() {
+			session.load()
+		}>
+		<div style={ position:'absolute', top:0, right:22, background:'green'}>'A'</div onclick=handler() {
+			net.post('sessions/refresh', { authToken:'1:bb77de6c-16e4-4729-b852-7853ff77d1f9' }, handler(event) {
+				res = event.response
+				session.authToken set: res.authToken
+				session.account set: res.account
+				bridge.command('state.set', { key:'session', value:res })
+			})
+		}>
 		<div style={ position:'absolute', top:0, right:11, background:'red'}>'R'</div onclick=handler() {
 			<script> location.reload() </script>
 		}>

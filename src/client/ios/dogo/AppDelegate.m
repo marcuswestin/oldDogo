@@ -18,14 +18,15 @@
         net = [[Net alloc] init];
         
         facebook = [[Facebook alloc] initWithAppId:@"219049001532833" andDelegate:self];
-        NSDictionary* facebookSession = [state get:@"facebook_session"];
+        NSDictionary* facebookSession = [state get:@"facebookSession"];
         if (facebookSession) {
-            facebook.accessToken = [facebookSession objectForKey:@"access_token"];
-            NSNumber* expirationDate = [facebookSession objectForKey:@"expiration_date"];
+            facebook.accessToken = [facebookSession objectForKey:@"accessToken"];
+            NSNumber* expirationDate = [facebookSession objectForKey:@"expirationToken"];
             facebook.expirationDate = [NSDate dateWithTimeIntervalSince1970:[expirationDate doubleValue]];
         }
         
         [[self.webView scrollView] setBounces:NO];
+        self.webView.dataDetectorTypes = UIDataDetectorTypeNone;
         
         return YES;
     } else {
@@ -69,9 +70,9 @@
     NSLog(@"fbDidLogin");
     NSMutableDictionary* facebookSession = [NSMutableDictionary dictionary];
     NSNumber* expirationDate = [NSNumber numberWithDouble:[facebook.expirationDate timeIntervalSince1970]];
-    [facebookSession setObject:facebook.accessToken forKey:@"access_token"];
-    [facebookSession setObject:expirationDate forKey:@"expiration_date"];
-    [state set:@"facebook_session" value:facebookSession];
+    [facebookSession setObject:facebook.accessToken forKey:@"accessToken"];
+    [facebookSession setObject:expirationDate forKey:@"expirationKey"];
+    [state set:@"facebookSession" value:facebookSession];
     self.facebookConnectResponseCallback(nil, facebookSession);
 }
 

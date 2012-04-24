@@ -8,8 +8,6 @@
 
 #import "State.h"
 
-static NSString* STATE_KEY = @"dogo.state";
-
 @implementation State
 
 - (id)init {
@@ -22,28 +20,33 @@ static NSString* STATE_KEY = @"dogo.state";
 }
 
 - (NSDictionary *)load {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    return [defaults objectForKey:STATE_KEY];
+    NSData* jsonData = [NSData dataWithContentsOfFile:[self getFilePath]];
+    NSDictionary* state = jsonData
+        ? [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingAllowFragments error:nil]
+        : [NSDictionary dictionary];
+    return state;
 }
 
 - (id)get:(NSString *)key {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSDictionary* state = [defaults objectForKey:STATE_KEY];
-    return [state objectForKey:STATE_KEY];
+    NSDictionary* state = [self load];
+    return [state objectForKey:key];
 }
 
 - (void)set:(NSString *)key value:(id)value {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSMutableDictionary* state = [NSMutableDictionary dictionaryWithDictionary:[defaults objectForKey:STATE_KEY]];
-    [state setObject:value forKey:key];
-    [defaults setObject:state forKey:STATE_KEY];
-    [defaults synchronize];
+    NSMutableDictionary* state = [NSMutableDictionary dictionaryWithDictionary:[self load]];
+    [state setValue:value forKey:key];
+    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:state options:NSJSONWritingPrettyPrinted error:nil];
+    [jsonData writeToFile:[self getFilePath] atomically:YES];
 }
 
 - (void)reset {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    [defaults setObject:[NSDictionary dictionary] forKey:STATE_KEY];
-    [defaults synchronize];
+    [[NSData data] writeToFile:[self getFilePath] atomically:YES];
+}
+
+- (NSString *)getFilePath {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    return [documentsDirectory stringByAppendingPathComponent:@"dogo.state"];
 }
 
 @end

@@ -15,5 +15,7 @@
 - (NSDictionary*) load;
 - (void) reset;
 
+- (NSString *)getFilePath;
+
 
 @end
