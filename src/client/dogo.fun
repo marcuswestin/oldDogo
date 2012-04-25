@@ -42,7 +42,7 @@ renderContact = template(contact) {
 face = template(contact) {
 	<div class="face" style={
 		width:50 height:50
-		background:'url("https://graph.facebook.com/'+contact.contact_facebook_id+'/picture")'
+		background:'url("https://graph.facebook.com/'+contact.facebookId+'/picture")'
 	}/>
 }
 
@@ -67,8 +67,13 @@ renderConversationList = template() {
 			if contactsReq.loading { 'Loading...' }
 			if contactsReq.error { 'Error ' contactsReq.error }
 			for contact in contactsReq.response.contacts {
-				<div class="item contact">face(contact)</div #tap.listItem(handler() {
-					scroller.push({ contact:contact })
+				memberClass = contact.memberSince ? ' member' : ''
+				<div class="item contact "+memberClass>face(contact)</div #tap.listItem(handler() {
+					if (contact.memberSince) {
+						scroller.push({ contact:contact })
+					} else {
+						alert("Invite them")
+					}
 				})>
 			}
 		</div>

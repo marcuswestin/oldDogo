@@ -1,5 +1,6 @@
 var uuid = require('uuid'),
-	facebook = require('./util/facebook')
+	facebook = require('./util/facebook'),
+	sql = require('./util/sql')
 
 module.exports = proto(null,
 	function(database) {
@@ -96,7 +97,16 @@ module.exports = proto(null,
 				[accountId, fbContactFbAccountId], callback)
 		},
 		_selectContacts: function(conn, accountId, callback) {
-			conn.select(this, 'SELECT * FROM facebook_contact WHERE account_id=?', [accountId], callback)
+			var properties = {
+				accountId: 'dg.id',
+				facebookId: 'fc.contact_facebook_id',
+				fullName: 'fc.contact_facebook_name',
+				memberSince: 'dg.claimed_time'
+			}
+			conn.select(this,
+				'SELECT'+sql.joinProperties(properties)+'FROM facebook_contact fc\n'+
+				'LEFT OUTER JOIN account dg ON fc.contact_facebook_id=dg.facebook_id\n'+
+				'WHERE fc.account_id=?', [accountId], callback)
 		},
 		_selectAccountByFacebookId: function(conn, fbAccountId, callback) {
 			conn.selectOne(this, 'SELECT * FROM account WHERE facebook_id=?', [fbAccountId], callback)
