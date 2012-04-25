@@ -8,10 +8,10 @@ util = {
 			session.load()
 		}>
 		<div style={ position:'absolute', top:0, right:22, background:'green'}>'A'</div onclick=handler() {
-			net.post('sessions/refresh', { authToken:'1:bb77de6c-16e4-4729-b852-7853ff77d1f9' }, handler(event) {
+			net.post('sessions/refresh', { authToken:'1:a1488373-840b-40ef-acd0-88720f4a57b8' }, handler(event) {
 				res = event.response
-				session.authToken set: res.authToken
-				session.account set: res.account
+				session set: 'authToken', res.authToken
+				session set: 'account', res.account
 				bridge.command('state.set', { key:'session', value:res })
 			})
 		}>

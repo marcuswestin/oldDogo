@@ -9,13 +9,14 @@ bridge = {
 		result = { loading:true, error:null, response:null }
 		<script command=command data=data responseHandler=responseHandler module=bridge result=result>
 			if (!__hackFirstExecution) { return }
+			result = result.evaluate()
 			var message = { command: command.asString(), data:(data && data.asJSONObject()) }
 			module.evaluate()._send(message, function(error, response) {
-				fun.set(result, 'loading', fun.expressions.No)
+				fun.dictSet(result, 'loading', fun.expressions.No)
 				if (error) {
-					fun.set(result, 'error', fun.expressions.fromJsValue(error))
+					fun.dictSet(result, 'error', error)
 				} else if (response) {
-					fun.set(result, 'response', fun.expressions.fromJsValue(response))
+					fun.dictSet(result, 'response', response)
 				}
 				if (responseHandler && !responseHandler.isNull()) {
 					responseHandler.evaluate().invoke([result])

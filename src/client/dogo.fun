@@ -93,8 +93,8 @@ renderSignup = template() {
 						sessionReq set: net.post('sessions', { facebook_access_token:event.response.accessToken }, handler(event) {
 							if (!event.error) {
 								res = event.response
-								session.authToken set: res.authToken
-								session.account set: res.account
+								session set: 'authToken', res.authToken
+								session set: 'account', res.account
 								bridge.command('state.set', { key:'session', value:res })
 							}
 						})

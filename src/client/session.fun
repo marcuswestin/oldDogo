@@ -10,7 +10,7 @@ session = {
 	
 	load: handler() {
 		localstorage.persist(session, 'session')
-		session.loading set:false
+		session set: 'loading', false
 		// bridge.command('state.load', null, handler(event) {
 		// 	session.loading set: false
 		// 	if (!event.error) {
@@ -22,7 +22,7 @@ session = {
 	}
 	
 	clear: handler() {
-		session.authToken set:null
-		session.account set:null
+		session set: 'authToken', null
+		session set: 'account', null
 	}
 }

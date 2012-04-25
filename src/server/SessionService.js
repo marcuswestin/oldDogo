@@ -49,7 +49,7 @@ module.exports = proto(null,
 		},
 		authenticateRequest: function(req, callback) {
 			var authorization = req.headers.authorization
-			if (!authorization) { return next('Unauthorized') }
+			if (!authorization) { return callback('Unauthorized') }
 
 			try {
 				var parts = authorization.split(' '),
@@ -59,7 +59,7 @@ module.exports = proto(null,
 				sessionToken = credentials[1]
 			} catch(e) {
 				console.warn(e)
-				return next('Error parsing basic auth: '+ authorization)
+				return callback('Error parsing basic auth: '+ authorization)
 			}
 
 			if (scheme != 'Basic') { return next('Unknown auth scheme - expected "Basic"') }

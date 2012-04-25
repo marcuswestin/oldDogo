@@ -12,12 +12,14 @@ net = {
 	_send: function(method, path, params, callback) {
 		url = 'http://marcus.local:9090/api/'+path
 		auth = null
-		<script session=session auth=auth>
-			var authToken = session && session.getContent()['authToken']
-			if (!authToken || !authToken.getContent()) { return }
+		token = session.authToken
+		<script token=token auth=auth>
+			token = token.evaluate()
+			var authToken = token && token.getContent()
+			if (!authToken) { return }
 			var base64 = require('std/base64'),
-				jsAuth = 'Basic '+base64.encode(authToken.getContent())
-			fun.set(auth, null, fun.expressions.Text(jsAuth))
+				jsAuth = 'Basic '+base64.encode(authToken)
+			auth.mutate('set', [fun.expressions.Text(jsAuth)])
 		</script>
 		headers = { 'Content-Type':'application/json', 'Authorization':auth }
 		return xhr._send(method, url, params, callback, headers)
