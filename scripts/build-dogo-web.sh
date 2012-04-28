@@ -11,8 +11,9 @@ if [ ! -d $BUILD_DIR ]; then
 fi
 
 cd $BUILD_DIR
+git pull origin master
 git checkout $BUILD_GIT_HASH
-make setup
+make setup-server
 make test
 
 mkdir -p $DIR
@@ -26,7 +27,7 @@ cp -r node_modules/request $DIR/node_modules
 cp -r node_modules/uuid $DIR/node_modules
 cp -r node_modules/fun/node_modules/std $DIR/node_modules
 
-cd $DIR && cd .. && tar -czvf $FILE $BUILD_NAME
+cd $DIR && cd .. && tar -czf $FILE $BUILD_NAME
 
 echo "Built $FILE"
 echo $FILE | pbcopy
