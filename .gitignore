@@ -4,3 +4,4 @@ node_modules
 xcuserdata
 build
 .fbTestUsers.json
+*.pyc

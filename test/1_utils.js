@@ -57,7 +57,7 @@ describe('A test', function() {
 })
 
 function setupDatabase(done) {
-	var setupSql = path.join(__dirname, '../schema.sql')
+	var setupSql = path.join(__dirname, '../db_schema.sql')
 	exec('cat '+setupSql+' | mysql -u dogo_tester --password=test', function(err, stdout, stderr) {
 		check(err)
 		is(!stderr)
