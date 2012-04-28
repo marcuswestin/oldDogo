@@ -23,7 +23,7 @@ setup:
 	cd node_modules && ln -snf fun/node_modules/optimist optimist
 
 run-dev:
-	node src/server/run.js --dev --log=true --port=9090 --dbPassword=dogo
+	node src/server/run.js --config=dev
 
 run-instapop:
 	node_modules/fun/bin/fun instapop/instapop.fun

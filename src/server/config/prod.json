@@ -1,0 +1,7 @@
+{
+	"log":true,
+	"dev":false,
+	"port":9090,
+	"dbHost":"dogo-db1.cqka8vcdrksp.us-east-1.rds.amazonaws.com",
+	"dbPassword":"dogopass9"
+}

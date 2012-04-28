@@ -9,18 +9,21 @@ var Database = require('./Database'),
 var argv = require('optimist').argv,
 	merge = require('std/merge')
 
-var opts = { log:true, dev:false, port:9090, dbPassword:'' }
-for (var key in opts) {
+if (!argv.config) { argv.config = 'dev' }
+
+var config = require('./config/'+argv.config)
+for (var key in config) {
 	if (argv[key] == null) { continue }
-	opts[key] = (argv[key] == 'false' ? false : argv[key])
+	config[key] = (argv[key] == 'false' ? false : argv[key])
 }
 
-var database = new Database('localhost', 'dogo', 'dogo_rw', opts.dbPassword),
+var database = new Database(config.dbHost, 'dogo', 'dogo_rw', config.dbPassword),
 	accountService = new AccountService(database),
 	sessionService = new SessionService(accountService),
 	messageService = new MessageService(database, accountService),
-	router = new Router(accountService, messageService, sessionService, { log:opts.log, dev:opts.dev })
+	router = new Router(accountService, messageService, sessionService, { log:config.log, dev:config.dev })
 
-router.listen(opts.port)
+router.listen(config.port)
 
-console.log('started server with opts', opts)
+config.dbPassword = config.dbPassword.replace(/[^\*]/g, '*')
+console.log('started server with config', config)
