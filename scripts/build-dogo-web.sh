@@ -16,6 +16,8 @@ git checkout $BUILD_GIT_HASH
 make setup-server
 make test
 
+
+
 mkdir -p $DIR
 cp -r src/server $DIR
 mkdir -p $DIR/node_modules
