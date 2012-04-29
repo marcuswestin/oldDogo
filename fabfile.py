@@ -1,6 +1,6 @@
 from __future__ import with_statement
 from os.path import basename
-from fabric.api import local, run, put, env, sudo, cd, lcd
+from fabric.api import local, run, put, env, sudo, cd, lcd, settings
 import time
 
 def build_dogo_web(git_hash):
@@ -11,7 +11,8 @@ def build_dogo_web(git_hash):
 		local('cd %s && make setup-server && make test' % src_dir)
 		local('mkdir -p %s' % build_dir)
 		local('cp -r %s/src/server %s/server' % (src_dir, build_dir))
-		local('cp -r %s/node_modules/express %s/node_modules' % (src_dir, build_dir))
+		local('mkdir -p %s/node_modules' % build_dir)
+		local('cp -r %s/node_modules/express %s/node_modules/express' % (src_dir, build_dir))
 		local('cp -r %s/node_modules/mysql %s/node_modules' % (src_dir, build_dir))
 		local('cp -r %s/node_modules/fun/node_modules/optimist %s/node_modules' % (src_dir, build_dir))
 		local('cp -r %s/node_modules/redis %s/node_modules' % (src_dir, build_dir))
@@ -27,7 +28,8 @@ def deploy_dogo_web(tar_file, build_name):
 	env.use_ssh_config = True
 	put(tar_file, tar_file)
 	run('tar -xzf %s' % tar_file)
-	sudo('killall node')
+	with settings(warn_only=True):
+	    sudo('killall -q node')
 	sudo('nohup node %s/server/run.js --config=prod' % build_name)
 
 def deploy_nginx_conf(git_hash):

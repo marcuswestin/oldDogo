@@ -13,9 +13,9 @@ module.exports = proto(null,
 		this._createRoutes()
 	}, {
 		listen:function(port) {
-			if (!port) { port = process.env.PORT || 9090 }
+			if (!port) { throw new Error("Router expected a port") }
 			this._router.listen(port)
-			if (this._opts.log) { console.log("Listening on :"+port) }
+			console.log("dogo-web listening on :"+port)
 		},
 		_configureRouter:function() {
 			var router = this._router
@@ -26,13 +26,17 @@ module.exports = proto(null,
 			var rest = this.rest,
 				filter = this.filters,
 				misc = this.misc,
+				dev = this.dev,
 				router = this._router
 			
 			router.error(misc.error.bind(this))
-			router.get('/', this.redirect('/app.html'))
-			router.get('/app.html', misc.app.bind(this))
-			router.get('/claim', misc.claim.bind(this))
-			router.get('/api/ping', misc.ping)
+			
+			if (this._opts.dev) {
+				router.get('/', this.redirect('/app.html'))
+				router.get('/app.html', dev.app.bind(this))
+			} else {
+				router.get('/', misc.ping)
+			}
 			
 			router.post('/api/sessions', rest.postSessions.bind(this))
 			router.post('/api/sessions/refresh', rest.refreshSession.bind(this))
@@ -76,16 +80,13 @@ module.exports = proto(null,
 		},
 		misc: {
 			ping: function(req, res) {
-				res.end('"pong"')
+				res.end('pong')
 			},
 			error: function(err, req, res) {
 				this.respond(req, res, err)
-			},
-			claim: function(req, res) {
-				fs.readFile(__dirname + '/../client/claim.html', bind(this, function(err, html) {
-					this.respond(req, res, err, html && html.toString(), 'text/html')
-				}))
-			},
+			}
+		},
+		dev: {
 			app: function(req, res) {
 				var compiler = require('fun/src/compiler')
 				compiler.compileFile(__dirname + '/../client/dogo.fun', { minify:false }, function(e, appHtml) {

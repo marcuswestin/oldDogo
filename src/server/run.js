@@ -23,7 +23,7 @@ var database = new Database(config.dbHost, 'dogo', 'dogo_rw', config.dbPassword)
 	messageService = new MessageService(database, accountService),
 	router = new Router(accountService, messageService, sessionService, { log:config.log, dev:config.dev })
 
+config.dbPassword = config.dbPassword.replace(/[^\*]/g, '*')
+console.log('starting server with config', config)
 router.listen(config.port)
 
-config.dbPassword = config.dbPassword.replace(/[^\*]/g, '*')
-console.log('started server with config', config)
