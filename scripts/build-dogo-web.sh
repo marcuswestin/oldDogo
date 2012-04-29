@@ -29,5 +29,5 @@ cp -r node_modules/fun/node_modules/std $DIR/node_modules
 
 cd $DIR && cd .. && tar -czf $FILE $BUILD_NAME
 
-echo "Built $FILE"
 echo $FILE | pbcopy
+echo "Built and copied \"$FILE\" to your clipboard."

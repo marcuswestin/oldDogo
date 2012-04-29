@@ -1,7 +1,7 @@
 {
 	"log":true,
 	"dev":true,
-	"port":9090,
+	"port":6000,
 	"dbHost":"localhost",
 	"dbPassword":"dogo"
 }
