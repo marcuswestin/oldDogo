@@ -18,6 +18,7 @@ setup:
 	git submodule init
 	git submodule sync
 	git submodule update
+	mkdir -p node_modules
 	cd node_modules && ln -snf fun/node_modules/std std
 	cd node_modules && ln -snf fun/node_modules/optimist optimist
 	cd node_modules/fun && make setup # server depends on node_modules/fun/node_modules/std
