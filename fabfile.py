@@ -18,7 +18,7 @@ def deploy_dogo_web(tar_file):
 def deploy_nginx_conf(git_hash):
 	def with_updated_build(build_dir):
 		env.use_ssh_config = True
-		put("%s/src/server/conf/nginx.conf" % build_dir, '/tmp/nginx.conf')
+		put("%s/src/server/config/nginx.conf" % build_dir, '/tmp/nginx.conf')
 		sudo('cp /tmp/nginx.conf /etc/nginx/nginx.conf')
 		sudo('/etc/init.d/nginx reload')
 	update_build(git_hash, with_updated_build)
