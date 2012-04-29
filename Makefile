@@ -8,7 +8,7 @@ setup-server: setup
 	cd node_modules/imap && npm install .
 	cd node_modules/validator && npm install .
 	cd node_modules/request && npm install .
-	npm install express@2.5.8
+	if [ ! -d node_modules/express ]; then npm install express@2.5.8 .; fi
 
 setup-client: setup
 	cd dependencies/blowtorch && make setup
