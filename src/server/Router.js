@@ -38,6 +38,7 @@ module.exports = proto(null,
 				router.get('/', misc.ping)
 			}
 			
+			router.get('/api/ping', misc.ping)
 			router.post('/api/sessions', rest.postSessions.bind(this))
 			router.post('/api/sessions/refresh', rest.refreshSession.bind(this))
 			router.post('/api/conversations', filter.session.bind(this), rest.postConversation.bind(this))
@@ -80,7 +81,7 @@ module.exports = proto(null,
 		},
 		misc: {
 			ping: function(req, res) {
-				res.end('pong')
+				res.end('"pong"')
 			},
 			error: function(err, req, res) {
 				this.respond(req, res, err)
