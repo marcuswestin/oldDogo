@@ -2,12 +2,13 @@ import xhr
 import ./bridge
 import ./session
 
-net = {
+// TODO Rename to api
+api = {
 	post: function(path, params, callback) {
-		return net._send('POST', path, params, callback)
+		return api._send('POST', path, params, callback)
 	},
 	get: function(path, params, callback) {
-		return net._send('GET', path, params, callback)
+		return api._send('GET', path, params, callback)
 	},
 	_send: function(method, path, params, callback) {
 		url = '/api/'+path
@@ -23,7 +24,7 @@ net = {
 		</script>
 		headers = { 'Content-Type':'application/json', 'Authorization':auth }
 		return xhr._send(method, url, params, callback, headers)
-		return bridge.command('net.request', {
+		return bridge.command('api.request', {
 			url:url,
 			method:method,
 			params:params

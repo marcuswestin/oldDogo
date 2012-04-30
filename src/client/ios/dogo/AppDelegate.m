@@ -57,7 +57,7 @@
         responseCallback(nil, nil);
     } else if ([command isEqualToString:@"state.reset"]) {
         [state reset];
-    } else if ([command isEqualToString:@"net.request"]) {
+    } else if ([command isEqualToString:@"api.request"]) {
         [net request:data responseCallback:responseCallback];
     } else if ([command isEqualToString:@"console.log"]) {
         NSLog(@"console.log %@", data);

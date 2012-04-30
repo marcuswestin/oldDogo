@@ -27,6 +27,7 @@ module.exports = proto(null,
 		withFacebookContactId:function(accountId, contactFbAccountId, callback) {
 			this._selectFacebookContact(this.db, accountId, contactFbAccountId, function(err, fbContact) {
 				if (err) { return callback(err) }
+				if (!fbContact) { return callback('Facebook contact not found') }
 				var accountFbId = fbContact.contact_facebook_id
 				this._selectAccountByFacebookId(this.db, accountFbId, function(err, acc) {
 					if (err) { return callback(err) }

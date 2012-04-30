@@ -49,10 +49,11 @@ module.exports = proto(null,
 			router.get('/api/ping', misc.ping)
 			router.post('/api/sessions', rest.postSessions.bind(this))
 			router.post('/api/sessions/refresh', rest.refreshSession.bind(this))
-			router.post('/api/conversations', filter.session.bind(this), rest.postConversation.bind(this))
+			// router.post('/api/conversations', filter.session.bind(this), rest.postConversation.bind(this))
 			router.get('/api/conversations', filter.session.bind(this), rest.getConversations.bind(this))
 			router.get('/api/contacts', filter.session.bind(this), rest.getContacts.bind(this))
 			router.post('/api/messages', filter.session.bind(this), rest.postMessage.bind(this))
+			router.get('/api/messages', filter.session.bind(this), rest.getConversationMessages.bind(this))
 		},
 		redirect:function(path) {
 			return function(req, res) { res.redirect(path) }
@@ -70,11 +71,11 @@ module.exports = proto(null,
 				var body = req.body
 				this.sessionService.refreshSessionWithAuthToken(body.authToken, bind(this, this.respond, req, res))
 			},
-			postConversation: function(req, res) {
-				var body = req.body
-				if (!body.with_facebook_account_id) { return this.respond('Missing fb account id') }
-				this.messageService.createConversation(req.session.accountId, body.with_facebook_account_id, bind(this, this.respond, req, res))
-			},
+			// postConversation: function(req, res) {
+			// 	var body = req.body
+			// 	if (!body.with_facebook_account_id) { return this.respond('Missing fb account id') }
+			// 	this.messageService.createConversation(req.session.accountId, body.with_facebook_account_id, bind(this, this.respond, req, res))
+			// },
 			getConversations: function(req, res) {
 				var body = req.body
 				this.messageService.listConversations(req.session.accountId, bind(this, this.respond, req, res))
@@ -85,6 +86,11 @@ module.exports = proto(null,
 			postMessage: function(req, res) {
 				var body = req.body
 				this.messageService.sendMessage(req.session.accountId, body.to_facebook_account_id, body.body, bind(this, this.respond, req, res))
+			},
+			getConversationMessages: function(req, res) {
+				var withFacebookId = req.param('withFacebookId'),
+					withAccountId = req.param('withAccountId')
+				this.messageService.getMessages(req.session.accountId, withFacebookId, withAccountId, bind(this, this.respond, req, res))
 			}
 		},
 		misc: {

@@ -6,6 +6,11 @@ module.exports = proto(null,
 		listConversations: function(accountId, callback) {
 			this._selectParticipations(this.db, accountId, function(err, conversations) {
 				if (err) { return callback(err) }
+				for (var i=0, convo; convo=conversations[i]; i++) {
+					var acc1 = convo.account1Id,
+						acc2 = convo.account2Id
+					convo.withAccountId = (acc1 == accountId ? acc2 : acc1)
+				}
 				callback(null, { conversations:conversations })
 			})
 		},
@@ -20,6 +25,28 @@ module.exports = proto(null,
 					}))
 				}))
 			}))
+		},
+		getMessages: function(accountId, withFacebookId, withAccountId, callback) {
+			var doGetMessages = bind(this, function(withAccountId) {
+				console.log("doGetMessages", accountId, withAccountId)
+				this.withConversationId(accountId, withAccountId, bind(this, function(err, conversationId) {
+					if (err) { return callback(err) }
+					this._selectMessages(this.db, conversationId, bind(this, function(err, messages) {
+						if (err) { return callback(err) }
+						callback(null, { messages:messages })
+					}))
+				}))
+			})
+			
+			if (withAccountId) {
+				doGetMessages(withAccountId)
+			} else {
+				this.accountService.withFacebookContactId(accountId, withFacebookId, bind(this, function(err, withAccountId) {
+					if (err) { return callback(err) }
+					console.log("withFacebookContactId", withFacebookId, withAccountId)
+					doGetMessages(withAccountId)
+				}))
+			}
 		},
 		withConversationId: function(account1Id, account2Id, callback) {
 			try { var ids = this._orderConvoIds(account1Id, account2Id) }
@@ -83,7 +110,10 @@ module.exports = proto(null,
 				[conn.time(), accountId, convoId, body], callback)
 		},
 		_selectMessage: function(conn, messageId, callback) {
-			conn.selectOne(this, 'SELECT * FROM message WHERE id=?', [messageId], callback)
+			conn.selectOne(this, this.sql.message+' WHERE id=?', [messageId], callback)
+		},
+		_selectMessages: function(conn, convoId, callback) {
+			conn.select(this, this.sql.message+' WHERE conversation_id=?', [convoId], callback)
 		},
 		_selectParticipations: function(conn, accountId, callback) {
 			conn.select(this, this.sql.participation+'WHERE participation.account_id=? ORDER BY last_message_id DESC', [accountId], callback)
@@ -95,8 +125,9 @@ module.exports = proto(null,
 			conn.updateOne(this, 'UPDATE conversation SET last_message_id=? WHERE id=?', [messageId, convoId], callback)
 		},
 		sql: {
+			message:'SELECT * FROM message\n',
 			participation:
-				'SELECT participation.*, last_message.*\n'+
+				'SELECT c.account_1_id as account1Id, c.account_2_id as account2Id, participation.*, last_message.*\n'+
 				'FROM conversation_participation participation\n'+
 				'INNER JOIN conversation c ON participation.conversation_id=c.id\n'+
 				'INNER JOIN message last_message ON c.last_message_id=last_message.id\n'

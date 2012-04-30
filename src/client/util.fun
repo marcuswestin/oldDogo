@@ -1,6 +1,7 @@
 import ./net
 import ./session
 
+
 util = {
 	
 	renderDevBar = template() {
@@ -8,7 +9,7 @@ util = {
 			session.load()
 		}>
 		<div style={ position:'absolute', top:0, right:22, background:'green'}>'A'</div onclick=handler() {
-			net.post('sessions/refresh', { authToken:'1:a1488373-840b-40ef-acd0-88720f4a57b8' }, handler(event) {
+			api.post('sessions/refresh', { authToken:'1:d57166ef-dd9e-440a-becc-75da07d03c20' }, handler(event) {
 				res = event.response
 				session set: 'authToken', res.authToken
 				session set: 'account', res.account
