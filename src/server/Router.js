@@ -1,6 +1,8 @@
 var express = require('express'),
 	SessionService = require('./SessionService'),
-	fs = require('fs')
+	fs = require('fs'),
+	path = require('path'),
+	curry = require('std/curry')
 
 module.exports = proto(null,
 	function(accountService, messageService, sessionService, opts) {
@@ -32,8 +34,14 @@ module.exports = proto(null,
 			router.error(misc.error.bind(this))
 			
 			if (this._opts.dev) {
-				router.get('/', this.redirect('/app.html'))
-				router.get('/app.html', dev.app.bind(this))
+				var devServer = require('fun/src/dev-server'),
+					filename = path.join(__dirname, '../client/dogo.fun'),
+					opts = { minify:false }
+				devServer.mountAndWatchFile(router, filename, opts)
+				router.get('/', devServer.serveDevClient)
+				router.get('/app.html', bind(this, function(req, res) {
+					devServer.compileFile(filename, opts, curry(devServer.respond, res))
+				}))
 			} else {
 				router.get('/', misc.ping)
 			}
@@ -87,15 +95,6 @@ module.exports = proto(null,
 				this.respond(req, res, err)
 			}
 		},
-		dev: {
-			app: function(req, res) {
-				var compiler = require('fun/src/compiler')
-				compiler.compileFile(__dirname + '/../client/dogo.fun', { minify:false }, function(e, appHtml) {
-					if (e) { res.end(errorHtmlResponse(e)) }
-					else { res.end(appHtml + reloadButtonHTML()) }
-				})
-			}
-		},
 		filters: {
 			session: function(req, res, next) {
 				this.sessionService.authenticateRequest(req, function(err, accountId) {
@@ -137,16 +136,3 @@ module.exports = proto(null,
 		}
 	}
 )
-
-function errorHtmlResponse(e) {
-	return ['<!doctype html>','<body>',
-		reloadButtonHTML(),
-		'<pre>',
-		e.stack ? e.stack : e.message ? e.message : e.toString(),
-		'</pre>'
-	].join('\n')
-}
-
-function reloadButtonHTML() {
-	return '<div style="width:15px; background:red; text-align:center; position:fixed; top:3px; right:3px; opacity:0.75; cursor:pointer;" ontouchstart="location.reload();" onclick="location.reload()">r</div>'
-}

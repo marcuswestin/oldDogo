@@ -14,6 +14,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
+        self.serverHost = @"http://marcus.local:9000";
         state = [[State alloc] init];
         net = [[Net alloc] init];
         
@@ -28,6 +29,9 @@
         [[self.webView scrollView] setBounces:NO];
         self.webView.dataDetectorTypes = UIDataDetectorTypeNone;
         
+        [self loadCurrentVersionApp];
+        [self requestUpgrade];
+
         return YES;
     } else {
         return NO;

@@ -10,9 +10,9 @@ net = {
 		return net._send('GET', path, params, callback)
 	},
 	_send: function(method, path, params, callback) {
-		url = 'http://marcus.local:9090/api/'+path
+		url = '/api/'+path
 		auth = null
-		token = session.authToken
+		token = session.state.authToken
 		<script token=token auth=auth>
 			token = token.evaluate()
 			var authToken = token && token.getContent()

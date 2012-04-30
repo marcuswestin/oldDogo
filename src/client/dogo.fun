@@ -120,7 +120,9 @@ renderSignup = template() {
 	scroller.renderHead(template() {
 		<div class="head">
 			util.renderDevBar()
-			<div class="title">scroller.view.title</div>
+			<div class="title">
+				scroller.view ? scroller.view.title : 'Dogo'
+			</div>
 		</div>
 	})
 	scroller.renderBody(template(view) {

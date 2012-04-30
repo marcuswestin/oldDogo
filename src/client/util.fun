@@ -36,7 +36,7 @@ util = {
 			var args = []
 			for (var i=0; i<arguments.length; i++) {
 				var arg = arguments[i]
-				if (arg && arg.asJSONObject) { arg = arg.asJSONObject() }
+				if (arg && arg.toJSON) { arg = arg.toJSON() }
 				args.push(arg)
 			}
 			bridge.evaluate()._send({ command:'console.log', data:args })

@@ -10,7 +10,7 @@ bridge = {
 		<script command=command data=data responseHandler=responseHandler module=bridge result=result>
 			if (!__hackFirstExecution) { return }
 			result = result.evaluate()
-			var message = { command: command.asString(), data:(data && data.asJSONObject()) }
+			var message = { command: command.toString(), data:(data && data.toJSON()) }
 			module.evaluate()._send(message, function(error, response) {
 				fun.dictSet(result, 'loading', fun.expressions.No)
 				if (error) {

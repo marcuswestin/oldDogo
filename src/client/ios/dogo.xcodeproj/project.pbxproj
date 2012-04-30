@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C92850E154E070400F11A16 /* app.html in Resources */ = {isa = PBXBuildFile; fileRef = 2C92850D154E070400F11A16 /* app.html */; };
 		2CD1A02E153FB6B0008949F2 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD1A02D153FB6B0008949F2 /* UIKit.framework */; };
 		2CD1A030153FB6B0008949F2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD1A02F153FB6B0008949F2 /* Foundation.framework */; };
 		2CD1A032153FB6B0008949F2 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD1A031153FB6B0008949F2 /* CoreGraphics.framework */; };
@@ -31,10 +32,10 @@
 		2CD1A08A153FB85D008949F2 /* libfacebook_ios_sdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD1A082153FB85D008949F2 /* libfacebook_ios_sdk.a */; };
 		2CDB811515434EB80005A558 /* State.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB811415434EB80005A558 /* State.m */; };
 		2CDB811D15438D3A0005A558 /* Net.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB811C15438D3A0005A558 /* Net.m */; };
-		2CE4B6E415449D6C00AC6828 /* app.html in Resources */ = {isa = PBXBuildFile; fileRef = 2CE4B6E315449D6C00AC6828 /* app.html */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2C92850D154E070400F11A16 /* app.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = app.html; sourceTree = "<group>"; };
 		2CD1A029153FB6B0008949F2 /* dogo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dogo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CD1A02D153FB6B0008949F2 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		2CD1A02F153FB6B0008949F2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -93,7 +94,6 @@
 		2CDB811415434EB80005A558 /* State.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = State.m; sourceTree = "<group>"; };
 		2CDB811B15438D3A0005A558 /* Net.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Net.h; sourceTree = "<group>"; };
 		2CDB811C15438D3A0005A558 /* Net.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Net.m; sourceTree = "<group>"; };
-		2CE4B6E315449D6C00AC6828 /* app.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = app.html; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +111,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2C92850C154E070400F11A16 /* dogo-ios-build */ = {
+			isa = PBXGroup;
+			children = (
+				2C92850D154E070400F11A16 /* app.html */,
+			);
+			name = "dogo-ios-build";
+			path = "../../../../../../../../private/tmp/build/dogo-ios-build";
+			sourceTree = "<group>";
+		};
 		2CD1A01E153FB6B0008949F2 = {
 			isa = PBXGroup;
 			children = (
@@ -147,7 +156,7 @@
 				2CDB811415434EB80005A558 /* State.m */,
 				2CDB811B15438D3A0005A558 /* Net.h */,
 				2CDB811C15438D3A0005A558 /* Net.m */,
-				2CE4B6E215449D6C00AC6828 /* dogo-client */,
+				2C92850C154E070400F11A16 /* dogo-ios-build */,
 				2CD1A079153FB85D008949F2 /* facebook-ios-sdk */,
 				2CD1A048153FB7B6008949F2 /* blowtorch-ios-sdk */,
 				2CD1A034153FB6B0008949F2 /* Supporting Files */,
@@ -258,15 +267,6 @@
 			path = "../../../../dependencies/facebook-ios-sdk/lib/facebook-ios-sdk";
 			sourceTree = "<group>";
 		};
-		2CE4B6E215449D6C00AC6828 /* dogo-client */ = {
-			isa = PBXGroup;
-			children = (
-				2CE4B6E315449D6C00AC6828 /* app.html */,
-			);
-			name = "dogo-client";
-			path = "../../../../build/client/dogo-client";
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -320,7 +320,7 @@
 			files = (
 				2CD1A038153FB6B0008949F2 /* InfoPlist.strings in Resources */,
 				2CD1A089153FB85D008949F2 /* FBDialog.bundle in Resources */,
-				2CE4B6E415449D6C00AC6828 /* app.html in Resources */,
+				2C92850E154E070400F11A16 /* app.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
