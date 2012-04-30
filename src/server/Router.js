@@ -95,7 +95,7 @@ module.exports = proto(null,
 		},
 		misc: {
 			ping: function(req, res) {
-				res.end('"pong"')
+				res.end('"Dogo!"')
 			},
 			error: function(err, req, res) {
 				this.respond(req, res, err)
