@@ -2,7 +2,8 @@ var express = require('express'),
 	SessionService = require('./SessionService'),
 	fs = require('fs'),
 	path = require('path'),
-	curry = require('std/curry')
+	curry = require('std/curry'),
+	slice = require('std/slice')
 
 module.exports = proto(null,
 	function(accountService, messageService, sessionService, opts) {
@@ -58,49 +59,44 @@ module.exports = proto(null,
 		redirect:function(path) {
 			return function(req, res) { res.redirect(path) }
 		},
-		_cleanBody:function(req) {
-			var body = req.body
-			for (var key in body) {
-				if (body.hasOwnProperty(key) && body[key] == 'null') {
-					delete body[key]
+		_getParams:function(req) {
+			var argNames = slice(arguments, 1)
+			var params = {}
+			for (var i=0, argName; argName=argNames[i]; i++) {
+				params[argName] = req.body[argName] || req.param(argName)
+				if (params[argName] == 'null') {
+					delete params[argName]
 				}
 			}
-			return body
+			return params
 		},
 		rest: {
 			postAuthentication: function(req, res, next) {
-				var body = this._cleanBody(req)
-				this.sessionService.createAuthentication(body.phone_number, bind(this, this.respond, req, res))
+				var params = this._getParams(req, 'phone_number')
+				this.sessionService.createAuthentication(params.phone_number, bind(this, this.respond, req, res))
 			},
 			postSessions: function(req, res) {
-				var body = this._cleanBody(req)
-				this.sessionService.createSessionWithFacebookAccessToken(body.facebook_access_token, bind(this, this.respond, req, res))
+				var params = this._getParams(req, 'facebook_access_token')
+				this.sessionService.createSessionWithFacebookAccessToken(params.facebook_access_token, bind(this, this.respond, req, res))
 			},
 			refreshSession: function(req, res) {
-				var body = this._cleanBody(req)
-				this.sessionService.refreshSessionWithAuthToken(body.authToken, bind(this, this.respond, req, res))
+				var params = this._getParams(req, 'authToken')
+				this.sessionService.refreshSessionWithAuthToken(params.authToken, bind(this, this.respond, req, res))
 			},
-			// postConversation: function(req, res) {
-			// 	var body = req.body
-			// 	if (!body.with_facebook_account_id) { return this.respond('Missing fb account id') }
-			// 	this.messageService.createConversation(req.session.accountId, body.with_facebook_account_id, bind(this, this.respond, req, res))
-			// },
 			getConversations: function(req, res) {
-				var body = this._cleanBody(req)
 				this.messageService.listConversations(req.session.accountId, bind(this, this.respond, req, res))
 			},
 			getContacts: function(req, res) {
 				this.accountService.getContacts(req.session.accountId, bind(this, this.respond, req, res))
 			},
 			postMessage: function(req, res) {
-				var body = this._cleanBody(req)
-				var facebookId = body.toFacebookId || body.to_facebook_account_id // backcompat
-				this.messageService.sendMessage(req.session.accountId, facebookId, body.toAccountId, body.body, bind(this, this.respond, req, res))
+				var params = this._getParams(req, 'toFacebookId', 'to_facebook_account_id', 'toAccountId', 'body')
+				var facebookId = params.toFacebookId || params.to_facebook_account_id // backcompat
+				this.messageService.sendMessage(req.session.accountId, facebookId, params.toAccountId, params.body, bind(this, this.respond, req, res))
 			},
 			getConversationMessages: function(req, res) {
-				var withFacebookId = req.param('withFacebookId'),
-					withAccountId = req.param('withAccountId')
-				this.messageService.getMessages(req.session.accountId, withFacebookId, withAccountId, bind(this, this.respond, req, res))
+				var params = this._getParams(req, 'withFacebookId', 'withAccountId')
+				this.messageService.getMessages(req.session.accountId, params.withFacebookId, params.withAccountId, bind(this, this.respond, req, res))
 			}
 		},
 		misc: {

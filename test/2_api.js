@@ -11,7 +11,13 @@ var port = 9090,
 
 var api = {
 	post: function(path, params, callback) { api.send('post', path, params, callback) },
-	get: function(path, callback) { api.send('get', path, null, callback) },
+	get: function(path, params, callback) {
+		if (!callback) {
+			callback = params
+			delete params
+		}
+		api.send('get', path, params, callback)
+	},
 	send: function(method, path, params, callback) {
 		if (!callback) {
 			callback = params
@@ -20,9 +26,15 @@ var api = {
 
 		var auth = api.authToken ? (api.authToken + '@') : ''
 		var url = 'http://'+auth+'localhost:'+port+'/api/'+path
-		var body = params ? JSON.stringify(params) : ''
+		if (method == 'GET') {
+			var body = params ? JSON.stringify(params) : ''
+			var qs = null
+		} else {
+			var body = ''
+			var qs = params
+		}
 		var headers = { 'Content-Type':'application/json', 'Content-Length':body.length }
-		request[method]({ url:url, headers:headers, body:body }, function(err, res) {
+		request[method]({ url:url, headers:headers, body:body, qs:qs }, function(err, res) {
 			if (err) { return callback(err) }
 			if (res.statusCode != 200) { return callback(new Error('Non-200 status code: '+res.statusCode+'. '+url)) }
 			try { var data = JSON.parse(res.body) }
@@ -49,7 +61,7 @@ describe('Facebook connect', function() {
 		if (u.fbAppAccessToken) { return done() }
 		// https://developers.facebook.com/docs/authentication/applications/
 		var params = { client_id:u.fbAppId, client_secret:u.fbAppSecret, grant_type:'client_credentials' }
-		request.get({ url:'https://graph.facebook.com/oauth/access_token', qs:params }, function(err, res) {
+		request.post({ url:'https://graph.facebook.com/oauth/access_token', qs:params }, function(err, res) {
 			check(err)
 			appAccessToken = qs.parse(res.body).access_token
 			is(appAccessToken)
@@ -65,7 +77,6 @@ describe('Facebook connect', function() {
 			check(err)
 			var user = JSON.parse(res.body)
 			is(user.id)
-			console.log('Created user', user)
 			done()
 		})
 	})
@@ -129,6 +140,24 @@ describe('Conversations', function() {
 					is(firstConvo.id, res.conversations[1].id) // the new conversation should now appear first
 					done()
 				})
+			})
+		})
+	})
+	it('should be possible to get messages by facebook id', function(done) {
+		api.get('conversations', function(err, res) {
+			api.get('messages', { withFacebookId:u.fbTestUsers[2].id }, function(err, res) {
+				check(err)
+				is(res.messages.length)
+				done()
+			})
+		})
+	})
+	it('should be possible to get messages by account id', function(done) {
+		api.get('conversations', function(err, res) {
+			api.get('messages', { withAccountId:res.conversations[0].withAccountId }, function(err, res) {
+				check(err)
+				is(res.messages.length)
+				done()
 			})
 		})
 	})

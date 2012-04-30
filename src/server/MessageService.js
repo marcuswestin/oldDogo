@@ -27,7 +27,7 @@ module.exports = proto(null,
 			})
 		},
 		getMessages: function(accountId, withFacebookId, withAccountId, callback) {
-			this._withContactAccountId(accountId, toFacebookAccountId, toAccountId, function(err, toAccountId) {
+			this._withContactAccountId(accountId, withFacebookId, withAccountId, function(err, withAccountId) {
 				if (err) { return callback(err) }
 				this.withConversationId(accountId, withAccountId, bind(this, function(err, conversationId) {
 					if (err) { return callback(err) }
