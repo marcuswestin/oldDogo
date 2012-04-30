@@ -111,6 +111,7 @@ module.exports = proto(null,
 			}
 		},
 		respond:function(req, res, err, content, contentType) {
+			try {
 			var code = 200, headers = {}
 			if (err) {
 				if (err === 'Unauthorized') {
@@ -139,6 +140,9 @@ module.exports = proto(null,
 			
 			res.writeHead(code, headers)
 			res.end(content)
+			} catch(e) {
+				res.end("Error sending message")
+			}
 		}
 	}
 )
