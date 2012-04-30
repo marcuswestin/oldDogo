@@ -6,7 +6,9 @@ import ui/lists
 import viewport
 import alert
 import ./session
+import app
 
+viewport.fitToDevice()
 <link rel="stylesheet/stylus" type="css" href="./style/dogo.styl" />
 
 headSize = 45
@@ -16,7 +18,9 @@ size = {
 }
 scroller = lists.makeScroller(size, { headSize:45 })
 
-// session.load()
+app.whenLoaded(handler() {
+	session.load()
+})
 
 // renderConversation = template(conv) {
 // 	<div class="back">"Back"</div #tap.button(handler() { state.currentConversation set: null })>
@@ -46,13 +50,22 @@ face = template(contact) {
 	}/>
 }
 
+section = template(label, class, renderContent) {
+	<div class="header">
+		<div class="label">label</div>
+	</div>
+	<div class="section "+class>
+		renderContent()
+	</div>
+	
+}
+
 renderConversationList = template() {
 	<div class="list">
 		convosReq = net.get('conversations')
 		contactsReq = net.get('contacts')
-
-		<div class="conversations">
-			<div class="header">"Conversations"</div>
+		
+		section('Conversations', 'conversations', template() {
 			if convosReq.loading { 'Loading...' }
 			if convosReq.error { 'Error: 'convosReq.error }
 			for convo in convosReq.response.conversations {
@@ -60,10 +73,12 @@ renderConversationList = template() {
 					scroller.push({ convo:convo })
 				})>
 			}
-		</div>
+			if convosReq.response.conversations.length is 0 {
+				<div class="ghostTown">"Start a conversation with a friend below"</div>
+			}
+		})
 		
-		<div class="contacts">
-			<div class="header">"Contacts"</div>
+		section('Friends', 'contacts', template() {
 			if contactsReq.loading { 'Loading...' }
 			if contactsReq.error { 'Error ' contactsReq.error }
 			for contact in contactsReq.response.contacts {
@@ -76,7 +91,7 @@ renderConversationList = template() {
 					}
 				})>
 			}
-		</div>
+		})
 	</div>
 }
 
@@ -98,8 +113,8 @@ renderSignup = template() {
 						sessionReq set: net.post('sessions', { facebook_access_token:event.response.accessToken }, handler(event) {
 							if (!event.error) {
 								res = event.response
-								session set: 'authToken', res.authToken
-								session set: 'account', res.account
+								session.state set: 'authToken', res.authToken
+								session.state set: 'account', res.account
 								bridge.command('state.set', { key:'session', value:res })
 							}
 						})
@@ -108,9 +123,6 @@ renderSignup = template() {
 			})>
 			if sessionReq.error {
 				'Error: 'sessionReq.error
-			}
-			if sessionReq.response {
-				"yay! " sessionReq.response
 			}
 		}
 	</div>
@@ -130,7 +142,7 @@ renderSignup = template() {
 			// renderConvo(view.convo)
 		} else if view.contact {
 			// renderContact(view.contact)
-		} else if session.authToken {
+		} else if session.state.authToken {
 			renderConversationList()
 		} else {
 			renderSignup()

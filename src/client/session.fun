@@ -2,14 +2,19 @@ import ./bridge
 import localstorage
 import alert
 
+sessionState = {
+	authToken:null,
+	account:null
+}
+
 session = {
 	
-	authToken:null
-	account:null
+	state: sessionState
+	
 	loading:true
 	
 	load: handler() {
-		localstorage.persist(session, 'session')
+		localstorage.persist(sessionState, 'session-state')
 		session set: 'loading', false
 		// bridge.command('state.load', null, handler(event) {
 		// 	session.loading set: false
