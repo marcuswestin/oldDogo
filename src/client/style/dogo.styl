@@ -6,7 +6,7 @@ html
 
 .head
 	height 100%;
-	gradient(headGr1, headGr2); borderTop 1px solid #E3E9ED; border-bottom 1px solid #8797A3;
+	gradient(headGr1, headGr2); borderTop 1px solid #E3E9ED; box-shadow 0 1px 3px #666;
 	.title
 		text-shadow 0 1px 0 headTxtSh; color:#fff; font-size 16px; padding 0 4px;
 		font-size 20px; text-align center; padding 8px 0 0 0; font-weight 600;
@@ -25,12 +25,12 @@ html
 
 .section
 	.header
-		height 40px; gradient(color4, color5); color #fff;
+		height 40px; background color4; color #fff; // gradient(color4, color5); 
 		.label
 			padding 9px;
 
 .contacts
-	padding 0 10px 10px;
+	padding 10px 10px 10px;
 	.face
 		float left;
 
@@ -57,3 +57,6 @@ html
 
 .clear
 	clear both
+
+.ghostTown
+	text-align center; color #fff; text-shadow 0 1px 0 headTxtSh; margin 10px 0;
