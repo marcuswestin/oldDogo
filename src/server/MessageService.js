@@ -14,8 +14,8 @@ module.exports = proto(null,
 				callback(null, { conversations:conversations })
 			})
 		},
-		sendMessage: function(accountId, toFacebookAccountId, body, callback) {
-			this.accountService.withFacebookContactId(accountId, toFacebookAccountId, bind(this, function(err, toAccountId) {
+		sendMessage: function(accountId, toFacebookAccountId, toAccountId, body, callback) {
+			this._withContactAccountId(accountId, toFacebookAccountId, toAccountId, function(err, toAccountId) {
 				if (err) { return callback(err) }
 				this.withConversationId(accountId, toAccountId, bind(this, function(err, conversationId) {
 					this._createMessage(accountId, conversationId, body, bind(this, function(err, message) {
@@ -24,11 +24,11 @@ module.exports = proto(null,
 						callback(null, { message:message })
 					}))
 				}))
-			}))
+			})
 		},
 		getMessages: function(accountId, withFacebookId, withAccountId, callback) {
-			var doGetMessages = bind(this, function(withAccountId) {
-				console.log("doGetMessages", accountId, withAccountId)
+			this._withContactAccountId(accountId, toFacebookAccountId, toAccountId, function(err, toAccountId) {
+				if (err) { return callback(err) }
 				this.withConversationId(accountId, withAccountId, bind(this, function(err, conversationId) {
 					if (err) { return callback(err) }
 					this._selectMessages(this.db, conversationId, bind(this, function(err, messages) {
@@ -37,15 +37,12 @@ module.exports = proto(null,
 					}))
 				}))
 			})
-			
-			if (withAccountId) {
-				doGetMessages(withAccountId)
+		},
+		_withContactAccountId: function(accountId, contactFacebookId, contactAccountId, callback) {
+			if (contactAccountId) {
+				callback.call(this, null, contactAccountId)
 			} else {
-				this.accountService.withFacebookContactId(accountId, withFacebookId, bind(this, function(err, withAccountId) {
-					if (err) { return callback(err) }
-					console.log("withFacebookContactId", withFacebookId, withAccountId)
-					doGetMessages(withAccountId)
-				}))
+				this.accountService.withFacebookContactId(accountId, contactFacebookId, bind(this, callback))
 			}
 		},
 		withConversationId: function(account1Id, account2Id, callback) {

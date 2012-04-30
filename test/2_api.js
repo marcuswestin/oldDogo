@@ -106,7 +106,7 @@ describe('Sessions', function() {
 	})
 	it('should let you send a message', function(done) {
 		var fbFriend = u.fbTestUsers[1]
-		api.post('messages', { to_facebook_account_id:fbFriend.id, body:'Hi' }, function(err, res) {
+		api.post('messages', { toFacebookId:fbFriend.id, body:'Hi' }, function(err, res) {
 			check(err)
 			is(res.message.id)
 			is(res.message.body, 'Hi')
@@ -116,19 +116,29 @@ describe('Sessions', function() {
 })
 
 describe('Conversations', function() {
-	it('should be created when a new message is sent', function(done) {
+	it('should be created when a new message is sent to a facebook id', function(done) {
 		api.get('conversations', function(err, res) {
 			var convoCount = res.conversations.length
 			var firstConvo = res.conversations[0]
 			is(firstConvo)
 			var newFbFriend = u.fbTestUsers[2]
-			api.post('messages', { to_facebook_account_id:newFbFriend.id, body:'Ho' }, function(err, res) {
+			api.post('messages', { toFacebookId:newFbFriend.id, body:'Ho' }, function(err, res) {
 				var message = res.message
 				api.get('conversations', function(err, res) {
 					is(res.conversations.length, convoCount + 1)
 					is(firstConvo.id, res.conversations[1].id) // the new conversation should now appear first
 					done()
 				})
+			})
+		})
+	})
+	it('should be possible to send to an account id', function(done) {
+		api.get('conversations', function(err, res) {
+			var body = 'Hi there'
+			api.post('messages', { toAccountId:res.conversations[0].withAccountId, body:body }, function(err, res) {
+				check(err)
+				is(res.message.body, body)
+				done()
 			})
 		})
 	})

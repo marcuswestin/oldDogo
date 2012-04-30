@@ -32,11 +32,11 @@ contactsById = {}
 renderConvo = template(convo, contact) {
 	// <div>"convo: "convo</div>
 	//  	<div>"contact: "contact</div>
-	params = convo.withAccountId ? { withAccountId:convo.withAccountId } : { withFacebookId:contact.facebookId }
-	messagesReq = api.get('messages', params)
+	messagesReq = api.get('messages', { withAccountId:convo.withAccountId, withFacebookId:contact.facebookId })
+	messages = messagesReq.response.messages
 	<div class="conversation">
 		<div class="messages">
-			for message in messagesReq.response.messages {
+			for message in messages {
 				<div class="messageBubble">
 					message.body
 				</div>
@@ -46,8 +46,11 @@ renderConvo = template(convo, contact) {
 			messageText = ""
 			<textarea class="bodyInput" data=messageText placeholder="Say something :)" />
 			<div class="button send">"Send"</div #tap.button(handler() {
-				api.post('messages', { to_facebook_account_id:contact.facebookId, body:messageText }, handler(event) {
-					
+				params = { toAccountId:convo.withAccountId, toFacebookId:contact.facebookId, body:messageText }
+				api.post('messages', params, handler(event) {
+					if (!event.error) {
+						messages push: event.response.message
+					}
 				})
 				messageText set:''
 			})>
