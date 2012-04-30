@@ -31,7 +31,7 @@
         self.webView.dataDetectorTypes = UIDataDetectorTypeNone;
         
         [self loadCurrentVersionApp];
-        [self requestUpgrade];
+//        [self requestUpgrade];
 
         return YES;
     } else {

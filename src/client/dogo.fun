@@ -164,7 +164,7 @@ renderSignup = template() {
 	scroller.renderHead(template() {
 		view = scroller.stack.last
 		<div class="head">
-			util.renderDevBar()
+			// util.renderDevBar()
 			<div class="title">
 				view.contact ? view.contact.fullName : 'Dogo'
 			</div>
