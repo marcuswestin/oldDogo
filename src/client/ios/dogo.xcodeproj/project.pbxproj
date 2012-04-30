@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2C92850E154E070400F11A16 /* app.html in Resources */ = {isa = PBXBuildFile; fileRef = 2C92850D154E070400F11A16 /* app.html */; };
+		2CB5FCD2154E44FE00D7A620 /* dogo-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CB5FCD1154E44FE00D7A620 /* dogo-logo.png */; };
 		2CD1A02E153FB6B0008949F2 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD1A02D153FB6B0008949F2 /* UIKit.framework */; };
 		2CD1A030153FB6B0008949F2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD1A02F153FB6B0008949F2 /* Foundation.framework */; };
 		2CD1A032153FB6B0008949F2 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD1A031153FB6B0008949F2 /* CoreGraphics.framework */; };
@@ -36,6 +37,7 @@
 
 /* Begin PBXFileReference section */
 		2C92850D154E070400F11A16 /* app.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = app.html; sourceTree = "<group>"; };
+		2CB5FCD1154E44FE00D7A620 /* dogo-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dogo-logo.png"; sourceTree = "<group>"; };
 		2CD1A029153FB6B0008949F2 /* dogo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dogo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CD1A02D153FB6B0008949F2 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		2CD1A02F153FB6B0008949F2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -120,6 +122,14 @@
 			path = "../../../../../../../../private/tmp/build/dogo-ios-build";
 			sourceTree = "<group>";
 		};
+		2CB5FCD0154E44FE00D7A620 /* images */ = {
+			isa = PBXGroup;
+			children = (
+				2CB5FCD1154E44FE00D7A620 /* dogo-logo.png */,
+			);
+			path = images;
+			sourceTree = SOURCE_ROOT;
+		};
 		2CD1A01E153FB6B0008949F2 = {
 			isa = PBXGroup;
 			children = (
@@ -167,6 +177,7 @@
 		2CD1A034153FB6B0008949F2 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				2CB5FCD0154E44FE00D7A620 /* images */,
 				2CD1A035153FB6B0008949F2 /* dogo-Info.plist */,
 				2CD1A036153FB6B0008949F2 /* InfoPlist.strings */,
 				2CD1A039153FB6B0008949F2 /* main.m */,
@@ -321,6 +332,7 @@
 				2CD1A038153FB6B0008949F2 /* InfoPlist.strings in Resources */,
 				2CD1A089153FB85D008949F2 /* FBDialog.bundle in Resources */,
 				2C92850E154E070400F11A16 /* app.html in Resources */,
+				2CB5FCD2154E44FE00D7A620 /* dogo-logo.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -419,6 +431,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "dogo/dogo-Prefix.pch";
 				INFOPLIST_FILE = "dogo/dogo-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../dependencies/facebook-ios-sdk/lib/facebook-ios-sdk\"",
@@ -434,6 +447,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "dogo/dogo-Prefix.pch";
 				INFOPLIST_FILE = "dogo/dogo-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../dependencies/facebook-ios-sdk/lib/facebook-ios-sdk\"",
