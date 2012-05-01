@@ -1,8 +1,9 @@
 import console
+import alert
+
 import app
 import tap
 import viewport
-import alert
 import ui/lists
 
 import ./bridge

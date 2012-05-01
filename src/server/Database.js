@@ -33,7 +33,6 @@ module.exports = proto(connectionBase,
 	function(host, db, user, password) {
 		this._poolSize = 4
 		this._pool = map(new Array(this._poolSize), function() {
-			console.log("Create client", { host:host, port:3306, user:user, password:'*****' }, 'USE '+db)
 			var client = mysql.createClient({ host:host, port:3306, user:user, password:password })
 			client.query('USE '+db)
 			return client
