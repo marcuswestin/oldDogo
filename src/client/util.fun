@@ -1,28 +1,25 @@
 import ./net
 import ./session
-
+import tap
 
 util = {
 	
 	renderDevBar = template() {
-		<div style={ position:'absolute', top:0, right:33, background:'yellow'}>'L'</div onclick=handler() {
-			session.load()
-		}>
-		<div style={ position:'absolute', top:0, right:22, background:'green'}>'A'</div onclick=handler() {
-			api.post('sessions/refresh', { authToken:'1:d57166ef-dd9e-440a-becc-75da07d03c20' }, handler(event) {
-				res = event.response
-				session set: 'authToken', res.authToken
-				session set: 'account', res.account
-				bridge.command('state.set', { key:'session', value:res })
-			})
-		}>
-		<div style={ position:'absolute', top:0, right:11, background:'red'}>'R'</div onclick=handler() {
-			<script> location.reload() </script>
-		}>
-		<div style={ position:'absolute', top:0, right:0, background:'blue'}>'X'</div onclick=handler() {
-			bridge.command('state.reset')
-			session.clear()
-		}>
+		<div style={ position:'absolute' top:4 right:4 }>
+			style = { width:30 height:24 float:'right' textAlign:'center' paddingTop:4 }
+			<div style=style style={ background:'green' }>'A'</div #tap.button(handler() {
+				api.post('sessions/refresh', { authToken:'1:d57166ef-dd9e-440a-becc-75da07d03c20' }, handler(event) {
+					res = event.response
+					session set: 'authToken', res.authToken
+					session set: 'account', res.account
+					bridge.command('state.set', { key:'session', value:res })
+				})
+			})>
+			<div style=style style={ background:'red' }>'R'</div #tap.button(handler() {
+				<script> location.reload() </script>
+			})>
+		
+		</div>
 	}
 
 }
