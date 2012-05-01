@@ -114,7 +114,7 @@ module.exports = proto(null,
 			conn.selectOne(this, this.sql.message+' WHERE id=?', [messageId], callback)
 		},
 		_selectMessages: function(conn, convoId, callback) {
-			conn.select(this, this.sql.message+' WHERE conversation_id=?', [convoId], callback)
+			conn.select(this, this.sql.message+' WHERE conversation_id=? ORDER BY id DESC', [convoId], callback)
 		},
 		_selectParticipations: function(conn, accountId, callback) {
 			conn.select(this, this.sql.participation+'WHERE participation.account_id=? ORDER BY last_message_id DESC', [accountId], callback)
