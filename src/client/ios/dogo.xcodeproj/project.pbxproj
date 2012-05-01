@@ -436,6 +436,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../dependencies/facebook-ios-sdk/lib/facebook-ios-sdk\"",
 				);
+				OTHER_CFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

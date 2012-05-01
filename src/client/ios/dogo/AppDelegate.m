@@ -14,8 +14,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
-//        self.serverHost = @"http://marcus.local:9000";
-        self.serverHost = @"http://api.dogoapp.com";
+        self.serverHost = self.isDev ? @"http://marcus.local:9000" : @"http://api.dogoapp.com";
         state = [[State alloc] init];
         net = [[Net alloc] init];
         
