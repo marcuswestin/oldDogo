@@ -1,3 +1,5 @@
+var trim = require('std/trim')
+
 module.exports = proto(null,
 	function(database, accountService) {
 		this.db = database
@@ -15,6 +17,8 @@ module.exports = proto(null,
 			})
 		},
 		sendMessage: function(accountId, toFacebookAccountId, toAccountId, body, callback) {
+			body = trim(body)
+			if (!body) { return callback('Empty body') }
 			this._withContactAccountId(accountId, toFacebookAccountId, toAccountId, function(err, toAccountId) {
 				if (err) { return callback(err) }
 				this.withConversationId(accountId, toAccountId, bind(this, function(err, conversationId) {
