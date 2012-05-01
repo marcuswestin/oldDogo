@@ -7,12 +7,14 @@ conversation = {
 		messagesReq = api.get('messages', { withAccountId:convo.withAccountId, withFacebookId:contact.facebookId })
 		messages = messagesReq.response.messages
 		<div class="conversation">
-			<div class="messages" style={ height:viewport.size.height - 80 'overflow':'scroll' }>
-				for message in messages {
-					<div class="messageBubble">
-						message.body
-					</div>
-				}
+			<div class="messagesWrapper" style={ height:viewport.size.height - 80 'overflow':'scroll' }>
+				<div class="messages" style={ paddingBottom:80 }>
+					for message in messages {
+						<div class="messageBubble">
+							message.body
+						</div>
+					}
+				</div>
 			</div>
 			
 			<div class="composer">
