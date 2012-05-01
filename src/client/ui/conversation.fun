@@ -8,7 +8,7 @@ conversation = {
 		messages = messagesReq.response.messages
 		<div class="conversation">
 			<div class="messagesWrapper" style={ height:viewport.size.height - 80 'overflow':'scroll' }>
-				<div class="messages" style={ paddingBottom:80 }>
+				<div class="messages" style={ paddingBottom:70 }>
 					for message in messages {
 						<div class="messageBubble">
 							message.body
