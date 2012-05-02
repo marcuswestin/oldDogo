@@ -4,7 +4,7 @@ var apns = require('apn'),
 module.exports = proto(null,
 	function(database, certData, keyData, keyPassphrase, useSandbox) {
 		this.db = database
-		this.apnsConnection = new apns.Connection({
+		var opts = {
 			certData:certData,
 			keyData:keyData,
 			passphrase: keyPassphrase,
@@ -13,7 +13,10 @@ module.exports = proto(null,
 			// enhanced: true,
 		    cacheLength: 5,
 			errorCallback: bind(this, this.onApnError)
-		})
+		}
+		this.apnsConnection = new apns.Connection(opts)
+		
+		console.log("Opened apns connection", opts.gateway+':'+opts.port)
 	}, {
 		sendMessage:function(message, toAccountId) {
 			this.db.selectOne(this, this.sql.selectPushInfo+'WHERE id=?', [toAccountId], function(err, data) {
