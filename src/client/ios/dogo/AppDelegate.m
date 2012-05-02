@@ -14,8 +14,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
-        NSLog(@"FOO %d", [self isDev]);
+
         self.serverHost = [self isDev] ? @"http://marcus.local:9000" : @"http://api.dogoapp.com";
+        
+        [self.config setValue:[self isDev] ? @"dev" : @"prod" forKey:@"mode"];
+        
         net = [[Net alloc] init];
         
         facebook = [[Facebook alloc] initWithAppId:@"219049001532833" andDelegate:self];
@@ -29,7 +32,7 @@
         [[self.webView scrollView] setBounces:NO];
         self.webView.dataDetectorTypes = UIDataDetectorTypeNone;
         
-        [self loadCurrentVersionApp];
+        [self startApp];
 //        [self requestUpgrade];
         
         return YES;

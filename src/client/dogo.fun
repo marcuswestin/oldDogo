@@ -29,14 +29,16 @@ scroller = lists.makeScroller(uiSize, { headSize:45 })
 
 app.whenLoaded(handler() {
 	bridge.eventHandler set: handler(event) {
-		data = event.data
+		info = event.info
 		switch (event.name) {
 			case 'app.start':
-				config set:data
+				config set:info
+				config set: 'dev', (info.mode is 'dev').copy()
+				bridge.command('app.show')
 			case 'push.registerFailed':
 				alert("Uh oh. Push registration failed")
 			case 'push.registered':
-				state.account set:'pushToken', data.deviceToken
+				state.account set:'pushToken', info.deviceToken
 				alert("send pushtoken to server")
 			default:
 				alert('Got unknown event', event)
@@ -46,7 +48,6 @@ app.whenLoaded(handler() {
 
 	localstorage.persist(state, 'state')
 })
-
 
 <script>
 	window.onerror = function(e) { alert('err ' + e)}
