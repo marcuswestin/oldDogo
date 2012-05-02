@@ -2,12 +2,12 @@ var apns = require('apn'),
 	sql = require('./util/sql')
 
 module.exports = proto(null,
-	function(database, certData, keyData, useSandbox) {
+	function(database, certData, keyData, keyPassphrase, useSandbox) {
 		this.db = database
 		this.apnsConnection = new apns.Connection({
 			certData:certData,
 			keyData:keyData,
-			// passphrase: null,
+			passphrase: keyPassphrase,
 			gateway:useSandbox ? 'gateway.sandbox.push.apple.com' : 'gateway.push.apple.com',
 			port: 2195,
 			// enhanced: true,
