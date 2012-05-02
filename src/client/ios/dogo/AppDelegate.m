@@ -16,10 +16,11 @@
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
 
         // Set as environment variable in schema
-        NSString* mode = [[[NSProcessInfo processInfo] environment] objectForKey:@"MODE"];
-        if (!mode) { mode = @"dev"; }
-        [self.config setValue:mode forKey:@"mode"];
+//        NSString* mode = @"dev";
+        NSString* mode = @"testflight";
+//        NSString* mode = @"appstore";
         
+        [self.config setValue:mode forKey:@"mode"];
         
         BOOL devMode = [mode isEqualToString:@"dev"];
         
