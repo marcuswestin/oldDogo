@@ -35,6 +35,7 @@
 		2CD1A077153FB7B6008949F2 /* WebViewJavascriptBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1A069153FB7B6008949F2 /* WebViewJavascriptBridge.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CD1A089153FB85D008949F2 /* FBDialog.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2CD1A07C153FB85D008949F2 /* FBDialog.bundle */; };
 		2CD1A08A153FB85D008949F2 /* libfacebook_ios_sdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD1A082153FB85D008949F2 /* libfacebook_ios_sdk.a */; };
+		2CD628E1155154E9002A48A0 /* app.html in Resources */ = {isa = PBXBuildFile; fileRef = 2CD628E0155154E9002A48A0 /* app.html */; };
 		2CDB811D15438D3A0005A558 /* Net.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CDB811C15438D3A0005A558 /* Net.m */; };
 /* End PBXBuildFile section */
 
@@ -100,6 +101,7 @@
 		2CD1A086153FB85D008949F2 /* SBJsonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonBase.h; sourceTree = "<group>"; };
 		2CD1A087153FB85D008949F2 /* SBJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonParser.h; sourceTree = "<group>"; };
 		2CD1A088153FB85D008949F2 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
+		2CD628E0155154E9002A48A0 /* app.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = app.html; sourceTree = "<group>"; };
 		2CDB811B15438D3A0005A558 /* Net.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Net.h; sourceTree = "<group>"; };
 		2CDB811C15438D3A0005A558 /* Net.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Net.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -177,6 +179,7 @@
 				2C92850C154E070400F11A16 /* dogo-ios-build */,
 				2CD1A079153FB85D008949F2 /* facebook-ios-sdk */,
 				2CD1A048153FB7B6008949F2 /* blowtorch-ios-sdk */,
+				2CD628DF155154E9002A48A0 /* dogo-ios-build */,
 				2CA9924B154FC9E400CF92FC /* images */,
 				2CD1A034153FB6B0008949F2 /* Supporting Files */,
 			);
@@ -288,6 +291,15 @@
 			path = "../../../../dependencies/facebook-ios-sdk/lib/facebook-ios-sdk";
 			sourceTree = "<group>";
 		};
+		2CD628DF155154E9002A48A0 /* dogo-ios-build */ = {
+			isa = PBXGroup;
+			children = (
+				2CD628E0155154E9002A48A0 /* app.html */,
+			);
+			name = "dogo-ios-build";
+			path = "../../../../../../../../private/tmp/build/dogo-ios-build";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -346,6 +358,7 @@
 				2CA99251154FCAA900CF92FC /* Default@2x.png in Resources */,
 				2CA99252154FCAA900CF92FC /* logo.png in Resources */,
 				2CA99253154FCAA900CF92FC /* logo@2x.png in Resources */,
+				2CD628E1155154E9002A48A0 /* app.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

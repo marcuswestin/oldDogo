@@ -15,13 +15,16 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
 
-        self.serverHost = [self isDev] ? @"http://marcus.local:9000" : @"http://api.dogoapp.com";
-        
         // Set as environment variable in schema
         NSString* mode = [[[NSProcessInfo processInfo] environment] objectForKey:@"MODE"];
         if (!mode) { mode = @"dev"; }
         [self.config setValue:mode forKey:@"mode"];
         
+        
+        BOOL devMode = [mode isEqualToString:@"dev"];
+        
+        self.serverHost = devMode ? @"http://marcus.local:9000" : @"http://api.dogoapp.com";
+
         net = [[Net alloc] init];
         
         facebook = [[Facebook alloc] initWithAppId:@"219049001532833" andDelegate:self];
@@ -35,7 +38,7 @@
         [[self.webView scrollView] setBounces:NO];
         self.webView.dataDetectorTypes = UIDataDetectorTypeNone;
         
-        [self startApp];
+        [self startApp:devMode];
 //        [self requestUpgrade];
         
         return YES;
