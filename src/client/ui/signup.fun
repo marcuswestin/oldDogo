@@ -1,4 +1,5 @@
-import ../session
+import ../state
+import ../util
 
 signup = {
 	render = template() {
@@ -12,14 +13,7 @@ signup = {
 				<div class="button login">"Login"</div #tap.button(handler() {
 					bridge.command('facebook.connect', null, handler(event) {
 						if (!event.error) {
-							sessionReq set: api.post('sessions', { facebook_access_token:event.response.accessToken }, handler(event) {
-								if (!event.error) {
-									res = event.response
-									session.state set: 'authToken', res.authToken
-									session.state set: 'account', res.account
-									bridge.command('state.set', { key:'session', value:res })
-								}
-							})
+							sessionReq set: api.post('sessions', { facebook_access_token:event.response.accessToken }, util.handleLogin)
 						}
 					})
 				})>

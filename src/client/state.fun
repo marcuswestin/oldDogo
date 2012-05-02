@@ -1,3 +1,15 @@
+import ./bridge
+import localstorage
+import app
+
 state = {
-	contactsById: {}
+	
+	authToken = null
+	
+	account = {
+		id: null
+		facebookId: null
+		pushToken: null
+	}
+
 }

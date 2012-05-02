@@ -1,5 +1,7 @@
-import ./net
-import ./session
+import ./api
+import ./config
+import ./state
+import ./bridge
 import tap
 
 util = {
@@ -8,12 +10,7 @@ util = {
 		<div style={ position:'absolute' top:4 right:4 }>
 			style = { width:30 height:24 float:'right' textAlign:'center' paddingTop:4 }
 			<div style=style style={ background:'green' }>'A'</div #tap.button(handler() {
-				api.post('sessions/refresh', { authToken:'1:d57166ef-dd9e-440a-becc-75da07d03c20' }, handler(event) {
-					res = event.response
-					session set: 'authToken', res.authToken
-					session set: 'account', res.account
-					bridge.command('state.set', { key:'session', value:res })
-				})
+				api.post('sessions/refresh', { authToken:'1:d57166ef-dd9e-440a-becc-75da07d03c20' }, util.handleLogin)
 			})>
 			<div style=style style={ background:'red' }>'R'</div #tap.button(handler() {
 				<script> location.reload() </script>
@@ -21,7 +18,15 @@ util = {
 		
 		</div>
 	}
-
+	
+	handleLogin = handler(event) {
+		if (!event.error) {
+			res = event.response
+			state set: 'authToken', res.authToken
+			state set: 'account', res.account
+		}
+	}
+	
 }
 
 <script bridge=bridge>

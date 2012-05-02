@@ -6,10 +6,11 @@ import tap
 import viewport
 import ui/lists
 
+import ./config
 import ./bridge
 import ./util
-import ./session
-import ./net
+import ./state
+import ./api
 import ./state
 import ./ui/signup
 import ./ui/head
@@ -27,12 +28,25 @@ uiSize = {
 scroller = lists.makeScroller(uiSize, { headSize:45 })
 
 app.whenLoaded(handler() {
-	session.load()
 	bridge.eventHandler set: handler(event) {
-		alert('Bridge got event', event)
+		data = event.data
+		switch (event.name) {
+			case 'app.start':
+				config set:data
+			case 'push.registerFailed':
+				alert("Uh oh. Push registration failed")
+			case 'push.registered':
+				state.account set:'pushToken', data.deviceToken
+				alert("send pushtoken to server")
+			default:
+				alert('Got unknown event', event)
+		}
 	}
 	bridge.command('push.register')
+
+	localstorage.persist(state, 'state')
 })
+
 
 <script>
 	window.onerror = function(e) { alert('err ' + e)}
@@ -45,7 +59,7 @@ app.whenLoaded(handler() {
 			conversation.render(view.convo, view.convo.contact)
 		} else if view.contact {
 			conversation.render(null, view.contact)
-		} else if session.state.authToken {
+		} else if state.authToken {
 			home.render(scroller)
 		} else {
 			signup.render()

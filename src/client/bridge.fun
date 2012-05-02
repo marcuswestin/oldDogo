@@ -50,16 +50,16 @@ bridge = {
 			setTimeout(function() {
 				try { message = JSON.parse(message) }
 				catch(e) { console.log("Bad JSON", message) }
-				
+				var data = message.data
 				if (message.command) {
 					if (message.command != 'handleEvent') { return console.log("Unknown command", message.command) }
-					var event = fun.value({ name:message.name, data:message.data })
+					var event = fun.value({ name:data.name, info:data.info })
 					bridgeHandler.invoke([event])
 				} else {
 					var responseId = message.responseId,
 						callback = callbacks[responseId]
 					delete callbacks[responseId]
-					callback(message.error, message.data)
+					callback(message.error, data)
 				}
 			})
 		})

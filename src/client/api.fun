@@ -1,6 +1,6 @@
 import xhr
 import ./bridge
-import ./session
+import ./state
 
 // TODO Rename to api
 api = {
@@ -13,7 +13,7 @@ api = {
 	_send: function(method, path, params, callback) {
 		url = '/api/'+path
 		auth = null
-		token = session.state.authToken
+		token = state.authToken
 		<script token=token auth=auth>
 			token = token.evaluate()
 			var authToken = token && token.getContent()
