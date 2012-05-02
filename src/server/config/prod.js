@@ -2,7 +2,7 @@ var fs = require('fs')
 
 module.exports = {
 	log:true,
-	dev:true,
+	dev:false,
 	port:9000,
 	dbHost:"dogo-db1.cqka8vcdrksp.us-east-1.rds.amazonaws.com",
 	dbPassword:"dogopass9",
