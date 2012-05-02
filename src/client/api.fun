@@ -1,6 +1,7 @@
 import xhr
 import ./bridge
 import ./state
+import ./config
 
 // TODO Rename to api
 api = {
@@ -22,7 +23,7 @@ api = {
 				jsAuth = 'Basic '+base64.encode(authToken)
 			auth.mutate('set', [fun.expressions.Text(jsAuth)])
 		</script>
-		headers = { 'Content-Type':'application/json', 'Authorization':auth }
+		headers = { 'Content-Type':'application/json', 'Authorization':auth, 'X-Dogo-Mode':config.mode }
 		return xhr._send(method, url, params, callback, headers)
 		return bridge.command('api.request', {
 			url:url,

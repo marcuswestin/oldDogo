@@ -33,7 +33,6 @@ app.whenLoaded(handler() {
 		switch (event.name) {
 			case 'app.start':
 				config set:info
-				config set: 'dev', (info.mode is 'dev').copy()
 				bridge.command('app.show')
 			case 'push.registerFailed':
 				alert("Uh oh. Push registration failed")

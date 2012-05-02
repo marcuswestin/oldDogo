@@ -19,7 +19,7 @@ var u = module.exports = {
 
 u.database = new Database('localhost', 'dogo_test', 'dogo_tester', 'test'),
 u.accountService = new AccountService(u.database)
-u.pushService = new PushService(u.database, 'cert', 'key', null, true)
+u.pushService = new PushService(u.database, null, null)
 u.messageService = new MessageService(u.database, u.accountService, u.pushService)
 u.sessionService = new SessionService(u.accountService)
 u.fbAppId = '219049001532833'

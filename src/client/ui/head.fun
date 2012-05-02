@@ -6,7 +6,7 @@ head = {
 		scroller.renderHead(template() {
 			view = scroller.stack.last
 			<div class="head">
-				if config.dev { util.renderDevBar() }
+				if config.mode is "dev" { util.renderDevBar() }
 				<div class="title">
 					view.contact ? view.contact.fullName : 'Dogo'
 				</div>

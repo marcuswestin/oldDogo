@@ -91,9 +91,10 @@ module.exports = proto(null,
 				this.accountService.getContacts(req.session.accountId, bind(this, this.respond, req, res))
 			},
 			postMessage: function(req, res) {
-				var params = this._getParams(req, 'toFacebookId', 'to_facebook_account_id', 'toAccountId', 'body')
+				var params = this._getParams(req, 'toFacebookId', 'to_facebook_account_id', 'toAccountId', 'body', 'devPush')
 				var facebookId = params.toFacebookId || params.to_facebook_account_id // backcompat
-				this.messageService.sendMessage(req.session.accountId, facebookId, params.toAccountId, params.body, bind(this, this.respond, req, res))
+				var isProd = (req.headers['x-dogo-mode'] == 'appstore')
+				this.messageService.sendMessage(req.session.accountId, facebookId, params.toAccountId, params.body, !isProd, bind(this, this.respond, req, res))
 			},
 			getConversationMessages: function(req, res) {
 				var params = this._getParams(req, 'withFacebookId', 'withAccountId')

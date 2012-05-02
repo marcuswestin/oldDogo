@@ -7,9 +7,9 @@ module.exports = {
 	dbHost:"localhost",
 	dbPassword:"dogo",
 	push: {
-		cert:fs.readFileSync(__dirname + '/dev/cert.pem'),
-		key:fs.readFileSync(__dirname + '/dev/key.pem'),
-		passphrase:''
+		certData:fs.readFileSync(__dirname + '/dev/cert.pem'),
+		keyData:fs.readFileSync(__dirname + '/dev/key.pem'),
+		passphrase:'dogopass9'
 	}
 }
 

@@ -14,11 +14,8 @@
 		<dict>
 			<key>CFBundleIconFiles</key>
 			<array>
-				<string>dogo-logo.png</string>
 				<string>Default.png</string>
 				<string>Default@2x.png</string>
-				<string>Screen Shot 2012-05-01 at 12.28.28 AM.png</string>
-				<string>Screen Shot 2012-05-01 at 12.26.57 AM.png</string>
 				<string>logo.png</string>
 				<string>logo@2x.png</string>
 			</array>
@@ -35,7 +32,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.9</string>
+	<string>0.11</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -46,7 +43,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>0.9</string>
+	<string>0.11</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIPrerenderedIcon</key>

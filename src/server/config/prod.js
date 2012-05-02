@@ -7,8 +7,8 @@ module.exports = {
 	dbHost:"dogo-db1.cqka8vcdrksp.us-east-1.rds.amazonaws.com",
 	dbPassword:"dogopass9",
 	push: {
-		cert:fs.readFileSync(__dirname + '/prod/cert.pem'),
-		key:fs.readFileSync(__dirname + '/prod/key.pem'),
+		certData:fs.readFileSync(__dirname + '/prod/cert.pem'),
+		keyData:fs.readFileSync(__dirname + '/prod/key.pem'),
 		passphrase:'dogopass9'
 	}
 }

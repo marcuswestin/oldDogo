@@ -18,7 +18,7 @@ module.exports = proto(null,
 				callback(null, { conversations:conversations })
 			})
 		},
-		sendMessage: function(accountId, toFacebookAccountId, toAccountId, body, callback) {
+		sendMessage: function(accountId, toFacebookAccountId, toAccountId, body, prodPush, callback) {
 			body = trim(body)
 			if (!body) { return callback('Empty body') }
 			this._withContactAccountId(accountId, toFacebookAccountId, toAccountId, function(err, toAccountId) {
@@ -26,7 +26,7 @@ module.exports = proto(null,
 				this.withConversationId(accountId, toAccountId, bind(this, function(err, conversationId) {
 					this._createMessage(accountId, conversationId, body, bind(this, function(err, message) {
 						if (err) { return callback(err) }
-						this.pushService.sendMessage(message, toAccountId)
+						this.pushService.sendMessage(message, toAccountId, prodPush)
 						callback(null, { message:message })
 					}))
 				}))

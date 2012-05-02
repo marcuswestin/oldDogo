@@ -18,15 +18,18 @@ for (var key in config) {
 	config[key] = (argv[key] == 'false' ? false : argv[key])
 }
 
+var devConfig = require('./config/dev'),
+	prodConfig = require('./config/prod')
+
 var database = new Database(config.dbHost, 'dogo', 'dogo_rw', config.dbPassword),
 	accountService = new AccountService(database),
-	pushService = new PushService(database, config.push.cert, config.push.key, config.push.passphrase, argv.config == 'dev'),
+	pushService = new PushService(database, devConfig.push, prodConfig.push),
 	sessionService = new SessionService(accountService),
 	messageService = new MessageService(database, accountService, pushService),
 	router = new Router(accountService, messageService, sessionService, { log:config.log, dev:config.dev })
 
 config.dbPassword = config.dbPassword.replace(/[^\*]/g, '*')
-config.push.key = '******'
-config.push.cert = '******'
+config.push.keyData = '******'
+config.push.certData = '******'
 console.log('starting server with config', config)
 router.listen(config.port)

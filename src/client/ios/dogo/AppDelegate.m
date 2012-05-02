@@ -17,7 +17,10 @@
 
         self.serverHost = [self isDev] ? @"http://marcus.local:9000" : @"http://api.dogoapp.com";
         
-        [self.config setValue:[self isDev] ? @"dev" : @"prod" forKey:@"mode"];
+        // Set as environment variable in schema
+        NSString* mode = [[[NSProcessInfo processInfo] environment] objectForKey:@"MODE"];
+        if (!mode) { mode = @"dev"; }
+        [self.config setValue:mode forKey:@"mode"];
         
         net = [[Net alloc] init];
         
