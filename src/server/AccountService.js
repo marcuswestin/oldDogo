@@ -45,6 +45,9 @@ module.exports = proto(null,
 				callback(null, { contacts:contacts })
 			})
 		},
+		setPushAuth: function(accountId, pushToken, pushSystem, callback) {
+			this._updateAccountPushAuth(this.db, accountId, pushToken, pushSystem, callback)
+		},
 		_createClaimedAccount:function(fbAccount, fbFriends, callback) {
 			console.log('create new account with', fbFriends.length, 'friends')
 			this.db.transact(this, function(tx) {
@@ -82,6 +85,11 @@ module.exports = proto(null,
 				'UPDATE account SET claimed_time=?, full_name=?, gender=?, locale=?',
 				[conn.time(), fbAccount.name, fbAccount.gender, fbAccount.locale], callback)
 		},
+		_updateAccountPushAuth: function(conn, accountId, pushToken, pushSystem, callback) {
+			conn.updateOne(this,
+				'UPDATE account SET push_token=?, push_system=? WHERE id=?',
+				[pushToken, pushSystem, accountId], callback)
+		},
 		_insertUnclaimedAccount: function(conn, fbAccountId, name, callback) {
 			conn.updateOne(this,
 				'INSERT INTO account SET created_time=?, facebook_id=?, full_name=?',
@@ -98,22 +106,21 @@ module.exports = proto(null,
 				[accountId, fbContactFbAccountId], callback)
 		},
 		_selectContacts: function(conn, accountId, callback) {
-			var properties = {
-				accountId: 'dg.id',
-				facebookId: 'fc.contact_facebook_id',
-				fullName: 'fc.contact_facebook_name',
-				memberSince: 'dg.claimed_time'
-			}
-			conn.select(this,
-				'SELECT'+sql.joinProperties(properties)+'FROM facebook_contact fc\n'+
-				'LEFT OUTER JOIN account dg ON fc.contact_facebook_id=dg.facebook_id\n'+
-				'WHERE fc.account_id=?', [accountId], callback)
+			conn.select(this, this.sql.contact+'WHERE facebook_contact.account_id=?', [accountId], callback)
 		},
 		_selectAccountByFacebookId: function(conn, fbAccountId, callback) {
 			conn.selectOne(this, 'SELECT * FROM account WHERE facebook_id=?', [fbAccountId], callback)
 		},
 		_selectAccount: function(conn, accountId, callback) {
 			conn.selectOne(this, 'SELECT * FROM account WHERE id=?', [accountId], callback)
+		},
+		sql: {
+			contact: sql.selectFrom('facebook_contact', {
+				accountId: 'account.id',
+				facebookId: 'facebook_contact.contact_facebook_id',
+				fullName: 'facebook_contact.contact_facebook_name',
+				memberSince: 'account.claimed_time'
+			}) + 'LEFT OUTER JOIN account ON facebook_contact.contact_facebook_id=account.facebook_id\n'
 		}
 	}
 )

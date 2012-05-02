@@ -12,4 +12,5 @@ state = {
 		pushToken: null
 	}
 
+	contactsById: {}
 }

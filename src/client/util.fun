@@ -13,7 +13,7 @@ util = {
 				api.post('sessions/refresh', { authToken:'1:d57166ef-dd9e-440a-becc-75da07d03c20' }, util.handleLogin)
 			})>
 			<div style=style style={ background:'red' }>'R'</div #tap.button(handler() {
-				<script> location.reload() </script>
+				bridge.command('app.restart')
 			})>
 		
 		</div>
@@ -24,6 +24,8 @@ util = {
 			res = event.response
 			state set: 'authToken', res.authToken
 			state set: 'account', res.account
+			
+			bridge.command('push.register')
 		}
 	}
 	

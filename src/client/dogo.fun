@@ -39,13 +39,14 @@ app.whenLoaded(handler() {
 				alert("Uh oh. Push registration failed")
 			case 'push.registered':
 				state.account set:'pushToken', info.deviceToken
-				alert("send pushtoken to server")
+				api.post('push_auth', { pushToken:info.deviceToken, pushSystem:'ios' })
+			case 'push.notification':
+				alert(info.data.aps.alert)
 			default:
 				alert('Got unknown event', event)
 		}
 	}
-	bridge.command('push.register')
-
+	
 	localstorage.persist(state, 'state')
 })
 

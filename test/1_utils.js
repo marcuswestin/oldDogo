@@ -6,6 +6,7 @@ var exec = require('child_process').exec,
 	MessageService = require('../src/server/MessageService'),
 	AccountService = require('../src/server/AccountService'),
 	SessionService = require('../src/server/SessionService'),
+	PushService = require('../src/server/PushService'),
 	assert = require('assert'),
 	fs = require('fs'),
 	time = require('fun/node_modules/std/time')
@@ -16,26 +17,36 @@ var u = module.exports = {
 	checkConnectionLeaks:checkConnectionLeaks
 }
 
-var db = u.database = new Database('localhost', 'dogo_test', 'dogo_tester', 'test'),
-	accs = u.accountService = new AccountService(u.database),
-	ms = u.messageService = new MessageService(u.database, u.accountService),
-	ss = u.sessionService = new SessionService(u.accountService),
-	check = u.check = function(err) { if (err) { throw err } },
-	is = u.is = function(a, b) {
-		if (arguments.length == 1) {
-			assert(a)
-		} else if (arguments.length == 2) {
-			assert.equal(a, b)
-		} else {
-			throw new Error("Too many arguments for is()")
-		}
-	}
-
+u.database = new Database('localhost', 'dogo_test', 'dogo_tester', 'test'),
+u.accountService = new AccountService(u.database)
+u.pushService = new PushService(u.database, 'cert', 'key', true)
+u.messageService = new MessageService(u.database, u.accountService, u.pushService)
+u.sessionService = new SessionService(u.accountService)
 u.fbAppId = '219049001532833'
 u.fbAppSecret = '8916710dbc540f3d439f4f6a67a3b5e7'
 u.fbAppAccessToken = '219049001532833|OyfUJ1FBjvZ3lVNjOMM3SFqm6CE'
 u.fbTestUsers = null
 var fbTestDataFile = __dirname+'/.fbTestUsers.json'
+
+u.pushService.testCount = 0
+u.pushService.sendMessage = function() {
+	u.pushService.testCount += 1
+}
+
+u.check = function(err) { if (err) { throw err } }
+u.is = function(a, b) {
+	if (arguments.length == 1) {
+		assert(a)
+	} else if (arguments.length == 2) {
+		assert.equal(a, b)
+	} else {
+		throw new Error("Too many arguments for is()")
+	}
+}
+
+var check = u.check,
+	is = u.is,
+	db = u.database
 try {
 	var fbTestUsersData = JSON.parse(fs.readFileSync(fbTestDataFile).toString())
 	if (fbTestUsersData && (new Date().getTime() - fbTestUsersData.time < 1.5 * time.hours)) {
@@ -57,7 +68,7 @@ describe('A test', function() {
 })
 
 function setupDatabase(done) {
-	var setupSql = path.join(__dirname, '../db_schema.sql')
+	var setupSql = path.join(__dirname, '../db/schema.sql')
 	exec('cat '+setupSql+' | mysql -u dogo_tester --password=test', function(err, stdout, stderr) {
 		check(err)
 		is(!stderr)

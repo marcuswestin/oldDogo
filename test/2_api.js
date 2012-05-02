@@ -126,6 +126,16 @@ describe('Sessions', function() {
 	})
 })
 
+sendMessage = function(body, callback) {
+	api.get('conversations', function(err, res) {
+		check(err)
+		api.post('messages', { toAccountId:res.conversations[0].withAccountId, body:body }, function(err, res) {
+			check(err)
+			callback(err, res)
+		})
+	})
+}
+
 describe('Conversations', function() {
 	it('should be created when a new message is sent to a facebook id', function(done) {
 		api.get('conversations', function(err, res) {
@@ -162,13 +172,20 @@ describe('Conversations', function() {
 		})
 	})
 	it('should be possible to send to an account id', function(done) {
-		api.get('conversations', function(err, res) {
-			var body = 'Hi there'
-			api.post('messages', { toAccountId:res.conversations[0].withAccountId, body:body }, function(err, res) {
-				check(err)
-				is(res.message.body, body)
-				done()
-			})
+		var body = 'Hi there'
+		sendMessage(body, function(err, res) {
+			is(res.message.body, body)
+			done()
+		})
+	})
+})
+
+describe('Push', function() {
+	it('should have been sent when a message is sent', function(done) {
+		var before = u.pushService.testCount
+		sendMessage("foo", function(err, res) {
+			is(u.pushService.testCount, before + 1)
+			done()
 		})
 	})
 })

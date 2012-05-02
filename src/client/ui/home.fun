@@ -31,7 +31,7 @@ home = {
 					<div class="item" #tap.button(selectConvo)>
 						face.account(convo.withAccountId)
 						<div class="messageBubble">
-							convo.body
+							convo.lastMessageBody
 						</div>
 					</div>
 					<div class="clear"/>

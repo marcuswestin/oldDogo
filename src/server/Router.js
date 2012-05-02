@@ -55,6 +55,7 @@ module.exports = proto(null,
 			router.get('/api/contacts', filter.session.bind(this), rest.getContacts.bind(this))
 			router.post('/api/messages', filter.session.bind(this), rest.postMessage.bind(this))
 			router.get('/api/messages', filter.session.bind(this), rest.getConversationMessages.bind(this))
+			router.post('/api/push_auth', filter.session.bind(this), rest.postPushAuth.bind(this))
 		},
 		redirect:function(path) {
 			return function(req, res) { res.redirect(path) }
@@ -97,6 +98,10 @@ module.exports = proto(null,
 			getConversationMessages: function(req, res) {
 				var params = this._getParams(req, 'withFacebookId', 'withAccountId')
 				this.messageService.getMessages(req.session.accountId, params.withFacebookId, params.withAccountId, bind(this, this.respond, req, res))
+			},
+			postPushAuth: function(req, res) {
+				var params = this._getParams(req, 'pushToken', 'pushSystem')
+				this.accountService.setPushAuth(req.session.accountId, params.pushToken, params.pushSystem, bind(this, this.respond, req, res))
 			}
 		},
 		misc: {

@@ -1,7 +1,0 @@
-{
-	"log":true,
-	"dev":true,
-	"port":9000,
-	"dbHost":"localhost",
-	"dbPassword":"dogo"
-}

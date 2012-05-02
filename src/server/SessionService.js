@@ -52,14 +52,19 @@ module.exports = proto(null,
 			if (!authorization) { return callback('Unauthorized') }
 
 			try {
-				var parts = authorization.split(' '),
-				scheme = parts[0],
-				credentials = new Buffer(parts[1], 'base64').toString().split(':'),
-				sessionAccountId = credentials[0],
-				sessionToken = credentials[1]
+				var parts = authorization.split(' ')
+				if (parts.length != 2) {
+					console.warn('Saw bad auth', authorization)
+					return callback('Bad auth')
+				}
+				
+				var scheme = parts[0],
+					credentials = new Buffer(parts[1], 'base64').toString().split(':'),
+					sessionAccountId = credentials[0],
+					sessionToken = credentials[1]
 			} catch(e) {
 				console.warn(e)
-				return callback('Error parsing basic auth: '+ authorization)
+				return callback('Error parsing auth: '+ authorization)
 			}
 
 			if (scheme != 'Basic') { return next('Unknown auth scheme - expected "Basic"') }

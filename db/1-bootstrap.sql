@@ -1,23 +1,3 @@
--- # one-time setup
--- mysql -u root
--- 	CREATE USER dogo_tester@localhost IDENTIFIED BY 'test';
--- 	GRANT ALL ON dogo_test.* TO dogo_tester@localhost;
--- 	CREATE USER dogo_rw@localhost IDENTIFIED BY 'dogo';
--- 	GRANT ALL ON dogo.* TO 'dogo_rw'@'localhost';
-
--- # reset with new schema
--- cat schema.sql | mysql -u dogo_tester --password=test
-
-DROP DATABASE IF EXISTS dogo_test;
-CREATE DATABASE dogo_test;
-USE dogo_test;
--- DROP DATABASE IF EXISTS dogo;
--- CREATE DATABASE dogo;
--- USE dogo;
-
-
-set foreign_key_checks = 0;
-
 CREATE TABLE picture (
 	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 	created_by_account_id BIGINT UNSIGNED DEFAULT NULL,
@@ -84,5 +64,3 @@ CREATE TABLE message (
 	FOREIGN KEY (sender_account_id) REFERENCES account(id),
 	PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-set foreign_key_checks = 1;
