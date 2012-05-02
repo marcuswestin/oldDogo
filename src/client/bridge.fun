@@ -1,10 +1,6 @@
+bridgeHandler = null
+
 bridge = {
-	init: function(commandHandler) {
-		<script module=bridge commandHandler=commandHandler>
-			module = module.evaluate()
-			module._commandHandler = commandHandler
-		</script>
-	},
 	command: function(command, data, responseHandler) {
 		result = { loading:true, error:null, response:null }
 		<script command=command data=data responseHandler=responseHandler module=bridge result=result>
@@ -24,11 +20,12 @@ bridge = {
 			})
 		</script>
 		return result
-	}
+	},
+	eventHandler: bridgeHandler
 }
 
 
-<script module=bridge>
+<script module=bridge bridgeHandler=bridgeHandler>
 	module = module.evaluate()
 	
 	var uniqueId = 0,
@@ -54,10 +51,16 @@ bridge = {
 				try { message = JSON.parse(message) }
 				catch(e) { console.log("Bad JSON", message) }
 				
-				var responseId = message.responseId,
-					callback = callbacks[responseId]
-				delete callbacks[responseId]
-				callback(message.error, message.data)
+				if (message.command) {
+					if (message.command != 'handleEvent') { return console.log("Unknown command", message.command) }
+					var event = fun.value({ name:message.name, data:message.data })
+					bridgeHandler.invoke([event])
+				} else {
+					var responseId = message.responseId,
+						callback = callbacks[responseId]
+					delete callbacks[responseId]
+					callback(message.error, message.data)
+				}
 			})
 		})
 		

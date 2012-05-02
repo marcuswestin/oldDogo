@@ -28,6 +28,10 @@ scroller = lists.makeScroller(uiSize, { headSize:45 })
 
 app.whenLoaded(handler() {
 	session.load()
+	bridge.eventHandler set: handler(event) {
+		alert('Bridge got event', event)
+	}
+	bridge.command('push.register')
 })
 
 <script>

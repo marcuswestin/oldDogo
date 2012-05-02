@@ -10,16 +10,16 @@
 
 @implementation AppDelegate
 
-@synthesize facebook, facebookConnectResponseCallback, state, net;
+@synthesize facebook, facebookConnectResponseCallback, net;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
-        self.serverHost = self.isDev ? @"http://marcus.local:9000" : @"http://api.dogoapp.com";
-        state = [[State alloc] init];
+        NSLog(@"FOO %d", [self isDev]);
+        self.serverHost = [self isDev] ? @"http://marcus.local:9000" : @"http://api.dogoapp.com";
         net = [[Net alloc] init];
         
         facebook = [[Facebook alloc] initWithAppId:@"219049001532833" andDelegate:self];
-        NSDictionary* facebookSession = [state get:@"facebookSession"];
+        NSDictionary* facebookSession = [self.state get:@"facebookSession"];
         if (facebookSession) {
             facebook.accessToken = [facebookSession objectForKey:@"accessToken"];
             NSNumber* expirationDate = [facebookSession objectForKey:@"expirationToken"];
@@ -31,7 +31,7 @@
         
         [self loadCurrentVersionApp];
 //        [self requestUpgrade];
-
+        
         return YES;
     } else {
         return NO;
@@ -42,6 +42,9 @@
     return [facebook handleOpenURL:url]; 
 }
 
++ (AppDelegate *)instance {
+    return (AppDelegate*) [UIApplication sharedApplication];
+}
 
 
 // Commands
@@ -50,17 +53,8 @@
     if ([command isEqualToString:@"facebook.connect"]) {
         self.facebookConnectResponseCallback = responseCallback;
         [facebook authorize:nil];
-    } else if ([command isEqualToString:@"state.load"]) {
-        responseCallback(nil, [state load]);
-    } else if ([command isEqualToString:@"state.set"]) {
-        [state set:[data objectForKey:@"key"] value:[data objectForKey:@"value"]];
-        responseCallback(nil, nil);
-    } else if ([command isEqualToString:@"state.reset"]) {
-        [state reset];
     } else if ([command isEqualToString:@"api.request"]) {
         [net request:data responseCallback:responseCallback];
-    } else if ([command isEqualToString:@"console.log"]) {
-        NSLog(@"console.log %@", data);
     }
 }
 
@@ -76,7 +70,7 @@
     NSNumber* expirationDate = [NSNumber numberWithDouble:[facebook.expirationDate timeIntervalSince1970]];
     [facebookSession setObject:facebook.accessToken forKey:@"accessToken"];
     [facebookSession setObject:expirationDate forKey:@"expirationKey"];
-    [state set:@"facebookSession" value:facebookSession];
+    [self.state set:@"facebookSession" value:facebookSession];
     self.facebookConnectResponseCallback(nil, facebookSession);
 }
 
