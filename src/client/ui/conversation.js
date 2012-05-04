@@ -1,8 +1,11 @@
 var trim = require('std/trim'),
 	placeholder = 'Say something :)'
+
+var messageList 
+
 module.exports = {
 	render:function(view) {
-		var textInput, messageList
+		var textInput
 		var convo = view.convo || {}
 		var contact = view.contact || {}
 		console.log("HERE", contact)
@@ -53,3 +56,11 @@ function renderMessage(message) {
 		div('body', message.body)
 	)
 }
+
+setTimeout(function() {
+	onMessage(function(message) {
+		if (messageList) {
+			messageList.prepend(renderMessage(message))
+		}
+	})
+})

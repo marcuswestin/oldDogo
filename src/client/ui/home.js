@@ -1,3 +1,5 @@
+var bodies = {}
+
 module.exports = {
 	render:function() {
 		var section = function(className, label, content) {
@@ -23,7 +25,7 @@ module.exports = {
 						var account = fromMe ? myAccount : contactsByAccountId[convo.withAccountId]
 						return div('clear messageBubble ' + (fromMe ? 'fromMe' : ''),
 							face.facebook(account),
-							div('body', convo.lastMessageBody)
+							bodies[account.accountId]=div('body', convo.lastMessageBody)
 						)
 					}))
 					if (res.conversations.length == 0) {
@@ -50,3 +52,11 @@ function selectContact(contact) {
 	console.log('selectContact', contact)
 	scroller.push({ contact:contact, title:contact.name })
 }
+
+setTimeout(function() {
+	onMessage(function(message) {
+		if (bodies[message.senderAccountId]) {
+			$(bodies[message.senderAccountId].empty()).text(message.body)
+		}
+	})	
+})

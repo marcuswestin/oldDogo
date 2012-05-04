@@ -44,6 +44,7 @@ module.exports = proto(null,
 				
 				var notification = new apns.Notification()
 				notification.alert = message.body
+				notification.payload = { senderAccountId: message.senderAccountId }
 				notification.device = new apns.Device(data.pushToken, ascii=true)
 				
 				if (prodPush) {

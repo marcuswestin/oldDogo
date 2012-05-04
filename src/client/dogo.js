@@ -41,6 +41,9 @@ contactsByAccountId = state.get('contactsByAccountId')
 contactsByFacebookId = state.get('contactsByFacebookId')
 myAccount = state.get('myAccount')
 
+onMessage = function(handler) { onMessage.handlers.push(handler) }
+onMessage.handlers = []
+
 bridge.eventHandler = function(name, info) {
 	switch(name) {
 		case 'app.start':
@@ -56,7 +59,10 @@ bridge.eventHandler = function(name, info) {
 			api.post('push_auth', { pushToken:info.deviceToken, pushSystem:'ios' })
 			break
 		case 'push.notification':
-			alert(info.data.aps.alert)
+			var data = info.data
+			each(onMessage.handlers, function(handler) {
+				handler({ senderAccountId:data.senderAccountId, body:data.aps.alert })
+			})
 			break
 		default:
 			alert('Got unknown event ' + JSON.stringify(event))
