@@ -32,7 +32,7 @@ module.exports = proto(null,
 				this._selectAccountByFacebookId(this.db, accountFbId, function(err, acc) {
 					if (err) { return callback(err) }
 					if (acc) { return callback(null, acc.id) }
-					this._insertUnclaimedAccount(this.db, accountFbId, fbContact.contact_facebook_name, callback)
+					this._insertUnclaimedAccount(this.db, accountFbId, fbContact.name, callback)
 				})
 			})
 		},
@@ -116,6 +116,7 @@ module.exports = proto(null,
 				accountId: 'account.id',
 				facebookId: 'facebook_contact.contact_facebook_id',
 				fullName: 'facebook_contact.contact_facebook_name',
+				name: 'facebook_contact.contact_facebook_name',
 				memberSince: 'account.claimed_time'
 			}) + 'LEFT OUTER JOIN account ON facebook_contact.contact_facebook_id=account.facebook_id\n'
 		}

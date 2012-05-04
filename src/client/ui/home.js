@@ -11,9 +11,6 @@ module.exports = {
 			)
 		}
 		
-		var contactsByAccountId = state.get('contactsByAccountId')
-		var contactsByFacebookId = state.get('contactsByFacebookId')
-
 		var loading
 		return div('list',
 			loading=div('loading', 'Loading...'),
@@ -21,14 +18,12 @@ module.exports = {
 				api.get('conversations', function(err, res) {
 					loading.remove()
 					if (err) { return error(err) }
-					tag.append(map(res.conversations, function(convo) {
+					tag.append(list(res.conversations, selectConvo, function(convo) {
 						var fromMe = (convo.withAccountId != convo.lastMessageFromId)
 						var account = fromMe ? state.get('account') : contactsByAccountId[convo.withAccountId]
-						return div('item clear',
-							div('messageBubble ' + (fromMe ? 'fromMe' : ''),
-								face.facebook(account),
-								div('body', convo.lastMessageBody)
-							)
+						return div('clear messageBubble ' + (fromMe ? 'fromMe' : ''),
+							face.facebook(account),
+							div('body', convo.lastMessageBody)
 						)
 					}))
 					if (res.conversations.length == 0) {
@@ -38,10 +33,19 @@ module.exports = {
 			})),
 			div(style({ height:4 })),
 			section('friends', 'Friends', 
-				map(contactsByFacebookId, function(contact) {
-					return div('item contact '+(contact.memberSice ? 'member' : ''), face.facebook(contact))
+				list(contactsByFacebookId, selectContact, function(contact) {
+					return div('contact', face.facebook(contact, true))
 				})
 			)
 		)
 	}
+}
+
+function selectConvo(convo) {
+	var contact = contactsByAccountId[convo.withAccountId]
+	scroller.push({ convo:convo, title:contact.name })
+}
+
+function selectContact(contact) {
+	scroller.push({ contact:contact, title:contact.name })
 }

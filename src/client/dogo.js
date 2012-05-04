@@ -10,7 +10,7 @@ face = require('ui/face')
 bind = require('std/bind')
 viewport = require('dom/viewport')
 each = require('std/each')
-
+list = require('dom/list')
 require('dom/tags').expose()
 
 error = function(err) {
@@ -35,6 +35,9 @@ state = {
 		localStorage.clear()
 	}
 }
+
+contactsByAccountId = state.get('contactsByAccountId')
+contactsByFacebookId = state.get('contactsByFacebookId')
 
 bridge.eventHandler = function(name, info) {
 	switch(name) {
@@ -63,18 +66,18 @@ function renderApp() {
 	scroller = makeScroller(viewport)
 	app=div('app', viewport.fit,
 
-		scroller.renderHead(45, function(view) {
-			var baseViewNum = scroller.hasConnectView ? 2 : 1
+		scroller.renderHead(45, function(view, viewBelow, fromView) {
+			var showBackButton = viewBelow && (scroller.stack.length > scroller.hasConnectView ? 2 : 1)
 			return div('head',
-				scroller.stack.length > baseViewNum && renderBackButton(),
+				showBackButton && renderBackButton(viewBelow.title || 'Home'),
 				div('title', view.title || 'Dogo'),
 				div('devBar',
 					div('button', 'R', button(function() { bridge.command('app.restart') })),
 					div('button', 'X', button(function() { state.clear(); bridge.command('app.restart') }))
 				)
 			)
-			function renderBackButton() {
-				return div('button back', button(function() {
+			function renderBackButton(title) {
+				return div('button back', title, button(function() {
 					scroller.pop()
 				}))
 			}
@@ -93,8 +96,8 @@ function renderApp() {
 				return connect.render(function(res) {
 					state.set('authToken', res.authToken)
 					state.set('account', res.account)
-					var contactsByAccountId = {}
-					var contactsByFacebookId = {}
+					contactsByAccountId = {}
+					contactsByFacebookId = {}
 					each(res.contacts, function(contact) {
 						if (contact.accountId) {
 							contactsByAccountId[contact.accountId] = contact
@@ -103,7 +106,7 @@ function renderApp() {
 					})
 					state.set('contactsByAccountId', contactsByAccountId)
 					state.set('contactsByFacebookId', contactsByFacebookId)
-					scroller.push({ account:res.account })
+					scroller.push({ account:res.account, title:'Dogo' })
 				})
 			}
 		})
