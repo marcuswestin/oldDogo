@@ -70,8 +70,8 @@ module.exports = proto(null,
 				this.sessionService.createAuthentication(params.phone_number, bind(this, this.respond, req, res))
 			},
 			postSessions: function(req, res) {
-				var params = this._getParams(req, 'facebook_access_token')
-				this.sessionService.createSessionWithFacebookAccessToken(params.facebook_access_token, bind(this, this.respond, req, res))
+				var params = this._getParams(req, 'facebookAccessToken')
+				this.sessionService.createSessionWithFacebookAccessToken(params.facebookAccessToken, bind(this, this.respond, req, res))
 			},
 			refreshSession: function(req, res) {
 				var params = this._getParams(req, 'authToken')
@@ -84,10 +84,9 @@ module.exports = proto(null,
 				this.accountService.getContacts(req.session.accountId, bind(this, this.respond, req, res))
 			},
 			postMessage: function(req, res) {
-				var params = this._getParams(req, 'toFacebookId', 'to_facebook_account_id', 'toAccountId', 'body', 'devPush')
-				var facebookId = params.toFacebookId || params.to_facebook_account_id // backcompat
+				var params = this._getParams(req, 'toFacebookId', 'toAccountId', 'body', 'devPush')
 				var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
-				this.messageService.sendMessage(req.session.accountId, facebookId, params.toAccountId, params.body, prodPush, bind(this, this.respond, req, res))
+				this.messageService.sendMessage(req.session.accountId, params.toFacebookId, params.toAccountId, params.body, prodPush, bind(this, this.respond, req, res))
 			},
 			getConversationMessages: function(req, res) {
 				var params = this._getParams(req, 'withFacebookId', 'withAccountId')

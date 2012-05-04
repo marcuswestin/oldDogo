@@ -18,8 +18,24 @@ function get(path, params, callback) {
 }
 
 function send(method, path, params, callback) {
+	if (!callback) {
+		callback = params
+		delete params
+	}
 	var url = '/api/'+path
-	var auth = state.authToken ? 'Basic '+base64.encode(state.authToken) : null
-	var headers = { 'Content-Type':'application/json', 'Authorization':auth, 'X-Dogo-Mode':config.mode }
-	return $[method](url, params, callback, headers)
+	var authToken = state.get('authToken')
+	var auth = authToken ? 'Basic '+base64.encode(authToken) : null
+	var headers = { 'Authorization':auth, 'X-Dogo-Mode':config.mode }
+	if (method == 'post' && params) {
+		params = JSON.stringify(params)
+		headers['Content-Type'] = 'application/json'
+	}
+	return $.ajax({
+		type:method,
+		url:url,
+		headers:headers,
+		data:params,
+		success:function(res) { callback(null, res) },
+		error:function(err) { callback(err, null) }
+	})
 }

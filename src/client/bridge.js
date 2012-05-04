@@ -25,7 +25,7 @@ function onWebViewJavascriptBridgeReady() {
 			try { message = JSON.parse(message) }
 			catch(e) { console.log("Bad JSON", message) }
 			if (message.event) {
-				bridge.eventHandler({ name:message.event, info:message.info })
+				bridge.eventHandler(message.event, message.info)
 			} else {
 				var responseId = message.responseId,
 					callback = callbacks[responseId]

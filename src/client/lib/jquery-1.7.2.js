@@ -97,6 +97,9 @@ var jQuery = function( selector, context ) {
 jQuery.fn = jQuery.prototype = {
 	constructor: jQuery,
 	init: function( selector, context, rootjQuery ) {
+		if (selector._renderTag) {
+			selector = selector.el
+		}
 		var match, elem, ret, doc;
 
 		// Handle $(""), $(null), or $(undefined)
