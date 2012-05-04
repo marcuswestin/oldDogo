@@ -27,6 +27,7 @@ module.exports = {
 				textInput=textarea('bodyInput', { placeholder:placeholder }),
 				div('send', 'Send', button(function() {
 					var body = trim($(textInput).val())
+					$(textInput).val('')
 					if (!body) { return }
 					var message = {
 						toAccountId:convo.withAccountId,
