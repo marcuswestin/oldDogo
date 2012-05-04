@@ -36,15 +36,17 @@ module.exports = {
 			})),
 			div(style({ height:4 })),
 			section('friends', 'Friends', div(function(el) {
-				api.get('contacts', function(err, res) {
-					if (err) { return error(err) }
-					var contactsById = {}
-					el.append(map(res.contacts, function(contact) {
-						contactsById[contact.accountId] = contact
-						return div('item contact '+(contact.memberSice ? 'member' : ''), face.facebook(contact))
-					}))
-					state.set('contactsById', contactsById)
-				})
+				setTimeout(function() {
+					api.get('contacts', function(err, res) {
+						if (err) { return error(err) }
+						var contactsById = {}
+						el.append(map(res.contacts, function(contact) {
+							contactsById[contact.accountId] = contact
+							return div('item contact '+(contact.memberSice ? 'member' : ''), face.facebook(contact))
+						}))
+						state.set('contactsById', contactsById)
+					})
+				}, 1000)
 			}))
 		)
 	}

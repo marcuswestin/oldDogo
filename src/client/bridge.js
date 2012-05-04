@@ -4,6 +4,11 @@ var uniqueId = 0,
 
 var bridge = module.exports = {
 	command:function(command, data, responseHandler) {
+		if (!responseHandler && typeof data == 'function') {
+			responseHandler = data
+			data = null
+		}
+		
 		var message = { command:command, data:data }
 		
 		if (responseHandler) {
