@@ -18,7 +18,7 @@ function get(path, params, callback) {
 }
 
 function send(method, path, params, callback) {
-	if (!callback) {
+	if (!callback && typeof params == 'function') {
 		callback = params
 		delete params
 	}
@@ -35,7 +35,7 @@ function send(method, path, params, callback) {
 		url:url,
 		headers:headers,
 		data:params,
-		success:function(res) { callback(null, res) },
-		error:function(err) { callback(err, null) }
+		success:function(res) { callback && callback(null, res) },
+		error:function(err) { callback && callback(err, null) }
 	})
 }

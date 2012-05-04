@@ -13,9 +13,9 @@ module.exports = proto(null,
 				if (err) { return callback(err) }
 				this.accountService.lookupOrCreateByFacebookAccount(res, fbAccessToken, bind(this, function(err, account) {
 					if (err) { return callback(err) }
-					this.createSessionForAccountId(account.id, bind(this, function(err, authToken) {
+					this.createSessionForAccountId(account.accountId, bind(this, function(err, authToken) {
 						if (err) { return callback(err) }
-						this.accountService.getContacts(account.id, bind(this, function(err, contacts) {
+						this.accountService.getContacts(account.accountId, bind(this, function(err, contacts) {
 							if (err) { return callback(err) }
 							callback(null, { authToken:authToken, account:account, contacts:contacts })
 						}))

@@ -48,10 +48,11 @@ module.exports = proto(connectionBase,
 			})
 		},
 		query: function(ctx, query, args, callback) {
+			var stack = new Error()
 			this._takeConnection(function(conn) {
 				var self = this
 				conn.query(query, args, function(err) {
-					if (err) { err = logError(err, query, args) }
+					if (err) { err = logError(err, query, args, stack.stack) }
 					self._returnConnection(conn)
 					callback.apply(ctx, arguments)
 				})
@@ -106,8 +107,8 @@ var Transaction = proto(connectionBase,
 	}
 )
 
-function logError(err, query, args) {
-	err = new Error((err.message || err) + '\n\t' + JSON.stringify(query) + ' '+JSON.stringify(args))
+function logError(err, query, args, stack) {
+	err = new Error((err.message || err) + '\n\t' + JSON.stringify(query) + ' '+JSON.stringify(args), stack)
 	// console.warn(err)
 	return err
 }

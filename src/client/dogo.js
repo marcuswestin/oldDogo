@@ -19,7 +19,8 @@ error = function(err) {
 
 var makeScroller = require('dom/scroller'),
 	connect = require('./ui/connect'),
-	home = require('./ui/home')
+	home = require('./ui/home'),
+	conversation = require('./ui/conversation')
 
 config = {}
 state = {
@@ -38,6 +39,7 @@ state = {
 
 contactsByAccountId = state.get('contactsByAccountId')
 contactsByFacebookId = state.get('contactsByFacebookId')
+myAccount = state.get('myAccount')
 
 bridge.eventHandler = function(name, info) {
 	switch(name) {
@@ -85,19 +87,16 @@ function renderApp() {
 
 		scroller.renderBody(3, function(view) {
 			console.log("render view", JSON.stringify(view))
-			if (view.convo) {
-				return 'convo'
-			} else if (view.contact) {
-				return 'contact'
+			if (view.convo || view.contact) {
+				return conversation.render(view)
 			} else if (state.get('authToken')) {
 				return home.render()
 			} else {
 				scroller.hasConnectView = true
 				return connect.render(function(res) {
-					state.set('authToken', res.authToken)
-					state.set('account', res.account)
 					contactsByAccountId = {}
 					contactsByFacebookId = {}
+					myAccount = res.account
 					each(res.contacts, function(contact) {
 						if (contact.accountId) {
 							contactsByAccountId[contact.accountId] = contact
@@ -106,7 +105,11 @@ function renderApp() {
 					})
 					state.set('contactsByAccountId', contactsByAccountId)
 					state.set('contactsByFacebookId', contactsByFacebookId)
+					state.set('myAccount', myAccount)
+					state.set('authToken', res.authToken)
 					scroller.push({ account:res.account, title:'Dogo' })
+					
+					bridge.command('push.register')
 				})
 			}
 		})

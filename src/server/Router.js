@@ -22,7 +22,7 @@ module.exports = proto(null,
 		},
 		_configureRouter:function() {
 			var router = this._router
-			if (this._opts.log) { router.use(express.logger({ format: ':method :url' })) }
+			// if (this._opts.log) { router.use(express.logger({ format: ':method :url' })) }
 			router.use(express.bodyParser())
 		},
 		_createRoutes: function() {
@@ -62,6 +62,7 @@ module.exports = proto(null,
 					delete params[argName]
 				}
 			}
+			console.log(req.method, req.url, req.session && req.session.accountId, params)
 			return params
 		},
 		rest: {
@@ -78,9 +79,11 @@ module.exports = proto(null,
 				this.sessionService.refreshSessionWithAuthToken(params.authToken, bind(this, this.respond, req, res))
 			},
 			getConversations: function(req, res) {
+				var params = this._getParams(req)
 				this.messageService.listConversations(req.session.accountId, bind(this, this.respond, req, res))
 			},
 			getContacts: function(req, res) {
+				var params = this._getParams(req)
 				this.accountService.getContacts(req.session.accountId, this.wrapRespond(req, res, 'contacts'))
 			},
 			postMessage: function(req, res) {
@@ -109,6 +112,7 @@ module.exports = proto(null,
 			session: function(req, res, next) {
 				this.sessionService.authenticateRequest(req, function(err, accountId) {
 					if (err) { return next(err) }
+					if (!accountId) { return next('Unauthorized') }
 					req.session = { accountId:accountId }
 					next()
 				})

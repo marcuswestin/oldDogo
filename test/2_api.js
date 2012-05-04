@@ -100,7 +100,7 @@ describe('Facebook connect', function() {
 			check(err)
 			is(res.authToken)
 			is(res.account)
-			is(res.account.facebook_id, fbUser.id)
+			is(res.account.facebookId, fbUser.id)
 			api.authToken = res.authToken
 			done()
 		})

@@ -20,7 +20,7 @@ module.exports = {
 					if (err) { return error(err) }
 					tag.append(list(res.conversations, selectConvo, function(convo) {
 						var fromMe = (convo.withAccountId != convo.lastMessageFromId)
-						var account = fromMe ? state.get('account') : contactsByAccountId[convo.withAccountId]
+						var account = fromMe ? myAccount : contactsByAccountId[convo.withAccountId]
 						return div('clear messageBubble ' + (fromMe ? 'fromMe' : ''),
 							face.facebook(account),
 							div('body', convo.lastMessageBody)
@@ -47,5 +47,6 @@ function selectConvo(convo) {
 }
 
 function selectContact(contact) {
+	console.log('selectContact', contact)
 	scroller.push({ contact:contact, title:contact.name })
 }

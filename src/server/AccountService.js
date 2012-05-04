@@ -9,7 +9,7 @@ module.exports = proto(null,
 		lookupOrCreateByFacebookAccount:function(fbAccount, fbAccessToken, callback) {
 			this._selectAccountByFacebookId(this.db, fbAccount.id, function(err, account) {
 				if (err) { return callback(err) }
-				if (account && account.claimed_time) { return callback(null, account) }
+				if (account && account.memberSince) { return callback(null, account) }
 				
 				facebook.get('me/friends', { access_token:fbAccessToken }, bind(this, function(err, res) {
 					if (err) { return callback(err) }
@@ -28,11 +28,11 @@ module.exports = proto(null,
 			this._selectFacebookContact(this.db, accountId, contactFbAccountId, function(err, fbContact) {
 				if (err) { return callback(err) }
 				if (!fbContact) { return callback('Facebook contact not found') }
-				var accountFbId = fbContact.contact_facebook_id
-				this._selectAccountByFacebookId(this.db, accountFbId, function(err, acc) {
+				var accountFbId = fbContact.facebookId
+				this._selectAccountByFacebookId(this.db, fbContact.facebookId, function(err, acc) {
 					if (err) { return callback(err) }
-					if (acc) { return callback(null, acc.id) }
-					this._insertUnclaimedAccount(this.db, accountFbId, fbContact.name, callback)
+					if (acc) { return callback(null, acc.accountId) }
+					this._insertUnclaimedAccount(this.db, fbContact.facebookId, fbContact.name, callback)
 				})
 			})
 		},
@@ -53,7 +53,7 @@ module.exports = proto(null,
 			})
 		},
 		_claimAccount:function(fbAccount, fbFriends, callback) {
-			console.log('claim account with', fbFriends.length, 'friends')
+			console.log('claim account with', fbAccount, fbFriends.length, 'friends')
 			this.db.transact(this, function(tx) {
 				callback = txCallback(tx, callback)
 				this._updateAccountClaimed(tx, fbAccount, bind(this, this._insertFbContacts, tx, fbFriends, callback))
@@ -99,19 +99,30 @@ module.exports = proto(null,
 		},
 		_selectFacebookContact: function(conn, accountId, fbContactFbAccountId, callback) {
 			conn.selectOne(this,
-				'SELECT * FROM facebook_contact WHERE account_id=? AND contact_facebook_id=?',
+				this.sql.selectFacebookContact+'WHERE account_id=? AND contact_facebook_id=?',
 				[accountId, fbContactFbAccountId], callback)
 		},
 		_selectContacts: function(conn, accountId, callback) {
 			conn.select(this, this.sql.contact+'WHERE facebook_contact.account_id=?', [accountId], callback)
 		},
 		_selectAccountByFacebookId: function(conn, fbAccountId, callback) {
-			conn.selectOne(this, 'SELECT * FROM account WHERE facebook_id=?', [fbAccountId], callback)
+			conn.selectOne(this, this.sql.account+'WHERE facebook_id=?', [fbAccountId], callback)
 		},
 		_selectAccount: function(conn, accountId, callback) {
-			conn.selectOne(this, 'SELECT * FROM account WHERE id=?', [accountId], callback)
+			conn.selectOne(this, this.sql.account+'WHERE id=?', [accountId], callback)
 		},
 		sql: {
+			selectFacebookContact: sql.selectFrom('facebook_contact', {
+				facebookId:'contact_facebook_id',
+				name:'contact_facebook_name'
+			}),
+			account: sql.selectFrom('account', {
+				facebookId:'facebook_id',
+				name:'full_name',
+				accountId:'id',
+				pushToken:'push_token',
+				memberSince:'claimed_time'
+			}),
 			contact: sql.selectFrom('facebook_contact', {
 				accountId: 'account.id',
 				facebookId: 'facebook_contact.contact_facebook_id',

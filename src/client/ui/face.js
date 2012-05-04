@@ -8,8 +8,7 @@ var face = module.exports = {
 	},
 	
 	account: function(accountId) {
-		if (!state.get('contactsById')) { return }
-		return face.facebook(state.get('contactsById')[accountId])
+		return face.facebook(contactsById[accountId])
 	}
 
 }
