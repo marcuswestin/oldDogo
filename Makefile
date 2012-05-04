@@ -23,7 +23,7 @@ setup:
 	cd node_modules && ln -snf fun/node_modules/optimist optimist
 	cd node_modules/fun && make setup # server depends on node_modules/fun/node_modules/std
 
-run-dev:
+run:
 	node src/server/run.js --config=dev
 
 run-instapop:

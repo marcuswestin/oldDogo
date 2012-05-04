@@ -35,14 +35,7 @@ module.exports = proto(null,
 			router.error(misc.error.bind(this))
 			
 			if (this._opts.dev) {
-				var devServer = require('fun/src/dev-server'),
-					filename = path.join(__dirname, '../client/dogo.fun'),
-					opts = { minify:false }
-				devServer.mountAndWatchFile(router, filename, opts)
-				router.get('/', devServer.serveDevClient)
-				router.get('/app.html', bind(this, function(req, res) {
-					devServer.compileFile(filename, opts, curry(devServer.respond, res))
-				}))
+				this._setupDev(router)
 			} else {
 				router.get('/', misc.ping)
 			}
@@ -93,8 +86,8 @@ module.exports = proto(null,
 			postMessage: function(req, res) {
 				var params = this._getParams(req, 'toFacebookId', 'to_facebook_account_id', 'toAccountId', 'body', 'devPush')
 				var facebookId = params.toFacebookId || params.to_facebook_account_id // backcompat
-				var isProd = (req.headers['x-dogo-mode'] == 'appstore')
-				this.messageService.sendMessage(req.session.accountId, facebookId, params.toAccountId, params.body, isProd, bind(this, this.respond, req, res))
+				var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
+				this.messageService.sendMessage(req.session.accountId, facebookId, params.toAccountId, params.body, prodPush, bind(this, this.respond, req, res))
 			},
 			getConversationMessages: function(req, res) {
 				var params = this._getParams(req, 'withFacebookId', 'withAccountId')
@@ -155,6 +148,51 @@ module.exports = proto(null,
 			} catch(e) {
 				res.end("Error sending message")
 			}
+		},
+		_setupDev:function(app) {
+			var nib = require('nib'),
+				jsCompiler = require('require/server'),
+				stylus = require('stylus')
+			
+			app.get('/app.html', function(req, res) {
+				res.sendfile('src/client/dogo.html')
+			})
+			
+			app.get('/stylus/*', function(req, res) {
+				var filename = req.path.replace('/stylus/', '')
+				fs.readFile(filename, function(err, content) {
+					if (err) { return respond(err) }
+					stylus(content.toString())
+						.set('filename', filename)
+						.set('compress', false)
+						.use(nib())
+						.import('nib')
+						.render(respond)
+				})
+				
+				function respond(err, content) {
+					if (err) {
+						res.writeHead(500)
+						res.end((err.stack || err.message || err).toString())
+					} else {
+						res.writeHead(200, { 'Content-Type':'text/css' })
+						res.end(content)
+					}
+				}
+			})
+			
+			app.get('/require/*', function(req, res) {
+				jsCompiler.handleRequest(req, res)
+			})
+			
+			fs.readdirSync('src/client').forEach(function(name) {
+				var path = 'src/client/'+name,
+					stat = fs.statSync(path)
+				if (stat.isDirectory()) {
+					console.log("HERE", name, path)
+					jsCompiler.addPath(name, path)
+				}
+			})
 		}
 	}
 )

@@ -1,12 +1,12 @@
-@import "./macros"
+@import "./normalize"
 @import "./colors"
 
-html
-	gradient(color2, #fff); height 100%;
+.app
+	background linear-gradient(top, color2, #fff); height 100%;
 
 .head
 	height 100%;
-	gradient(headGr1, headGr2); borderTop 1px solid #E3E9ED; box-shadow 0 1px 3px #333;
+	background linear-gradient(top, headGr1, headGr2); borderTop 1px solid #E3E9ED; box-shadow 0 1px 3px #333;
 	.title
 		text-shadow 0 1px 0 headTxtSh; color:#fff; font-size 16px; padding 0 4px;
 		font-size 20px; text-align center; padding 8px 0 0 0; font-weight 600;
