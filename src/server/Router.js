@@ -81,7 +81,7 @@ module.exports = proto(null,
 				this.messageService.listConversations(req.session.accountId, bind(this, this.respond, req, res))
 			},
 			getContacts: function(req, res) {
-				this.accountService.getContacts(req.session.accountId, bind(this, this.respond, req, res))
+				this.accountService.getContacts(req.session.accountId, this.wrapRespond(req, res, 'contacts'))
 			},
 			postMessage: function(req, res) {
 				var params = this._getParams(req, 'toFacebookId', 'toAccountId', 'body', 'devPush')
@@ -113,6 +113,13 @@ module.exports = proto(null,
 					next()
 				})
 			}
+		},
+		wrapRespond:function(req, res, name) {
+			return bind(this, function(err, data) {
+				var response = {}
+				response[name] = data
+				this.respond(req, res, err, err ? null : response)
+			})
 		},
 		respond:function(req, res, err, content, contentType) {
 			try {

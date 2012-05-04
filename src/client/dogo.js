@@ -9,6 +9,7 @@ bridge = require('./bridge')
 face = require('ui/face')
 bind = require('std/bind')
 viewport = require('dom/viewport')
+each = require('std/each')
 
 require('dom/tags').expose()
 
@@ -29,6 +30,9 @@ state = {
 	set: function(name, val) {
 		console.log('state.set', name, val)
 		localStorage[name] = JSON.stringify(val)
+	},
+	clear: function() {
+		localStorage.clear()
 	}
 }
 
@@ -54,8 +58,6 @@ bridge.eventHandler = function(name, info) {
 	}
 }
 
-window.onerror = function(e) { alert('err ' + e)}
-
 scoller = null
 function renderApp() {
 	scroller = makeScroller(viewport)
@@ -67,7 +69,8 @@ function renderApp() {
 				scroller.stack.length > baseViewNum && renderBackButton(),
 				div('title', view.title || 'Dogo'),
 				div('devBar',
-					div('button', 'R', button(function() { bridge.command('app.reload') }))
+					div('button', 'R', button(function() { bridge.command('app.reload') })),
+					div('button', 'X', button(function() { state.clear(); bridge.command('app.reload') }))
 				)
 			)
 			function renderBackButton() {
@@ -90,6 +93,11 @@ function renderApp() {
 				return connect.render(function(res) {
 					state.set('authToken', res.authToken)
 					state.set('account', res.account)
+					var contactsById = {}
+					each(res.contacts, function(contact) {
+						contactsById[contact.accountId] = contact
+					})
+					state.set('contactsById', contactsById)
 					scroller.push({ account:res.account })
 				})
 			}
@@ -110,6 +118,8 @@ if (navigator.userAgent.match('Chrome')) {
 					callback(null, response.authResponse)
 				}, data && data.opts)
 				break
+			case 'app.reload':
+				location.reload()
 		}
 	}
 	
@@ -162,4 +172,6 @@ if (navigator.userAgent.match('Chrome')) {
 	function getSize() { return { width:width(), height:height() } }
 
 	var $win = $(window)
+} else {
+	window.onerror = function(e) { alert('err ' + e)}
 }

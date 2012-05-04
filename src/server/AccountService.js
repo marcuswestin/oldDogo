@@ -40,10 +40,7 @@ module.exports = proto(null,
 			this._selectAccount(this.db, accountId, callback)
 		},
 		getContacts: function(accountId, callback) {
-			this._selectContacts(this.db, accountId, function(err, contacts) {
-				if (err) { return callback(err) }
-				callback(null, { contacts:contacts })
-			})
+			this._selectContacts(this.db, accountId, callback)
 		},
 		setPushAuth: function(accountId, pushToken, pushSystem, callback) {
 			this._updateAccountPushAuth(this.db, accountId, pushToken, pushSystem, callback)
