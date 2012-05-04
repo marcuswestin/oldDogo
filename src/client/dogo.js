@@ -79,7 +79,7 @@ function renderApp() {
 			return div('head',
 				showBackButton && renderBackButton(viewBelow.title || 'Home'),
 				div('title', view.title || 'Dogo'),
-				div('devBar',
+				(config.mode == "dev") && div('devBar',
 					div('button', 'R', button(function() { bridge.command('app.restart') })),
 					div('button', 'X', button(function() { state.clear(); bridge.command('app.restart') }))
 				)
