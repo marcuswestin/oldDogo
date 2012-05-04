@@ -37,16 +37,11 @@ module.exports = {
 				})
 			})),
 			div(style({ height:4 })),
-			section('friends', 'Friends', div(function(el) {
-				setTimeout(function() {
-					api.get('contacts', function(err, res) {
-						if (err) { return error(err) }
-						el.append(map(res.contacts, function(contact) {
-							return div('item contact '+(contact.memberSice ? 'member' : ''), face.facebook(contact))
-						}))
-					})
-				}, 1000)
-			}))
+			section('friends', 'Friends', 
+				map(contactsByFacebookId, function(contact) {
+					return div('item contact '+(contact.memberSice ? 'member' : ''), face.facebook(contact))
+				})
+			)
 		)
 	}
 }
