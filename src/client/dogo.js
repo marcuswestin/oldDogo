@@ -75,7 +75,7 @@ function renderApp() {
 	app=div('app', viewport.fit,
 
 		scroller.renderHead(45, function(view, viewBelow, fromView) {
-			var showBackButton = viewBelow && (scroller.stack.length > scroller.hasConnectView ? 2 : 1)
+			var showBackButton = viewBelow && (scroller.stack.length > 2)
 			return div('head',
 				showBackButton && renderBackButton(viewBelow.title || 'Home'),
 				div('title', view.title || 'Dogo'),
