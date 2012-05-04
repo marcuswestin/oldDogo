@@ -13,15 +13,17 @@
 	.back
 		position absolute; top 5px; left 4px; border-width 2px;
 
-.login.button
-	font-weight bold; font-size 22px; text-shadow 0 1px 0 #999; width 120px; margin 160px auto; padding 6px 8px 8px; box-shadow 0 1px 0 #999;
-.login.button.tap-active
-	text-shadow none; box-shadow 0 0 0;
+.connect
+	text-align center; width 100%;
+	.button
+		font-weight bold; font-size 22px; text-shadow 0 1px 0 #999; width 120px; margin 160px auto; padding 6px 8px 8px; box-shadow 0 1px 0 #999;
+	.button.active
+		text-shadow none; box-shadow 0 0 0;
 
 .button
-	padding 4px 8px 6px; border-radius 10px; gradient(color4, color5); border 3px solid #fff; color #fff; text-align center;
+	padding 4px 8px 6px; border-radius 10px; background linear-gradient(top, color4, color5); border 3px solid #fff; color #fff; text-align center; display inline-block; cursor pointer;
 .button.tap-active
-	gradient(color5, color5);
+	background linear-gradient(bottom, color4, color5);
 
 .section
 	.header

@@ -2,17 +2,22 @@ require('lib/jquery-1.7.2')
 
 style = function(styles) { return { style:styles } }
 create = require('std/create')
-options = require('std/options')
 map = require('std/map')
 button = require('dom/button')
+api = require('./api')
+bridge = require('./bridge')
 
 require('dom/tags').expose()
 
+error = function(err) {
+	alert("Oops! "+JSON.stringify(err))
+}
+
 var makeScroller = require('dom/scroller'),
 	viewport = require('dom/viewport'),
-	bridge = require('./bridge')
+	connect = require('./ui/connect')
 
-var config = {}, state = {}, bridge
+var config = {}, state = {}
 
 bridge.eventHandler = function(event) {
 	var info
@@ -66,7 +71,7 @@ function renderApp() {
 			} else if (state.authToken) {
 				return 'home'
 			} else {
-				return 'signup'
+				return connect.render()
 			}
 		})
 	).appendTo(document.body)
