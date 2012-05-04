@@ -15,6 +15,10 @@ setup-client: setup
 	cd dependencies/blowtorch && make setup
 	cd dependencies/facebook-ios-sdk && scripts/build_facebook_ios_sdk_static_lib.sh
 
+setup-dev: setup
+	cd node_modules/watch && npm install .
+	cd node_modules/socket.io && npm install .
+
 setup:
 	git submodule init
 	git submodule sync

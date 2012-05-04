@@ -151,10 +151,22 @@ module.exports = proto(null,
 		_setupDev:function(app) {
 			var nib = require('nib'),
 				jsCompiler = require('require/server'),
-				stylus = require('stylus')
+				stylus = require('stylus'),
+				socketIo = require('socket.io'),
+				time = require('std/time'),
+				watch = require('watch')
 			
 			app.get('/app.html', function(req, res) {
 				res.sendfile('src/client/dogo.html')
+			})
+			
+			app.get('/', function(req, res) { res.redirect('/dev-client.html') })
+			
+			app.get('/dev-client.html', function(req, res) {
+				fs.readFile('src/client/dev-client.html', function(err, html) {
+					res.writeHead(200)
+					res.end(html.toString())
+				})
 			})
 			
 			app.get('/stylus/*', function(req, res) {
@@ -191,6 +203,70 @@ module.exports = proto(null,
 					jsCompiler.addPath(name, path)
 				}
 			})
+			
+			var serverIo = socketIo.listen(app)
+			serverIo.set('log level', 0)
+			
+			serverIo.sockets.on('connection', function(socket) {
+				console.log("Dev client connected")
+				fs.readFile('src/client/dogo.html', function(err, html) {
+					socket.emit('change', { error:err, html:html.toString() })
+				})
+			})
+			
+			
+			var lastChange = time.now()
+			var onChange = function(event, changedFilename) {
+				if (time.now() - lastChange < 1000) { return } // Node bug calls twice per change, see https://github.com/joyent/node/issues/2126
+				lastChange = time.now()
+				console.log("detected change.", "Compiling and sending.")
+				fs.readFile('src/client/dogo.html', function(err, html) {
+					serverIo.sockets.emit('change', { error:err, html:html.toString() })
+				})
+			}
+			
+			var watchedFiles = {}
+			var walkFiles = function() {
+				walk('src/client', function(err, files) {
+					files.forEach(function(file) {
+						if (watchedFiles[file]) { return }
+						var ext = file.split('.').pop()
+						if (ext == 'js' || ext == 'styl' || ext == 'html') {
+							console.log('Watching', file)
+							watchedFiles[file] = true
+							fs.watch(file, onChange)
+						}
+					})
+				})
+			}
+			watch.watchTree(__dirname + '/../client', function(f, curr, prev) {
+				if (prev) { return } // not new file
+				walkFiles()
+			})
 		}
 	}
 )
+
+var walk = function(dir, done) {
+	var results = []
+	fs.readdir(dir, function(err, list) {
+		if (err) return done(err)
+		var pending = list.length
+		if (!pending) return done(null, results)
+		list.forEach(function(file) {
+			file = dir + '/' + file
+			fs.stat(file, function(err, stat) {
+				if (stat && stat.isDirectory()) {
+					walk(file, function(err, res) {
+						results = results.concat(res)
+						if (!--pending) done(null, results)
+					})
+				} else {
+					results.push(file)
+					if (!--pending) done(null, results)
+				}
+			})
+		})
+	})
+}
+
