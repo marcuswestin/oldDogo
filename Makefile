@@ -8,6 +8,7 @@ setup-server: setup
 	cd node_modules/imap && npm install .
 	cd node_modules/validator && npm install .
 	cd node_modules/request && npm install .
+	cd node_modules/optimist && npm install .
 	if [ ! -d node_modules/express ]; then npm install express@2.5.8 .; fi
 
 setup-client: setup
@@ -19,9 +20,6 @@ setup:
 	git submodule sync
 	git submodule update
 	mkdir -p node_modules
-	cd node_modules && ln -snf fun/node_modules/std std
-	cd node_modules && ln -snf fun/node_modules/optimist optimist
-	cd node_modules/fun && make setup # server depends on node_modules/fun/node_modules/std
 
 run:
 	node src/server/run.js --config=dev
