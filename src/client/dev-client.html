@@ -22,10 +22,14 @@
 				error.appendChild(document.createTextNode(data.error))
 			} else {
 				error.style.display = 'none'
-				var doc = outputIframe.contentWindow.document
-				doc.open()
-				doc.write(data.html)
-				doc.close()
+				try {
+					var doc = outputIframe.contentWindow.document
+					doc.open()
+					doc.write(data.html)
+					doc.close()
+				} catch(e) {
+					console.log("dev-client error", e)
+				}
 			}
 		});
 	</script>
