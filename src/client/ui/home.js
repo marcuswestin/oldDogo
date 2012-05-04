@@ -11,6 +11,9 @@ module.exports = {
 			)
 		}
 		
+		var contactsByAccountId = state.get('contactsByAccountId')
+		var contactsByFacebookId = state.get('contactsByFacebookId')
+
 		var loading
 		return div('list',
 			loading=div('loading', 'Loading...'),
@@ -18,10 +21,9 @@ module.exports = {
 				api.get('conversations', function(err, res) {
 					loading.remove()
 					if (err) { return error(err) }
-					var contactsById = state.get('contactsById')
 					tag.append(map(res.conversations, function(convo) {
 						var fromMe = (convo.withAccountId != convo.lastMessageFromId)
-						var account = fromMe ? state.get('account') : contactsById[convo.withAccountId]
+						var account = fromMe ? state.get('account') : contactsByAccountId[convo.withAccountId]
 						return div('item clear',
 							div('messageBubble ' + (fromMe ? 'fromMe' : ''),
 								face.facebook(account),

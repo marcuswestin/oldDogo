@@ -69,8 +69,8 @@ function renderApp() {
 				scroller.stack.length > baseViewNum && renderBackButton(),
 				div('title', view.title || 'Dogo'),
 				div('devBar',
-					div('button', 'R', button(function() { bridge.command('app.reload') })),
-					div('button', 'X', button(function() { state.clear(); bridge.command('app.reload') }))
+					div('button', 'R', button(function() { bridge.command('app.restart') })),
+					div('button', 'X', button(function() { state.clear(); bridge.command('app.restart') }))
 				)
 			)
 			function renderBackButton() {
@@ -93,11 +93,16 @@ function renderApp() {
 				return connect.render(function(res) {
 					state.set('authToken', res.authToken)
 					state.set('account', res.account)
-					var contactsById = {}
+					var contactsByAccountId = {}
+					var contactsByFacebookId = {}
 					each(res.contacts, function(contact) {
-						contactsById[contact.accountId] = contact
+						if (contact.accountId) {
+							contactsByAccountId[contact.accountId] = contact
+						}
+						contactsByFacebookId[contact.facebookId] = contact
 					})
-					state.set('contactsById', contactsById)
+					state.set('contactsByAccountId', contactsByAccountId)
+					state.set('contactsByFacebookId', contactsByFacebookId)
 					scroller.push({ account:res.account })
 				})
 			}
@@ -118,7 +123,7 @@ if (navigator.userAgent.match('Chrome')) {
 					callback(null, response.authResponse)
 				}, data && data.opts)
 				break
-			case 'app.reload':
+			case 'app.restart':
 				location.reload()
 		}
 	}
