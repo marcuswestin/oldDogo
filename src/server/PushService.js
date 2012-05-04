@@ -48,10 +48,10 @@ module.exports = proto(null,
 				notification.device = new apns.Device(data.pushToken, ascii=true)
 				
 				if (prodPush) {
-					console.log("Send distribution push notification")
+					console.log("Send distribution push notification", JSON.stringify(notification).length)
 					this.prodApnsConnection.sendNotification(notification)
 				} else {
-					console.log("Send sandbox push notification")
+					console.log("Send sandbox push notification", JSON.stringify(notification).length)
 					this.devApnsConnection.sendNotification(notification)
 				}
 			})
