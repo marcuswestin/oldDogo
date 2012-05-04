@@ -57,7 +57,7 @@ function renderMessage(message) {
 	)
 }
 
-setTimeout(function() {
+$(function() {
 	onMessage(function(message) {
 		if (messageList) {
 			messageList.prepend(renderMessage(message))

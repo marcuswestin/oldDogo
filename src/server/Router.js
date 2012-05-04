@@ -172,12 +172,21 @@ module.exports = proto(null,
 			})
 			
 			app.get('/', function(req, res) { res.redirect('/dev-client.html') })
+
+			app.get('/jquery.js', function(req, res) {
+				sendFile(res, 'src/client/lib/jquery-1.7.2.js')
+			})
+			
+			function sendFile(res, path) {
+				fs.readFile(path, function(err, content) {
+					if (err) { throw err }
+					res.writeHead(200)
+					res.end(content.toString())
+				})
+			}
 			
 			app.get('/dev-client.html', function(req, res) {
-				fs.readFile('src/client/dev-client.html', function(err, html) {
-					res.writeHead(200)
-					res.end(html.toString())
-				})
+				sendFile(res, 'src/client/dev-client.html')
 			})
 			
 			app.get('/stylus/*', function(req, res) {

@@ -53,7 +53,7 @@ function selectContact(contact) {
 	scroller.push({ contact:contact, title:contact.name })
 }
 
-setTimeout(function() {
+$(function() {
 	onMessage(function(message) {
 		if (bodies[message.senderAccountId]) {
 			$(bodies[message.senderAccountId].empty()).text(message.body)

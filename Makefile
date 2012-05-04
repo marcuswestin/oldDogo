@@ -8,6 +8,7 @@ setup-server: setup
 	cd node_modules/imap && npm install .
 	cd node_modules/validator && npm install .
 	cd node_modules/request && npm install .
+	cd node_modules/require && npm install .
 	cd node_modules/optimist && npm install .
 	if [ ! -d node_modules/express ]; then npm install express@2.5.8 .; fi
 
@@ -32,7 +33,7 @@ run-instapop:
 	node_modules/fun/bin/fun instapop/instapop.fun
 
 client:
-	bash scripts/build-client.sh
+	node scripts/build-client.js
 
 clean:
 	rm -rf build
