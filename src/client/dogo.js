@@ -6,6 +6,9 @@ map = require('std/map')
 button = require('dom/button')
 api = require('./api')
 bridge = require('./bridge')
+face = require('ui/face')
+bind = require('std/bind')
+viewport = require('dom/viewport')
 
 require('dom/tags').expose()
 
@@ -14,8 +17,8 @@ error = function(err) {
 }
 
 var makeScroller = require('dom/scroller'),
-	viewport = require('dom/viewport'),
-	connect = require('./ui/connect')
+	connect = require('./ui/connect'),
+	home = require('./ui/home')
 
 config = {}
 state = {
@@ -53,10 +56,10 @@ bridge.eventHandler = function(name, info) {
 
 window.onerror = function(e) { alert('err ' + e)}
 
-var scroller = makeScroller()
-
+scoller = null
 function renderApp() {
-	div('app', viewport.fit,
+	scroller = makeScroller(viewport)
+	app=div('app', viewport.fit,
 
 		scroller.renderHead(45, function(view) {
 			var baseViewNum = scroller.hasConnectView ? 2 : 1
@@ -81,7 +84,7 @@ function renderApp() {
 			} else if (view.contact) {
 				return 'contact'
 			} else if (state.get('authToken')) {
-				return 'home'
+				return home.render()
 			} else {
 				scroller.hasConnectView = true
 				return connect.render(function(res) {
@@ -108,7 +111,12 @@ if (navigator.userAgent.match('Chrome')) {
 				break
 		}
 	}
-	bridge.eventHandler('app.start', {})
+	
+	$(function() {
+		bridge.eventHandler('app.start', {})
+		$('.app').css({ margin:'0 auto' })
+		$('body').css({ background:'#222' })
+	})
 	
 	div({ id:'fb-root' }).appendTo(document.body)
 	window.fbAsyncInit = function() {
@@ -128,4 +136,29 @@ if (navigator.userAgent.match('Chrome')) {
 		js.src = "//connect.facebook.net/en_US/all.js";
 		ref.parentNode.insertBefore(js, ref);
 	}(document));
+
+	viewport.height = function() { return 480 }
+	viewport.width = function() { return 320 }
+	
+	module.exports = {
+		fit:fit,
+		getSize:getSize,
+		width:width,
+		height:height
+	}
+
+	function fit() {
+		var el = this
+		var resize = function() {
+			$(el).height(height()).width(width())
+		}
+		$win.resize(resize)
+		resize()
+	}
+
+	function height() { return $win.height() }
+	function width() { return $win.width() }
+	function getSize() { return { width:width(), height:height() } }
+
+	var $win = $(window)
 }
