@@ -188,7 +188,6 @@ module.exports = proto(null,
 				var path = 'src/client/'+name,
 					stat = fs.statSync(path)
 				if (stat.isDirectory()) {
-					console.log("HERE", name, path)
 					jsCompiler.addPath(name, path)
 				}
 			})

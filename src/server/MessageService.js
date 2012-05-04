@@ -150,7 +150,8 @@ module.exports = proto(null,
 				account2Id: 'convo.account_2_id',
 				conversationId: 'partic.conversation_id',
 				lastMessageBody: 'last_message.body',
-				lastMessageTime: 'last_message.sent_time'
+				lastMessageTime: 'last_message.sent_time',
+				lastMessageFromId: 'last_message.sender_account_id'
 			})
 			+ 'INNER JOIN conversation convo ON partic.conversation_id=convo.id\n'
 			+ 'INNER JOIN message last_message ON convo.last_message_id=last_message.id\n'

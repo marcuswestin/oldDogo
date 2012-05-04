@@ -1,7 +1,7 @@
 module.exports = {
 	render:function() {
 		var section = function(className, label, content) {
-			return div('section clean',
+			return div('section clear',
 				div('header',
 					div('label', label)
 				),
@@ -18,9 +18,15 @@ module.exports = {
 				api.get('conversations', function(err, res) {
 					loading.remove()
 					if (err) { return error(err) }
+					var contactsById = state.get('contactsById')
 					tag.append(map(res.conversations, function(convo) {
-						return div('item',
-							div('messageBubble', face.account(convo.withAccountId), convo.lastMessageBody)
+						var fromMe = (convo.withAccountId != convo.lastMessageFromId)
+						var account = fromMe ? state.get('account') : contactsById[convo.withAccountId]
+						return div('item clear',
+							div('messageBubble ' + (fromMe ? 'fromMe' : ''),
+								face.facebook(account),
+								div('body', convo.lastMessageBody)
+							)
 						)
 					}))
 					if (res.conversations.length == 0) {
@@ -32,9 +38,12 @@ module.exports = {
 			section('friends', 'Friends', div(function(el) {
 				api.get('contacts', function(err, res) {
 					if (err) { return error(err) }
+					var contactsById = {}
 					el.append(map(res.contacts, function(contact) {
+						contactsById[contact.accountId] = contact
 						return div('item contact '+(contact.memberSice ? 'member' : ''), face.facebook(contact))
 					}))
+					state.set('contactsById', contactsById)
 				})
 			}))
 		)

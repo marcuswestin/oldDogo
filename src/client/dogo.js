@@ -89,6 +89,7 @@ function renderApp() {
 				scroller.hasConnectView = true
 				return connect.render(function(res) {
 					state.set('authToken', res.authToken)
+					state.set('account', res.account)
 					scroller.push({ account:res.account })
 				})
 			}

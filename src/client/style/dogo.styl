@@ -38,14 +38,19 @@
 
 .conversations
 	.item
-		margin 4px;
-		.face
-			float left; margin 0 4px 0 0;
 		.messageBubble
-			float left;
+			margin 4px; min-height 50px
+			.face
+				float left; border-radius 6px 0 0 6px; margin-right 6px;
+		.messageBubble.fromMe
+			.face
+				float left; border-radius 0 6px 6px 0; margin-left 6px;
+		
 
 .messageBubble
-	padding 11px 8px; border-radius 10px; background #fff; border 4px solid color4;
+	border-radius 10px; background #fff; border 4px solid color4;
+	.body
+		padding 5px;
 
 .conversation
 	.messages
