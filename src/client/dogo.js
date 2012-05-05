@@ -11,16 +11,19 @@ bind = require('std/bind')
 viewport = require('dom/viewport')
 each = require('std/each')
 list = require('dom/list')
-require('dom/tags').expose()
 
 error = function(err) {
 	alert("Oops! "+JSON.stringify(err))
 }
 
-var makeScroller = require('dom/scroller'),
+var tags = require('dom/tags')
+	makeScroller = require('dom/scroller'),
 	connect = require('./ui/connect'),
 	home = require('./ui/home'),
 	conversation = require('./ui/conversation')
+
+tags.expose()
+tags.enableJQueryTags()
 
 config = {}
 state = {
