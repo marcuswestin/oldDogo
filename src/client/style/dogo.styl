@@ -3,10 +3,15 @@
 
 .app
 	background linear-gradient(top, color2, #fff); height 100%;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none; /* Disable selection/Copy of UIWebView */
 
+.scroller-head
+	z-index 1; box-shadow 0 1px 4px #333;
+	
 .head
 	height 100%;
-	background linear-gradient(top, headGr1, headGr2); borderTop 1px solid #E3E9ED; box-shadow 0 1px 3px #333;
+	background linear-gradient(top, headGr1, headGr2); borderTop 1px solid #E3E9ED;
 	.title
 		text-shadow 0 1px 0 headTxtSh; color:#fff; font-size 16px; padding 0 4px;
 		font-size 20px; text-align center; padding 8px 0 0 0; font-weight 600;
