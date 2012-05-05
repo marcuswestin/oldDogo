@@ -77,16 +77,16 @@ function renderApp() {
 	scroller = makeScroller(viewport)
 	app=div('app', viewport.fit,
 
-		scroller.renderHead(45, function(view, viewBelow, fromView) {
+		scroller.renderHead(45, function(headTag, view, viewBelow, fromView) {
 			var showBackButton = viewBelow && (scroller.stack.length > (scroller.hasConnectView ? 2 : 1))
-			return div('head',
+			headTag.append(div('head',
 				showBackButton && renderBackButton(viewBelow.title || 'Home'),
 				div('title', view.title || 'Dogo'),
 				(config.mode == "dev") && div('devBar',
 					div('button', 'R', button(function() { bridge.command('app.restart') })),
 					div('button', 'X', button(function() { state.clear(); bridge.command('app.restart') }))
 				)
-			)
+			))
 			function renderBackButton(title) {
 				return div('button back', title, button(function() {
 					scroller.pop()
@@ -94,15 +94,15 @@ function renderApp() {
 			}
 		}),
 
-		scroller.renderBody(3, function(view) {
+		scroller.renderBody(3, function(bodyTag, view) {
 			console.log("render view", JSON.stringify(view))
 			if (view.convo || view.contact) {
-				return conversation.render(view)
+				conversation.render(bodyTag, view)
 			} else if (state.get('authToken')) {
-				return home.render()
+				home.render(bodyTag, view)
 			} else {
 				scroller.hasConnectView = true
-				return connect.render(function(res) {
+				connect.render(bodyTag, function(res) {
 					contactsByAccountId = {}
 					contactsByFacebookId = {}
 					myAccount = res.account

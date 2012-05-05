@@ -1,7 +1,7 @@
 var bodies = {}
 
 module.exports = {
-	render:function() {
+	render:function(body) {
 		var section = function(className, label, content) {
 			return div('section clear',
 				div('header',
@@ -13,7 +13,7 @@ module.exports = {
 			)
 		}
 		
-		return div('list',
+		body.append(div('list',
 			sec=section('conversations', 'Conversations', div(function(tag) {
 				tag.append(div('loading', 'Loading...'))
 				api.get('conversations', function(err, res) {
@@ -37,7 +37,7 @@ module.exports = {
 					return div('contact', face.facebook(contact, true))
 				})
 			)
-		)
+		))
 	}
 }
 

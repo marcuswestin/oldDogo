@@ -20,8 +20,9 @@
 	.button.active
 		text-shadow none; box-shadow 0 0 0;
 
+buttonRadius = 10px;
 .button
-	padding 4px 8px 6px; border-radius 10px; background linear-gradient(top, color4, color5); border 3px solid #fff; color #fff; text-align center; display inline-block; cursor pointer;
+	padding 4px 8px 6px; border-radius buttonRadius; background linear-gradient(top, color4, color5); border 3px solid #fff; color #fff; text-align center; display inline-block; cursor pointer;
 .button.active
 	background linear-gradient(bottom, color4, color5);
 
@@ -60,11 +61,16 @@
 	.messageBubble
 		margin 4px 8px 0;
 	.composer
-		position absolute; bottom 0; margin 8px; width 300px;
-		.bodyInput
-			width 300px; margin 0 0 4px;
+		position absolute; bottom 0; width 310px; margin 0 0 8px 8px;
+		shadow = 0 1px 2px #444;
+		.body
+			bodyRadius = 6px;
+			display inline-block; box-shadow shadow; border-radius bodyRadius;
+			textarea
+				width 235px; border 0; border 2px solid color4; border-radius bodyRadius;
 		.send.button
-			width 284px;
+			position absolute; top 0; right 5px; box-shadow shadow;
+				
 
 .clear
 	clear both

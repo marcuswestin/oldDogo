@@ -4,13 +4,14 @@ var trim = require('std/trim'),
 var messageList 
 
 module.exports = {
-	render:function(view) {
+	render:function(body, view) {
 		var convo = view.convo || {}
 		var contact = view.contact || {}
 		var messagesTag
-		return div('conversation',
-			messagesTag=div('messagesWrapper', style({ height:viewport.height() - 80, overflow:'scroll' }),
-				div('messages', style({ paddingBottom:70 }),
+		
+		body.append(div('conversation',
+			messagesTag=div('messagesWrapper', style({ height:viewport.height() - 45, overflow:'scroll' }),
+				div('messages', style({ paddingBottom:44 }),
 					function(tag) {
 						messageList = tag
 						tag.append(div('loading', 'Getting messages...'))
@@ -25,13 +26,26 @@ module.exports = {
 					}
 				)
 			),
-			div('composer', function(composerTag) {
-				var $input=$(
-					composerTag.append(textarea('bodyInput', { placeholder:placeholder }))
+			div('composer', function(composer) {
+				var input
+				
+				composer.append(
+					div('body', input=textarea({ placeholder:placeholder }, button(function() {
+						$input.focus()
+					})))
 				)
-				$input.on('focus', function() { $(messagesTag).css({ paddingTop:215 }) })
-				$input.on('blur', function() { $(messagesTag).css({ paddingTop:0 }) })
-				composerTag.append(div('send', 'Send', button(function() {
+				
+				$input=$(input)
+					.on('focus', function() {
+						$(messagesTag)
+							.css({ paddingTop:215 })
+							.scrollTop(0)
+					})
+					.on('blur', function() {
+						$(messagesTag).css({ paddingTop:0 })
+					})
+				
+				composer.append(div('send button', 'Send', button(function() {
 					var body = trim($input.val())
 					$input.val('')
 					if (!body) { return }
@@ -47,7 +61,7 @@ module.exports = {
 					messageList.prepend(renderMessage(message))
 				})))
 			})
-		)
+		))
 	}
 }
 
