@@ -12,6 +12,7 @@ viewport = require('dom/viewport')
 each = require('std/each')
 list = require('dom/list')
 slice = require('std/slice')
+isTouch = require('dom/isTouch')
 
 error = function(err) {
 	alert("Oops! "+JSON.stringify(err))
@@ -126,7 +127,8 @@ function renderApp() {
 	).appendTo(document.body)
 }
 
-if (navigator.userAgent.match('Chrome')) {
+if (!isTouch) {
+	// Browser for debugging
 	bridge.command = function(command, data, callback) {
 		if (!callback) {
 			callback = data
