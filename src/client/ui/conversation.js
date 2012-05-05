@@ -5,12 +5,11 @@ var messageList
 
 module.exports = {
 	render:function(view) {
-		var textInput
 		var convo = view.convo || {}
 		var contact = view.contact || {}
-		console.log("HERE", contact)
+		var messagesTag
 		return div('conversation',
-			div('messagesWrapper', style({ height:viewport.height() - 80, overflow:'scroll' }),
+			messagesTag=div('messagesWrapper', style({ height:viewport.height() - 80, overflow:'scroll' }),
 				div('messages', style({ paddingBottom:70 }),
 					function(tag) {
 						messageList = tag
@@ -26,11 +25,15 @@ module.exports = {
 					}
 				)
 			),
-			div('composer',
-				textInput=textarea('bodyInput', { placeholder:placeholder }),
-				div('send', 'Send', button(function() {
-					var body = trim($(textInput).val())
-					$(textInput).val('')
+			div('composer', function(composerTag) {
+				var $input=$(
+					composerTag.append(textarea('bodyInput', { placeholder:placeholder }))
+				)
+				$input.on('focus', function() { $(messagesTag).css({ paddingTop:215 }) })
+				$input.on('blur', function() { $(messagesTag).css({ paddingTop:0 }) })
+				composerTag.append(div('send', 'Send', button(function() {
+					var body = trim($input.val())
+					$input.val('')
 					if (!body) { return }
 					var message = {
 						toAccountId:convo.withAccountId,
@@ -42,8 +45,8 @@ module.exports = {
 						if (err) { return error(err) }
 					})
 					messageList.prepend(renderMessage(message))
-				}))
-			)
+				})))
+			})
 		)
 	}
 }
