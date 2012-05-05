@@ -2,10 +2,10 @@ var bodies = {}
 
 module.exports = {
 	render:function(body) {
-		var section = function(className, label, content) {
+		var section = function(className, headerLabel, content) {
 			return div('section clear',
-				div('header',
-					div('label', label)
+				headerLabel && div('header',
+					div('label', headerLabel)
 				),
 				div('section '+className,
 					content
@@ -14,7 +14,7 @@ module.exports = {
 		}
 		
 		body.append(div('home',
-			sec=section('conversations', 'Conversations', div(function(tag) {
+			sec=section('conversations', null, div(function(tag) {
 				tag.append(div('loading', 'Loading...'))
 				api.get('conversations', function(err, res) {
 					if (err) { return error(err) }

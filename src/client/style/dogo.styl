@@ -1,5 +1,19 @@
 @import "./normalize"
-@import "./colors"
+
+gradientLight = #D6DDE2
+gradientDark = #B0BAC2
+
+// http://www.colourlovers.com/palette/92095/Giant_Goldfish
+color1 = #71D1EA
+color2 = #AADBD8
+color3 = #E0E4C9
+color4 = #EF8805
+color5 = #F56B00
+
+headGr1 = color4
+headGr2 = color5
+textShadow = 0 1px 0 #888;
+buttonShadow = 0 1px 2px #444;
 
 .app
 	background linear-gradient(top, color2, #fff); height 100%;
@@ -13,24 +27,29 @@
 	height 100%;
 	background linear-gradient(top, headGr1, headGr2); borderTop 1px solid #E3E9ED;
 	.title
-		text-shadow 0 1px 0 headTxtSh; color:#fff; font-size 16px; padding 0 4px;
+		text-shadow textShadow; color:#fff; font-size 16px; padding 0 4px;
 		font-size 20px; text-align center; padding 8px 0 0 0; font-weight 600;
 	.back
 		position absolute; top 5px; left 4px; border-width 2px;
+	.devBar
+		absolute top right;
+		.button
+			margin 2px;
+	
 
 .connect
 	text-align center; width 100%;
 	.button
-		font-weight bold; font-size 22px; text-shadow 0 1px 0 #999; width 120px; margin 160px auto; padding 6px 8px 8px; box-shadow 0 1px 0 #999;
+		font-weight bold; font-size 22px; text-shadow textShadow; width 120px; margin 160px auto; padding 6px 8px 8px;
 	.button.active
-		text-shadow none; box-shadow 0 0 0;
+		text-shadow none;
 
 .home
 	.section
 		.header
 			height 40px; background color4; color #fff; // gradient(color4, color5); 
 			.label
-				padding 9px;
+				padding 9px; text-shadow textShadow;
 	.conversations
 		.select-arrow
 			float right; margin 15px 8px 0 0;
@@ -44,9 +63,10 @@
 
 buttonRadius = 10px;
 .button
-	padding 4px 8px 6px; border-radius buttonRadius; background linear-gradient(top, color4, color5); border 3px solid #fff; color #fff; text-align center; display inline-block; cursor pointer;
+	padding 4px 8px 6px; border-radius buttonRadius; background linear-gradient(top, color4, color5); border 3px solid #fff;
+	color #fff; text-align center; display inline-block; cursor pointer; box-shadow buttonShadow;
 .button.active
-	background linear-gradient(bottom, color4, color5);
+	background linear-gradient(bottom, color4, color5); box-shadow 0 0 0;
 
 
 .face
@@ -72,16 +92,15 @@ buttonRadius = 10px;
 		margin 4px 8px 0;
 	.composer
 		position absolute; bottom 0; width 310px; margin 0 0 8px 8px;
-		shadow = 0 1px 2px #444;
 		.body
 			bodyRadius = 6px; bodyWidth = 235px;
-			display inline-block; box-shadow shadow; border-radius bodyRadius; width bodyWidth;
+			display inline-block; box-shadow buttonShadow; border-radius bodyRadius; width bodyWidth;
 			.focusOverlay
 				absolute top 0; width bodyWidth+6px; height 100%;
 			textarea
 				width bodyWidth; border 0; border 2px solid color4; border-radius bodyRadius;
 		.send.button
-			position absolute; top 0; right 5px; box-shadow shadow;
+			position absolute; top 0; right 5px;
 
 .select-arrow
 	width 20px; height 20px; background color1; border-radius 10px;
@@ -90,8 +109,5 @@ buttonRadius = 10px;
 	clear both
 
 .ghostTown
-	text-align center; color #fff; text-shadow 0 1px 0 headTxtSh; margin 10px 0;
-
-.devBar
-	absolute top right;
+	text-align center; color #fff; text-shadow textShadow; margin 10px 0;
 
