@@ -11,6 +11,7 @@ bind = require('std/bind')
 viewport = require('dom/viewport')
 each = require('std/each')
 list = require('dom/list')
+slice = require('std/slice')
 
 error = function(err) {
 	alert("Oops! "+JSON.stringify(err))
@@ -194,4 +195,7 @@ if (navigator.userAgent.match('Chrome')) {
 	var $win = $(window)
 } else {
 	window.onerror = function(e) { alert('err ' + e)}
+	console.log = function() {
+		bridge.command('console.log', slice(arguments))
+	}
 }
