@@ -25,27 +25,32 @@
 	.button.active
 		text-shadow none; box-shadow 0 0 0;
 
+.home
+	.section
+		.header
+			height 40px; background color4; color #fff; // gradient(color4, color5); 
+			.label
+				padding 9px;
+	.conversations
+		.select-arrow
+			float right; margin 15px 8px 0 0;
+	.friends
+		padding 1px 0 0 2px;
+		.face
+			float left; margin 2px 2px 1px 1px;
+		.member-ribbon
+			width 16px; height 16px; background url("http://icons.iconarchive.com/icons/famfamfam/silk/16/award-star-gold-3-icon.png"); float right; margin 2px 0;
+	
+
 buttonRadius = 10px;
 .button
 	padding 4px 8px 6px; border-radius buttonRadius; background linear-gradient(top, color4, color5); border 3px solid #fff; color #fff; text-align center; display inline-block; cursor pointer;
 .button.active
 	background linear-gradient(bottom, color4, color5);
 
-.section
-	.header
-		height 40px; background color4; color #fff; // gradient(color4, color5); 
-		.label
-			padding 9px;
 
 .face
 	width 50px; height 50px;
-
-.friends
-	padding 1px 0 0 2px;
-	.face
-		float left; margin 2px 2px 1px 1px;
-	.member-ribbon
-		width 16px; height 16px; background url("http://icons.iconarchive.com/icons/famfamfam/silk/16/award-star-gold-3-icon.png"); float right; margin 2px 0;
 
 .loading
 	color #666; text-align center; margin 10px auto; font-style italic;
@@ -69,14 +74,18 @@ buttonRadius = 10px;
 		position absolute; bottom 0; width 310px; margin 0 0 8px 8px;
 		shadow = 0 1px 2px #444;
 		.body
-			bodyRadius = 6px;
-			display inline-block; box-shadow shadow; border-radius bodyRadius;
+			bodyRadius = 6px; bodyWidth = 235px;
+			display inline-block; box-shadow shadow; border-radius bodyRadius; width bodyWidth;
+			.focusOverlay
+				absolute top 0; width bodyWidth+6px; height 100%;
 			textarea
-				width 235px; border 0; border 2px solid color4; border-radius bodyRadius;
+				width bodyWidth; border 0; border 2px solid color4; border-radius bodyRadius;
 		.send.button
 			position absolute; top 0; right 5px; box-shadow shadow;
-				
 
+.select-arrow
+	width 20px; height 20px; background color1; border-radius 10px;
+				
 .clear
 	clear both
 
@@ -85,3 +94,4 @@ buttonRadius = 10px;
 
 .devBar
 	absolute top right;
+

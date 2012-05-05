@@ -30,9 +30,11 @@ module.exports = {
 				var input
 				
 				composer.append(
-					div('body', input=textarea({ placeholder:placeholder }, button(function() {
-						$input.focus()
-					})))
+					div('body',
+						input=textarea({ placeholder:placeholder }, button(function() {
+							$input.focus()
+						}))
+					)
 				)
 				
 				$input=$(input)

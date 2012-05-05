@@ -13,7 +13,7 @@ module.exports = {
 			)
 		}
 		
-		body.append(div('list',
+		body.append(div('home',
 			sec=section('conversations', 'Conversations', div(function(tag) {
 				tag.append(div('loading', 'Loading...'))
 				api.get('conversations', function(err, res) {
@@ -23,6 +23,7 @@ module.exports = {
 						var fromMe = (convo.withAccountId != convo.lastMessageFromId)
 						var fromAccount = fromMe ? myAccount : withAccount
 						return div('clear messageBubble ',// + (fromMe ? 'fromMe' : ''),
+							div('select-arrow'),
 							face.facebook(withAccount),
 							div('name', withAccount.name),
 							bodies[withAccount.accountId]=div('body', convo.lastMessageBody)
