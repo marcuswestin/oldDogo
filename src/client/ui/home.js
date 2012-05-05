@@ -19,11 +19,13 @@ module.exports = {
 				api.get('conversations', function(err, res) {
 					if (err) { return error(err) }
 					tag.empty().append(list(res.conversations, selectConvo, function(convo) {
+						var withAccount = contactsByAccountId[convo.withAccountId]
 						var fromMe = (convo.withAccountId != convo.lastMessageFromId)
-						var account = fromMe ? myAccount : contactsByAccountId[convo.withAccountId]
-						return div('clear messageBubble ' + (fromMe ? 'fromMe' : ''),
-							face.facebook(account),
-							bodies[account.accountId]=div('body', convo.lastMessageBody)
+						var fromAccount = fromMe ? myAccount : withAccount
+						return div('clear messageBubble ',// + (fromMe ? 'fromMe' : ''),
+							face.facebook(withAccount),
+							div('name', withAccount.name),
+							bodies[withAccount.accountId]=div('body', convo.lastMessageBody)
 						)
 					}))
 					if (res.conversations.length == 0) {
