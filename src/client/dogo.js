@@ -144,7 +144,7 @@ if (navigator.userAgent.match('Chrome')) {
 	}
 	
 	$(function() {
-		bridge.eventHandler('app.start', {})
+		bridge.eventHandler('app.start', { mode:'dev' })
 		$('.app').css({ margin:'0 auto' })
 		$('body').css({ background:'#222' })
 	})
