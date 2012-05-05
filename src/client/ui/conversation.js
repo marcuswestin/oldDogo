@@ -38,11 +38,18 @@ module.exports = {
 				$input=$(input)
 					.on('focus', function() {
 						$(messagesTag)
-							.css({ paddingTop:215 })
-							.scrollTop(0)
+							.css({ marginTop:215 })
+							.scrollTop(1)
+							.on('scroll', function() {
+								if ($(messagesTag).scrollTop() == 0) {
+									$(messagesTag).scrollTop(1)
+								}
+							})
 					})
 					.on('blur', function() {
-						$(messagesTag).css({ paddingTop:0 })
+						$(messagesTag)
+							.css({ marginTop:0 })
+							.off('scroll')
 					})
 				
 				composer.append(div('send button', 'Send', button(function() {
