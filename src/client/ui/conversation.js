@@ -22,7 +22,7 @@ module.exports = {
 						}
 						api.get('messages', params, function(err, res) {
 							if (err) { return error(err) }
-							withAccount(convo.withAccountId, function(withAccount) {
+							loadAccount(convo.withAccountId, function(withAccount) {
 								tag.empty().append(map(res.messages, curry(renderMessage, withAccount)))
 							})
 						})
@@ -70,9 +70,7 @@ module.exports = {
 					api.post('messages', message, function(err, res) {
 						if (err) { return error(err) }
 					})
-					withAccount(convo.withAccountId, function(withAccount) {
-						messageList.prepend(renderMessage(withAccount, message))
-					})
+					messageList.prepend(renderMessage(message))
 				})))
 			})
 		))
@@ -91,7 +89,9 @@ function renderMessage(withAccount, message) {
 $(function() {
 	onMessage(function(message) {
 		if (messageList) {
-			messageList.prepend(renderMessage(message))
+			loadAccount(message.senderAccountId, function(account) {
+				messageList.prepend(renderMessage(account, message))
+			})
 		}
 	})
 })

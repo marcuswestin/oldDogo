@@ -61,27 +61,27 @@ updateContacts = function(contacts) {
 
 accountKnown = function(accountId) { return !!contactsByAccountId[accountId] }
 
-withAccount = function(accountId, callback) {
+loadAccount = function(accountId, callback) {
 	if (contactsByAccountId[accountId]) {
 		callback(contactsByAccountId[accountId])
 	} else {
-		if (withAccount.queue[accountId]) {
-			withAccount.queue[accountId].push(callback)
+		if (loadAccount.queue[accountId]) {
+			loadAccount.queue[accountId].push(callback)
 		} else {
-			withAccount.queue[accountId] = [callback]
+			loadAccount.queue[accountId] = [callback]
 			api.get('account_info', { accountId:accountId }, function(err, res) {
 				if (err) { return error(err) }
 				contactsByAccountId[accountId] = res.account
 				state.set('contactsByAccountId', contactsByAccountId)
-				each(withAccount.queue[accountId], function(callback) {
+				each(loadAccount.queue[accountId], function(callback) {
 					callback(res.account)
 				})
-				delete withAccount.queue[accountId]
+				delete loadAccount.queue[accountId]
 			})
 		}
 	}
 }
-withAccount.queue = {}
+loadAccount.queue = {}
 
 onMessage = function(handler) { onMessage.handlers.push(handler) }
 onMessage.handlers = []
@@ -105,6 +105,7 @@ bridge.eventHandler = function(name, info) {
 			each(onMessage.handlers, function(handler) {
 				handler({ senderAccountId:data.senderAccountId, body:data.aps.alert })
 			})
+			bridge.command('device.vibrate')
 			break
 		default:
 			alert('Got unknown event ' + JSON.stringify(event))

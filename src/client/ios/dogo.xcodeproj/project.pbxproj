@@ -15,6 +15,7 @@
 		2CA99251154FCAA900CF92FC /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CA9924D154FCAA900CF92FC /* Default@2x.png */; };
 		2CA99252154FCAA900CF92FC /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CA9924E154FCAA900CF92FC /* logo.png */; };
 		2CA99253154FCAA900CF92FC /* logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CA9924F154FCAA900CF92FC /* logo@2x.png */; };
+		2CAE30591556262500742518 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CAE30581556262500742518 /* AudioToolbox.framework */; };
 		2CD1A02E153FB6B0008949F2 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD1A02D153FB6B0008949F2 /* UIKit.framework */; };
 		2CD1A030153FB6B0008949F2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD1A02F153FB6B0008949F2 /* Foundation.framework */; };
 		2CD1A032153FB6B0008949F2 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD1A031153FB6B0008949F2 /* CoreGraphics.framework */; };
@@ -51,6 +52,7 @@
 		2CA9924D154FCAA900CF92FC /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "images/Default@2x.png"; sourceTree = "<group>"; };
 		2CA9924E154FCAA900CF92FC /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = logo.png; path = images/logo.png; sourceTree = "<group>"; };
 		2CA9924F154FCAA900CF92FC /* logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "logo@2x.png"; path = "images/logo@2x.png"; sourceTree = "<group>"; };
+		2CAE30581556262500742518 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		2CD1A029153FB6B0008949F2 /* dogo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dogo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CD1A02D153FB6B0008949F2 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		2CD1A02F153FB6B0008949F2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -115,6 +117,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2CAE30591556262500742518 /* AudioToolbox.framework in Frameworks */,
 				2CD1A02E153FB6B0008949F2 /* UIKit.framework in Frameworks */,
 				2CD1A030153FB6B0008949F2 /* Foundation.framework in Frameworks */,
 				2CD1A032153FB6B0008949F2 /* CoreGraphics.framework in Frameworks */,
@@ -151,6 +154,7 @@
 		2CD1A01E153FB6B0008949F2 = {
 			isa = PBXGroup;
 			children = (
+				2CAE30581556262500742518 /* AudioToolbox.framework */,
 				2CD1A033153FB6B0008949F2 /* dogo */,
 				2CD1A02C153FB6B0008949F2 /* Frameworks */,
 				2CD1A02A153FB6B0008949F2 /* Products */,
