@@ -49,6 +49,7 @@ module.exports = proto(null,
 			router.post('/api/messages', filter.session.bind(this), rest.postMessage.bind(this))
 			router.get('/api/messages', filter.session.bind(this), rest.getConversationMessages.bind(this))
 			router.post('/api/push_auth', filter.session.bind(this), rest.postPushAuth.bind(this))
+			router.get('/api/account_info', filter.session.bind(this), rest.getAccountInfo.bind(this))
 		},
 		redirect:function(path) {
 			return function(req, res) { res.redirect(path) }
@@ -72,7 +73,8 @@ module.exports = proto(null,
 			},
 			postSessions: function(req, res) {
 				var params = this._getParams(req, 'facebookAccessToken')
-				this.sessionService.createSessionWithFacebookAccessToken(params.facebookAccessToken, bind(this, this.respond, req, res))
+				this.sessionService.createSessionWithFacebookAccessToken(params.facebookAccessToken,
+					bind(this, this.respond, req, res))
 			},
 			refreshSession: function(req, res) {
 				var params = this._getParams(req, 'authToken')
@@ -80,7 +82,7 @@ module.exports = proto(null,
 			},
 			getConversations: function(req, res) {
 				var params = this._getParams(req)
-				this.messageService.listConversations(req.session.accountId, bind(this, this.respond, req, res))
+				this.messageService.listConversations(req.session.accountId, this.wrapRespond(req, res, 'conversations'))
 			},
 			getContacts: function(req, res) {
 				var params = this._getParams(req)
@@ -89,15 +91,23 @@ module.exports = proto(null,
 			postMessage: function(req, res) {
 				var params = this._getParams(req, 'toFacebookId', 'toAccountId', 'body', 'devPush')
 				var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
-				this.messageService.sendMessage(req.session.accountId, params.toFacebookId, params.toAccountId, params.body, prodPush, bind(this, this.respond, req, res))
+				this.messageService.sendMessage(req.session.accountId,
+					params.toFacebookId, params.toAccountId, params.body, prodPush,
+					bind(this, this.respond, req, res))
 			},
 			getConversationMessages: function(req, res) {
 				var params = this._getParams(req, 'withFacebookId', 'withAccountId')
-				this.messageService.getMessages(req.session.accountId, params.withFacebookId, params.withAccountId, bind(this, this.respond, req, res))
+				this.messageService.getMessages(req.session.accountId, params.withFacebookId, params.withAccountId,
+					this.wrapRespond(req, res, 'messages'))
 			},
 			postPushAuth: function(req, res) {
 				var params = this._getParams(req, 'pushToken', 'pushSystem')
-				this.accountService.setPushAuth(req.session.accountId, params.pushToken, params.pushSystem, bind(this, this.respond, req, res))
+				this.accountService.setPushAuth(req.session.accountId, params.pushToken, params.pushSystem,
+					bind(this, this.respond, req, res))
+			},
+			getAccountInfo: function(req, res) {
+				var params = this._getParams(req, 'accountId')
+				this.accountService.getAccount(params.accountId, this.wrapRespond(req, res, 'account'))
 			}
 		},
 		misc: {
@@ -163,9 +173,7 @@ module.exports = proto(null,
 			var nib = require('nib'),
 				jsCompiler = require('require/server'),
 				stylus = require('stylus'),
-				socketIo = require('socket.io'),
-				time = require('std/time'),
-				watch = require('watch')
+				time = require('std/time')
 			
 			app.get('/app.html', function(req, res) {
 				res.sendfile('src/client/dogo.html')
@@ -184,10 +192,6 @@ module.exports = proto(null,
 					res.end(content.toString())
 				})
 			}
-			
-			app.get('/dev-client.html', function(req, res) {
-				sendFile(res, 'src/client/dev-client.html')
-			})
 			
 			app.get('/stylus/*', function(req, res) {
 				var filename = req.path.replace('/stylus/', '')
@@ -224,6 +228,13 @@ module.exports = proto(null,
 				}
 			})
 			
+			
+			// Auto-reload dev client stuff
+			return;
+			app.get('/dev-client.html', function(req, res) {
+				sendFile(res, 'src/client/dev-client.html')
+			})
+			
 			var serverIo = socketIo.listen(app)
 			serverIo.set('log level', 0)
 			
@@ -233,7 +244,6 @@ module.exports = proto(null,
 					socket.emit('change', { error:err, html:html.toString() })
 				})
 			})
-			
 			
 			var lastChange = time.now()
 			var onChange = function(event, changedFilename) {
@@ -245,6 +255,8 @@ module.exports = proto(null,
 				})
 			}
 			
+			var socketIo = require('socket.io'),
+			watch = require('watch')
 			var watchedFiles = {}
 			var walkFiles = function() {
 				walk('src/client', function(err, files) {

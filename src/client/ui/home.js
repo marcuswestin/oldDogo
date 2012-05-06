@@ -19,15 +19,23 @@ module.exports = {
 				api.get('conversations', function(err, res) {
 					if (err) { return error(err) }
 					tag.empty().append(list(res.conversations, selectConvo, function(convo) {
-						var withAccount = contactsByAccountId[convo.withAccountId]
-						var fromMe = (convo.withAccountId != convo.lastMessageFromId)
-						var fromAccount = fromMe ? myAccount : withAccount
-						return div('clear messageBubble ',// + (fromMe ? 'fromMe' : ''),
-							div('select-arrow'),
-							face.facebook(withAccount),
-							div('name', withAccount.name),
-							bodies[withAccount.accountId]=div('body', convo.lastMessageBody)
-						)
+						return div('clear messageBubble', function(bubble) {
+							if (!accountKnown(convo.withAccountId)) {
+								bubble.append(div('loading', 'Loading...'))
+							}
+							withAccount(convo.withAccountId, function(withAccount) {
+								console.log(convo)
+								bubble.empty().append(
+									div('unread-indicator'),
+									face.facebook(withAccount),
+									div('name', withAccount.name),
+									bodies[withAccount.accountId]=div('body', convo.lastReceivedBody
+										? convo.lastReceivedBody
+										: div('youStarted', "You started the conversation.")
+									)
+								)
+							})
+						})	
 					}))
 					if (res.conversations.length == 0) {
 						tag.append(div('ghostTown', "Start a conversation with a friend below"))

@@ -46,6 +46,18 @@ contactsByAccountId = state.get('contactsByAccountId')
 contactsByFacebookId = state.get('contactsByFacebookId')
 myAccount = state.get('myAccount')
 
+accountKnown = function(accountId) { return !!contactsByAccountId[accountId] }
+withAccount = function(accountId, callback) {
+	if (contactsByAccountId[accountId]) {
+		callback(contactsByAccountId[accountId])
+	} else {
+		api.get('account_info', { accountId:accountId }, function(err, res) {
+			if (err) { return error(err) }
+			callback(res.account)
+		})
+	}
+}
+
 onMessage = function(handler) { onMessage.handlers.push(handler) }
 onMessage.handlers = []
 

@@ -15,7 +15,7 @@ module.exports = proto(null,
 						acc2 = convo.account2Id
 					convo.withAccountId = (acc1 == accountId ? acc2 : acc1)
 				}
-				callback(null, { conversations:conversations })
+				callback(null, conversations)
 			})
 		},
 		sendMessage: function(accountId, toFacebookAccountId, toAccountId, body, prodPush, callback) {
@@ -24,7 +24,7 @@ module.exports = proto(null,
 			this._withContactAccountId(accountId, toFacebookAccountId, toAccountId, function(err, toAccountId) {
 				if (err) { return callback(err) }
 				this.withConversationId(accountId, toAccountId, bind(this, function(err, conversationId) {
-					this._createMessage(accountId, conversationId, body, bind(this, function(err, message) {
+					this._createMessage(accountId, toAccountId, conversationId, body, bind(this, function(err, message) {
 						if (err) { return callback(err) }
 						this.pushService.sendMessage(message, toAccountId, prodPush)
 						callback(null, { message:message })
@@ -35,11 +35,12 @@ module.exports = proto(null,
 		getMessages: function(accountId, withFacebookId, withAccountId, callback) {
 			this._withContactAccountId(accountId, withFacebookId, withAccountId, function(err, withAccountId) {
 				if (err) { return callback(err) }
-				this.withConversationId(accountId, withAccountId, bind(this, function(err, conversationId) {
+				this.getConversation(accountId, withAccountId, bind(this, function(err, conversation) {
 					if (err) { return callback(err) }
-					this._selectMessages(this.db, conversationId, bind(this, function(err, messages) {
+					if (!conversation) { return callback(null, []) }
+					this._selectMessages(this.db, conversation.id, bind(this, function(err, messages) {
 						if (err) { return callback(err) }
-						callback(null, { messages:messages })
+						callback(null, messages)
 					}))
 				}))
 			})
@@ -51,14 +52,20 @@ module.exports = proto(null,
 				this.accountService.withFacebookContactId(accountId, contactFacebookId, bind(this, callback))
 			}
 		},
-		withConversationId: function(account1Id, account2Id, callback) {
+		getConversation: function(account1Id, account2Id, callback) {
 			try { var ids = this._orderConvoIds(account1Id, account2Id) }
 			catch (err) { return callback(err) }
-			this._selectConversation(this.db, ids.account1Id, ids.account2Id, function(err, conversation) {
+			this._selectConversation(this.db, ids.account1Id, ids.account2Id, callback)
+		},
+		withConversationId: function(account1Id, account2Id, callback) {
+			this.getConversation(account1Id, account2Id, bind(this, function(err, conversation) {
 				if (err) { return callback(err) }
-				if (conversation) { return callback(null, conversation.id) }
-				this._createConversationId(account1Id, account2Id, callback)
-			})
+				if (conversation) {
+					callback(null, conversation.id)
+				} else {
+					this._createConversationId(account1Id, account2Id, callback)
+				}
+			}))
 		},
 		_createConversationId: function(account1Id, account2Id, callback) {
 			try { var ids = this._orderConvoIds(account1Id, account2Id) }
@@ -77,14 +84,18 @@ module.exports = proto(null,
 				})
 			})
 		},
-		_createMessage: function(accountId, conversationId, body, callback) {
+		_createMessage: function(accountId, toAccountId, conversationId, body, callback) {
 			this.db.transact(this, function(tx) {
 				callback = txCallback(tx, callback)
 				this._insertMessage(tx, accountId, conversationId, body, function(err, messageId) {
-					if (err) { return callback(err) }
+					if (err) { return logError(err, callback, '_createMessage._insertMessage') }
 					this._updateConversationLastMessage(tx, conversationId, messageId, function(err) {
-						if (err) { return callback(err) }
-						this._selectMessage(tx, messageId, callback)
+						if (err) { return logErr(err, callback, '_createMessage._updateConversationLastMessage') }
+						this._updateParticipationLastReceivedMessage(tx, toAccountId, conversationId, messageId, function(err) {
+							if (err) { return logErr(err, callback, '_createMessage._updateParticipationLastReceivedMessage', toAccountId, conversationId, messageId) }
+							if (err) { return callback(err) }
+							this._selectMessage(tx, messageId, callback)
+						})
 					})
 				})
 			})
@@ -127,6 +138,11 @@ module.exports = proto(null,
 		_updateConversationLastMessage: function(conn, convoId, messageId, callback) {
 			conn.updateOne(this, 'UPDATE conversation SET last_message_id=? WHERE id=?', [messageId, convoId], callback)
 		},
+		_updateParticipationLastReceivedMessage: function(conn, toAccountId, conversationId, messageId, callback) {
+			conn.updateOne(this,
+				'UPDATE conversation_participation SET last_received_message_id=? WHERE conversation_id=? AND account_id=?',
+				[messageId, conversationId, toAccountId], callback)
+		},
 		sql: {
 
 			selectMessage:sql.selectFrom('message', {
@@ -149,12 +165,17 @@ module.exports = proto(null,
 				account1Id: 'convo.account_1_id',
 				account2Id: 'convo.account_2_id',
 				conversationId: 'partic.conversation_id',
+				lastReceivedBody: 'last_received.body',
+				lastReceivedTime: 'last_received.sent_time',
+				// TODO Remove lastMessage*
 				lastMessageBody: 'last_message.body',
 				lastMessageTime: 'last_message.sent_time',
 				lastMessageFromId: 'last_message.sender_account_id'
 			})
 			+ 'INNER JOIN conversation convo ON partic.conversation_id=convo.id\n'
-			+ 'INNER JOIN message last_message ON convo.last_message_id=last_message.id\n'
+			+ 'LEFT OUTER JOIN message last_message ON convo.last_message_id=last_message.id\n'
+			+ 'LEFT OUTER JOIN message last_received ON partic.last_received_message_id=last_received.id\n'
+			// TODO remove last_message join
 		}
 	}
 )
