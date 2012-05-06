@@ -14,7 +14,7 @@ getId = function(model) {
 
 logErr = function(err, callback /* , args ... */) {
 	var args = slice(arguments, 2)
-	console.error('Error:', err.stack || err.message || err, args)
+	console.error('Error:', args, err.stack || err.message || err)
 	if (typeof callback == 'function') {
 		callback(err, null)
 	} else {

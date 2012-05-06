@@ -24,7 +24,6 @@ module.exports = {
 								bubble.append(div('loading', 'Loading...'))
 							}
 							withAccount(convo.withAccountId, function(withAccount) {
-								console.log(convo)
 								bubble.empty().append(
 									div('unread-indicator'),
 									face.facebook(withAccount),
@@ -53,8 +52,8 @@ module.exports = {
 }
 
 function selectConvo(convo) {
-	var contact = contactsByAccountId[convo.withAccountId]
-	scroller.push({ convo:convo, title:contact.name })
+	var account = contactsByAccountId[convo.withAccountId]
+	scroller.push({ convo:convo, title:account ? account.name : 'Friend' })
 }
 
 function selectContact(contact) {

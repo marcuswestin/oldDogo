@@ -13,6 +13,7 @@ each = require('std/each')
 list = require('dom/list')
 slice = require('std/slice')
 isTouch = require('dom/isTouch')
+curry = require('std/curry')
 
 error = function(err) {
 	alert("Oops! "+JSON.stringify(err))
@@ -45,6 +46,18 @@ state = {
 contactsByAccountId = state.get('contactsByAccountId')
 contactsByFacebookId = state.get('contactsByFacebookId')
 myAccount = state.get('myAccount')
+updateContacts = function(contacts) {
+	contactsByAccountId = {}
+	contactsByFacebookId = {}
+	each(contacts, function(contact) {
+		if (contact.accountId) {
+			contactsByAccountId[contact.accountId] = contact
+		}
+		contactsByFacebookId[contact.facebookId] = contact
+	})
+	state.set('contactsByAccountId', contactsByAccountId)
+	state.set('contactsByFacebookId', contactsByFacebookId)
+}
 
 accountKnown = function(accountId) { return !!contactsByAccountId[accountId] }
 withAccount = function(accountId, callback) {
@@ -53,6 +66,8 @@ withAccount = function(accountId, callback) {
 	} else {
 		api.get('account_info', { accountId:accountId }, function(err, res) {
 			if (err) { return error(err) }
+			contactsByAccountId[accountId] = res.account
+			state.set('contactsByAccountId', contactsByAccountId[accountId])
 			callback(res.account)
 		})
 	}
@@ -117,17 +132,8 @@ function renderApp() {
 			} else {
 				scroller.hasConnectView = true
 				connect.render(bodyTag, function(res) {
-					contactsByAccountId = {}
-					contactsByFacebookId = {}
 					myAccount = res.account
-					each(res.contacts, function(contact) {
-						if (contact.accountId) {
-							contactsByAccountId[contact.accountId] = contact
-						}
-						contactsByFacebookId[contact.facebookId] = contact
-					})
-					state.set('contactsByAccountId', contactsByAccountId)
-					state.set('contactsByFacebookId', contactsByFacebookId)
+					updateContacts(res.contacts)
 					state.set('myAccount', myAccount)
 					state.set('authToken', res.authToken)
 					scroller.push({ account:res.account, title:'Dogo' })

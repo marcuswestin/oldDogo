@@ -21,7 +21,9 @@ module.exports = {
 						}
 						api.get('messages', params, function(err, res) {
 							if (err) { return error(err) }
-							tag.empty().append(map(res.messages, renderMessage))
+							withAccount(convo.withAccountId, function(withAccount) {
+								tag.empty().append(map(res.messages, curry(renderMessage, withAccount)))
+							})
 						})
 					}
 				)
@@ -74,9 +76,9 @@ module.exports = {
 	}
 }
 
-function renderMessage(message) {
+function renderMessage(withAccount, message) {
 	var fromMe = (message.senderAccountId == myAccount.accountId)
-	var account = fromMe ? myAccount : contactsByAccountId[message.senderAccountId]
+	var account = fromMe ? myAccount : withAccount
 	return div('clear messageBubble ' + (fromMe ? 'fromMe' : ''),
 		face.facebook(account),
 		div('body', message.body)

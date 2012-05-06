@@ -34,12 +34,12 @@ module.exports = proto(null,
 		},
 		getMessages: function(accountId, withFacebookId, withAccountId, callback) {
 			this._withContactAccountId(accountId, withFacebookId, withAccountId, function(err, withAccountId) {
-				if (err) { return callback(err) }
+				if (err) { return logErr(err, callback, 'getMessages._withContactAccountId', accountId, withFacebookId, withAccountId) }
 				this.getConversation(accountId, withAccountId, bind(this, function(err, conversation) {
-					if (err) { return callback(err) }
+					if (err) { return logErr(err, callback, 'getMessages.getConversation', accountId, withAccountId) }
 					if (!conversation) { return callback(null, []) }
 					this._selectMessages(this.db, conversation.id, bind(this, function(err, messages) {
-						if (err) { return callback(err) }
+						if (err) { return logErr(err, callback, 'getMessages._selectMessages', conversation.id) }
 						callback(null, messages)
 					}))
 				}))
@@ -130,7 +130,9 @@ module.exports = proto(null,
 			conn.select(this, this.sql.selectMessage+' WHERE conversation_id=? ORDER BY id DESC', [convoId], callback)
 		},
 		_selectParticipations: function(conn, accountId, callback) {
-			conn.select(this, this.sql.selectParticipation+'WHERE partic.account_id=? ORDER BY last_message_id DESC', [accountId], callback)
+			conn.select(this, this.sql.selectParticipation
+				+ 'WHERE partic.account_id=?\n'
+				+ 'ORDER BY last_received.sent_time DESC, convo.created_time DESC', [accountId], callback)
 		},
 		_selectConversation: function(conn, account1Id, account2Id, callback) {
 			conn.selectOne(this, 'SELECT * FROM conversation WHERE account_1_id=? AND account_2_id=?', [account1Id, account2Id], callback)
