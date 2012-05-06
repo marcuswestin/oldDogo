@@ -19,27 +19,9 @@ module.exports = {
 				api.get('conversations', function(err, res) {
 					if (err) { return error(err) }
 					tag.empty().append(list(res.conversations, selectConvo, function(convo) {
-						
-						return bubbles[convo.withAccountId]=div('clear messageBubble', function(bubble) {
-							if (!accountKnown(convo.withAccountId)) {
-								bubble.append(div('loading', 'Loading...'))
-							}
-							loadAccount(convo.withAccountId, function(withAccount) {
-								bubble.empty().append(
-									div('unreadDot'),
-									face.facebook(withAccount),
-									div('name', withAccount.name),
-									div('body', convo.lastReceivedBody
-										? convo.lastReceivedBody
-										: div('youStarted', "You started the conversation.")
-									)
-								)
-								
-								var hasUnread = (!convo.lastReadMessageId && convo.lastReceivedMessageId)
-									|| (convo.lastReadMessageId < convo.lastReceivedMessageId) 
-								if (hasUnread) { $(bubble).addClass('hasUnread') }
-							})
-						})	
+						var hasUnread = (!convo.lastReadMessageId && convo.lastReceivedMessageId)
+							|| (convo.lastReadMessageId < convo.lastReceivedMessageId) 
+						return renderBubble(convo.withAccountId, convo.lastReceivedBody, hasUnread)
 					}))
 					if (res.conversations.length == 0) {
 						tag.append(div('ghostTown', "Start a conversation with a friend below"))
@@ -54,6 +36,27 @@ module.exports = {
 			)
 		))
 	}
+}
+
+function renderBubble(withAccountId, body, hasUnread) {
+	return bubbles[withAccountId] = div('clear messageBubble', function(bubble) {
+		if (!accountKnown(withAccountId)) {
+			bubble.append(div('loading', 'Loading...'))
+		}
+		loadAccount(withAccountId, function(withAccount) {
+			bubble.empty().append(
+				div('unreadDot'),
+				face.facebook(withAccount),
+				div('name', withAccount.name),
+				div('body', body
+					? body
+					: div('youStarted', "You started the conversation.")
+				)
+			)
+			
+			if (hasUnread) { $(bubble).addClass('hasUnread') }
+		})
+	})
 }
 
 function selectConvo(convo) {
@@ -71,12 +74,17 @@ function selectContact(contact) {
 $(function() {
 	onMessage(function(message) {
 		if (bubbles[message.senderAccountId]) {
+			if (!bubbles[message.senderAccountId]) {
+				// TODO 
+				// renderBubble(message.senderAccountId)
+				// take the list and list.addItem
+			}
 			$bubble = $(bubbles[message.senderAccountId])
 			$bubble
 				.addClass('hasUnread')
 				.find('.body').empty().text(message.body)
 			
-			$($bubble[0].parentNode).prepend($bubble)
+			// $('.conversations .dom-list').prepend($bubble)
 		}
 	})	
 })

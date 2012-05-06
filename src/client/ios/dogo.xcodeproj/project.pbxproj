@@ -154,7 +154,6 @@
 		2CD1A01E153FB6B0008949F2 = {
 			isa = PBXGroup;
 			children = (
-				2CAE30581556262500742518 /* AudioToolbox.framework */,
 				2CD1A033153FB6B0008949F2 /* dogo */,
 				2CD1A02C153FB6B0008949F2 /* Frameworks */,
 				2CD1A02A153FB6B0008949F2 /* Products */,
@@ -172,9 +171,10 @@
 		2CD1A02C153FB6B0008949F2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				2CD1A02D153FB6B0008949F2 /* UIKit.framework */,
-				2CD1A02F153FB6B0008949F2 /* Foundation.framework */,
 				2CD1A031153FB6B0008949F2 /* CoreGraphics.framework */,
+				2CD1A02F153FB6B0008949F2 /* Foundation.framework */,
+				2CD1A02D153FB6B0008949F2 /* UIKit.framework */,
+				2CAE30581556262500742518 /* AudioToolbox.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

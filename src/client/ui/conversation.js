@@ -1,13 +1,15 @@
 var trim = require('std/trim'),
 	placeholder = 'Say something :)'
 
-var messageList 
+var messageList, currentConvo
 
 module.exports = {
 	render:function(body, view) {
 		var convo = view.convo || {}
 		var contact = view.contact || {}
 		var messagesTag
+		
+		currentConvo = view.convo
 		
 		body.append(div('conversation',
 			messagesTag=div('messagesWrapper', style({ height:viewport.height() - 45, overflow:'scroll' }),
@@ -91,10 +93,9 @@ function renderMessage(withAccount, message) {
 
 $(function() {
 	onMessage(function(message) {
-		if (messageList) {
-			loadAccount(message.senderAccountId, function(account) {
-				messageList.prepend(renderMessage(account, message))
-			})
-		}
+		if (!currentConvo || currentConvo.withAccountId != message.senderAccountId) { return }
+		loadAccount(message.senderAccountId, function(account) {
+			messageList.prepend(renderMessage(account, message))
+		})
 	})
 })
