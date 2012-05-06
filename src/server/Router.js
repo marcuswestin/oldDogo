@@ -96,8 +96,9 @@ module.exports = proto(null,
 					bind(this, this.respond, req, res))
 			},
 			getConversationMessages: function(req, res) {
-				var params = this._getParams(req, 'withFacebookId', 'withAccountId')
-				this.messageService.getMessages(req.session.accountId, params.withFacebookId, params.withAccountId,
+				var params = this._getParams(req, 'withFacebookId', 'withAccountId', 'lastReadMessageId')
+				this.messageService.getMessages(req.session.accountId,
+					params.withFacebookId, params.withAccountId, params.lastReadMessageId,
 					this.wrapRespond(req, res, 'messages'))
 			},
 			postPushAuth: function(req, res) {

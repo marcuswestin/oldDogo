@@ -17,7 +17,8 @@ module.exports = {
 						tag.append(div('loading', 'Getting messages...'))
 						var params = {
 							withAccountId:convo.withAccountId,
-							withFacebookId:contact.facebookId
+							withFacebookId:contact.facebookId,
+							lastReadMessageId:convo.lastReadMessageId
 						}
 						api.get('messages', params, function(err, res) {
 							if (err) { return error(err) }

@@ -32,7 +32,7 @@ module.exports = proto(null,
 				}))
 			})
 		},
-		getMessages: function(accountId, withFacebookId, withAccountId, callback) {
+		getMessages: function(accountId, withFacebookId, withAccountId, lastReadMessageId, callback) {
 			this._withContactAccountId(accountId, withFacebookId, withAccountId, function(err, withAccountId) {
 				if (err) { return logErr(err, callback, 'getMessages._withContactAccountId', accountId, withFacebookId, withAccountId) }
 				this.getConversation(accountId, withAccountId, bind(this, function(err, conversation) {
@@ -41,15 +41,19 @@ module.exports = proto(null,
 					this._selectMessages(this.db, conversation.id, bind(this, function(err, messages) {
 						if (err) { return logErr(err, callback, 'getMessages._selectMessages', conversation.id) }
 						callback(null, messages)
-						this._markLastReadMessage(accountId, conversation.id, messages)
+						this._markLastReadMessage(accountId, conversation.id, messages, lastReadMessageId)
 					}))
 				}))
 			})
 		},
-		_markLastReadMessage:function(accountId, conversationId, messages) {
+		_markLastReadMessage:function(accountId, conversationId, messages, lastReadMessageId) {
 			// Find most recent message sent not by me
 			for (var i=messages.length-1; i>=0; i++) {
 				var message = messages[i]
+				if (lastReadMessageId && message.id < lastReadMessageId) {
+					// We've already seen this message before - no need to continue
+					return
+				}
 				if (message.senderAccountId != accountId) {
 					this._updateLastReadMessage(this.db, accountId, conversationId, message.id, function(err) {
 						if (err) { return logErr(err, function() {}, 'getMessages._updateLastReadMessage') }
@@ -187,6 +191,7 @@ module.exports = proto(null,
 				conversationId: 'partic.conversation_id',
 				lastReceivedBody: 'last_received.body',
 				lastReceivedTime: 'last_received.sent_time',
+				lastReadMessageId: 'partic.last_read_message_id',
 				// TODO Remove lastMessage*
 				lastMessageBody: 'last_message.body',
 				lastMessageTime: 'last_message.sent_time',
