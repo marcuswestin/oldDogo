@@ -70,9 +70,11 @@ CREATE TABLE conversation_participation (
 	conversation_id BIGINT UNSIGNED NOT NULL,
 	account_id BIGINT UNSIGNED NOT NULL,
 	last_received_message_id BIGINT UNSIGNED DEFAULT NULL,
-	last_read_time INT UNSIGNED,
+	last_read_message_id BIGINT UNSIGNED DEFAULT NULL,
 	FOREIGN KEY (conversation_id) REFERENCES conversation(id),
 	FOREIGN KEY (account_id) REFERENCES account(id),
+	FOREIGN KEY (last_received_message_id) REFERENCES message(id),
+	FOREIGN KEY (last_read_message_id) REFERENCES message(id),
 	PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
