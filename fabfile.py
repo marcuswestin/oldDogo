@@ -13,7 +13,9 @@ def build_dogo_web(git_hash):
 		local('mkdir -p %s' % build_dir)
 		local('cp -r %s/src/server %s/server' % (src_dir, build_dir))
 		local('mkdir -p %s/node_modules' % build_dir)
-		local('cp -r %s/node_modules/express %s/node_modules/express' % (src_dir, build_dir))
+		#local('cp -r %s/node_modules/express %s/node_modules/express' % (src_dir, build_dir))
+		# HACK!	
+		local('cp -r /Users/marcus/code/dogo/node_modules/express %s/node_modules/express' % (src_dir, build_dir))
 		local('cp -r %s/node_modules/mysql %s/node_modules' % (src_dir, build_dir))
 		local('cp -r %s/node_modules/optimist %s/node_modules' % (src_dir, build_dir))
 		local('cp -r %s/node_modules/redis %s/node_modules' % (src_dir, build_dir))

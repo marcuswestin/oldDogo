@@ -8,8 +8,7 @@ setup-server: setup
 	cd node_modules/request && npm install .
 	cd node_modules/require && npm install .
 	cd node_modules/optimist && npm install .
-	#if [ ! -d node_modules/express ]; then npm install express@2.5.8 .; fi
-	if [ ! -d node_modules/express ]; then cp -r /Users/marcus/code/dogo/node_modules/express node_modules/express; fi
+	if [ ! -d node_modules/express ]; then npm install express@2.5.8 .; fi
 
 
 setup-client: setup
