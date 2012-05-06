@@ -5,8 +5,6 @@ setup-server: setup
 	cd node_modules/uuid && npm install .
 	cd node_modules/mocha && npm install .
 	cd node_modules/mysql && npm install .
-	cd node_modules/imap && npm install .
-	cd node_modules/validator && npm install .
 	cd node_modules/request && npm install .
 	cd node_modules/require && npm install .
 	cd node_modules/optimist && npm install .
