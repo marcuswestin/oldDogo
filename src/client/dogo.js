@@ -60,18 +60,28 @@ updateContacts = function(contacts) {
 }
 
 accountKnown = function(accountId) { return !!contactsByAccountId[accountId] }
+
 withAccount = function(accountId, callback) {
 	if (contactsByAccountId[accountId]) {
 		callback(contactsByAccountId[accountId])
 	} else {
-		api.get('account_info', { accountId:accountId }, function(err, res) {
-			if (err) { return error(err) }
-			contactsByAccountId[accountId] = res.account
-			state.set('contactsByAccountId', contactsByAccountId)
-			callback(res.account)
-		})
+		if (withAccount.queue[accountId]) {
+			withAccount.queue[accountId].push(callback)
+		} else {
+			withAccount.queue[accountId] = [callback]
+			api.get('account_info', { accountId:accountId }, function(err, res) {
+				if (err) { return error(err) }
+				contactsByAccountId[accountId] = res.account
+				state.set('contactsByAccountId', contactsByAccountId)
+				each(withAccount.queue[accountId], function(callback) {
+					callback(res.account)
+				})
+				delete withAccount.queue[accountId]
+			})
+		}
 	}
 }
+withAccount.queue = {}
 
 onMessage = function(handler) { onMessage.handlers.push(handler) }
 onMessage.handlers = []
