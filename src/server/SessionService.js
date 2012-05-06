@@ -10,13 +10,13 @@ module.exports = proto(null,
 	}, {
 		createSessionWithFacebookAccessToken: function(fbAccessToken, callback) {
 			facebook.get('me', { access_token:fbAccessToken }, bind(this, function(err, res) {
-				if (err) { return callback(err) }
+				if (err) { return logError(err, callback, 'createSessionWithFacebookAccessToken.facebook.get.me', fbAccessToken) }
 				this.accountService.lookupOrCreateByFacebookAccount(res, fbAccessToken, bind(this, function(err, account) {
-					if (err) { return callback(err) }
+					if (err) { return logError(err, callback, 'createSessionWithFacebookAccessToken.lookupOrCreateByFacebookAccount', account) }
 					this.createSessionForAccountId(account.accountId, bind(this, function(err, authToken) {
-						if (err) { return callback(err) }
+						if (err) { return logError(err, callback, 'createSessionWithFacebookAccessToken.createSessionForAccountId', account.accountId) }
 						this.accountService.getContacts(account.accountId, bind(this, function(err, contacts) {
-							if (err) { return callback(err) }
+							if (err) { return logError(err, callback, 'createSessionWithFacebookAccessToken.getContacts') }
 							callback(null, { authToken:authToken, account:account, contacts:contacts })
 						}))
 					}))
