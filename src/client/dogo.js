@@ -67,7 +67,7 @@ withAccount = function(accountId, callback) {
 		api.get('account_info', { accountId:accountId }, function(err, res) {
 			if (err) { return error(err) }
 			contactsByAccountId[accountId] = res.account
-			state.set('contactsByAccountId', contactsByAccountId[accountId])
+			state.set('contactsByAccountId', contactsByAccountId)
 			callback(res.account)
 		})
 	}
