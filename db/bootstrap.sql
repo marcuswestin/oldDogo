@@ -69,6 +69,7 @@ CREATE TABLE conversation_participation (
 	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 	conversation_id BIGINT UNSIGNED NOT NULL,
 	account_id BIGINT UNSIGNED NOT NULL,
+	last_received_message_id BIGINT UNSIGNED DEFAULT NULL,
 	last_read_time INT UNSIGNED,
 	FOREIGN KEY (conversation_id) REFERENCES conversation(id),
 	FOREIGN KEY (account_id) REFERENCES account(id),
