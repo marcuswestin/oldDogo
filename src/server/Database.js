@@ -3,23 +3,27 @@ var mysql = require('mysql')
 var connectionBase = {
 	selectOne: function(ctx, query, args, callback) {
 		this.query(ctx, query, args, function(err, rows) {
+			if (err) { console.error('selectOne error', query, args, err) }
 			if (!err && rows.length > 1) { err = "Got more rows than expected" }
 			callback.call(this, err, !err && rows[0])
 		})
 	},
 	select:function(ctx, query, args, callback) {
 		this.query(ctx, query, args, function(err, rows) {
+			if (err) { console.error('select error', query, args, err) }
 			callback.call(this, err, !err && rows)
 		})
 	},
 	insert:function(ctx, query, args, callback) {
 		this.query(ctx, query, args, function(err, info) {
+			if (err) { console.error('insert error', query, args, err) }
 			if (!err && !info.insertId) { err = "Did not recieve an insertId" }
 			callback.call(this, err, !err && info.insertId)
 		})
 	},
 	updateOne:function(ctx, query, args, callback) {
 		this.query(ctx, query, args, function(err, info) {
+			if (err) { console.error('updateOne error', query, args, err) }
 			if (!err && info.affectedRows > 1) { err = "Updated more rows than expected" }
 			callback.call(this, err, !err && info.insertId)
 		})
