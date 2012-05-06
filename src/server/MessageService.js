@@ -41,9 +41,22 @@ module.exports = proto(null,
 					this._selectMessages(this.db, conversation.id, bind(this, function(err, messages) {
 						if (err) { return logErr(err, callback, 'getMessages._selectMessages', conversation.id) }
 						callback(null, messages)
+						this._markLastReadMessage(accountId, conversation.id, messages)
 					}))
 				}))
 			})
+		},
+		_markLastReadMessage:function(accountId, conversationId, messages) {
+			// Find most recent message sent not by me
+			for (var i=messages.length-1; i>=0; i++) {
+				var message = messages[i]
+				if (message.senderAccountId != accountId) {
+					this._updateLastReadMessage(this.db, accountId, conversationId, message.id, function(err) {
+						if (err) { return logErr(err, function() {}, 'getMessages._updateLastReadMessage') }
+					})
+					return // We can stop after we find the first message
+				} 
+			}
 		},
 		_withContactAccountId: function(accountId, contactFacebookId, contactAccountId, callback) {
 			if (contactAccountId) {
@@ -144,6 +157,11 @@ module.exports = proto(null,
 			conn.updateOne(this,
 				'UPDATE conversation_participation SET last_received_message_id=? WHERE conversation_id=? AND account_id=?',
 				[messageId, conversationId, toAccountId], callback)
+		},
+		_updateLastReadMessage: function(conn, accountId, conversationId, messageId, callback) {
+			conn.updateOne(this,
+				'UPDATE conversation_participation SET last_read_message_id=? WHERE conversation_id=? AND account_id=?',
+				[messageId, conversationId, accountId], callback)
 		},
 		sql: {
 
