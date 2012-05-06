@@ -70,7 +70,9 @@ module.exports = {
 					api.post('messages', message, function(err, res) {
 						if (err) { return error(err) }
 					})
-					messageList.prepend(renderMessage(message))
+					withAccount(convo.withAccountId, function(withAccount) {
+						messageList.prepend(renderMessage(withAccount, message))
+					})
 				})))
 			})
 		))

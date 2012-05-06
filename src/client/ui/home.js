@@ -1,4 +1,5 @@
-var bodies = {}
+var bubbles = {},
+	bubbleList
 
 module.exports = {
 	render:function(body) {
@@ -14,30 +15,36 @@ module.exports = {
 		}
 		
 		body.append(div('home',
-			sec=section('conversations', null, div(function(tag) {
-				tag.append(div('loading', 'Loading...'))
+			sec=section('conversations', null, div(function(_bubbleList) {
+				bubbleList = _bubbleList
+				bubbleList.append(div('loading', 'Loading...'))
 				api.get('conversations', function(err, res) {
 					if (err) { return error(err) }
-					tag.empty().append(list(res.conversations, selectConvo, function(convo) {
-						return div('clear messageBubble', function(bubble) {
+					bubbleList.empty().append(list(res.conversations, selectConvo, function(convo) {
+						
+						return bubbles[convo.withAccountId]=div('clear messageBubble', function(bubble) {
 							if (!accountKnown(convo.withAccountId)) {
 								bubble.append(div('loading', 'Loading...'))
 							}
 							withAccount(convo.withAccountId, function(withAccount) {
 								bubble.empty().append(
-									div('unread-indicator'),
+									div('unreadDot'),
 									face.facebook(withAccount),
 									div('name', withAccount.name),
-									bodies[withAccount.accountId]=div('body', convo.lastReceivedBody
+									div('body', convo.lastReceivedBody
 										? convo.lastReceivedBody
 										: div('youStarted', "You started the conversation.")
 									)
 								)
+								
+								var hasUnread = (!convo.lastReadMessageId && convo.lastReceivedMessageId)
+									|| (convo.lastReadMessageId < convo.lastReceivedMessageId) 
+								if (hasUnread) { $(bubble).addClass('hasUnread') }
 							})
 						})	
 					}))
 					if (res.conversations.length == 0) {
-						tag.append(div('ghostTown', "Start a conversation with a friend below"))
+						bubbleList.append(div('ghostTown', "Start a conversation with a friend below"))
 					}
 				})
 			})),
@@ -63,8 +70,12 @@ function selectContact(contact) {
 
 $(function() {
 	onMessage(function(message) {
-		if (bodies[message.senderAccountId]) {
-			$(bodies[message.senderAccountId].empty()).text(message.body)
+		if (bubbles[message.senderAccountId]) {
+			$bubble = $(bubbles[message.senderAccountId])
+			$bubble
+				.addClass('hasUnread')
+				.find('.body').empty().text(message.body)
+			$(bubbleList).prepend($bubble)
 		}
 	})	
 })

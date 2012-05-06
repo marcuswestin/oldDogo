@@ -48,7 +48,7 @@ module.exports = proto(null,
 		},
 		_markLastReadMessage:function(accountId, conversationId, messages, lastReadMessageId) {
 			// Find most recent message sent not by me
-			for (var i=messages.length-1; i>=0; i++) {
+			for (var i=0; i<messages.length; i++) {
 				var message = messages[i]
 				if (lastReadMessageId && message.id < lastReadMessageId) {
 					// We've already seen this message before - no need to continue
@@ -191,6 +191,7 @@ module.exports = proto(null,
 				conversationId: 'partic.conversation_id',
 				lastReceivedBody: 'last_received.body',
 				lastReceivedTime: 'last_received.sent_time',
+				lastReceivedMessageId: 'last_received.id',
 				lastReadMessageId: 'partic.last_read_message_id',
 				// TODO Remove lastMessage*
 				lastMessageBody: 'last_message.body',
