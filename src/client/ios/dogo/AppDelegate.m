@@ -16,8 +16,8 @@
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
 
         // Set as environment variable in schema
-        NSString* mode = @"dev";
-//        NSString* mode = @"testflight";
+//        NSString* mode = @"dev";
+        NSString* mode = @"testflight";
 //        NSString* mode = @"appstore";
         
         [self.config setValue:mode forKey:@"mode"];
