@@ -145,10 +145,11 @@ module.exports = proto(null,
 					content = 'Authorization Required'
 					headers['WWW-Authenticate'] = 'Basic'
 				} else {
+					var stackError = new Error()
 					code = 500
 					content = err.stack || err.message || err.toString()
 					if (this._opts.log || this._opts.dev) {
-						console.warn('error', content, req.url, req.body)
+						console.warn('error', content, req.url, req.body, stackError.stack)
 					}
 				}
 			}
