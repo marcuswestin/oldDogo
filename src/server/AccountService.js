@@ -79,8 +79,8 @@ module.exports = proto(null,
 		},
 		_updateAccountClaimed: function(conn, fbAccount, callback) {
 			conn.updateOne(this,
-				'UPDATE account SET claimed_time=?, full_name=?, gender=?, locale=?',
-				[conn.time(), fbAccount.name, fbAccount.gender, fbAccount.locale], callback)
+				'UPDATE account SET claimed_time=?, full_name=?, gender=?, locale=? WHERE facebook_id=?',
+				[conn.time(), fbAccount.name, fbAccount.gender, fbAccount.locale, fbAccount.id], callback)
 		},
 		_updateAccountPushAuth: function(conn, accountId, pushToken, pushSystem, callback) {
 			conn.updateOne(this,
