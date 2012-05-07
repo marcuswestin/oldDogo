@@ -66,6 +66,7 @@ module.exports = proto(null,
 				if (err) { return callback(err) }
 				if (!fbFriends.length) { return finish() }
 				var friend = fbFriends.shift()
+				console.log("Inser fb friend", accountId, friend.id, friend.name)
 				this._insertFacebookContact(tx, accountId, friend.id, friend.name, next)
 			})
 			var finish = bind(this, function() {
@@ -74,6 +75,7 @@ module.exports = proto(null,
 			this._selectAccountByFacebookId(tx, fbAccount.id, function(err, account) {
 				if (err) { return logErr(err, callback, 'select id by facebook id', fbAccount) }
 				accountId = account.accountId
+				console.log("Selected", account, accountId)
 				if (!accountId) { return callback("No Dogo account matches this Facebook account") }
 				next()
 			})
