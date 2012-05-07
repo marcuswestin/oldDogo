@@ -12,7 +12,7 @@ getId = function(model) {
 	return typeof model == 'number' ? model : model.id
 }
 
-logErr = function(err, callback /* , args ... */) {
+logError = logErr = function(err, callback /* , args ... */) {
 	var args = slice(arguments, 2)
 	console.error('Error:', args, err.stack || err.message || err)
 	if (typeof callback == 'function') {
