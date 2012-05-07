@@ -49,26 +49,33 @@ module.exports = proto(null,
 			console.log('create new account with', fbFriends.length, 'friends')
 			this.db.transact(this, function(tx) {
 				callback = txCallback(tx, callback)
-				this._insertClaimedAccount(tx, fbAccount, bind(this, this._insertFbContacts, tx, fbFriends, callback))
+				this._insertClaimedAccount(tx, fbAccount, bind(this, this._insertFbContacts, tx, fbAccount, fbFriends, callback))
 			})
 		},
 		_claimAccount:function(fbAccount, fbFriends, callback) {
 			console.log('claim account with', fbAccount, fbFriends.length, 'friends')
 			this.db.transact(this, function(tx) {
 				callback = txCallback(tx, callback)
-				this._updateAccountClaimed(tx, fbAccount, bind(this, this._insertFbContacts, tx, fbFriends, callback))
+				this._updateAccountClaimed(tx, fbAccount, bind(this, this._insertFbContacts, tx, fbAccount, fbFriends, callback))
 			})
 		},
-		_insertFbContacts:function(tx, fbFriends, callback, err, accountId) {
+		_insertFbContacts:function(tx, fbAccount, fbFriends, callback, err) {
+			var accountId = null
 			if (err) { return logErr(err, callback, '_insertFbContacts', accountId) }
 			var next = bind(this, function(err) {
 				if (err) { return callback(err) }
 				if (!fbFriends.length) { return finish(accountId) }
 				var friend = fbFriends.shift()
-				this._insertFacebookContact(tx, accountId, friend.id, friend.name, next)
+				this._insertFacebookContact(tx, fbAccount.id, friend.id, friend.name, next)
 			})
 			var finish = bind(this, function(accountId) {
 				this._selectAccount(tx, accountId, callback)
+			})
+			tx.selectOne(this, 'SELECT id FROM account WHERE facebook_id=?', [fbAccount.id], function(err, _accountId) {
+				if (err) { return logErr(err, callback, 'select id by facebook id') }
+				accountId = _accountId
+				if (!accountId) { return callback("No Dogo account matches this Facebook account") }
+				next()
 			})
 			next()
 		},
