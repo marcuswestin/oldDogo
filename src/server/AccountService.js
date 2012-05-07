@@ -79,7 +79,6 @@ module.exports = proto(null,
 				if (!accountId) { return callback("No Dogo account matches this Facebook account") }
 				next()
 			})
-			next()
 		},
 		_insertClaimedAccount: function(conn, fbAccount, callback) {
 			conn.insert(this,
