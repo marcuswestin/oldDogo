@@ -71,9 +71,9 @@ module.exports = proto(null,
 			var finish = bind(this, function(accountId) {
 				this._selectAccount(tx, accountId, callback)
 			})
-			tx.selectOne(this, 'SELECT id FROM account WHERE facebook_id=?', [fbAccount.id], function(err, _accountId) {
-				if (err) { return logErr(err, callback, 'select id by facebook id') }
-				accountId = _accountId
+			this._selectAccountByFacebookId(tx, fbAccount.id, function(err, account) {
+				if (err) { return logErr(err, callback, 'select id by facebook id', fbAccount) }
+				accountId = account.id
 				if (!accountId) { return callback("No Dogo account matches this Facebook account") }
 				next()
 			})
