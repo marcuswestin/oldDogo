@@ -60,7 +60,7 @@ module.exports = proto(null,
 			})
 		},
 		_insertFbContacts:function(tx, fbFriends, callback, err, accountId) {
-			if (err) { return callback(err) }
+			if (err) { return logErr(err, callback, '_insertFbContacts', accountId) }
 			var next = bind(this, function(err) {
 				if (err) { return callback(err) }
 				if (!fbFriends.length) { return finish(accountId) }
