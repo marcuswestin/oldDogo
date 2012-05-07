@@ -66,7 +66,7 @@ module.exports = proto(null,
 				if (err) { return callback(err) }
 				if (!fbFriends.length) { return finish(accountId) }
 				var friend = fbFriends.shift()
-				this._insertFacebookContact(tx, fbAccount.id, friend.id, friend.name, next)
+				this._insertFacebookContact(tx, accountId, friend.id, friend.name, next)
 			})
 			var finish = bind(this, function(accountId) {
 				this._selectAccount(tx, accountId, callback)
