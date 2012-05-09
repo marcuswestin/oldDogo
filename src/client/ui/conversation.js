@@ -11,12 +11,12 @@ module.exports = {
 		
 		currentConvo = view.convo
 		
-		body.append(div('conversation',
+		$(body).append(div('conversation',
 			messagesTag=div('messagesWrapper', style({ height:viewport.height() - 45, overflow:'scroll' }),
 				div('messages', style({ paddingBottom:44 }),
-					function(tag) {
-						messageList = tag
-						tag.append(div('loading', 'Getting messages...'))
+					function($tag) {
+						messageList = $tag
+						$tag.append(div('loading', 'Getting messages...'))
 						var params = {
 							withAccountId:convo.withAccountId,
 							withFacebookId:contact.facebookId,
@@ -24,9 +24,13 @@ module.exports = {
 						}
 						api.get('messages', params, function(err, res) {
 							if (err) { return error(err) }
-							loadAccount(convo.withAccountId, function(withAccount) {
-								tag.empty().append(map(res.messages, curry(renderMessage, withAccount)))
-							})
+							if (convo.withAccountId) {
+								loadAccount(convo.withAccountId, function(withAccount) {
+									$tag.empty().append(map(res.messages, curry(renderMessage, withAccount)))
+								})
+							} else if (contact && contact.facebookId) {
+								$tag.empty().append(map(res.messages, curry(renderMessage, contact)))
+							}
 						})
 					}
 				)
@@ -94,8 +98,8 @@ function renderMessage(withAccount, message) {
 $(function() {
 	onMessage(function(message) {
 		if (!currentConvo || currentConvo.withAccountId != message.senderAccountId) { return }
-		loadAccount(message.senderAccountId, function(account) {
-			messageList.prepend(renderMessage(account, message))
+		loadAccount(message.senderAccountId, function(fromAccount) {
+			messageList.prepend(renderMessage(fromAccount, message))
 		})
 	})
 })

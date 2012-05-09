@@ -1,6 +1,6 @@
 module.exports = {
 	render: function(body, onConnected) {
-		body.append(div('connect',
+		$(body).append(div('connect',
 			div('button', 'Connect', button(function() {
 				var $el = $(this).text('Loading...').addClass('disabled')
 				bridge.command('facebook.connect', function(err, data) {

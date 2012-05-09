@@ -1,32 +1,31 @@
 require('lib/jquery-1.7.2')
+require('tags')
+require('tags/button')
+require('tags/list')
 
 style = function(styles) { return { style:styles } }
 create = require('std/create')
 map = require('std/map')
-button = require('dom/button')
 api = require('./api')
 bridge = require('./bridge')
 face = require('ui/face')
 bind = require('std/bind')
-viewport = require('dom/viewport')
+viewport = require('tags/viewport')
 each = require('std/each')
-list = require('dom/list')
 slice = require('std/slice')
-isTouch = require('dom/isTouch')
 curry = require('std/curry')
+button = tags.button
+list = tags.list
+tags.expose()
 
 error = function(err) {
 	alert("Oops! "+JSON.stringify(err))
 }
 
-var tags = require('dom/tags')
-	makeScroller = require('dom/scroller'),
+var makeScroller = require('tags/scroller'),
 	connect = require('./ui/connect'),
 	home = require('./ui/home'),
 	conversation = require('./ui/conversation')
-
-tags.expose()
-tags.enableJQueryTags()
 
 config = {}
 state = {
@@ -62,6 +61,7 @@ updateContacts = function(contacts) {
 accountKnown = function(accountId) { return !!contactsByAccountId[accountId] }
 
 loadAccount = function(accountId, callback) {
+	if (!accountId) { throw new Error("loadAccount: Undefined accountId") }
 	if (contactsByAccountId[accountId]) {
 		callback(contactsByAccountId[accountId])
 	} else {
@@ -115,11 +115,11 @@ bridge.eventHandler = function(name, info) {
 scoller = null
 function renderApp() {
 	scroller = makeScroller(viewport)
-	app=div('app', viewport.fit,
+	$(document.body).append(div('app', viewport.fit,
 
-		scroller.renderHead(45, function(headTag, view, viewBelow, fromView) {
+		scroller.renderHead(45, function($head, view, viewBelow, fromView) {
 			var showBackButton = viewBelow && (scroller.stack.length > (scroller.hasConnectView ? 2 : 1))
-			headTag.append(div('head',
+			$head.append(div('head',
 				showBackButton && renderBackButton(viewBelow.title || 'Home'),
 				div('title', view.title || 'Dogo'),
 				(config.mode == "dev") && div('devBar',
@@ -134,15 +134,15 @@ function renderApp() {
 			}
 		}),
 
-		scroller.renderBody(3, function(bodyTag, view) {
+		scroller.renderBody(3, function($body, view) {
 			console.log("render view", JSON.stringify(view))
 			if (view.convo || view.contact) {
-				conversation.render(bodyTag, view)
+				conversation.render($body, view)
 			} else if (state.get('authToken')) {
-				home.render(bodyTag, view)
+				home.render($body, view)
 			} else {
 				scroller.hasConnectView = true
-				connect.render(bodyTag, function(res) {
+				connect.render($body, function(res) {
 					myAccount = res.account
 					updateContacts(res.contacts)
 					state.set('myAccount', myAccount)
@@ -153,10 +153,10 @@ function renderApp() {
 				})
 			}
 		})
-	).appendTo(document.body)
+	))
 }
 
-if (!isTouch) {
+if (!tags.isTouch) {
 	// Browser for debugging
 	bridge.command = function(command, data, callback) {
 		if (!callback) {
@@ -181,7 +181,7 @@ if (!isTouch) {
 		$('body').css({ background:'#222' })
 	})
 	
-	div({ id:'fb-root' }).appendTo(document.body)
+	$(document.body).append(div({ id:'fb-root' }))
 	window.fbAsyncInit = function() {
 		FB.init({
 			appId      : '219049001532833', // App ID

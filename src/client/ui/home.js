@@ -13,25 +13,27 @@ module.exports = {
 			)
 		}
 		
-		body.append(div('home',
-			sec=section('conversations', null, div(function(tag) {
-				tag.append(div('loading', 'Loading...'))
+		$(body).append(div('home',
+			sec=section('conversations', null, div(function($tag) {
+				$tag.append(div('loading', 'Loading...'))
 				api.get('conversations', function(err, res) {
 					if (err) { return error(err) }
-					tag.empty().append(list(res.conversations, selectConvo, function(convo) {
+					$tag.empty().append(list(res.conversations, selectConvo, function(convo) {
 						var hasUnread = (!convo.lastReadMessageId && convo.lastReceivedMessageId)
 							|| (convo.lastReadMessageId < convo.lastReceivedMessageId) 
 						return renderBubble(convo.withAccountId, convo.lastReceivedBody, hasUnread)
 					}))
 					if (res.conversations.length == 0) {
-						tag.append(div('ghostTown', "Start a conversation with a friend below"))
+						$tag.append(div('ghostTown', "Start a conversation with a friend below"))
 					}
 				})
 			})),
 			div(style({ height:4 })),
-			section('friends', 'Friends', 
+			section('friends', 'Friends on Dogo', 
 				list(contactsByFacebookId, selectContact, function(contact) {
-					return div('contact', face.facebook(contact, true))
+					if (contact.memberSince) {
+						return div('contact', face.facebook(contact, true))
+					}
 				})
 			)
 		))
