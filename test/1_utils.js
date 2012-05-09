@@ -9,7 +9,7 @@ var exec = require('child_process').exec,
 	PushService = require('../src/server/PushService'),
 	assert = require('assert'),
 	fs = require('fs'),
-	time = require('fun/node_modules/std/time')
+	time = require('std/time')
 
 var u = module.exports = {
 	setupDatabase:setupDatabase,

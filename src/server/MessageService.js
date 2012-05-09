@@ -24,6 +24,7 @@ module.exports = proto(null,
 			this._withContactAccountId(accountId, toFacebookAccountId, toAccountId, function(err, toAccountId) {
 				if (err) { return callback(err) }
 				this.withConversationId(accountId, toAccountId, bind(this, function(err, conversationId) {
+					if (err) { return logErr(err, callback, 'sendMessage.withConversationId', accountId, toAccountId) }
 					this._createMessage(accountId, toAccountId, conversationId, body, bind(this, function(err, message) {
 						if (err) { return callback(err) }
 						this.pushService.sendMessage(message, toAccountId, prodPush)

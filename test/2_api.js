@@ -96,7 +96,7 @@ describe('Facebook connect', function() {
 	it('should let you create a session', function(done) {
 		var fbUser = u.fbTestUsers[0]
 		this.timeout(5000)
-		api.post('sessions', { facebook_access_token:fbUser.access_token }, function(err, res) {
+		api.post('sessions', { facebookAccessToken:fbUser.access_token }, function(err, res) {
 			check(err)
 			is(res.authToken)
 			is(res.account)
