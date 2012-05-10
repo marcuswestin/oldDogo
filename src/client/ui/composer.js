@@ -23,9 +23,10 @@ module.exports = {
 				)
 			)
 			state.pen = pens.smooth
+			selectText(null)
 		}
 		
-		function selectText() {
+		function selectText(e) {
 			$ui.textInput = $(textarea({ placeholder:placeholder }, button(function() {
 				$ui.textInput.focus()
 			})))
