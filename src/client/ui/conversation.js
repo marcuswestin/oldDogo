@@ -1,22 +1,22 @@
-var trim = require('std/trim'),
-	placeholder = 'Say something :)'
+var composer = require('./composer')
 
 var messageList, currentConvo
 
 module.exports = {
-	render:function(body, view) {
+	render:function($body, view) {
 		var convo = view.convo || {}
 		var contact = view.contact || {}
-		var messagesTag
 		
 		currentConvo = view.convo
 		
-		$(body).append(div('conversation',
-			messagesTag=div('messagesWrapper', style({ height:viewport.height() - 45, overflow:'scroll' }),
-				div('messages', style({ paddingBottom:44 }),
-					function($tag) {
-						messageList = $tag
-						$tag.append(div('loading', 'Getting messages...'))
+		var $ui = {}
+		
+		$body.append(
+			$ui.conversation = $(div('conversation',
+				div('messagesWrapper', style({ height:viewport.height() - 45, overflow:'scroll' }),
+					div('messages', style({ paddingBottom:44 }), function($messageList) {
+						$ui.messageList = $messageList
+						$ui.messageList.append(div('loading', 'Getting messages...'))
 						var params = {
 							withAccountId:convo.withAccountId,
 							withFacebookId:contact.facebookId,
@@ -26,63 +26,17 @@ module.exports = {
 							if (err) { return error(err) }
 							if (convo.withAccountId) {
 								loadAccount(convo.withAccountId, function(withAccount) {
-									$tag.empty().append(map(res.messages, curry(renderMessage, withAccount)))
+									$ui.messageList.empty().append(map(res.messages, curry(renderMessage, withAccount)))
 								})
 							} else if (contact && contact.facebookId) {
-								$tag.empty().append(map(res.messages, curry(renderMessage, contact)))
+								$ui.messageList.empty().append(map(res.messages, curry(renderMessage, contact)))
 							}
 						})
-					}
-				)
-			),
-			div('composer', function(composer) {
-				var input
-				
-				composer.append(
-					div('body',
-						input=textarea({ placeholder:placeholder }, button(function() {
-							$input.focus()
-						}))
-					)
-				)
-				
-				$input=$(input)
-					.on('focus', function() {
-						$(messagesTag)
-							.css({ marginTop:215 })
-							.scrollTop(1)
-							.on('scroll', function() {
-								if ($(messagesTag).scrollTop() == 0) {
-									$(messagesTag).scrollTop(1)
-								}
-							})
 					})
-					.on('blur', function() {
-						$(messagesTag)
-							.css({ marginTop:0 })
-							.off('scroll')
-					})
-				
-				composer.append(div('send button', 'Send', button(function() {
-					var body = trim($input.val())
-					$input.val('')
-					if (!body) { return }
-					var message = {
-						toAccountId:convo.withAccountId,
-						toFacebookId:contact.facebookId,
-						senderAccountId:myAccount.accountId,
-						body:body
-					}
-					api.post('messages', message, function(err, res) {
-						if (err) { return error(err) }
-					})
-					
-					loadAccount(convo.withAccountId, function(withAccount) {
-						messageList.prepend(renderMessage(withAccount, message))
-					})
-				})))
-			})
-		))
+				),
+				composer.render($ui, convo, contact, renderMessage)
+			))
+		)
 	}
 }
 
