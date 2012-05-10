@@ -177,14 +177,12 @@ var pens = {
 		onDown: function(ctx, point) {
 			state.points = [point]
 			ctx.moveTo(point.x, point.y)
-			state.color = rgba();
+			ctx.strokeStyle = rgba()
 			ctx.lineWidth = state.lineWidth
-			ctx.strokeStyle = state.color
 		},
 		onMove: function(ctx, point) {
 			var points = state.points
 			if (!points) { return }
-			console.log('move', point.x)
 			points.push(point)
 			var dw = 10
 			ctx.beginPath()
@@ -202,7 +200,6 @@ var pens = {
 		onUp: function(ctx, point) {
 			var points = state.points
 			if (!points) { return }
-			console.log('up', point.x)
 			points.push(point)
 			state.points = null
 			
@@ -219,7 +216,7 @@ var pens = {
 			ctx.moveTo(point.x, point.y)
 			ctx.beginPath()
 			ctx.lineWidth = pens.glow.lineWidth.init
-			ctx.strokeStyle = rgba()
+			ctx.strokeStyle = rgba(.1)
 			ctx.globalCompositeOperation = 'lighter'
 			state.points = [point]
 		},
@@ -257,19 +254,23 @@ var pens = {
 			}
 		},
 		lineWidth: {
-			init:5,
-			vary:3,
+			init:10,
+			vary:5,
 			max:20,
 			min:3
 		}
 	}
 }
 
-function rgba() {
+function rgba(alpha) {
 	var colors = []
 	for(var i = 0; i< 3; i++) {
 		colors.push(Math.floor(Math.random() * 255))
 	}
-	// colors.push(0.1)
-	return 'rgb('+colors.join(',')+')'
+	if (alpha) {
+		colors.push(alpha)
+		return 'rgba('+colors.join(',')+')'
+	} else {
+		return 'rgb('+colors.join(',')+')'
+	}
 }    
