@@ -22,7 +22,7 @@ module.exports = {
 					)
 				)
 			)
-			state.pen = pens.smoothed
+			state.pen = pens.smooth
 		}
 		
 		function selectText() {
@@ -55,27 +55,31 @@ module.exports = {
 			var h = 187
 			$ui.drawCanvas = $(canvas('canvas', { width:w, height:h }))
 			ctx = state.ctx = $ui.drawCanvas[0].getContext('2d')
-			ctx.fillStyle = '#fff'
+			ctx.fillStyle = '#000'
 			ctx.fillRect(0, 0, w, h)
 			
 			$ui.drawCanvas
 				.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
 				.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
 			
-			// $(".app").append($ui.drawCanvas)
-			$ui.surface.empty().append(div('drawer', $ui.drawCanvas))
+			$ui.surface.empty().append(div('drawer',
+				div('pens', $.map(pens, function(pen, name) {
+					return div('button', name, button(function() { state.pen = pen }))
+				})),
+				$ui.drawCanvas
+			))
 			
 			function getPoint(e) {
 				var point = {
 					x:e.originalEvent.pageX - (tags.isTouch ? 8 : $ui.drawCanvas.offset().left),
 					y:e.originalEvent.pageY - $ui.drawCanvas.offset().top
 				}
-				console.log(point.x, point.y, $ui.drawCanvas.offset().top)
 				return point
 			}
 			
 			function pencilDown(e) {
 				e.preventDefault()
+				ctx.globalCompositeOperation = 'source-over'
 				state.pen.onDown(ctx, getPoint(e))
 				// ctx.lineCap = 'round'
 				// ctx.lineJoin = 'round'
@@ -121,24 +125,18 @@ module.exports = {
 }
 
 var pens = {
-	smoothed: {
-		lineWidth: {
-			init:5,
-			vary:3,
-			max:7,
-			min:1
-		},
+	smooth: {
 		onDown: function(ctx, point) {
 			ctx.moveTo(point.x, point.y)
 			ctx.beginPath()
-			ctx.lineWidth = pens.smoothed.lineWidth.init
+			ctx.lineWidth = pens.smooth.lineWidth.init
 			ctx.strokeStyle = rgba()
 			state.points = [point]
 		},
 		onMove: function(ctx, point) {
 			var points = state.points
 			if (!points) { return }
-			var lineWidth = pens.smoothed.lineWidth
+			var lineWidth = pens.smooth.lineWidth
 			var dw = lineWidth.vary
 			ctx.lineWidth += Math.round((Math.random() * dw) - (dw/2 + .3))
 			if (ctx.lineWidth < lineWidth.min) {
@@ -152,7 +150,6 @@ var pens = {
 				var pN2 = points[points.length - 3]
 				var pN1 = points[points.length - 2]
 				var interp = { x:(pN2.x + pN1.x)/2, y:(pN2.y + pN1.y)/2 }
-				console.log(interp.x, interp.y)
 				ctx.quadraticCurveTo(pN2.x, pN2.y, interp.x, interp.y)
 				ctx.stroke()
 			}
@@ -168,10 +165,103 @@ var pens = {
 				var pN1 = points[points.length - 2]
 				ctx.quadraticCurveTo(pN0.x, pN0.y, pN1.x, pN1.y)
 			}
+		},
+		lineWidth: {
+			init:5,
+			vary:3,
+			max:7,
+			min:1
 		}
 	},
 	zebra: {
-		
+		onDown: function(ctx, point) {
+			state.points = [point]
+			ctx.moveTo(point.x, point.y)
+			state.color = rgba();
+			ctx.lineWidth = state.lineWidth
+			ctx.strokeStyle = state.color
+		},
+		onMove: function(ctx, point) {
+			var points = state.points
+			if (!points) { return }
+			console.log('move', point.x)
+			points.push(point)
+			var dw = 10
+			ctx.beginPath()
+			ctx.lineWidth += Math.round((Math.random() * dw) - (dw/2 + .3))
+			if (ctx.lineWidth < 1) ctx.lineWidth = 1
+			if (ctx.lineWidth > 50) ctx.lineWidth = 50
+			if (points.length > 2) {
+				var pN2 = points[points.length - 3]
+				var pN1 = points[points.length - 2]
+				var interp = { x:(pN2.x + pN1.x)/2, y:(pN2.y + pN1.y)/2 }
+				ctx.quadraticCurveTo(pN2.x, pN2.y, interp.x, interp.y)
+				ctx.stroke()
+			}
+		},
+		onUp: function(ctx, point) {
+			var points = state.points
+			if (!points) { return }
+			console.log('up', point.x)
+			points.push(point)
+			state.points = null
+			
+			if (points && points.length > 1) {
+				// curve through the last two points
+				var pN0 = points[points.length - 1]
+				var pN1 = points[points.length - 2]
+				ctx.quadraticCurveTo(pN0.x, pN0.y, pN1.x, pN1.y)
+			}
+		}
+	},
+	glow: {
+		onDown: function(ctx, point) {
+			ctx.moveTo(point.x, point.y)
+			ctx.beginPath()
+			ctx.lineWidth = pens.glow.lineWidth.init
+			ctx.strokeStyle = rgba()
+			ctx.globalCompositeOperation = 'lighter'
+			state.points = [point]
+		},
+		onMove: function(ctx, point) {
+			var points = state.points
+			if (!points) { return }
+			var lineWidth = pens.glow.lineWidth
+			var dw = lineWidth.vary
+			ctx.lineWidth += Math.round((Math.random() * dw) - (dw/2 + .3))
+			if (ctx.lineWidth < lineWidth.min) {
+				ctx.lineWidth = lineWidth.min
+			} else if (ctx.lineWidth > lineWidth.max) {
+				ctx.lineWidth = lineWidth.max
+			}
+			points.push(point)
+			
+			if (points.length > 2) {
+				var pN2 = points[points.length - 3]
+				var pN1 = points[points.length - 2]
+				var interp = { x:(pN2.x + pN1.x)/2, y:(pN2.y + pN1.y)/2 }
+				ctx.quadraticCurveTo(pN2.x, pN2.y, interp.x, interp.y)
+				ctx.stroke()
+			}
+		},
+		onUp: function(ctx, point) {
+			var points = state.points
+			state.points = null
+			
+			points.push(point)
+			if (points && points.length > 1) {
+				// curve through the last two points
+				var pN0 = points[points.length - 1]
+				var pN1 = points[points.length - 2]
+				ctx.quadraticCurveTo(pN0.x, pN0.y, pN1.x, pN1.y)
+			}
+		},
+		lineWidth: {
+			init:5,
+			vary:3,
+			max:20,
+			min:3
+		}
 	}
 }
 
