@@ -12,8 +12,8 @@ module.exports = {
 		var $ui = {}
 		
 		$body.append(
-			$ui.conversation = $(div('conversation',
-				div('messagesWrapper', style({ height:viewport.height() - 45, overflow:'scroll' }),
+			div('conversation',
+				$ui.wrapper=$(div('messagesWrapper', style({ height:viewport.height() - 45, overflow:'scroll' }),
 					div('messages', style({ paddingBottom:44 }), function($messageList) {
 						$ui.messageList = $messageList
 						$ui.messageList.append(div('loading', 'Getting messages...'))
@@ -33,9 +33,9 @@ module.exports = {
 							}
 						})
 					})
-				),
+				)),
 				composer.render($ui, convo, contact, renderMessage)
-			))
+			)
 		)
 	}
 }

@@ -2,8 +2,8 @@ require('lib/jquery-1.7.2')
 require('tags')
 require('tags/button')
 require('tags/list')
+require('tags/style')
 
-style = function(styles) { return { style:styles } }
 create = require('std/create')
 map = require('std/map')
 api = require('./api')
@@ -16,6 +16,7 @@ slice = require('std/slice')
 curry = require('std/curry')
 button = tags.button
 list = tags.list
+style = tags.style
 tags.expose()
 
 error = function(err) {

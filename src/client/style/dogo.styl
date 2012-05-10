@@ -99,9 +99,14 @@ buttonRadius = 10px;
 		position absolute; bottom 0; width 310px; margin 0 0 8px 8px;
 		.surface
 			bodyRadius = 6px; bodyWidth = 296px;
-			display inline-block; box-shadow buttonShadow; border-radius bodyRadius; width bodyWidth+8;
-			textarea
-				width bodyWidth; border 0; border 2px solid color4; border-radius bodyRadius; height 50px;
+			.writer
+				display inline-block; width bodyWidth+8;
+				box-shadow buttonShadow; border-radius bodyRadius; 
+				textarea
+					width bodyWidth; border 2px solid color4; border-radius bodyRadius; height 50px;
+			.drawer
+				.canvas
+					border-radius 10px; box-shadow buttonShadow;
 		.tools
 			.tool
 				display inline-block; border 1px solid #333; margin 2px 4px 0 0; border-radius 4px;
