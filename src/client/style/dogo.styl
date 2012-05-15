@@ -96,22 +96,25 @@ buttonRadius = 10px;
 	.messageBubble
 		margin 4px 8px 0;
 	.composer
-		position absolute; bottom 0; width 310px; margin 0 0 8px 8px;
+		position absolute; bottom 0; width 320px; padding 0;
+		background linear-gradient(top, rgba(60,60,60,0.0), rgba(60,60,60,0.9))
 		.surface
-			bodyRadius = 6px; bodyWidth = 296px;
+			bodyRadius = 6px; bodyWidth = 320px;
 			.writer
-				display inline-block; width bodyWidth+8;
-				box-shadow buttonShadow; border-radius bodyRadius; 
+				display inline-block; width bodyWidth; box-shadow 0 -1px 6px #444;
 				textarea
-					width bodyWidth; border 2px solid color4; border-radius bodyRadius; height 50px;
+					border none; width bodyWidth - 4px; height 50px;
 			.drawer
+				line-height 0;
+				.pens
+					line-height 20px;
 				.canvas
-					border-radius 10px; box-shadow buttonShadow;
+					// border-radius 10px; box-shadow buttonShadow;
 		.tools
 			.tool
-				display inline-block; border 1px solid #333; margin 2px 4px 0 0; border-radius 4px;
+				display inline-block; border 2px solid #fff; margin 2px 4px 2px 0; border-radius 4px;
 			.tool.send
-				float right; margin-right 6px;
+				float right; margin-right 1px;
 
 .clear
 	clear both

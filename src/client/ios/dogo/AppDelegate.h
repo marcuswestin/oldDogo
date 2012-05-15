@@ -10,12 +10,15 @@
 #import "FBConnect.h"
 #import "Net.h"
 
-@interface AppDelegate : BTAppDelegate <FBSessionDelegate>
+@interface AppDelegate : BTAppDelegate <FBSessionDelegate, UITextViewDelegate>
 
 @property (nonatomic, retain) Facebook *facebook;
 @property (nonatomic, copy) ResponseCallback facebookConnectResponseCallback;
 @property (atomic, strong) Net* net;
 
 + (AppDelegate*) instance;
+
+@property (atomic, strong) UITextView* textInput;
+- (void) showTextInput:(NSDictionary*) params;
 
 @end

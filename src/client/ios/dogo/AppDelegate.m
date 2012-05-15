@@ -7,10 +7,11 @@
 //
 
 #import "AppDelegate.h"
+#import <QuartzCore/QuartzCore.h>
 
 @implementation AppDelegate
 
-@synthesize facebook, facebookConnectResponseCallback, net;
+@synthesize facebook, facebookConnectResponseCallback, net, textInput;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
@@ -65,9 +66,52 @@
         [facebook authorize:nil];
     } else if ([command isEqualToString:@"api.request"]) {
         [net request:data responseCallback:responseCallback];
+    } else if ([command isEqualToString:@"composer.showTextInput"]) {
+        [self showTextInput:data];
+    } else if ([command isEqualToString:@"composer.hideTextInput"]) {
+        [textInput removeFromSuperview];
     }
 }
 
+
+
+// Composer
+- (void)showTextInput:(NSDictionary *)params {
+    float x = [[params objectForKey:@"x"] doubleValue];
+    float y = [[params objectForKey:@"y"] doubleValue];
+    float width = [[params objectForKey:@"width"] doubleValue];
+    float height = [[params objectForKey:@"height"] doubleValue];
+    textInput = [[UITextView alloc] initWithFrame:CGRectMake(x, y, width, height)];
+    
+    UITextView* textField = textInput;
+    textField.font = [UIFont systemFontOfSize:15];
+    
+    textField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    textField.layer.borderWidth = 1.0;
+    textField.layer.borderColor = [[UIColor grayColor] CGColor];
+    textField.layer.cornerRadius = 0.0;
+    textField.backgroundColor = [UIColor whiteColor];
+    textField.clipsToBounds = YES;
+    textField.keyboardType = UIKeyboardTypeDefault;
+    textField.returnKeyType = UIReturnKeySend;
+    textField.delegate = self;
+    [self.window addSubview:textInput];
+
+    [textField becomeFirstResponder];
+}
+
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
+    if([text isEqualToString:@"\n"]) {
+        [self notify:@"composer.sendText" info:[NSDictionary dictionaryWithObject:textInput.text forKey:@"text"]];
+        textInput.text = @"";
+        return NO;
+    }
+    return YES;
+}
+
+- (void)textViewDidEndEditing:(UITextView *)textView {
+    [textInput removeFromSuperview];
+}
 
 
 // Facebook

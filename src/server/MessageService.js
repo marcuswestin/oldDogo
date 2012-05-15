@@ -33,19 +33,16 @@ module.exports = proto(null,
 				}))
 			})
 		},
-		getMessages: function(accountId, withFacebookId, withAccountId, lastReadMessageId, callback) {
-			this._withContactAccountId(accountId, withFacebookId, withAccountId, function(err, withAccountId) {
-				if (err) { return logErr(err, callback, 'getMessages._withContactAccountId', accountId, withFacebookId, withAccountId) }
-				this.getConversation(accountId, withAccountId, bind(this, function(err, conversation) {
-					if (err) { return logErr(err, callback, 'getMessages.getConversation', accountId, withAccountId) }
-					if (!conversation) { return callback(null, []) }
-					this._selectMessages(this.db, conversation.id, bind(this, function(err, messages) {
-						if (err) { return logErr(err, callback, 'getMessages._selectMessages', conversation.id) }
-						callback(null, messages)
-						this._markLastReadMessage(accountId, conversation.id, messages, lastReadMessageId)
-					}))
+		getMessages: function(accountId, withAccountId, lastReadMessageId, callback) {
+			this.getConversation(accountId, withAccountId, bind(this, function(err, conversation) {
+				if (err) { return logErr(err, callback, 'getMessages.getConversation', accountId, withAccountId) }
+				if (!conversation) { return callback(null, []) }
+				this._selectMessages(this.db, conversation.id, bind(this, function(err, messages) {
+					if (err) { return logErr(err, callback, 'getMessages._selectMessages', conversation.id) }
+					callback(null, messages)
+					this._markLastReadMessage(accountId, conversation.id, messages, lastReadMessageId)
 				}))
-			})
+			}))
 		},
 		_markLastReadMessage:function(accountId, conversationId, messages, lastReadMessageId) {
 			// Find most recent message sent not by me

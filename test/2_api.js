@@ -153,15 +153,6 @@ describe('Conversations', function() {
 			})
 		})
 	})
-	it('should be possible to get messages by facebook id', function(done) {
-		api.get('conversations', function(err, res) {
-			api.get('messages', { withFacebookId:u.fbTestUsers[2].id }, function(err, res) {
-				check(err)
-				is(res.messages.length)
-				done()
-			})
-		})
-	})
 	it('should be possible to get messages by account id', function(done) {
 		api.get('conversations', function(err, res) {
 			api.get('messages', { withAccountId:res.conversations[0].withAccountId }, function(err, res) {

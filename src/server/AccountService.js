@@ -36,8 +36,12 @@ module.exports = proto(null,
 				})
 			})
 		},
-		getAccount: function(accountId, callback) {
-			this._selectAccount(this.db, accountId, callback)
+		getAccount: function(accountId, facebookId, callback) {
+			if (accountId) {
+				this._selectAccountByAccountId(this.db, accountId, callback)
+			} else {
+				this._selectAccountByFacebookId(this.db, facebookId, callback)
+			}
 		},
 		getContacts: function(accountId, callback) {
 			this._selectContacts(this.db, accountId, callback)
@@ -69,7 +73,7 @@ module.exports = proto(null,
 				this._insertFacebookContact(tx, accountId, friend.id, friend.name, next)
 			})
 			var finish = bind(this, function() {
-				this._selectAccount(tx, accountId, callback)
+				this._selectAccountByAccountId(tx, accountId, callback)
 			})
 			this._selectAccountByFacebookId(tx, fbAccount.id, function(err, account) {
 				if (err) { return logErr(err, callback, 'select id by facebook id', fbAccount) }
@@ -114,7 +118,7 @@ module.exports = proto(null,
 		_selectAccountByFacebookId: function(conn, fbAccountId, callback) {
 			conn.selectOne(this, this.sql.account+'WHERE facebook_id=?', [fbAccountId], callback)
 		},
-		_selectAccount: function(conn, accountId, callback) {
+		_selectAccountByAccountId: function(conn, accountId, callback) {
 			conn.selectOne(this, this.sql.account+'WHERE id=?', [accountId], callback)
 		},
 		sql: {

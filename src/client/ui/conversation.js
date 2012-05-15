@@ -1,13 +1,16 @@
 var composer = require('./composer')
 
-var messageList, currentConvo
+var messageList
+var currentAccountId
+var currentFacebookId
 
 module.exports = {
 	render:function($body, view) {
-		var convo = view.convo || {}
-		var contact = view.contact || {}
+		var accountId = view.accountId
+		var facebookId = view.facebookId
 		
-		currentConvo = view.convo
+		currentAccountId = accountId
+		currentFacebookId = facebookId
 		
 		var $ui = {}
 		
@@ -15,26 +18,25 @@ module.exports = {
 			div('conversation',
 				$ui.wrapper=$(div('messagesWrapper', style({ height:viewport.height() - 45, overflow:'scroll' }),
 					div('messages', style({ paddingBottom:44 }), function($messageList) {
-						$ui.messageList = $messageList
-						$ui.messageList.append(div('loading', 'Getting messages...'))
-						var params = {
-							withAccountId:convo.withAccountId,
-							withFacebookId:contact.facebookId,
-							lastReadMessageId:convo.lastReadMessageId
-						}
-						api.get('messages', params, function(err, res) {
-							if (err) { return error(err) }
-							if (convo.withAccountId) {
-								loadAccount(convo.withAccountId, function(withAccount) {
+						messageList = $ui.messageList = $messageList
+						if (accountId) {
+							$ui.messageList.append(div('loading', 'Getting messages...'))
+							var params = {
+								withAccountId:view.accountId,
+								lastReadMessageId:view.lastReadMessageId
+							}
+							api.get('messages', params, function(err, res) {
+								if (err) { return error(err) }
+								loadAccountId(accountId, function(withAccount) {
 									$ui.messageList.empty().append(map(res.messages, curry(renderMessage, withAccount)))
 								})
-							} else if (contact && contact.facebookId) {
-								$ui.messageList.empty().append(map(res.messages, curry(renderMessage, contact)))
-							}
-						})
+							})
+						} else {
+							$ui.messageList.append(div('loading', 'Start the conversation - draw something!'))
+						}
 					})
 				)),
-				composer.render($ui, convo, contact, renderMessage)
+				composer.render($ui, accountId, facebookId, renderMessage)
 			)
 		)
 	}
@@ -49,11 +51,9 @@ function renderMessage(withAccount, message) {
 	)
 }
 
-$(function() {
-	onMessage(function(message) {
-		if (!currentConvo || currentConvo.withAccountId != message.senderAccountId) { return }
-		loadAccount(message.senderAccountId, function(fromAccount) {
-			messageList.prepend(renderMessage(fromAccount, message))
-		})
+events.on('push.message', function(message) {
+	if (!currentAccountId || currentAccountId != message.senderAccountId) { return }
+	loadAccountId(message.senderAccountId, function(fromAccount) {
+		messageList.prepend(renderMessage(fromAccount, message))
 	})
 })

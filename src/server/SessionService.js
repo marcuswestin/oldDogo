@@ -37,7 +37,7 @@ module.exports = proto(null,
 			var parts = authToken.split(':')
 			this._authenticateSession(parts[1], parts[0], bind(this, function(err, accountId) {
 				if (err) { return callback(err) }
-				this.accountService.getAccount(accountId, function(err, account) {
+				this.accountService.getAccount(accountId, null, function(err, account) {
 					if (err) { return callback(err) }
 					callback(null, { authToken:authToken, account:account })
 				})

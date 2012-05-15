@@ -1,4 +1,6 @@
-var bubbles = {}
+var conversation = require('./conversation')
+
+var $ui
 
 module.exports = {
 	render:function(body) {
@@ -13,80 +15,79 @@ module.exports = {
 			)
 		}
 		
+		$ui = {}
+		
 		$(body).append(div('home',
-			sec=section('conversations', null, div(function($tag) {
+			$ui.conversations=$(section('conversations', null, div(function($tag) {
 				$tag.append(div('loading', 'Loading...'))
 				api.get('conversations', function(err, res) {
 					if (err) { return error(err) }
-					$tag.empty().append(list(res.conversations, selectConvo, function(convo) {
+					var messages = map(res.conversations, function(convo) {
 						var hasUnread = (!convo.lastReadMessageId && convo.lastReceivedMessageId)
-							|| (convo.lastReadMessageId < convo.lastReceivedMessageId) 
-						return renderBubble(convo.withAccountId, convo.lastReceivedBody, hasUnread)
-					}))
+							|| (convo.lastReadMessageId < convo.lastReceivedMessageId)
+						return { hasUnread:hasUnread, accountId:convo.withAccountId, body:convo.lastReceivedBody, lastReceivedMessageId:convo.lastReceivedMessageId }
+					})
+					$tag.empty().append(
+						$ui.conversationList=list(messages, selectMessage, renderBubble)
+					)
 					if (res.conversations.length == 0) {
 						$tag.append(div('ghostTown', "Start a conversation with a friend below"))
 					}
 				})
-			})),
+			}))),
 			div(style({ height:4 })),
-			section('friends', 'Friends on Dogo', 
+			section('friends', 'Friend', 
 				list(contactsByFacebookId, selectContact, function(contact) {
-					if (contact.memberSince) {
+					// if (contact.memberSince) {
 						return div('contact', face.facebook(contact, true))
-					}
+					// }
 				})
 			)
 		))
+		
+		function selectMessage(message) {
+			var accountId = message.accountId
+			var account = contactsByAccountId[accountId]
+			var conversation = { accountId:accountId, title:account ? account.name : 'Friend' }
+			scroller.push({ conversation:conversation })
+			$ui.conversations.find('#'+bubbleId(accountId)).removeClass('hasUnread')
+		}
+
+		function selectContact(contact) {
+			var conversation = { accountId:contact.accountId, facebookId:contact.facebookId, title:contact.name }
+			scroller.push({ conversation:conversation })
+			$ui.conversations.find('#'+bubbleId(contact.accountId)).removeClass('hasUnread')
+		}
 	}
 }
 
-function renderBubble(withAccountId, body, hasUnread) {
-	return bubbles[withAccountId] = div('clear messageBubble', function(bubble) {
-		if (!accountKnown(withAccountId)) {
-			bubble.append(div('loading', 'Loading...'))
+function renderBubble(message) {
+	return div('clear messageBubble', { id:bubbleId(message.accountId) }, function($bubble) {
+		if (!accountKnown(message.accountId)) {
+			$bubble.append(div('loading', 'Loading...'))
 		}
-		loadAccount(withAccountId, function(withAccount) {
-			bubble.empty().append(
+		loadAccountId(message.accountId, function(account) {
+			$bubble.empty().append(
 				div('unreadDot'),
-				face.facebook(withAccount),
-				div('name', withAccount.name),
-				div('body', body
-					? body
+				face.facebook(account),
+				div('name', account.name),
+				div('body', message.body
+					? message.body
 					: div('youStarted', "You started the conversation.")
 				)
 			)
-			
-			if (hasUnread) { $(bubble).addClass('hasUnread') }
+
+			if (message.hasUnread) { $bubble.addClass('hasUnread') }
 		})
 	})
 }
 
-function selectConvo(convo) {
-	var account = contactsByAccountId[convo.withAccountId]
-	scroller.push({ convo:convo, title:account ? account.name : 'Friend' })
-	$(bubbles[convo.withAccountId]).removeClass('hasUnread')
-}
+function bubbleId(withAccountId) { return 'conversation-bubble-'+withAccountId }
 
-function selectContact(contact) {
-	console.log('selectContact', contact)
-	scroller.push({ contact:contact, title:contact.name })
-	$(bubbles[contact.accountId]).removeClass('hasUnread')
-}
-
-$(function() {
-	onMessage(function(message) {
-		if (bubbles[message.senderAccountId]) {
-			if (!bubbles[message.senderAccountId]) {
-				// TODO 
-				// renderBubble(message.senderAccountId)
-				// take the list and list.addItem
-			}
-			$bubble = $(bubbles[message.senderAccountId])
-			$bubble
-				.addClass('hasUnread')
-				.find('.body').empty().text(message.body)
-			
-			// $('.conversations .dom-list').prepend($bubble)
-		}
-	})	
+events.on('push.message', function(message) {
+	if (!$ui) { return }
+	$ui.conversations.find('#'+bubbleId(message.senderAccountId)).remove()
+	var currentConvo = scroller.current().conversation
+	var isCurrent = currentConvo && (currentConvo.accountId == message.senderAccountId) // TODO also check facebookId
+	$ui.conversationList.prepend({ accountId:message.senderAccountId, body:message.body, hasUnread:!isCurrent })
 })

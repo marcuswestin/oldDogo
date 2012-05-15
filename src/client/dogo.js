@@ -4,6 +4,8 @@ require('tags/button')
 require('tags/list')
 require('tags/style')
 
+require('./events')
+
 create = require('std/create')
 map = require('std/map')
 api = require('./api')
@@ -18,6 +20,8 @@ button = tags.button
 list = tags.list
 style = tags.style
 tags.expose()
+
+var time = require('std/time')
 
 error = function(err) {
 	alert("Oops! "+JSON.stringify(err))
@@ -43,8 +47,8 @@ state = {
 	}
 }
 
-contactsByAccountId = state.get('contactsByAccountId')
-contactsByFacebookId = state.get('contactsByFacebookId')
+contactsByAccountId = state.get('contactsByAccountId') || {}
+contactsByFacebookId = state.get('contactsByFacebookId') || {}
 myAccount = state.get('myAccount')
 updateContacts = function(contacts) {
 	contactsByAccountId = {}
@@ -61,57 +65,61 @@ updateContacts = function(contacts) {
 
 accountKnown = function(accountId) { return !!contactsByAccountId[accountId] }
 
-loadAccount = function(accountId, callback) {
-	if (!accountId) { throw new Error("loadAccount: Undefined accountId") }
-	if (contactsByAccountId[accountId]) {
-		callback(contactsByAccountId[accountId])
+loadFacebookId = function(facebookId, callback) {
+	_loadAccount(null, facebookId, contactsByFacebookId, 'contactsByFacebookId', loadFacebookId.queue, callback)
+}
+loadFacebookId.queue = {}
+
+loadAccountId = function(accountId, callback) {
+	_loadAccount(accountId, null, contactsByAccountId, 'contactsByAccountId', loadAccountId.queue, callback)
+}
+loadAccountId.queue = {}
+
+_loadAccount = function(accountId, facebookId, stash, stashKey, queue, callback) {
+	if (!accountId && !facebookId) { throw new Error("loadAccount: Undefined accountId") }
+	var id = accountId || facebookId
+	if (stash[id]) {
+		callback(stash[id])
 	} else {
-		if (loadAccount.queue[accountId]) {
-			loadAccount.queue[accountId].push(callback)
+		if (queue[id]) {
+			queue[id].push(callback)
 		} else {
-			loadAccount.queue[accountId] = [callback]
-			api.get('account_info', { accountId:accountId }, function(err, res) {
+			queue[id] = [callback]
+			api.get('account_info', { accountId:accountId, facebookId:facebookId }, function(err, res) {
 				if (err) { return error(err) }
-				contactsByAccountId[accountId] = res.account
-				state.set('contactsByAccountId', contactsByAccountId)
-				each(loadAccount.queue[accountId], function(callback) {
+				stash[id] = res.account
+				state.set(stashKey, stash)
+				each(queue[id], function(callback) {
 					callback(res.account)
 				})
-				delete loadAccount.queue[accountId]
+				delete queue[id]
 			})
 		}
 	}
 }
-loadAccount.queue = {}
 
-onMessage = function(handler) { onMessage.handlers.push(handler) }
-onMessage.handlers = []
+events.on('app.start', function(info) {
+	config = info
+	renderApp()
+	bridge.command('app.show')
+})
 
-bridge.eventHandler = function(name, info) {
-	switch(name) {
-		case 'app.start':
-			config = info
-			renderApp()
-			bridge.command('app.show')
-			break
-		case 'push.registerFailed':
-			alert("Uh oh. Push registration failed")
-			break
-		case 'push.registered':
-			state.set('pushToken', info.deviceToken)
-			api.post('push_auth', { pushToken:info.deviceToken, pushSystem:'ios' })
-			break
-		case 'push.notification':
-			var data = info.data
-			each(onMessage.handlers, function(handler) {
-				handler({ senderAccountId:data.senderAccountId, body:data.aps.alert })
-			})
-			bridge.command('device.vibrate')
-			break
-		default:
-			alert('Got unknown event ' + JSON.stringify(event))
-	}
-}
+events.on('push.registerFailed', function(info) {
+	alert("Uh oh. Push registration failed")
+})
+
+events.on('push.registered', function(info) {
+	state.set('pushToken', info.deviceToken)
+	api.post('push_auth', { pushToken:info.deviceToken, pushSystem:'ios' })
+})
+
+events.on('push.notification', function(info) {
+	var data = info.data
+	events.fire('push.message', { senderAccountId:data.senderAccountId, body:data.aps.alert })
+	bridge.command('device.vibrate')
+})
+
+bridge.eventHandler = function(name, info) { events.fire(name, info) }
 
 scoller = null
 function renderApp() {
@@ -137,8 +145,8 @@ function renderApp() {
 
 		scroller.renderBody(3, function($body, view) {
 			console.log("render view", JSON.stringify(view))
-			if (view.convo || view.contact) {
-				conversation.render($body, view)
+			if (view.conversation) {
+				conversation.render($body, view.conversation)
 			} else if (state.get('authToken')) {
 				home.render($body, view)
 			} else {

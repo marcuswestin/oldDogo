@@ -96,9 +96,9 @@ module.exports = proto(null,
 					bind(this, this.respond, req, res))
 			},
 			getConversationMessages: function(req, res) {
-				var params = this._getParams(req, 'withFacebookId', 'withAccountId', 'lastReadMessageId')
+				var params = this._getParams(req, 'withAccountId', 'lastReadMessageId')
 				this.messageService.getMessages(req.session.accountId,
-					params.withFacebookId, params.withAccountId, params.lastReadMessageId,
+					params.withAccountId, params.lastReadMessageId,
 					this.wrapRespond(req, res, 'messages'))
 			},
 			postPushAuth: function(req, res) {
@@ -107,8 +107,8 @@ module.exports = proto(null,
 					bind(this, this.respond, req, res))
 			},
 			getAccountInfo: function(req, res) {
-				var params = this._getParams(req, 'accountId')
-				this.accountService.getAccount(params.accountId, this.wrapRespond(req, res, 'account'))
+				var params = this._getParams(req, 'accountId', 'facebookId')
+				this.accountService.getAccount(params.accountId, params.facebookId, this.wrapRespond(req, res, 'account'))
 			}
 		},
 		misc: {

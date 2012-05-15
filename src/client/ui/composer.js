@@ -8,9 +8,20 @@ var state = {
 	pen: null
 }
 
+var currentAccountId
+var currentFacebookId
+var $currentViewUi
+var currentRenderMessage
+
 module.exports = {
-	render: function($viewUi, convo, contact, renderMessage) {
+	render: function($viewUi, accountId, facebookId, renderMessage) {
 		var $ui = {}
+
+		currentAccountId = accountId
+		currentFacebookId = facebookId
+		$currentViewUi = $viewUi
+		currentRenderMessage = renderMessage
+		
 		return function($tag) {
 			$tag.append(
 				div('composer',
@@ -23,41 +34,28 @@ module.exports = {
 				)
 			)
 			state.pen = pens.smooth
-			selectText(null)
+		}
+		
+		function send() {
+			sendImage()
 		}
 		
 		function selectText(e) {
-			$ui.textInput = $(textarea({ placeholder:placeholder }, button(function() {
-				$ui.textInput.focus()
-			})))
-			$ui.textInput.on('focus', function() {
-				$viewUi.wrapper
-					.css({ marginTop:215 })
-					.scrollTop(1)
-					.on('scroll', function() {
-						if ($viewUi.wrapper.scrollTop() == 0) {
-							$viewUi.wrapper.scrollTop(1)
-						}
-					})
-			})
-			$ui.textInput.on('blur', function() {
-				$viewUi.wrapper
-					.css({ marginTop:0 })
-					.off('scroll')
-			})
-			$ui.surface.empty().append(div('writer', $ui.textInput))
-			$ui.textInput.focus()
+			bridge.command('composer.showTextInput', { x:0, y:214, width:320, height:40 })
+			$ui.surface.empty().append(div('writer'))
 		}
 		
 		function selectDraw() {
-			if ($ui.textInput) { $ui.textInput.blur() }
-			
-			var w = 304
-			var h = 187
-			$ui.drawCanvas = $(canvas('canvas', { width:w, height:h }))
+			var width = 320
+			var height = 187
+			var ratio = window.devicePixelRatio || 1
+			$ui.drawCanvas = $(canvas('canvas', { width:width * ratio, height:height * ratio }, style({ height:height, width:width })))
 			ctx = state.ctx = $ui.drawCanvas[0].getContext('2d')
+			
+			ctx.scale(ratio, ratio);
+			
 			ctx.fillStyle = '#000'
-			ctx.fillRect(0, 0, w, h)
+			ctx.fillRect(0, 0, width, height)
 			
 			$ui.drawCanvas
 				.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
@@ -100,27 +98,6 @@ module.exports = {
 				e.preventDefault()
 				state.pen.onUp(ctx, getPoint(e))
 			}
-		}
-		
-		function send() {
-			var body = trim($ui.textInput.val())
-			$ui.textInput.val('')
-			if (!body) { return }
-			
-			var message = {
-				toAccountId:convo.withAccountId,
-				toFacebookId:contact.facebookId,
-				senderAccountId:myAccount.accountId,
-				body:body
-			}
-			
-			api.post('messages', message, function(err, res) {
-				if (err) { return error(err) }
-			})
-
-			loadAccount(convo.withAccountId, function(withAccount) {
-				$viewUi.messageList.prepend(renderMessage(withAccount, message))
-			})
 		}
 	}
 }
@@ -274,4 +251,36 @@ function rgba(alpha) {
 	} else {
 		return 'rgb('+colors.join(',')+')'
 	}
-}    
+}
+
+events.on('composer.sendText', function(info) {
+	sendText(info.text)
+})
+
+function sendImage() {
+	alert('implement sendImage')
+}
+
+function sendText(text) {
+	var body = trim(text)
+	if (!body) { return }
+	
+	var message = {
+		toAccountId:currentAccountId,
+		toFacebookId:currentFacebookId,
+		senderAccountId:myAccount.accountId,
+		body:body
+	}
+	
+	api.post('messages', message, function(err, res) {
+		if (err) { return error(err) }
+	})
+	
+	if (currentAccountId) {
+		loadAccountId(currentAccountId, function(withAccount) {
+			$currentViewUi.messageList.prepend(currentRenderMessage(withAccount, message))
+		})
+	} else {
+		
+	}
+}
