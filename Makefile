@@ -2,15 +2,15 @@ test:
 	./node_modules/mocha/bin/mocha --bail --reporter list
 
 setup-server: setup
-	cd node_modules/uuid && npm install .
-	cd node_modules/mocha && npm install .
-	cd node_modules/mysql && npm install .
-	cd node_modules/request && npm install .
-	cd node_modules/require && npm install .
-	cd node_modules/optimist && npm install .
-	cd node_modules/aws2js && npm install .
-	cd node_modules/knox && npm install .
-	# if [ ! -d node_modules/express ]; then npm install express@2.5.8 .; fi
+	cd node_modules/uuid && npm install --production .
+	cd node_modules/mocha && npm install --production .
+	cd node_modules/mysql && npm install --production .
+	cd node_modules/request && npm install --production .
+	cd node_modules/require && npm install --production .
+	cd node_modules/optimist && npm install --production .
+	cd node_modules/aws2js && npm install --production .
+	cd node_modules/knox && npm install --production .
+	if [ ! -d node_modules/express ]; then npm install express@2.5.8 .; fi
 
 
 setup-client: setup
