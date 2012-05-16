@@ -87,6 +87,7 @@ function bubbleId(withAccountId) { return 'conversation-bubble-'+withAccountId }
 
 events.on('push.message', function(message) {
 	if (!$ui) { return }
+	$ui.conversations.find('.ghostTown').remove()
 	$ui.conversations.find('#'+bubbleId(message.senderAccountId)).remove()
 	var currentConvo = scroller.current().conversation
 	var isCurrent = currentConvo && (currentConvo.accountId == message.senderAccountId) // TODO also check facebookId
