@@ -6,7 +6,8 @@ var base64 = require('std/base64')
 // 
 module.exports = {
 	post:post,
-	get:get
+	get:get,
+	getAuth:getAuth
 }
 
 function post(path, params, callback) {
@@ -17,15 +18,18 @@ function get(path, params, callback) {
 	return send('GET', path, params, callback)
 }
 
+function getAuth() {
+	var authToken = state.get('authToken')
+	return authToken ? 'Basic '+base64.encode(authToken) : null
+}
+
 function send(method, path, params, callback) {
 	if (!callback && typeof params == 'function') {
 		callback = params
 		delete params
 	}
 	var url = '/api/'+path
-	var authToken = state.get('authToken')
-	var auth = authToken ? 'Basic '+base64.encode(authToken) : null
-	var headers = { 'Authorization':auth, 'X-Dogo-Mode':config.mode }
+	var headers = { 'Authorization':getAuth(), 'X-Dogo-Mode':config.mode }
 	if (method == 'post' && params) {
 		params = JSON.stringify(params)
 		headers['Content-Type'] = 'application/json'

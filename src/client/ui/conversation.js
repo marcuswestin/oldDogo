@@ -45,9 +45,11 @@ module.exports = {
 function renderMessage(withAccount, message) {
 	var fromMe = (message.senderAccountId == myAccount.accountId)
 	var account = fromMe ? myAccount : withAccount
+	
 	return div('clear messageBubble ' + (fromMe ? 'fromMe' : ''),
 		face.facebook(account),
-		div('body', message.body)
+		message.body && div('body', message.body),
+		message.payloadType == 'picture' && img(style({ width:150, height:100 }), { src:'/api/image?conversationId='+message.conversationId+'&pictureId='+message.payloadId+'&authorization='+encodeURIComponent(api.getAuth()) })
 	)
 }
 

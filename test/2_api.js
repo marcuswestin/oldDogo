@@ -7,7 +7,7 @@ var u = require('./1_utils'),
 	qs = require('querystring')
 
 var port = 9090,
-	router = new Router(u.accountService, u.messageService, u.sessionService, { log:false, dev:true })
+	router = new Router(u.accountService, u.messageService, u.sessionService, u.pictureService, { log:false, dev:true })
 
 var api = {
 	post: function(path, params, callback) { api.send('post', path, params, callback) },

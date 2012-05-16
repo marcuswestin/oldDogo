@@ -5,6 +5,7 @@ var exec = require('child_process').exec,
 	Database = require('../src/server/Database'),
 	MessageService = require('../src/server/MessageService'),
 	AccountService = require('../src/server/AccountService'),
+	PictureService = require('../src/server/PictureService'),
 	SessionService = require('../src/server/SessionService'),
 	PushService = require('../src/server/PushService'),
 	assert = require('assert'),
@@ -20,6 +21,7 @@ var u = module.exports = {
 u.database = new Database('localhost', 'dogo_test', 'dogo_tester', 'test'),
 u.accountService = new AccountService(u.database)
 u.pushService = new PushService(u.database, null, null)
+u.pictureService = new PictureService(u.database)
 u.messageService = new MessageService(u.database, u.accountService, u.pushService)
 u.sessionService = new SessionService(u.accountService)
 u.fbAppId = '219049001532833'
@@ -29,7 +31,7 @@ u.fbTestUsers = null
 var fbTestDataFile = __dirname+'/.fbTestUsers.json'
 
 u.pushService.testCount = 0
-u.pushService.sendMessage = function() {
+u.pushService.sendMessagePush = function() {
 	u.pushService.testCount += 1
 }
 

@@ -24,6 +24,8 @@ def build_dogo_web(git_hash):
 		local('cp -r %s/node_modules/apn %s/node_modules' % (src_dir, build_dir))
 		local('cp -r %s/node_modules/std %s/node_modules' % (src_dir, build_dir))
 		local('cp -r %s/node_modules/tags %s/node_modules' % (src_dir, build_dir))
+		local('cp -r %s/node_modules/aws2js %s/node_modules' % (src_dir, build_dir))
+		local('cp -r %s/node_modules/knox %s/node_modules' % (src_dir, build_dir))
 		local('cd %s && cd .. && tar -czf %s %s' % (build_dir, tar_file, build_name))
 		local('echo "%s,%s" | pbcopy' % (tar_file, build_name))
 		local('echo Built and copied deploy args to your clipboard.')

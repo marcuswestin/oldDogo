@@ -29,14 +29,14 @@ module.exports = {
 					div('tools',
 						div('button tool write', 'Write', button(selectText)),
 						div('button tool draw', 'Draw', button(selectDraw)),
-						div('button tool send', 'Send', button(send))
+						div('button tool send', 'Send', button(onSend))
 					)
 				)
 			)
 			state.pen = pens.smooth
 		}
 		
-		function send() {
+		function onSend() {
 			sendImage()
 		}
 		
@@ -45,19 +45,25 @@ module.exports = {
 			$ui.surface.empty().append(div('writer'))
 		}
 		
+		function sendImage() {
+			var data = $ui.canvas[0].toDataURL('image/png')
+			send({ base64Picture:data })
+		}
+		
 		function selectDraw() {
 			var width = 320
 			var height = 187
 			var ratio = window.devicePixelRatio || 1
-			$ui.drawCanvas = $(canvas('canvas', { width:width * ratio, height:height * ratio }, style({ height:height, width:width })))
-			ctx = state.ctx = $ui.drawCanvas[0].getContext('2d')
+			// if (ratio < 2) { ratio = 2 }
+			$ui.canvas = $(canvas('canvas', { width:width * ratio, height:height * ratio }, style({ height:height, width:width })))
+			ctx = state.ctx = $ui.canvas[0].getContext('2d')
 			
 			ctx.scale(ratio, ratio);
 			
 			ctx.fillStyle = '#000'
 			ctx.fillRect(0, 0, width, height)
 			
-			$ui.drawCanvas
+			$ui.canvas
 				.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
 				.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
 			
@@ -65,13 +71,13 @@ module.exports = {
 				div('pens', $.map(pens, function(pen, name) {
 					return div('button', name, button(function() { state.pen = pen }))
 				})),
-				$ui.drawCanvas
+				$ui.canvas
 			))
 			
 			function getPoint(e) {
 				var point = {
-					x:e.originalEvent.pageX - (tags.isTouch ? 8 : $ui.drawCanvas.offset().left),
-					y:e.originalEvent.pageY - $ui.drawCanvas.offset().top
+					x:e.originalEvent.pageX - (tags.isTouch ? 8 : $ui.canvas.offset().left),
+					y:e.originalEvent.pageY - $ui.canvas.offset().top
 				}
 				return point
 			}
@@ -254,33 +260,38 @@ function rgba(alpha) {
 }
 
 events.on('composer.sendText', function(info) {
-	sendText(info.text)
+	var body = trim(info.text)
+	if (!body) { return }
+	send({ body:body })
 })
 
-function sendImage() {
-	alert('implement sendImage')
-}
-
-function sendText(text) {
-	var body = trim(text)
-	if (!body) { return }
-	
+function send(params) {
 	var message = {
 		toAccountId:currentAccountId,
 		toFacebookId:currentFacebookId,
-		senderAccountId:myAccount.accountId,
-		body:body
+		senderAccountId:myAccount.accountId
+	}
+	
+	each(params, function(val, key) { message[key] = val })
+
+	var doDraw = function(message) {
+		if (currentAccountId) {
+			loadAccountId(currentAccountId, function(withAccount) {
+				$currentViewUi.messageList.prepend(currentRenderMessage(withAccount, message))
+			})
+		} else {
+			alert('TODO implement drawing message sent to facebook id')
+		}
+	}
+	
+	if (params.body) {
+		doDraw(message) // draw text messages right away
 	}
 	
 	api.post('messages', message, function(err, res) {
 		if (err) { return error(err) }
+		if (!params.body) {
+			doDraw(res.message) // draw picture messages when they are ready
+		}
 	})
-	
-	if (currentAccountId) {
-		loadAccountId(currentAccountId, function(withAccount) {
-			$currentViewUi.messageList.prepend(currentRenderMessage(withAccount, message))
-		})
-	} else {
-		
-	}
 }

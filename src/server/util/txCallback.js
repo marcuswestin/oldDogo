@@ -1,4 +1,4 @@
-module.exports = function txCallback(tx, callback) {
+module.exports = function txCallback(tx, callback, context) {
 	return function(err, result) {
 		try {
 			if (err) { tx.rollback() }
@@ -6,6 +6,6 @@ module.exports = function txCallback(tx, callback) {
 		} catch(e) {
 			err = e
 		}
-		callback(err, result)
+		callback.call(context || this, err, result)
 	}
 }

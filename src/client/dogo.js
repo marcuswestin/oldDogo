@@ -115,7 +115,8 @@ events.on('push.registered', function(info) {
 
 events.on('push.notification', function(info) {
 	var data = info.data
-	events.fire('push.message', { senderAccountId:data.senderAccountId, body:data.aps.alert })
+	data.body = data.aps.alert
+	events.fire('push.message', data)
 	bridge.command('device.vibrate')
 })
 

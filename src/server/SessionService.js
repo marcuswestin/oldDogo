@@ -51,7 +51,7 @@ module.exports = proto(null,
 			})
 		},
 		authenticateRequest: function(req, callback) {
-			var authorization = req.headers.authorization
+			var authorization = req.headers.authorization || req.param('authorization')
 			if (!authorization) { return callback('Unauthorized') }
 
 			try {

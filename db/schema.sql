@@ -22,6 +22,7 @@ CREATE TABLE picture (
 	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 	created_by_account_id BIGINT UNSIGNED DEFAULT NULL,
 	created_time INT UNSIGNED,
+	uploaded_time INT UNSIGNED,
 	FOREIGN KEY (created_by_account_id) REFERENCES account(id),
 	PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -58,6 +59,7 @@ CREATE TABLE conversation (
 	account_2_id BIGINT UNSIGNED NOT NULL,
 	created_time INT UNSIGNED,
 	last_message_id BIGINT UNSIGNED DEFAULT NULL,
+	bucket_created_time INT UNSIGNED DEFAULT NULL,
 	FOREIGN KEY (last_message_id) REFERENCES message(id),
 	FOREIGN KEY (account_1_id) REFERENCES account(id),
 	FOREIGN KEY (account_2_id) REFERENCES account(id),

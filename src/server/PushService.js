@@ -36,7 +36,7 @@ module.exports = proto(null,
 			console.log("Created apns connection", prodOpts.gateway+':'+prodOpts.port)
 		}
 	}, {
-		sendMessage:function(message, toAccountId, prodPush) {
+		sendMessagePush:function(message, toAccountId, prodPush) {
 			this.db.selectOne(this, this.sql.selectPushInfo+'WHERE id=?', [toAccountId], function(err, data) {
 				if (err) { return }
 				if (!data.pushToken) { return console.log('Bah No push token for', toAccountId) }
@@ -44,7 +44,11 @@ module.exports = proto(null,
 				
 				var notification = new apns.Notification()
 				notification.alert = message.body
-				notification.payload = { senderAccountId: message.senderAccountId }
+				notification.payload = { senderAccountId:message.senderAccountId, conversationId:message.conversationId }
+				if (message.payloadId) {
+					notification.payload.payloadId = message.payloadId
+					notification.payload.payloadType = message.payloadType
+				}
 				notification.device = new apns.Device(data.pushToken, ascii=true)
 				
 				if (prodPush) {

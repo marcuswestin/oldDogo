@@ -8,6 +8,8 @@ setup-server: setup
 	cd node_modules/request && npm install .
 	cd node_modules/require && npm install .
 	cd node_modules/optimist && npm install .
+	cd node_modules/aws2js && npm install .
+	cd node_modules/knox && npm install .
 	# if [ ! -d node_modules/express ]; then npm install express@2.5.8 .; fi
 
 

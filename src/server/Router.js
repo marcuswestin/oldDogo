@@ -6,10 +6,11 @@ var express = require('express'),
 	slice = require('std/slice')
 
 module.exports = proto(null,
-	function(accountService, messageService, sessionService, opts) {
+	function(accountService, messageService, sessionService, pictureService, opts) {
 		this.accountService = accountService
 		this.sessionService = sessionService
 		this.messageService = messageService
+		this.pictureService = pictureService
 		this._opts = opts
 		this._router = express.createServer()
 		this._configureRouter(opts || {})
@@ -50,6 +51,7 @@ module.exports = proto(null,
 			router.get('/api/messages', filter.session.bind(this), rest.getConversationMessages.bind(this))
 			router.post('/api/push_auth', filter.session.bind(this), rest.postPushAuth.bind(this))
 			router.get('/api/account_info', filter.session.bind(this), rest.getAccountInfo.bind(this))
+			router.get('/api/image', filter.session.bind(this), rest.getPicture.bind(this))
 		},
 		redirect:function(path) {
 			return function(req, res) { res.redirect(path) }
@@ -63,7 +65,11 @@ module.exports = proto(null,
 					delete params[argName]
 				}
 			}
-			console.log(req.method, req.url, req.session && req.session.accountId, params)
+			
+			var logParams = JSON.stringify(params)
+			if (logParams.length > 250) { logParams = logParams.substr(0, 250) + ' (......)' }
+			
+			console.log(req.method, req.url, req.session && req.session.accountId, logParams)
 			return params
 		},
 		rest: {
@@ -89,10 +95,10 @@ module.exports = proto(null,
 				this.accountService.getContacts(req.session.accountId, this.wrapRespond(req, res, 'contacts'))
 			},
 			postMessage: function(req, res) {
-				var params = this._getParams(req, 'toFacebookId', 'toAccountId', 'body', 'devPush')
+				var params = this._getParams(req, 'toFacebookId', 'toAccountId', 'body', 'base64Picture', 'devPush')
 				var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
 				this.messageService.sendMessage(req.session.accountId,
-					params.toFacebookId, params.toAccountId, params.body, prodPush,
+					params.toFacebookId, params.toAccountId, params.body, params.base64Picture, prodPush,
 					bind(this, this.respond, req, res))
 			},
 			getConversationMessages: function(req, res) {
@@ -109,6 +115,11 @@ module.exports = proto(null,
 			getAccountInfo: function(req, res) {
 				var params = this._getParams(req, 'accountId', 'facebookId')
 				this.accountService.getAccount(params.accountId, params.facebookId, this.wrapRespond(req, res, 'account'))
+			},
+			getPicture: function(req, res) {
+				var params = this._getParams(req, 'conversationId', 'pictureId')
+				var url = this.pictureService.getImageUrl(req.session.accountId, params.conversationId, params.pictureId)
+				res.redirect(url)
 			}
 		},
 		misc: {
@@ -149,7 +160,9 @@ module.exports = proto(null,
 					code = 500
 					content = err.stack || err.message || err.toString()
 					if (this._opts.log || this._opts.dev) {
-						console.warn('error', content, req.url, req.body, stackError.stack)
+						var logBody = JSON.stringify(req.body)
+						if (logBody.length > 400) { logBody = logBody.substr(0, 400) + ' (......)' }
+						console.warn('error', content, req.url, logBody, stackError.stack)
 					}
 				}
 			}
