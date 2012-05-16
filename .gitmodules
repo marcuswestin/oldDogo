@@ -1,9 +1,6 @@
 [submodule "node_modules/mocha"]
 	path = node_modules/mocha
 	url = https://github.com/visionmedia/mocha.git
-[submodule "node_modules/fun"]
-	path = node_modules/fun
-	url = git@github.com:marcuswestin/fun.git
 [submodule "dependencies/facebook-ios-sdk"]
 	path = dependencies/facebook-ios-sdk
 	url = git://github.com/facebook/facebook-ios-sdk.git
@@ -15,7 +12,7 @@
 	url = https://github.com/felixge/node-mysql.git
 [submodule "node_modules/redis"]
 	path = node_modules/redis
-	url = git@github.com:marcuswestin/node_redis.git
+	url = git://github.com/marcuswestin/node_redis.git
 [submodule "node_modules/request"]
 	path = node_modules/request
 	url = https://github.com/mikeal/request.git
@@ -30,10 +27,10 @@
 	url = https://github.com/visionmedia/nib.git
 [submodule "node_modules/require"]
 	path = node_modules/require
-	url = git@github.com:marcuswestin/require.git
+	url = git://github.com/marcuswestin/require.git
 [submodule "node_modules/std"]
 	path = node_modules/std
-	url = git@github.com:marcuswestin/std.js.git
+	url = git://github.com/marcuswestin/std.js.git
 [submodule "node_modules/optimist"]
 	path = node_modules/optimist
 	url = https://github.com/substack/node-optimist.git
@@ -45,7 +42,7 @@
 	url = https://github.com/LearnBoost/socket.io.git
 [submodule "node_modules/tags"]
 	path = node_modules/tags
-	url = git@github.com:marcuswestin/tags.js.git
+	url = git://github.com/marcuswestin/tags.js.git
 [submodule "node_modules/aws2js"]
 	path = node_modules/aws2js
 	url = https://github.com/SaltwaterC/aws2js.git
