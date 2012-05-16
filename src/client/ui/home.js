@@ -48,8 +48,9 @@ module.exports = {
 		function selectMessage(message) {
 			var accountId = message.accountId
 			var account = contactsByAccountId[accountId]
-			var conversation = { accountId:accountId, title:account ? account.name : 'Friend' }
-			scroller.push({ conversation:conversation })
+			var title = (account ? account.name : 'Friend')
+			var conversation = { accountId:accountId }
+			scroller.push({ title:title, conversation:conversation })
 			$ui.conversations.find('#'+bubbleId(accountId)).removeClass('hasUnread')
 		}
 
