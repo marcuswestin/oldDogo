@@ -25,7 +25,9 @@ module.exports = {
 					var messages = map(res.conversations, function(convo) {
 						var hasUnread = (!convo.lastReadMessageId && convo.lastReceivedMessageId)
 							|| (convo.lastReadMessageId < convo.lastReceivedMessageId)
-						return { hasUnread:hasUnread, accountId:convo.withAccountId, body:convo.lastReceivedBody, lastReceivedMessageId:convo.lastReceivedMessageId }
+						return { hasUnread:hasUnread, accountId:convo.withAccountId, body:convo.lastReceivedBody,
+							lastReceivedMessageId:convo.lastReceivedMessageId,
+							payloadType:convo.lastReceivedPayloadType, payloadId:convo.lastReceivedPayloadId }
 					})
 					$tag.empty().append(
 						$ui.conversationList=list(messages, selectMessage, renderBubble)
@@ -74,7 +76,9 @@ function renderBubble(message) {
 				div('name', account.name),
 				div('body', message.body
 					? message.body
-					: div('youStarted', "You started the conversation.")
+					: message.payloadType == 'picture'
+						? div('youStarted', 'sent you a picture')
+						: div('youStarted', "You started the conversation.")
 				)
 			)
 
@@ -91,5 +95,6 @@ events.on('push.message', function(message) {
 	$ui.conversations.find('#'+bubbleId(message.senderAccountId)).remove()
 	var currentConvo = scroller.current().conversation
 	var isCurrent = currentConvo && (currentConvo.accountId == message.senderAccountId) // TODO also check facebookId
-	$ui.conversationList.prepend({ accountId:message.senderAccountId, body:message.body, hasUnread:!isCurrent })
+	$ui.conversationList.prepend({ accountId:message.senderAccountId, body:message.body, hasUnread:!isCurrent,
+		payloadType:message.payloadType, payloadId:message.payloadId })
 })

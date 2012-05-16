@@ -45,12 +45,16 @@ module.exports = {
 			$ui.surface.empty().append(div('writer'))
 		}
 		
+		var imageTouched
 		function sendImage() {
+			if (!imageTouched) { return }
 			var data = $ui.canvas[0].toDataURL('image/png')
 			send({ base64Picture:data })
+			selectDraw()
 		}
 		
 		function selectDraw() {
+			imageTouched = false
 			var width = 320
 			var height = 187
 			var ratio = window.devicePixelRatio || 1
@@ -91,6 +95,7 @@ module.exports = {
 			}
 
 			function pencilMove(e) {
+				imageTouched = true
 				e.preventDefault()
 				state.pen.onMove(ctx, getPoint(e))
 				// ctx.beginPath()

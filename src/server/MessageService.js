@@ -216,6 +216,8 @@ module.exports = proto(null,
 				conversationId: 'partic.conversation_id',
 				lastReceivedBody: 'last_received.body',
 				lastReceivedTime: 'last_received.sent_time',
+				lastReceivedPayloadType: 'last_received.payload_type',
+				lastReceivedPayloadId: 'last_received.payload_id',
 				lastReceivedMessageId: 'last_received.id',
 				lastReadMessageId: 'partic.last_read_message_id',
 				// TODO Remove lastMessage*
