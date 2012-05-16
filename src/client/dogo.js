@@ -23,7 +23,7 @@ tags.expose()
 
 var time = require('std/time')
 
-error = function(err) {
+button.onError = error = function(err) {
 	alert("Oops! "+JSON.stringify(err))
 }
 
