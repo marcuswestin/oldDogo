@@ -3,6 +3,7 @@ require('tags')
 require('tags/button')
 require('tags/list')
 require('tags/style')
+require('tags/scroller')
 
 require('./events')
 
@@ -27,8 +28,7 @@ button.onError = error = function(err) {
 	alert("Oops! "+JSON.stringify(err))
 }
 
-var makeScroller = require('tags/scroller'),
-	connect = require('./ui/connect'),
+var connect = require('./ui/connect'),
 	home = require('./ui/home'),
 	conversation = require('./ui/conversation')
 
@@ -122,9 +122,9 @@ events.on('push.notification', function(info) {
 
 bridge.eventHandler = function(name, info) { events.fire(name, info) }
 
-scoller = null
+scroller = null
 function renderApp() {
-	scroller = makeScroller(viewport)
+	scroller = tags.scroller(viewport)
 	$(document.body).append(div('app', viewport.fit,
 
 		scroller.renderHead(45, function($head, view, viewBelow, fromView) {
