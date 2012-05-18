@@ -31,7 +31,9 @@ def deploy_dogo_web(git_hash):
 		do('make setup-server')
 	do('mkdir -p %s' % builds_dir)
 	do('cp -RH %s %s/%s' % (src_dir, builds_dir, build_name))
-	sudo_do('nohup node %s/%s/src/server/run.js --config=dev' % (builds_dir, build_name))
+	with settings(warn_only=True):
+		sudo_do('killall -q node')
+	sudo_do('nohup node %s/%s/src/server/run.js --config=prod' % (builds_dir, build_name))
 
 # NEXT Use cluster to run app
 # One app per cpu
