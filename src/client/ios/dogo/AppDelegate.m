@@ -16,10 +16,13 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
 
-        // Set as environment variable in schema
-//        NSString* mode = @"dev";
-        NSString* mode = @"testflight";
-//        NSString* mode = @"appstore";
+        NSString* mode = @"dev";
+#ifdef TESTFLIGHT
+        mode = @"testflight";
+#endif
+#ifdef APPSTORE
+        mode = @"appstore";  
+#endif
         
         [self.config setValue:mode forKey:@"mode"];
         

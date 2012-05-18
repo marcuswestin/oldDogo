@@ -2,7 +2,8 @@ var fs = require('fs'),
 	exec = require('child_process').exec,
 	jsCompiler = require('require/compiler'),
 	stylus = require('stylus'),
-	nib = require('nib')
+	nib = require('nib'),
+	path = require('path')
 
 var dir = '/build/dogo-ios-build'
 
