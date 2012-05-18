@@ -36,9 +36,9 @@ client:
 clean:
 	rm -rf build
 
+GIT_REV=`git rev-parse --verify HEAD`
 deploy-latest-dogo-web:
-	git push origin master
-	GIT_REV=`git rev-parse --verify HEAD`
+	# echo "BUILDING AND DEPLOYING ${GIT_REV}"
 	fab deploy_dogo_web:${GIT_REV} -H dogo-web1
 
 .PHONY: test
