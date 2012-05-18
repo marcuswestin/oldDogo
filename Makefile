@@ -6,13 +6,13 @@ setup-server: setup
 	cd node_modules/mocha && npm install --production .
 	cd node_modules/mysql && npm install --production .
 	cd node_modules/request && npm install --production .
-	cd node_modules/require && npm install --production .
 	cd node_modules/optimist && npm install --production .
 	cd node_modules/aws2js && npm install --production .
 	cd node_modules/knox && npm install --production .
 	cd node_modules/express && npm install --production .
 
-setup-client: setup
+setup-dev: setup
+	cd node_modules/require && npm install --production .
 	cd dependencies/blowtorch && make setup
 	cd dependencies/facebook-ios-sdk && scripts/build_facebook_ios_sdk_static_lib.sh
 
