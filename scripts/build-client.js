@@ -4,7 +4,7 @@ var fs = require('fs'),
 	stylus = require('stylus'),
 	nib = require('nib')
 
-var dir = '/tmp/build/dogo-ios-build'
+var dir = '/build/dogo-ios-build'
 
 exec('rm -rf '+dir, function() {
 	exec('mkdir -p '+dir, function() {
