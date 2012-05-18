@@ -41,6 +41,6 @@ clean:
 deploy-latest-dogo-web:
 	git push origin master
 	GIT_REV=`git rev-parse --verify HEAD`
-	fab update_dogo_web:${GIT_REV} -H dogo-web1
+	fab deploy_dogo_web:${GIT_REV} -H dogo-web1
 
 .PHONY: test
