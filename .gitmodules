@@ -46,9 +46,9 @@
 [submodule "node_modules/knox"]
 	path = node_modules/knox
 	url = https://github.com/LearnBoost/knox.git
-[submodule "dependencies/blowtorch"]
-	path = dependencies/blowtorch
-	url = https://marcuswestin@github.com/marcuswestin/blowtorch.git
 [submodule "node_modules/express"]
 	path = node_modules/express
 	url = https://github.com/visionmedia/express.git
+[submodule "dependencies/blowtorch"]
+	path = dependencies/blowtorch
+	url = git@github.com:marcuswestin/blowtorch.git

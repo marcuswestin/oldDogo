@@ -39,9 +39,8 @@ clean:
 	rm -rf build
 
 deploy-latest-dogo-web:
-	gitupn_push origin master
+	git push origin master
 	GIT_REV=`git rev-parse --verify HEAD`
 	fab update_dogo_web:${GIT_REV} -H dogo-web1
-
 
 .PHONY: test
