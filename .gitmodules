@@ -16,9 +16,6 @@
 [submodule "node_modules/request"]
 	path = node_modules/request
 	url = https://github.com/mikeal/request.git
-[submodule "node_modules/express"]
-	path = node_modules/express
-	url = https://github.com/visionmedia/express.git
 [submodule "node_modules/apn"]
 	path = node_modules/apn
 	url = https://github.com/argon/node-apn.git
@@ -52,3 +49,6 @@
 [submodule "dependencies/blowtorch"]
 	path = dependencies/blowtorch
 	url = https://marcuswestin@github.com/marcuswestin/blowtorch.git
+[submodule "node_modules/express"]
+	path = node_modules/express
+	url = https://github.com/visionmedia/express.git

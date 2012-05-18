@@ -3,10 +3,41 @@ from os.path import basename
 from fabric.api import local, run, put, env, sudo, cd, lcd, settings
 import time
 
+env.use_ssh_config = True
+
+build_dir = "~/build-dogo-web/"
+
+isLocal = True
+
+go = lcd if isLocal else cd
+do = local if isLocal else run
+def cp(from, to):
+	local('cp %s %s' % (from, to)) if isLocal else put(from, to)
+
+def setup_dogo_web():
+	# Intentionally remote-only
+	sudo('apt-get install build-essential make nginx redis-server libssl-dev curl git-core libxml2-dev nodejs npm') # ? mysql-client-core-5.5
+	put('~/flutterby-keys/dogo/secure/aws_dogo_github_id_rsa', '~/.ssh/id_rsa')
+	run('chmod 600 ~/.ssh/id_rsa')
+	run('mkdir -p %s' % build_dir)
+	run('git clone git@github.com:marcuswestin/dogo.git %s' % build_dir)
+	with cd(build_dir):
+		run('make setup-server')
+
+def build_dogo_web(git_hash):
+	with go(build_dir):
+		do('git pull origin master; git checkout %s; git submodule init; git submodule sync; git submodule update;' % git_hash)
+		do('make setup-server')
+
+def update_dogo_web(git_hash):
+	with go(build_dir):
+		do('git pull origin master; git checkout %s; git submodule init; git submodule sync; git submodule update;' % git_hash)
+		
+
 def build_dogo_web(git_hash):
 	def with_updated_build(src_dir):
 		build_name = "dogo-web-%s-%s" % (int(time.time()), git_hash)
-		build_dir = "/tmp/build/%s" % build_name
+		build_dir = "/build/%s" % build_name
 		tar_file = "%s.tar.gz" % build_dir
 		# local('cd %s && make setup-server && make test' % src_dir)
 		local('cd %s && make setup-server' % src_dir)
@@ -32,7 +63,6 @@ def build_dogo_web(git_hash):
 	update_build(git_hash, with_updated_build)
 
 def deploy_dogo_web(tar_file, build_name):
-	env.use_ssh_config = True
 	put(tar_file, tar_file)
 	run('tar -xzf %s' % tar_file)
 	with settings(warn_only=True):
@@ -44,11 +74,10 @@ def deploy_nginx_conf(git_hash):
 		put("%s/src/server/config/nginx.conf" % src_dir, '/tmp/nginx.conf')
 		sudo('cp /tmp/nginx.conf /etc/nginx/nginx.conf')
 		sudo('/etc/init.d/nginx reload')
-	env.use_ssh_config = True
 	update_build(git_hash, with_updated_build)
 
 def update_build(git_hash, then):
-	src_dir = '/tmp/build/dogo'
+	src_dir = '/build/dogo'
 	local('if [ ! -d %s ]; then git clone git@github.com:marcuswestin/dogo.git %s; fi' % (src_dir, src_dir))
 	with lcd(src_dir):
 		local('git pull origin master')

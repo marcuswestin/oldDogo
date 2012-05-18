@@ -10,8 +10,7 @@ setup-server: setup
 	cd node_modules/optimist && npm install --production .
 	cd node_modules/aws2js && npm install --production .
 	cd node_modules/knox && npm install --production .
-	if [ ! -d node_modules/express ]; then npm install express@2.5.8 .; fi
-
+	cd node_modules/express && npm install --production .
 
 setup-client: setup
 	cd dependencies/blowtorch && make setup
@@ -30,8 +29,8 @@ setup:
 run:
 	node src/server/run.js --config=dev
 
-run-instapop:
-	node_modules/fun/bin/fun instapop/instapop.fun
+run-prod:
+	node src/server/run.js --config=prod
 
 client:
 	node scripts/build-client.js
@@ -42,4 +41,4 @@ clean:
 session:
 	node scripts/create-session.js 1
 
-.PHONY: test .setup run-dev build-client build-server run-instapop clean session
+.PHONY: test

@@ -33,8 +33,6 @@ module.exports = proto(null,
 				dev = this.dev,
 				router = this._router
 			
-			router.error(misc.error.bind(this))
-			
 			if (this._opts.dev) {
 				this._setupDev(router)
 			} else {
@@ -52,6 +50,12 @@ module.exports = proto(null,
 			router.post('/api/push_auth', filter.session.bind(this), rest.postPushAuth.bind(this))
 			router.get('/api/account_info', filter.session.bind(this), rest.getAccountInfo.bind(this))
 			router.get('/api/image', filter.session.bind(this), rest.getPicture.bind(this))
+			
+			var self = this
+			router.use(function onError(err, req, res, next){
+				console.log("HERE", err, req, res)
+				self.respond(req, res, err)
+			})
 		},
 		redirect:function(path) {
 			return function(req, res) { res.redirect(path) }
@@ -125,9 +129,6 @@ module.exports = proto(null,
 		misc: {
 			ping: function(req, res) {
 				res.end('"Dogo!"')
-			},
-			error: function(err, req, res) {
-				this.respond(req, res, err)
 			}
 		},
 		filters: {
