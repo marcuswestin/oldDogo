@@ -11,7 +11,7 @@
 
 @implementation AppDelegate
 
-@synthesize facebook, facebookConnectResponseCallback, net, textInput;
+@synthesize facebook, facebookConnectResponseCallback, textInput;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
@@ -30,8 +30,6 @@
         
         self.serverHost = devMode ? @"http://marcus.local:9000" : @"http://api.dogoapp.com";
 
-        net = [[Net alloc] init];
-        
         facebook = [[Facebook alloc] initWithAppId:@"219049001532833" andDelegate:self];
         NSDictionary* facebookSession = [self.state get:@"facebookSession"];
         if (facebookSession) {
@@ -67,8 +65,6 @@
     if ([command isEqualToString:@"facebook.connect"]) {
         self.facebookConnectResponseCallback = responseCallback;
         [facebook authorize:nil];
-    } else if ([command isEqualToString:@"api.request"]) {
-        [net request:data responseCallback:responseCallback];
     } else if ([command isEqualToString:@"composer.showTextInput"]) {
         [self showTextInput:data];
     } else if ([command isEqualToString:@"composer.hideTextInput"]) {

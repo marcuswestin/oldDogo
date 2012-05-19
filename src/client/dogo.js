@@ -244,6 +244,6 @@ if (!tags.isTouch) {
 	var $win = $(window)
 } else {
 	console.log = function() {
-		bridge.command('console.log', slice(arguments))
+		bridge.command('console.log', JSON.stringify(slice(arguments)))
 	}
 }
