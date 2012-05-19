@@ -10,6 +10,7 @@ setup-server: setup
 	cd node_modules/aws2js && npm install --production .
 	cd node_modules/knox && npm install --production .
 	cd node_modules/express && npm install --production .
+	cd node_modules/color && npm install --production .
 
 setup-dev: setup
 	cd node_modules/require && npm install --production .

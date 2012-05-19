@@ -5,6 +5,8 @@ var express = require('express'),
 	curry = require('std/curry'),
 	slice = require('std/slice')
 
+require('color')
+
 module.exports = proto(null,
 	function(accountService, messageService, sessionService, pictureService, opts) {
 		this.accountService = accountService
@@ -53,7 +55,7 @@ module.exports = proto(null,
 			
 			var self = this
 			router.use(function onError(err, req, res, next){
-				console.log("HERE", err, req, res)
+				console.log("ERROR".red, err)
 				self.respond(req, res, err)
 			})
 		},
@@ -156,10 +158,11 @@ module.exports = proto(null,
 					code = 401
 					content = 'Authorization Required'
 					headers['WWW-Authenticate'] = 'Basic'
+					console.warn("Unauthorized".red, req.url.pink)
 				} else {
 					var stackError = new Error()
 					code = 500
-					content = err.stack || err.message || err.toString()
+					content = err.stack || err.message || (err.toString && err.toString()) || err
 					if (this._opts.log || this._opts.dev) {
 						var logBody = JSON.stringify(req.body)
 						if (logBody.length > 400) { logBody = logBody.substr(0, 400) + ' (......)' }
