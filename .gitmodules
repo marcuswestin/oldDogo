@@ -52,3 +52,6 @@
 [submodule "dependencies/blowtorch"]
 	path = dependencies/blowtorch
 	url = git@github.com:marcuswestin/blowtorch.git
+[submodule "node_modules/color"]
+	path = node_modules/color
+	url = https://github.com/harthur/color.git
