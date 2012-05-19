@@ -274,7 +274,7 @@ function send(params) {
 	var message = {
 		toAccountId:currentAccountId,
 		toFacebookId:currentFacebookId,
-		senderAccountId:myAccount.accountId
+		senderAccountId:gState.myAccount().accountId
 	}
 	
 	each(params, function(val, key) { message[key] = val })

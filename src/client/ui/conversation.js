@@ -43,6 +43,7 @@ module.exports = {
 }
 
 function renderMessage(withAccount, message) {
+	var myAccount = gState.myAccount()
 	var fromMe = (message.senderAccountId == myAccount.accountId)
 	var account = fromMe ? myAccount : withAccount
 	

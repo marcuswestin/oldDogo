@@ -35,7 +35,7 @@ function onWebViewJavascriptBridgeReady() {
 				var responseId = message.responseId,
 					callback = callbacks[responseId]
 				delete callbacks[responseId]
-				callback(message.error, message.data)
+				typeof callback == 'function' && callback(message.error, message.data)
 			}
 		})
 	})

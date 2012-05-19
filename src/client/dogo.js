@@ -6,6 +6,7 @@ require('tags/style')
 require('tags/scroller')
 
 require('./events')
+require('./state')
 
 create = require('std/create')
 map = require('std/map')
@@ -33,52 +34,26 @@ var connect = require('./ui/connect'),
 	conversation = require('./ui/conversation')
 
 config = {}
-state = {
-	get: function(name) {
-		var val = localStorage[name]
-		return val ? JSON.parse(localStorage[name]) : undefined
-	},
-	set: function(name, val) {
-		localStorage[name] = JSON.stringify(val)
-	},
-	clear: function() {
-		localStorage.clear()
-	}
-}
 
-contactsByAccountId = state.get('contactsByAccountId') || {}
-contactsByFacebookId = state.get('contactsByFacebookId') || {}
-myAccount = state.get('myAccount')
-updateContacts = function(contacts) {
-	contactsByAccountId = {}
-	contactsByFacebookId = {}
-	each(contacts, function(contact) {
-		if (contact.accountId) {
-			contactsByAccountId[contact.accountId] = contact
-		}
-		contactsByFacebookId[contact.facebookId] = contact
-	})
-	state.set('contactsByAccountId', contactsByAccountId)
-	state.set('contactsByFacebookId', contactsByFacebookId)
-}
 
-accountKnown = function(accountId) { return !!contactsByAccountId[accountId] }
+accountKnown = function(accountId) { return !!gState.cache['contactsByAccountId'][accountId] }
 
 loadFacebookId = function(facebookId, callback) {
-	_loadAccount(null, facebookId, contactsByFacebookId, 'contactsByFacebookId', loadFacebookId.queue, callback)
+	_loadAccount(null, facebookId, 'contactsByFacebookId', loadFacebookId.queue, callback)
 }
 loadFacebookId.queue = {}
 
 loadAccountId = function(accountId, callback) {
-	_loadAccount(accountId, null, contactsByAccountId, 'contactsByAccountId', loadAccountId.queue, callback)
+	_loadAccount(accountId, null, 'contactsByAccountId', loadAccountId.queue, callback)
 }
 loadAccountId.queue = {}
 
-_loadAccount = function(accountId, facebookId, stash, stashKey, queue, callback) {
+var _loadAccount = function(accountId, facebookId, stashKey, queue, callback) {
 	if (!accountId && !facebookId) { throw new Error("loadAccount: Undefined accountId") }
 	var id = accountId || facebookId
+	var stash = gState.cache[stashKey]
 	if (stash[id]) {
-		callback && (stash[id])
+		callback && callback(stash[id])
 		return stash[id]
 	} else {
 		if (queue[id]) {
@@ -88,10 +63,8 @@ _loadAccount = function(accountId, facebookId, stash, stashKey, queue, callback)
 			api.get('account_info', { accountId:accountId, facebookId:facebookId }, function(err, res) {
 				if (err) { return error(err) }
 				stash[id] = res.account
-				state.set(stashKey, stash)
-				each(queue[id], function(callback) {
-					callback(res.account)
-				})
+				gState.set(stashKey, stash)
+				each(queue[id], function(callback) { callback(res.account) })
 				delete queue[id]
 			})
 		}
@@ -100,8 +73,7 @@ _loadAccount = function(accountId, facebookId, stash, stashKey, queue, callback)
 
 events.on('app.start', function(info) {
 	config = info
-	renderApp()
-	bridge.command('app.show')
+	startApp()
 })
 
 events.on('push.registerFailed', function(info) {
@@ -109,7 +81,7 @@ events.on('push.registerFailed', function(info) {
 })
 
 events.on('push.registered', function(info) {
-	state.set('pushToken', info.deviceToken)
+	gState.set('pushToken', info.deviceToken)
 	api.post('push_auth', { pushToken:info.deviceToken, pushSystem:'ios' })
 })
 
@@ -123,53 +95,76 @@ events.on('push.notification', function(info) {
 bridge.eventHandler = function(name, info) { events.fire(name, info) }
 
 scroller = null
-function renderApp() {
-	scroller = tags.scroller(viewport)
-	$(document.body).append(div('app', viewport.fit,
+function startApp() {
+	gState.load(function(err) {
+		if (err) { alert("Uh oh. It looks like you need to re-install Dogo. I'm so sorry! :()") }
+		
+		if (config.mode == 'dev') {
+			window.onerror = function(e) { alert('ERROR ' + e) }
+		} else {
+			window.onerror = function(e) { console.log("ERROR", e) }
+		}
+		
+		scroller = tags.scroller(viewport)
+		$(document.body).append(div('app', viewport.fit,
 
-		scroller.renderHead(45, function($head, view, viewBelow, fromView) {
-			var showBackButton = viewBelow && (scroller.stack.length > (scroller.hasConnectView ? 2 : 1))
-			$head.append(div('head',
-				showBackButton && renderBackButton(viewBelow.title || 'Home'),
-				div('title', view.title || 'Dogo'),
-				(config.mode == "dev") && div('devBar',
-					div('button', 'R', button(function() { bridge.command('app.restart') })),
-					div('button', 'X', button(function() { state.clear(); bridge.command('app.restart') }))
-				)
-			))
-			function renderBackButton(title) {
-				return div('button back', title, button(function() {
-					scroller.pop()
-				}))
-			}
-		}),
+			scroller.renderHead(45, function($head, view, viewBelow, fromView) {
+				console.log('renderHead start')
+				var showBackButton = viewBelow && (scroller.stack.length > (scroller.hasConnectView ? 2 : 1))
+				$head.append(div('head',
+					showBackButton && renderBackButton(viewBelow.title || 'Home'),
+					div('title', view.title || 'Dogo'),
+					(config.mode == "dev") && div('devBar',
+						div('button', 'R', button(function() { bridge.command('app.restart') })),
+						div('button', 'X', button(function() { gState.clear(); bridge.command('app.restart') }))
+					)
+				))
+				function renderBackButton(title) {
+					return div('button back', title, button(function() {
+						scroller.pop()
+					}))
+				}
+				console.log('renderHead done')
+			}),
 
-		scroller.renderBody(3, function($body, view) {
-			console.log("render view", JSON.stringify(view))
-			if (view.conversation) {
-				conversation.render($body, view.conversation)
-			} else if (state.get('authToken')) {
-				home.render($body, view)
-			} else {
-				scroller.hasConnectView = true
-				connect.render($body, function(res) {
-					myAccount = res.account
-					updateContacts(res.contacts)
-					state.set('myAccount', myAccount)
-					state.set('authToken', res.authToken)
-					scroller.push({ account:res.account, title:'Dogo' })
-					
-					bridge.command('push.register')
-				})
-			}
-		})
-	))
+			scroller.renderBody(3, function($body, view) {
+				console.log("render view", JSON.stringify(view))
+				if (view.conversation) {
+					conversation.render($body, view.conversation)
+				} else if (gState.authToken()) {
+					home.render($body, view)
+				} else {
+					scroller.hasConnectView = true
+					connect.render($body, function(res) {
+						var contacts = res.contacts
+						var contactsByAccountId = gState.cache['contactsByAccountId'] || {}
+						var contactsByFacebookId = gState.cache['contactsByFacebookId'] || {}
+						each(contacts, function(contact) {
+							if (contact.accountId) {
+								contactsByAccountId[contact.accountId] = contact
+							}
+							contactsByFacebookId[contact.facebookId] = contact
+						})
+						
+						gState.set('contactsByAccountId', contactsByAccountId)
+						gState.set('contactsByFacebookId', contactsByFacebookId)
+						gState.set('sessionInfo', { myAccount:res.account, authToken:res.authToken })
+						scroller.push({ title:'Dogo' })
+
+						bridge.command('push.register')
+					})
+				}
+			})
+		))
+		
+		bridge.command('app.show')
+	})
 }
 
 if (!tags.isTouch) {
 	// Browser for debugging
 	bridge.command = function(command, data, callback) {
-		if (!callback) {
+		if (!callback && typeof data == 'function') {
 			callback = data
 			data = null
 		}
@@ -182,8 +177,21 @@ if (!tags.isTouch) {
 				break
 			case 'app.restart':
 				location.reload()
+				break
+			case 'state.set':
+				var state = _getState(); state[data.key] = data.value;
+				localStorage['dogo-browser-state'] = JSON.stringify(state)
+				break
+			case 'state.clear':
+				localStorage.clear()
+				break
+			case 'state.load':
+				callback(null, _getState())
+				break
 		}
 	}
+	
+	var _getState = function() { try { return JSON.parse(localStorage['dogo-browser-state']) } catch(e) { return {} } }
 	
 	$(function() {
 		bridge.eventHandler('app.start', { mode:'dev' })
@@ -235,7 +243,6 @@ if (!tags.isTouch) {
 
 	var $win = $(window)
 } else {
-	window.onerror = function(e) { alert('err ' + e)}
 	console.log = function() {
 		bridge.command('console.log', slice(arguments))
 	}

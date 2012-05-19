@@ -39,7 +39,7 @@ module.exports = {
 			}))),
 			div(style({ height:4 })),
 			section('friends', 'Friend', 
-				list(contactsByFacebookId, selectContact, function(contact) {
+				list(gState.cache['contactsByFacebookId'], selectContact, function(contact) {
 					// if (contact.memberSince) {
 						return div('contact', face.facebook(contact, true))
 					// }
@@ -49,7 +49,7 @@ module.exports = {
 		
 		function selectMessage(message) {
 			var accountId = message.accountId
-			var account = accountKnown(accountId) && loadAccount(accountId)
+			var account = accountKnown(accountId) && loadAccountId(accountId)
 			var title = (account ? account.name : 'Friend')
 			var conversation = { accountId:accountId }
 			scroller.push({ title:title, conversation:conversation })
