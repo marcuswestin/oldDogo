@@ -49,7 +49,7 @@ module.exports = {
 		
 		function selectMessage(message) {
 			var accountId = message.accountId
-			var account = contactsByAccountId[accountId]
+			var account = accountKnown(accountId) && loadAccount(accountId)
 			var title = (account ? account.name : 'Friend')
 			var conversation = { accountId:accountId }
 			scroller.push({ title:title, conversation:conversation })

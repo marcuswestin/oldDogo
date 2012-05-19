@@ -39,7 +39,6 @@ state = {
 		return val ? JSON.parse(localStorage[name]) : undefined
 	},
 	set: function(name, val) {
-		console.log('state.set', name, val)
 		localStorage[name] = JSON.stringify(val)
 	},
 	clear: function() {
@@ -79,7 +78,8 @@ _loadAccount = function(accountId, facebookId, stash, stashKey, queue, callback)
 	if (!accountId && !facebookId) { throw new Error("loadAccount: Undefined accountId") }
 	var id = accountId || facebookId
 	if (stash[id]) {
-		callback(stash[id])
+		callback && (stash[id])
+		return stash[id]
 	} else {
 		if (queue[id]) {
 			queue[id].push(callback)
