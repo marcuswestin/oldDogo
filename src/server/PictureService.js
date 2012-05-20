@@ -55,7 +55,7 @@ module.exports = proto(null,
 		},
 		
 		_getPicturePath: function(pictureId) {
-			if (pictureId > 50 || isDev) { return 'picture-'+pictureId+'.png' }
+			if (pictureId > 72 || isDev) { return 'picture-'+pictureId+'.png' }
 			else { return 'pictures/'+pictureId+'.png' }
 		},
 		
