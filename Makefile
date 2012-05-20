@@ -31,9 +31,11 @@ run:
 run-prod:
 	node src/server/run.js --config=prod
 
-testflight:
+client:
 	mkdir -p ~/dogo-builds
 	node scripts/build-client.js
+
+testflight: client
 	xcodebuild -project src/client/ios/dogo.xcodeproj -sdk iphoneos GCC_PREPROCESSOR_DEFINITIONS="TESTFLIGHT" -configuration Release
 	# xcodebuild -project src/client/ios/dogo.xcodeproj -sdk iphonesimulator5.1 GCC_PREPROCESSOR_DEFINITIONS="TESTFLIGHT" -configuration Release
 	/usr/bin/xcrun -sdk iphoneos PackageApplication src/client/ios/build/Release-iphoneos/dogo.app -o ~/Desktop/dogo.ipa
