@@ -9,7 +9,7 @@ var bridge = module.exports = {
 			data = null
 		}
 		
-		var message = { command:command, data:data }
+		var message = { command:command, data:data || {} }
 		
 		if (responseHandler) {
 			message.responseId = 'r' + (uniqueId++)
