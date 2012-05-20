@@ -44,6 +44,7 @@ module.exports = proto(null,
 		},
 		
 		getImageUrl: function(accountId, conversationId, pictureId) {
+			console.log("HERE", getSignedUrl(this._getConversationBucketName(conversationId), this._getPicturePath(pictureId)))
 			return getSignedUrl(this._getConversationBucketName(conversationId), this._getPicturePath(pictureId))
 		},
 		
