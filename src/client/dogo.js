@@ -40,7 +40,7 @@ var connect = require('./ui/connect'),
 
 config = {}
 
-markLoading = function($tag, isLoading) {
+loading = function($tag, isLoading) {
 	if (!$tag) { return }
 	$tag.empty()
 	if (typeof isLoading == 'boolean' && !isLoading) { return }

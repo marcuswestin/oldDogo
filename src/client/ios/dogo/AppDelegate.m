@@ -11,7 +11,7 @@
 
 @implementation AppDelegate
 
-@synthesize facebook, facebookConnectResponseCallback, textInput;
+@synthesize facebook, facebookCallback, textInput;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {

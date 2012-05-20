@@ -98,9 +98,9 @@ function messageFromSentMessage(message, accountId) {
 }
 
 function reloadConversations() {
-	markLoading($ui.info)
+	loading($ui.info)
 	api.get('conversations', function(err, res) {
-		markLoading($ui.info, false)
+		loading($ui.info, false)
 		if (err) { return error(err, $ui.info) }
 		var messages = map(res.conversations, messageFromConvo)
 		$ui.conversations.append(messages)

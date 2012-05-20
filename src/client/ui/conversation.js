@@ -15,8 +15,9 @@ module.exports = {
 		$body.append(
 			div('conversation',
 				$ui.wrapper=$(div('messagesWrapper', style({ height:viewport.height() - 45, overflow:'scroll' }),
+					$ui.invite=$(div('invite')),
 					div('messages', style({ paddingBottom:44 }), function($messageList) {
-						$ui.messageList = $messageList
+						$ui.messages = $messageList
 						refreshMessages()
 					})
 				)),
@@ -27,7 +28,7 @@ module.exports = {
 }
 
 function refreshMessages() {
-	$ui.messageList.append(div('loading', 'Getting messages...'))
+	$ui.messages.append(div('loading', 'Getting messages...'))
 	var params = {
 		withAccountId:currentAccountId,
 		withFacebookId:currentFacebookId,
@@ -35,9 +36,9 @@ function refreshMessages() {
 	}
 	api.get('messages', params, function(err, res) {
 		if (err) { return error(err) }
-		$ui.messageList.empty().append(map(res.messages, renderMessage))
+		$ui.messages.empty().append(map(res.messages, renderMessage))
 		if (!res.messages.length) {
-			$ui.messageList.append(div('ghostTown', 'Start the conversation - draw something!'))
+			$ui.messages.append(div('ghostTown', 'Start the conversation - draw something!'))
 		}
 	})
 }
@@ -52,8 +53,8 @@ function renderMessage(message) {
 }
 
 function addMessage(message) {
-	$ui.messageList.prepend(renderMessage(message))
-	$ui.messageList.find('.ghostTown').remove()
+	$ui.messages.prepend(renderMessage(message))
+	$ui.messages.find('.ghostTown').remove()
 }
 
 events.on('push.message', function(message) {
@@ -69,12 +70,16 @@ events.on('message.sending', function(message) {
 })
 
 events.on('message.sent', function(message, toAccountId, toFacebookId) {
-	if (message.body) { return } // already rendered
 	if (!currentAccountId && toFacebookId && toFacebookId == currentFacebookId) {
 		// A first message was sent to this facebook id, and the server responds with the newly created account id as well as the facebook id
 		currentAccountId = toAccountId
 	}
 	if (currentAccountId != toAccountId) { return }
+	loadAccountId(toAccountId, function(account) {
+		if (account.memberSince) { return }
+		promptInvite(account.accountId, account.facebookId)
+	})
+	if (message.body) { return } // already rendered
 	addMessage(message)
 })
 
@@ -88,3 +93,25 @@ events.on('view.change', function() {
 events.on('app.willEnterForeground', function() {
 	if ($ui) { refreshMessages() }
 })
+
+function promptInvite(accountId, facebookId) {
+	return; // Disabled for now
+	composer.hide()
+	loading($ui.invite)
+	loadAccountId(accountId, function(account) {
+		$ui.invite.empty().append(div(
+			div('encouragement', 'Nice!'),
+			div('personal', account.name, " hasn't downloaded Dogo yet."),
+			div('button', 'Tell them!', button(function() {
+				// TODO events.on('facebook.dialogDidComplete', function() { ... })
+				// https://developers.facebook.com/docs/reference/dialogs/requests/
+				// https://developers.facebook.com/docs/mobile/ios/build/
+				bridge.command('facebook.apprequests', {
+					message:"I sent you a message on Dogo.",
+					notification_text:"Get Dogo!",
+					to:account.facebookId.toString()
+				})
+			}))
+		))
+	})
+}

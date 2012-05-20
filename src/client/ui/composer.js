@@ -11,10 +11,16 @@ var state = {
 var currentAccountId
 var currentFacebookId
 var $currentViewUi
+var $ui
 
-module.exports = {
+var composer = module.exports = {
+	hide:function() {
+		if (!$ui) { return }
+		$ui.surface.empty()
+		bridge.command('composer.hideTextInput')
+	},
 	render: function($viewUi, accountId, facebookId) {
-		var $ui = {}
+		$ui = {}
 
 		currentAccountId = accountId
 		currentFacebookId = facebookId
@@ -39,8 +45,9 @@ module.exports = {
 		}
 		
 		function selectText(e) {
-			bridge.command('composer.showTextInput', { x:0, y:214, width:320, height:40 })
-			$ui.surface.empty().append(div('writer'))
+			composer.hide()
+			bridge.command('composer.showTextInput', { x:0, y:224, width:320, height:40 })
+			$ui.surface.append(div('writer'))
 		}
 		
 		var imageTouched
@@ -52,6 +59,8 @@ module.exports = {
 		}
 		
 		function selectDraw() {
+			composer.hide()
+			
 			imageTouched = false
 			var width = 320
 			var height = 187
@@ -69,7 +78,7 @@ module.exports = {
 				.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
 				.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
 			
-			$ui.surface.empty().append(div('drawer',
+			$ui.surface.append(div('drawer',
 				div('pens', $.map(pens, function(pen, name) {
 					return div('button', name, button(function() { state.pen = pen }))
 				})),
@@ -286,5 +295,5 @@ function send(params) {
 }
 
 events.on('view.change', function onViewRenderEvent() {
-	bridge.command('composer.hideTextInput')
+	composer.hide()
 })
