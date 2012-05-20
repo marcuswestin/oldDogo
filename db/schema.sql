@@ -34,6 +34,8 @@ CREATE TABLE account (
 	facebook_id BIGINT UNSIGNED NOT NULL,
 	locale CHAR(5) DEFAULT NULL,
 	full_name VARCHAR(255) NOT NULL,
+	first_name VARCHAR(63) NOT NULL,
+	last_name VARCHAR(63) NOT NULL,
 	image_picture_id BIGINT UNSIGNED DEFAULT NULL,
 	gender ENUM('male','female') DEFAULT NULL,
 	push_token VARCHAR(255) DEFAULT NULL,

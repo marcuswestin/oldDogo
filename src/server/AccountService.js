@@ -84,13 +84,13 @@ module.exports = proto(null,
 		},
 		_insertClaimedAccount: function(conn, fbAccount, callback) {
 			conn.insert(this,
-				'INSERT INTO account SET created_time=?, claimed_time=?, facebook_id=?, full_name=?, gender=?, locale=?',
-				[conn.time(), conn.time(), fbAccount.id, fbAccount.name, fbAccount.gender, fbAccount.locale], callback)
+				'INSERT INTO account SET created_time=?, claimed_time=?, facebook_id=?, full_name=?, first_name=?, last_name=?, gender=?, locale=?',
+				[conn.time(), conn.time(), fbAccount.id, fbAccount.name, fbAccount.first_name, fbAccount.last_name, fbAccount.gender, fbAccount.locale], callback)
 		},
 		_updateAccountClaimed: function(conn, fbAccount, callback) {
 			conn.updateOne(this,
-				'UPDATE account SET claimed_time=?, full_name=?, gender=?, locale=? WHERE facebook_id=?',
-				[conn.time(), fbAccount.name, fbAccount.gender, fbAccount.locale, fbAccount.id], callback)
+				'UPDATE account SET claimed_time=?, full_name=?, first_name=?, last_name=?, gender=?, locale=? WHERE facebook_id=?',
+				[conn.time(), fbAccount.name, fbAccount.first_name, fbAccount.last_name, fbAccount.gender, fbAccount.locale, fbAccount.id], callback)
 		},
 		_updateAccountPushAuth: function(conn, accountId, pushToken, pushSystem, callback) {
 			conn.updateOne(this,
@@ -129,6 +129,8 @@ module.exports = proto(null,
 			account: sql.selectFrom('account', {
 				facebookId:'facebook_id',
 				name:'full_name',
+				firstName:'first_name',
+				lastName:'last_name',
 				accountId:'id',
 				pushToken:'push_token',
 				memberSince:'claimed_time'
