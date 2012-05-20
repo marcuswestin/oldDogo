@@ -18,25 +18,10 @@ module.exports = {
 		$ui = {}
 		
 		$(body).append(div('home',
-			$ui.conversations=$(section('conversations', null, div(function($tag) {
-				$tag.append(div('loading', 'Loading...'))
-				api.get('conversations', function(err, res) {
-					if (err) { return error(err) }
-					var messages = map(res.conversations, function(convo) {
-						var hasUnread = (!convo.lastReadMessageId && convo.lastReceivedMessageId)
-							|| (convo.lastReadMessageId < convo.lastReceivedMessageId)
-						return { hasUnread:hasUnread, accountId:convo.withAccountId, body:convo.lastReceivedBody,
-							lastReceivedMessageId:convo.lastReceivedMessageId,
-							payloadType:convo.lastReceivedPayloadType, payloadId:convo.lastReceivedPayloadId }
-					})
-					$tag.empty().append(
-						$ui.conversationList=list(messages, selectMessage, renderBubble)
-					)
-					if (res.conversations.length == 0) {
-						$tag.append(div('ghostTown', "Start a conversation with a friend below"))
-					}
-				})
-			}))),
+			$ui.info = $(div('info')),
+			div('conversations',
+				$ui.conversations = list([], selectMessage, function(conv) { return conv.conversationId }, renderBubble)
+			),
 			div(style({ height:4 })),
 			section('friends', 'Friend', 
 				list(gState.cache['contactsByFacebookId'], selectContact, function(contact) {
@@ -47,29 +32,17 @@ module.exports = {
 			)
 		))
 		
-		function selectMessage(message) {
-			var accountId = message.accountId
-			var account = accountKnown(accountId) && loadAccountId(accountId)
-			var title = (account ? account.name : 'Friend')
-			var conversation = { accountId:accountId }
-			scroller.push({ title:title, conversation:conversation })
-			$ui.conversations.find('#'+bubbleId(accountId)).removeClass('hasUnread')
-		}
-
-		function selectContact(contact) {
-			var conversation = { accountId:contact.accountId, facebookId:contact.facebookId, title:contact.name }
-			scroller.push({ conversation:conversation })
-			$ui.conversations.find('#'+bubbleId(contact.accountId)).removeClass('hasUnread')
-		}
+		reloadConversations()
 	}
 }
 
 function renderBubble(message) {
+	$ui.info.find('.ghostTown').remove()
 	return div('clear messageBubble', { id:bubbleId(message.accountId) }, function($bubble) {
 		if (!accountKnown(message.accountId)) {
 			$bubble.append(div('loading', 'Loading...'))
 		}
-		loadAccountId(message.accountId, function(account) {
+		loadAccountId(message.accountId, function doRenderBubble(account) {
 			$bubble.empty().append(
 				div('unreadDot'),
 				face.facebook(account),
@@ -81,20 +54,93 @@ function renderBubble(message) {
 						: div('youStarted', "You started the conversation.")
 				)
 			)
-
 			if (message.hasUnread) { $bubble.addClass('hasUnread') }
 		})
 	})
 }
 
+function messageFromConvo(convo) {
+	var hasUnread = (!convo.lastReadMessageId && convo.lastReceivedMessageId)
+					|| (convo.lastReadMessageId < convo.lastReceivedMessageId)
+	return {
+		accountId: convo.withAccountId,
+		hasUnread: hasUnread,
+		body: convo.lastReceivedBody,
+		lastReceivedMessageId: convo.lastReceivedMessageId,
+		payloadType: convo.lastReceivedPayloadType,
+		payloadId: convo.lastReceivedPayloadId,
+		conversationId: convo.id
+	}
+}
+
+function messageFromPush(pushMessage) {
+	var currentConvo = scroller.current().conversation
+	var isCurrent = (currentConvo && (currentConvo.accountId == pushMessage.senderAccountId)) // TODO also check facebookId
+	return {
+		accountId: pushMessage.senderAccountId,
+		hasUnread: !isCurrent,
+		body: pushMessage.body,
+		lastReceivedMessageId: pushMessage.id,
+		payloadType: pushMessage.payloadType,
+		payloadId: pushMessage.payloadId,
+		conversationId: pushMessage.conversationId
+	}
+}
+
+function messageFromSentMessage(message, accountId) {
+	return {
+		accountId: accountId,
+		hasUnread: false,
+		body: null, payloadType: null, payloadId:null, // So that it will still show the most recent received message
+		lastReceivedMessageId: null,
+		conversationId: message.conversationId
+	}
+}
+
+function reloadConversations() {
+	markLoading($ui.info)
+	api.get('conversations', function(err, res) {
+		markLoading($ui.info, false)
+		if (err) { return error(err, $ui.info) }
+		var messages = map(res.conversations, messageFromConvo)
+		$ui.conversations.append(messages)
+		if (res.conversations.length == 0) {
+			$ui.info.empty().append(div('ghostTown', "Start a conversation with a friend below"))
+		}
+	})
+}
+
+function selectMessage(message) {
+	var accountId = message.accountId
+	var account = accountKnown(accountId) && loadAccountId(accountId)
+	var title = (account ? account.name : 'Friend')
+	var conversation = { accountId:accountId }
+	scroller.push({ title:title, conversation:conversation })
+	$ui.conversations.find('#'+bubbleId(accountId)).removeClass('hasUnread')
+}
+
+function selectContact(contact) {
+	var conversation = { accountId:contact.accountId, facebookId:contact.facebookId }
+	scroller.push({ conversation:conversation, title: contact.name })
+	$ui.conversations.find('#'+bubbleId(contact.accountId)).removeClass('hasUnread')
+}
+
 function bubbleId(withAccountId) { return 'conversation-bubble-'+withAccountId }
 
-events.on('push.message', function(message) {
-	if (!$ui) { return }
-	$ui.conversations.find('.ghostTown').remove()
-	$ui.conversations.find('#'+bubbleId(message.senderAccountId)).remove()
-	var currentConvo = scroller.current().conversation
-	var isCurrent = currentConvo && (currentConvo.accountId == message.senderAccountId) // TODO also check facebookId
-	$ui.conversationList.prepend({ accountId:message.senderAccountId, body:message.body, hasUnread:!isCurrent,
-		payloadType:message.payloadType, payloadId:message.payloadId })
+events.on('push.message', function(pushMessage) {
+	if ($ui) {
+		$ui.conversations.prepend(messageFromPush(pushMessage))
+	}
+})
+
+events.on('app.willEnterForeground', function() {
+	if ($ui) {
+		reloadConversations()
+	}
+})
+
+events.on('message.sent', function onMessageSentHome(message, toAccountId, toFacebookId) {
+	if (!$ui.conversations.find('#'+bubbleId(toAccountId))[0]) {
+		$ui.conversations.prepend(messageFromSentMessage(message, toAccountId))
+	}
 })

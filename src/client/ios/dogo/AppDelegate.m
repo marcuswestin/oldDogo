@@ -68,7 +68,10 @@
     } else if ([command isEqualToString:@"composer.showTextInput"]) {
         [self showTextInput:data];
     } else if ([command isEqualToString:@"composer.hideTextInput"]) {
+        [textInput resignFirstResponder];
         [textInput removeFromSuperview];
+    } else {
+        NSLog(@"WARNING ObjC Got unknown command: %@ %@", command, data);
     }
 }
 

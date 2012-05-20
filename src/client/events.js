@@ -6,13 +6,14 @@ events = {
 
 var _handlers = {}
 
-function fire(name, info) {
+function fire(name) {
+	var args = slice(arguments, 1)
 	var handlers = _handlers[name]
 	if (!handlers || !handlers.length) {
-		return alert('Got unknown event ' + name + ": " + JSON.stringify(info))
+		return alert('Got unknown event ' + name + ": " + JSON.stringify(args))
 	}
 	for (var i=0; i<handlers.length; i++) {
-		handlers[i](info)
+		handlers[i].apply(this, args)
 	}
 	return this
 }

@@ -36,6 +36,7 @@ module.exports = proto(null,
 				router = this._router
 			
 			if (this._opts.dev) {
+				isDev = true
 				this._setupDev(router)
 			} else {
 				router.get('/', misc.ping)
@@ -108,9 +109,9 @@ module.exports = proto(null,
 					bind(this, this.respond, req, res))
 			},
 			getConversationMessages: function(req, res) {
-				var params = this._getParams(req, 'withAccountId', 'lastReadMessageId')
+				var params = this._getParams(req, 'withAccountId', 'withFacebookId', 'lastReadMessageId')
 				this.messageService.getMessages(req.session.accountId,
-					params.withAccountId, params.lastReadMessageId,
+					params.withAccountId, params.withFacebookId, params.lastReadMessageId,
 					this.wrapRespond(req, res, 'messages'))
 			},
 			postPushAuth: function(req, res) {

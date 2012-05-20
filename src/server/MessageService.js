@@ -27,7 +27,7 @@ module.exports = proto(null,
 				return callback('Empty message')
 			}
 			
-			this._withContactAccountId(accountId, toFacebookAccountId, toAccountId, function(err, toAccountId) {
+			this._withContactAccountId(accountId, toAccountId, toFacebookAccountId, function(err, toAccountId) {
 				if (err) { return callback(err) }
 				this.withConversation(accountId, toAccountId, bind(this, function(err, conversation) {
 					if (err) { return logErr(err, callback, 'sendMessage.withConversationInfo', accountId, toAccountId) }
@@ -37,7 +37,7 @@ module.exports = proto(null,
 						this._createMessage(accountId, toAccountId, conversation.id, body, pictureId, bind(this, function(err, message) {
 							if (err) { return callback(err) }
 							this.pushService.sendMessagePush(message, toAccountId, prodPush)
-							callback(null, { message:message })
+							callback(null, { message:message, toAccountId:toAccountId, toFacebookId:toFacebookAccountId })
 						}))
 					})
 					
@@ -49,16 +49,19 @@ module.exports = proto(null,
 				}))
 			})
 		},
-		getMessages: function(accountId, withAccountId, lastReadMessageId, callback) {
-			this.getConversation(accountId, withAccountId, bind(this, function(err, conversation) {
-				if (err) { return logErr(err, callback, 'getMessages.getConversation', accountId, withAccountId) }
-				if (!conversation) { return callback(null, []) }
-				this._selectMessages(this.db, conversation.id, bind(this, function(err, messages) {
-					if (err) { return logErr(err, callback, 'getMessages._selectMessages', conversation.id) }
-					callback(null, messages)
-					this._markLastReadMessage(accountId, conversation.id, messages, lastReadMessageId)
+		getMessages: function(accountId, withAccountId, withFacebookId, lastReadMessageId, callback) {
+			this._withContactAccountId(accountId, withAccountId, withFacebookId, function(err, withAccountId) {
+				if (err) { return callback(err) }
+				this.getConversation(accountId, withAccountId, bind(this, function(err, conversation) {
+					if (err) { return logErr(err, callback, 'getMessages.getConversation', accountId, withAccountId) }
+					if (!conversation) { return callback(null, []) }
+					this._selectMessages(this.db, conversation.id, bind(this, function(err, messages) {
+						if (err) { return logErr(err, callback, 'getMessages._selectMessages', conversation.id) }
+						callback(null, messages)
+						this._markLastReadMessage(accountId, conversation.id, messages, lastReadMessageId)
+					}))
 				}))
-			}))
+			})
 		},
 		_markLastReadMessage:function(accountId, conversationId, messages, lastReadMessageId) {
 			// Find most recent message sent not by me
@@ -76,7 +79,7 @@ module.exports = proto(null,
 				} 
 			}
 		},
-		_withContactAccountId: function(accountId, contactFacebookId, contactAccountId, callback) {
+		_withContactAccountId: function(accountId, contactAccountId, contactFacebookId, callback) {
 			if (contactAccountId) {
 				callback.call(this, null, contactAccountId)
 			} else {
@@ -213,7 +216,7 @@ module.exports = proto(null,
 			selectParticipation:sql.selectFrom('conversation_participation partic', {
 				account1Id: 'convo.account_1_id',
 				account2Id: 'convo.account_2_id',
-				conversationId: 'partic.conversation_id',
+				id: 'partic.conversation_id',
 				lastReceivedBody: 'last_received.body',
 				lastReceivedTime: 'last_received.sent_time',
 				lastReceivedPayloadType: 'last_received.payload_type',

@@ -48,11 +48,12 @@ module.exports = proto(null,
 		},
 		
 		_getConversationBucketName: function(conversationId) {
-			return 'dogo-test6-conversation-'+conversationId
+			if (isDev) { return 'dogo-dev-conversation-'+conversationId }
+			else { return 'dogo-prod-conversation-'+conversationId }
 		},
 		
 		_getPicturePath: function(pictureId) {
-			return 'pictures/'+pictureId+'.png'
+			if (pictureId > 50 || isDev) { return 'picture-'+pictureId+'.png' }
 		},
 		
 		_withConversationBucket:function(conversation, callback) {
@@ -61,8 +62,14 @@ module.exports = proto(null,
 			if (conversation.hasBucket) { return callback.call(this, null, bucket) }
 			console.log('Creating bucket:', bucket)
 			s3.createBucket(bucket, 'public-read', region, bind(this, function(err, res) {
-				console.log('Created bucket DONE:', bucket, err, res)
-				if (err) { return callback.call(this, err) }
+				console.log("Done creating bucket:", bucket)
+				if (err) {
+					if (err.document && err.document.Code == 'BucketAlreadyOwnedByYou') {
+						// Do nothing
+					} else {
+						return callback.call(this, err)
+					}
+				}
 				this._updateConversationHasBucket(this.db, conversation.id, function(err) {
 					if (err) { return callback.call(this, err) }
 					callback.call(this, null, bucket)

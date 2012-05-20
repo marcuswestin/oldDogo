@@ -25,8 +25,13 @@ tags.expose()
 
 var time = require('std/time')
 
-button.onError = error = function(err) {
-	alert("Oops! "+JSON.stringify(err))
+button.onError = error = function(err, $tag) {
+	var message = "Oops! "+JSON.stringify(err)
+	if ($tag) {
+		$tag.empty().append(div('error', message))
+	} else {
+		alert(message)
+	}
 }
 
 var connect = require('./ui/connect'),
@@ -35,39 +40,48 @@ var connect = require('./ui/connect'),
 
 config = {}
 
+markLoading = function($tag, isLoading) {
+	if (!$tag) { return }
+	$tag.empty()
+	if (typeof isLoading == 'boolean' && !isLoading) { return }
+	$tag.empty().append(div('loading', 'Loading...'))
+}
+
+getId = function(d) { console.log("HERE", d); return d.id }
 
 accountKnown = function(accountId) { return !!gState.cache['contactsByAccountId'][accountId] }
-
-loadFacebookId = function(facebookId, callback) {
-	_loadAccount(null, facebookId, 'contactsByFacebookId', loadFacebookId.queue, callback)
-}
+loadFacebookId = function(facebookId, callback) { return loadAccount(null, facebookId, callback) }
 loadFacebookId.queue = {}
-
-loadAccountId = function(accountId, callback) {
-	_loadAccount(accountId, null, 'contactsByAccountId', loadAccountId.queue, callback)
-}
+loadAccountId = function(accountId, callback) { return loadAccount(accountId, null, callback) }
 loadAccountId.queue = {}
-
-var _loadAccount = function(accountId, facebookId, stashKey, queue, callback) {
+loadAccount = function(accountId, facebookId, callback) {
 	if (!accountId && !facebookId) { throw new Error("loadAccount: Undefined accountId") }
-	var id = accountId || facebookId
-	var stash = gState.cache[stashKey]
-	if (stash[id]) {
-		callback && callback(stash[id])
-		return stash[id]
+	if (accountId) {
+		var cacheKey = 'contactsByAccountId'
+		var queue = loadAccountId.queue
+		var id = accountId
 	} else {
-		if (queue[id]) {
-			queue[id].push(callback)
-		} else {
-			queue[id] = [callback]
-			api.get('account_info', { accountId:accountId, facebookId:facebookId }, function(err, res) {
-				if (err) { return error(err) }
-				stash[id] = res.account
-				gState.set(stashKey, stash)
-				each(queue[id], function(callback) { callback(res.account) })
-				delete queue[id]
-			})
-		}
+		var cacheKey = 'contactsByFacebookId'
+		var queue = loadFacebookId.queue
+		var id = facebookId
+	}
+	
+	var cache = gState.cache[cacheKey]
+	var account = cache[id]
+	if (account) {
+		callback && callback(account)
+		return account
+	} else if (queue[id]) {
+		queue[id].push(callback)
+	} else {
+		queue[id] = [callback]
+		api.get('account_info', { accountId:accountId, facebookId:facebookId }, function(err, res) {
+			if (err) { return error(err) }
+			cache[id] = res.account
+			gState.set(cacheKey, cache)
+			each(queue[id], function(callback) { callback(res.account) })
+			delete queue[id]
+		})
 	}
 }
 
@@ -105,7 +119,7 @@ function startApp() {
 			window.onerror = function(e) { console.log("ERROR", e) }
 		}
 		
-		scroller = tags.scroller(viewport)
+		scroller = tags.scroller(function onViewChange() { events.fire('view.change') })
 		$(document.body).append(div('app', viewport.fit,
 
 			scroller.renderHead(45, function($head, view, viewBelow, fromView) {
@@ -247,3 +261,5 @@ if (!tags.isTouch) {
 		bridge.command('console.log', JSON.stringify(slice(arguments)))
 	}
 }
+
+bridge.init()

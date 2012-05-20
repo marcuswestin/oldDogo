@@ -11,6 +11,17 @@ var face = module.exports = {
 		// 		$tag.css('background', 'url("'+url+'")')
 		// 	})
 		// })
+	},
+	
+	load: function(accountId, showRibbon) {
+		return div('face', function($tag) {
+			loadAccount(accountId, null, function(account) {
+				if (showRibbon && account.memberSince) {
+					$tag.append(div('member-ribbon'))
+				}
+				$tag.css('background', 'url("https://graph.facebook.com/'+account.facebookId+'/picture") rgba(255, 255, 255, .4)')
+			})
+		})
 	}
 
 }

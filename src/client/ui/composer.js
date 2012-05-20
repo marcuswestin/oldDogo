@@ -11,16 +11,14 @@ var state = {
 var currentAccountId
 var currentFacebookId
 var $currentViewUi
-var currentRenderMessage
 
 module.exports = {
-	render: function($viewUi, accountId, facebookId, renderMessage) {
+	render: function($viewUi, accountId, facebookId) {
 		var $ui = {}
 
 		currentAccountId = accountId
 		currentFacebookId = facebookId
 		$currentViewUi = $viewUi
-		currentRenderMessage = renderMessage
 		
 		return function($tag) {
 			$tag.append(
@@ -279,24 +277,14 @@ function send(params) {
 	
 	each(params, function(val, key) { message[key] = val })
 
-	var doDraw = function(message) {
-		if (currentAccountId) {
-			loadAccountId(currentAccountId, function(withAccount) {
-				$currentViewUi.messageList.prepend(currentRenderMessage(withAccount, message))
-			})
-		} else {
-			alert('TODO implement drawing message sent to facebook id')
-		}
-	}
-	
-	if (params.body) {
-		doDraw(message) // draw text messages right away
-	}
+	events.fire('message.sending', message)
 	
 	api.post('messages', message, function(err, res) {
 		if (err) { return error(err) }
-		if (!params.body) {
-			doDraw(res.message) // draw picture messages when they are ready
-		}
+		events.fire('message.sent', res.message, res.toAccountId, res.toFacebookId)
 	})
 }
+
+events.on('view.change', function onViewRenderEvent() {
+	bridge.command('composer.hideTextInput')
+})
