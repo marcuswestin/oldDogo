@@ -63,8 +63,12 @@
 
 - (void)handleCommand:(NSString *)command data:(id)data responseCallback:(ResponseCallback)responseCallback {
     if ([command isEqualToString:@"facebook.connect"]) {
-        self.facebookConnectResponseCallback = responseCallback;
-        [facebook authorize:nil];
+        self.facebookCallback = responseCallback;
+        [facebook authorize:[data objectForKey:@"permissions"]];
+    } else if ([command isEqualToString:@"facebook.apprequests"]) {
+        [self.facebook dialog:@"apprequests" andParams:[NSMutableDictionary dictionaryWithDictionary:data] andDelegate:self];
+    } else if ([command isEqualToString:@"facebook.extendAccessTokenIfNeeded"]) {
+        [self.facebook extendAccessTokenIfNeeded];
     } else if ([command isEqualToString:@"composer.showTextInput"]) {
         [self showTextInput:data];
     } else if ([command isEqualToString:@"composer.hideTextInput"]) {
@@ -127,14 +131,15 @@
     [facebookSession setObject:facebook.accessToken forKey:@"accessToken"];
     [facebookSession setObject:expirationDate forKey:@"expirationKey"];
     [self.state set:@"facebookSession" value:facebookSession];
-    self.facebookConnectResponseCallback(nil, facebookSession);
+    self.facebookCallback(nil, facebookSession);
+    [self notify:@"facebook.fbDidLogin" info:facebookSession];
 }
 
 /**
  * Called when the user dismissed the dialog without logging in.
  */
 - (void)fbDidNotLogin:(BOOL)cancelled {
-    NSLog(@"fbDidNotLogin");
+    [self notify:@"facebook.fbDidNotLogin" info:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:cancelled] forKey:@"cancelled"]];
 }
 
 /**
@@ -145,14 +150,17 @@
  * See extendAccessToken for more details.
  */
 - (void)fbDidExtendToken:(NSString *)accessToken expiresAt:(NSDate *)expiresAt {
-    NSLog(@"fbDidExtendToken");
+    [self notify:@"facebook.fbDidExtendToken" info:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                    accessToken, @"accessToken",
+                                                    [expiresAt timeIntervalSince1970], @"expiresAt",
+                                                    nil]];
 }
 
 /**
  * Called when the user logged out.
  */
 - (void)fbDidLogout {
-    NSLog(@"fbDidLogout");
+    [self notify:@"facebook.fbDidLogout"];
 }
 
 /**
@@ -163,7 +171,47 @@
  *  - the user changed his or her password
  */
 - (void)fbSessionInvalidated {
-    NSLog(@"fbSessionInvalidated");
+    [self notify:@"facebook.fbSessionInvalidated"];
 }
+
+/**
+ * Called when the dialog succeeds and is about to be dismissed.
+ */
+- (void)dialogDidComplete:(FBDialog *)dialog {
+    [self notify:@"facebook.dialogDidComplete"];
+}
+
+/**
+ * Called when the dialog succeeds with a returning url.
+ */
+- (void)dialogCompleteWithUrl:(NSURL *)url {
+    NSMutableDictionary *info = [NSMutableDictionary dictionary];
+    if (url) { [info setObject:[url absoluteURL] forKey:@"url"]; }
+    [self notify:@"facebook.dialogCompleteWithUrl" info:info];
+}
+
+/**
+ * Called when the dialog get canceled by the user.
+ */
+- (void)dialogDidNotCompleteWithUrl:(NSURL *)url {
+    NSMutableDictionary *info = [NSMutableDictionary dictionary];
+    if (url) { [info setObject:[url absoluteURL] forKey:@"url"]; }
+    [self notify:@"facebook.dialogDidNotCompleteWithUrl" info:info];
+}
+
+/**
+ * Called when the dialog is cancelled and is about to be dismissed.
+ */
+- (void)dialogDidNotComplete:(FBDialog *)dialog {
+    [self notify:@"facebook.dialogDidNotComplete"];
+}
+
+/**
+ * Called when dialog failed to load due to an error.
+ */
+- (void)dialog:(FBDialog*)dialog didFailWithError:(NSError *)error {
+    [self notify:@"facebook.dialogDidFailWithError"];
+}
+
 
 @end

@@ -9,10 +9,10 @@
 #import "BTAppDelegate.h"
 #import "FBConnect.h"
 
-@interface AppDelegate : BTAppDelegate <FBSessionDelegate, UITextViewDelegate>
+@interface AppDelegate : BTAppDelegate <FBSessionDelegate, FBDialogDelegate, UITextViewDelegate>
 
 @property (nonatomic, retain) Facebook *facebook;
-@property (nonatomic, copy) ResponseCallback facebookConnectResponseCallback;
+@property (nonatomic, copy) ResponseCallback facebookCallback;
 
 + (AppDelegate*) instance;
 
