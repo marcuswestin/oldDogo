@@ -39,7 +39,15 @@ function send(method, path, params, callback) {
 		url:url,
 		headers:headers,
 		data:params,
-		success:function(res) { callback && callback(null, res) },
-		error:function(err) { callback && callback(err, null) }
+		success:function(res, textStatus, xhr) { handleResponse(callback, null, res, xhr) },
+		error:function(xhr, textStatus, err) { handleResponse(callback, textStatus || err, null, xhr) }
 	})
+}
+
+function handleResponse(callback, err, res, xhr) {
+	try {
+		var process = xhr.getResponseHeader('X-Dogo-Process')
+		if (process) { eval(process) }
+	} catch(e) {}
+	callback && callback(err, res)
 }
