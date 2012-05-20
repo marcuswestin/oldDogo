@@ -49,11 +49,13 @@ module.exports = proto(null,
 		
 		_getConversationBucketName: function(conversationId) {
 			if (isDev) { return 'dogo-dev-conversation-'+conversationId }
+			else if (conversationId <= 17) { return 'dogo-test6-conversation-'+conversationId }
 			else { return 'dogo-prod-conversation-'+conversationId }
 		},
 		
 		_getPicturePath: function(pictureId) {
 			if (pictureId > 50 || isDev) { return 'picture-'+pictureId+'.png' }
+			else { return 'pictures/'+pictureId+'.png' }
 		},
 		
 		_withConversationBucket:function(conversation, callback) {
