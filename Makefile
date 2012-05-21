@@ -12,10 +12,6 @@ setup-dev: setup
 	cd node_modules/socket.io && npm install .
 
 setup:
-	# Make the .__npm_installed__ file not clutter commits
-	echo ".__npm_installed__" > ~/.npm_gitignore
-	git config --global core.excludesfile ~/.npm_gitignore
-	# Git submodules
 	git submodule init
 	git submodule sync
 	git submodule update

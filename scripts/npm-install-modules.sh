@@ -1,8 +1,8 @@
-for npm_module in ./node_modules/*
+for npm_module in uuid mysql request optimist aws2js knox express color
 do
-	if [ ! -f $npm_module/.__npm_installed__ ]
+	if [ ! -f node_modules/$npm_module/.__npm_installed__ ]
 	then
 		echo "check npm install $npm_module"
-		cd $npm_module && npm install . --production && touch .__npm_installed__ && cd ../..
+		cd node_modules/$npm_module && npm install . --production && touch .__npm_installed__ && cd ../..
 	fi
 done
