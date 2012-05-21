@@ -2,15 +2,7 @@ test:
 	./node_modules/mocha/bin/mocha --bail --reporter list
 
 setup-server: setup
-	cd node_modules/uuid && npm install --production .
-	cd node_modules/mocha && npm install --production .
-	cd node_modules/mysql && npm install --production .
-	cd node_modules/request && npm install --production .
-	cd node_modules/optimist && npm install --production .
-	cd node_modules/aws2js && npm install --production .
-	cd node_modules/knox && npm install --production .
-	cd node_modules/express && npm install --production .
-	cd node_modules/color && npm install --production .
+	bash scripts/npm-install-modules.sh
 
 setup-dev: setup
 	cd node_modules/require && npm install --production .
@@ -20,6 +12,10 @@ setup-dev: setup
 	cd node_modules/socket.io && npm install .
 
 setup:
+	# Make the .__npm_installed__ file not clutter commits
+	echo ".__npm_installed__" > ~/.npm_gitignore
+	git config --global core.excludesfile ~/.npm_gitignore
+	# Git submodules
 	git submodule init
 	git submodule sync
 	git submodule update
