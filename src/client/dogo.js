@@ -99,6 +99,10 @@ events.on('push.registered', function(info) {
 	api.post('push_auth', { pushToken:info.deviceToken, pushSystem:'ios' })
 })
 
+events.on('app.willEnterForeground', function() {
+	bridge.command('app.setIconBadgeNumber', { number:0 })
+})
+
 events.on('push.notification', function(info) {
 	var data = info.data
 	
@@ -276,3 +280,4 @@ if (!tags.isTouch) {
 }
 
 bridge.init()
+

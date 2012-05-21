@@ -46,6 +46,7 @@ module.exports = proto(null,
 					if (err) { return console.log("ERROR this.sql.selectAccountFirstName", fromAcccountId) }
 					var notification = new apns.Notification()
 					notification.payload = { id:message.id, senderAccountId:message.senderAccountId, conversationId:message.conversationId }
+					notification.badge = 1
 					if (message.payloadId) {
 						notification.payload.payloadId = message.payloadId
 						notification.payload.payloadType = message.payloadType
