@@ -14,7 +14,7 @@ module.exports = {
 							return error(err)
 						}
 						$el.text('Connected!')
-						onConnected(res)
+						onConnected(res, data)
 					})
 				})
 			}))

@@ -22,5 +22,9 @@ gState = {
 		var sessionInfo = gState.cache['sessionInfo']
 		return sessionInfo && sessionInfo['myAccount']
 	},
+	facebookSession:function() {
+		var sessionInfo = gState.cache['sessionInfo']
+		return sessionInfo && sessionInfo['facebookSession']
+	},
 	cache: {}
 }

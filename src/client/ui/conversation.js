@@ -77,7 +77,7 @@ events.on('message.sent', function(message, toAccountId, toFacebookId) {
 	if (currentAccountId != toAccountId) { return }
 	loadAccountId(toAccountId, function(account) {
 		if (account.memberSince) { return }
-		promptInvite(account.accountId, account.facebookId)
+		promptInvite(message, account.accountId, account.facebookId)
 	})
 	if (message.body) { return } // already rendered
 	addMessage(message)
@@ -94,8 +94,7 @@ events.on('app.willEnterForeground', function() {
 	if ($ui) { refreshMessages() }
 })
 
-function promptInvite(accountId, facebookId) {
-	return; // Disabled for now
+function promptInvite(message, accountId, facebookId) {
 	composer.hide()
 	loading($ui.invite)
 	loadAccountId(accountId, function(account) {
@@ -106,10 +105,27 @@ function promptInvite(accountId, facebookId) {
 				// TODO events.on('facebook.dialogDidComplete', function() { ... })
 				// https://developers.facebook.com/docs/reference/dialogs/requests/
 				// https://developers.facebook.com/docs/mobile/ios/build/
-				bridge.command('facebook.apprequests', {
-					message:"I sent you a message on Dogo.",
-					notification_text:"Get Dogo!",
-					to:account.facebookId.toString()
+				
+				if (gState.facebookSession()) {
+					bridge.command('facebook.setSession', gState.facebookSession())
+				}
+				
+				var myAccount = gState.myAccount()
+				var name = myAccount.firstName || myAccount.name
+				if (message.body) {
+					var text = name+' says: "'+message.body+'". Reply in style with Dogo!'
+				} else {
+					var text = 'sent you a drawing! Reply in style with Dogo'
+				}
+				
+				bridge.command('facebook.dialog', {
+					dialog: 'apprequests',
+					params: {
+						message: text,
+						to: account.facebookId.toString(),
+						data: JSON.stringify({ conversationId:message.conversationId }),
+						// frictionless:'1'
+					}
 				})
 			}))
 		))

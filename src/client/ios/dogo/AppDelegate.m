@@ -31,12 +31,6 @@
         self.serverHost = devMode ? @"http://marcus.local:9000" : @"http://api.dogoapp.com";
 
         facebook = [[Facebook alloc] initWithAppId:@"219049001532833" andDelegate:self];
-        NSDictionary* facebookSession = [self.state get:@"facebookSession"];
-        if (facebookSession) {
-            facebook.accessToken = [facebookSession objectForKey:@"accessToken"];
-            NSNumber* expirationDate = [facebookSession objectForKey:@"expirationToken"];
-            facebook.expirationDate = [NSDate dateWithTimeIntervalSince1970:[expirationDate doubleValue]];
-        }
         
         [[self.webView scrollView] setBounces:NO];
         self.webView.dataDetectorTypes = UIDataDetectorTypeNone;
@@ -65,8 +59,18 @@
     if ([command isEqualToString:@"facebook.connect"]) {
         self.facebookCallback = responseCallback;
         [facebook authorize:[data objectForKey:@"permissions"]];
-    } else if ([command isEqualToString:@"facebook.apprequests"]) {
-        [self.facebook dialog:@"apprequests" andParams:[NSMutableDictionary dictionaryWithDictionary:data] andDelegate:self];
+    } else if ([command isEqualToString:@"facebook.dialog"]) {
+        NSString* dialog = [data objectForKey:@"dialog"]; // oauth, feed, and apprequests
+        NSMutableDictionary* params = [NSMutableDictionary dictionaryWithDictionary:[data objectForKey:@"params"]]; // so silly
+        NSLog(@"HERE1");
+        [self.facebook dialog:dialog andParams:params andDelegate:self];
+        NSLog(@"HERE2");
+    } else if ([command isEqualToString:@"facebook.setSession"]) {
+        facebook.accessToken = [data objectForKey:@"accessToken"];
+        NSDate* expirationDate = [NSDate dateWithTimeIntervalSince1970:[[data objectForKey:@"expirationDate"] doubleValue]];
+        facebook.expirationDate = expirationDate;
+    } else if ([command isEqualToString:@"facebook.isSessionValid"]) {
+        responseCallback(nil, [NSDictionary dictionaryWithObject:jsonBool([facebook isSessionValid]) forKey:@"isValid"]);
     } else if ([command isEqualToString:@"facebook.extendAccessTokenIfNeeded"]) {
         [self.facebook extendAccessTokenIfNeeded];
     } else if ([command isEqualToString:@"composer.showTextInput"]) {
@@ -125,12 +129,10 @@
  * Called when the user successfully logged in.
  */
 - (void)fbDidLogin {
-    NSLog(@"fbDidLogin");
     NSMutableDictionary* facebookSession = [NSMutableDictionary dictionary];
     NSNumber* expirationDate = [NSNumber numberWithDouble:[facebook.expirationDate timeIntervalSince1970]];
     [facebookSession setObject:facebook.accessToken forKey:@"accessToken"];
-    [facebookSession setObject:expirationDate forKey:@"expirationKey"];
-    [self.state set:@"facebookSession" value:facebookSession];
+    [facebookSession setObject:expirationDate forKey:@"expirationDate"];
     self.facebookCallback(nil, facebookSession);
     [self notify:@"facebook.fbDidLogin" info:facebookSession];
 }

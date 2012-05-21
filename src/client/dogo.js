@@ -149,7 +149,7 @@ function startApp() {
 					home.render($body, view)
 				} else {
 					scroller.hasConnectView = true
-					connect.render($body, function(res) {
+					connect.render($body, function(res, facebookSession) {
 						var contacts = res.contacts
 						var contactsByAccountId = gState.cache['contactsByAccountId'] || {}
 						var contactsByFacebookId = gState.cache['contactsByFacebookId'] || {}
@@ -162,7 +162,7 @@ function startApp() {
 						
 						gState.set('contactsByAccountId', contactsByAccountId)
 						gState.set('contactsByFacebookId', contactsByFacebookId)
-						gState.set('sessionInfo', { myAccount:res.account, authToken:res.authToken })
+						gState.set('sessionInfo', { myAccount:res.account, authToken:res.authToken, facebookSession:facebookSession })
 						scroller.push({ title:'Dogo' })
 
 						bridge.command('push.register')
