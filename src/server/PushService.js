@@ -36,28 +36,34 @@ module.exports = proto(null,
 			console.log("Created apns connection", prodOpts.gateway+':'+prodOpts.port)
 		}
 	}, {
-		sendMessagePush:function(message, toAccountId, prodPush) {
+		sendMessagePush:function(message, fromAcccountId, toAccountId, prodPush) {
 			this.db.selectOne(this, this.sql.selectPushInfo+'WHERE id=?', [toAccountId], function(err, data) {
 				if (err) { return }
 				if (!data.pushToken) { return console.log('Bah No push token for', toAccountId) }
 				if (data.pushSystem != 'ios') { return console.error('WARNING Unknown push system', data.pushSystem) }
 				
-				var notification = new apns.Notification()
-				notification.alert = message.body
-				notification.payload = { id:message.id, senderAccountId:message.senderAccountId, conversationId:message.conversationId }
-				if (message.payloadId) {
-					notification.payload.payloadId = message.payloadId
-					notification.payload.payloadType = message.payloadType
-				}
-				notification.device = new apns.Device(data.pushToken, ascii=true)
-				
-				if (prodPush) {
-					console.log("Send distribution push notification", JSON.stringify(notification).length)
-					this.prodApnsConnection.sendNotification(notification)
-				} else {
-					console.log("Send sandbox push notification", JSON.stringify(notification).length)
-					this.devApnsConnection.sendNotification(notification)
-				}
+				this.db.selectOne(this, this.sql.selectAccountFirstName+'WHERE id=?', [fromAcccountId], function(err, fromAccountInfo) {
+					if (err) { return console.log("ERROR this.sql.selectAccountFirstName", fromAcccountId) }
+					var notification = new apns.Notification()
+					notification.payload = { id:message.id, senderAccountId:message.senderAccountId, conversationId:message.conversationId }
+					if (message.payloadId) {
+						notification.payload.payloadId = message.payloadId
+						notification.payload.payloadType = message.payloadType
+						// notification.alert = fromAccountInfo.firstName + ' sent you a drawing'
+					} else {
+						notification.alert = message.body
+						// notification.alert = fromAccountInfo.firstName + ' says: "'+message.body+'"'
+					}
+					notification.device = new apns.Device(data.pushToken, ascii=true)
+
+					if (prodPush) {
+						console.log("Send distribution push notification", JSON.stringify(notification).length)
+						this.prodApnsConnection.sendNotification(notification)
+					} else {
+						console.log("Send sandbox push notification", JSON.stringify(notification).length)
+						this.devApnsConnection.sendNotification(notification)
+					}
+				})
 			})
 		},
 		
@@ -69,6 +75,9 @@ module.exports = proto(null,
 			selectPushInfo: sql.selectFrom('account', {
 				pushToken:'push_token',
 				pushSystem:'push_system'
+			}),
+			selectAccountFirstName: sql.selectFrom('account', {
+				firstName:'first_name'
 			})
 		}
 	}

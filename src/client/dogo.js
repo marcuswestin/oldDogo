@@ -101,7 +101,20 @@ events.on('push.registered', function(info) {
 
 events.on('push.notification', function(info) {
 	var data = info.data
-	data.body = data.aps.alert
+	
+	var alert = data.aps && data.aps.alert
+	if (alert) {
+		var match
+		
+		if (match=alert.match(/^\w+ says: "(.*)"/i)) {
+			data.body = match[1]
+		} else if (alert.match(/^\w+ sent you a drawing/i)) {
+			// No body for drawings
+		} else {
+			data.body = alert
+			// backcompat
+		}
+	}
 	events.fire('push.message', data)
 	bridge.command('device.vibrate')
 })
