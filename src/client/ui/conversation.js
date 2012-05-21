@@ -95,6 +95,7 @@ events.on('app.willEnterForeground', function() {
 })
 
 function promptInvite(message, accountId, facebookId) {
+	return
 	composer.hide()
 	loading($ui.invite)
 	loadAccountId(accountId, function(account) {
