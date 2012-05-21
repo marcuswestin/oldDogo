@@ -126,7 +126,7 @@ var pens = {
 			ctx.moveTo(point.x, point.y)
 			ctx.beginPath()
 			ctx.lineWidth = pens.smooth.lineWidth.init
-			ctx.strokeStyle = rgba()
+			ctx.fillStyle = ctx.strokeStyle = rgba()
 			state.points = [point]
 		},
 		onMove: function(ctx, point) {
@@ -155,7 +155,11 @@ var pens = {
 			state.points = null
 			
 			points.push(point)
-			if (points && points.length > 1) {
+			if (points.length == 2) {
+				ctx.arc(points[0].x, points[0].y, 5, 0, Math.PI*2, true)
+				ctx.closePath()
+				ctx.fill()
+			} else if (points.length > 2) {
 				// curve through the last two points
 				var pN0 = points[points.length - 1]
 				var pN1 = points[points.length - 2]
