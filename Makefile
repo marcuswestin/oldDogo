@@ -12,6 +12,9 @@ setup-dev: setup
 	cd node_modules/socket.io && npm install .
 
 setup:
+	echo "node_modules" > ~/.__npm_installed__gitignore
+	echo ".__npm_installed__" >> ~/.__npm_installed__gitignore
+	git config --global core.excludesfile ~/.__npm_installed__gitignore
 	git submodule init
 	git submodule sync
 	git submodule update
