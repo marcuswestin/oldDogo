@@ -62,9 +62,7 @@
     } else if ([command isEqualToString:@"facebook.dialog"]) {
         NSString* dialog = [data objectForKey:@"dialog"]; // oauth, feed, and apprequests
         NSMutableDictionary* params = [NSMutableDictionary dictionaryWithDictionary:[data objectForKey:@"params"]]; // so silly
-        NSLog(@"HERE1");
         [self.facebook dialog:dialog andParams:params andDelegate:self];
-        NSLog(@"HERE2");
     } else if ([command isEqualToString:@"facebook.setSession"]) {
         facebook.accessToken = [data objectForKey:@"accessToken"];
         NSDate* expirationDate = [NSDate dateWithTimeIntervalSince1970:[[data objectForKey:@"expirationDate"] doubleValue]];
