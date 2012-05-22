@@ -225,7 +225,7 @@ if (!tags.isTouch) {
 	var _getState = function() { try { return JSON.parse(localStorage['dogo-browser-state']) } catch(e) { return {} } }
 	
 	$(function() {
-		bridge.eventHandler('app.start', { mode:'dev' })
+		bridge.eventHandler('app.start', { config: { mode:'dev' }, bundleVersion:'DevChrome' })
 		$('.app').css({ margin:'0 auto' })
 		$('body').css({ background:'#222' })
 	})
