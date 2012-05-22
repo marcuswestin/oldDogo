@@ -102,38 +102,41 @@ events.on('app.willEnterForeground', function() {
 function promptInvite(message, accountId, facebookId) {
 	return
 	composer.hide()
-	loading($ui.invite)
 	loadAccountId(accountId, function(account) {
-		$ui.invite.empty().append(div(
-			div('encouragement', 'Nice!'),
-			div('personal', account.name, " hasn't downloaded Dogo yet."),
-			div('button', 'Tell them!', button(function() {
-				// TODO events.on('facebook.dialogDidComplete', function() { ... })
-				// https://developers.facebook.com/docs/reference/dialogs/requests/
-				// https://developers.facebook.com/docs/mobile/ios/build/
+		
+		var $infoBar = $(div('dogo-info blue',
+			div('invite',
+				div('encouragement', 'Nice ', message.payloadType=='picture' ? 'Picture' : 'Message', '!'),
+				div('personal', account.name, " doesn't have Dogo yet ..."),
+				div('button', 'Send via Facebook', button(function() {
+					// TODO events.on('facebook.dialogDidComplete', function() { ... })
+					// https://developers.facebook.com/docs/reference/dialogs/requests/
+					// https://developers.facebook.com/docs/mobile/ios/build/
 				
-				if (gState.facebookSession()) {
-					bridge.command('facebook.setSession', gState.facebookSession())
-				}
-				
-				var myAccount = gState.myAccount()
-				var name = myAccount.firstName || myAccount.name
-				if (message.body) {
-					var text = name+' says: "'+message.body+'". Reply in style with Dogo!'
-				} else {
-					var text = 'sent you a drawing! Reply in style with Dogo'
-				}
-				
-				bridge.command('facebook.dialog', {
-					dialog: 'apprequests',
-					params: {
-						message: text,
-						to: account.facebookId.toString(),
-						data: JSON.stringify({ conversationId:message.conversationId }),
-						// frictionless:'1'
+					if (gState.facebookSession()) {
+						bridge.command('facebook.setSession', gState.facebookSession())
 					}
-				})
-			}))
+				
+					var myAccount = gState.myAccount()
+					var name = myAccount.firstName || myAccount.name
+					if (message.body) {
+						var text = name+' says: "'+message.body+'". Reply in style with Dogo!'
+					} else {
+						var text = 'sent you a drawing! Reply in style with Dogo'
+					}
+				
+					bridge.command('facebook.dialog', {
+						dialog: 'apprequests',
+						params: {
+							message: text,
+							to: account.facebookId.toString(),
+							data: JSON.stringify({ conversationId:message.conversationId })
+							// frictionless:'1'
+						}
+					})
+				}))
+			)
 		))
+		$infoBar.insertAfter($ui.messages.find('.messageBubble')[0])
 	})
 }

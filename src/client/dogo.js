@@ -99,7 +99,7 @@ events.on('push.registered', function(info) {
 	api.post('push_auth', { pushToken:info.deviceToken, pushSystem:'ios' })
 })
 
-events.on('app.willEnterForeground', function() {
+events.on('app.didBecomeActive', function() {
 	bridge.command('app.setIconBadgeNumber', { number:0 })
 })
 

@@ -10,10 +10,33 @@ color3 = #E0E4C9
 color4 = #EF8805
 color5 = #F56B00
 
+// http://azuliadesigns.com/css-message-notification-bars/
+blueLight = #BDE5F8
+blueDark = #00529B
+greenLight = #DFF2BF
+greenDark = #4F8A10
+yellowLight = #FEEFB3
+yellowDark = #9F6000
+redLight = #FFBABA
+redDark = #D8000C
+
 headGr1 = color4
 headGr2 = color5
 textShadow = 0 1px 0 #888;
 buttonShadow = 0 1px 2px #444;
+
+.blue
+	background blueLight; color blueDark; border-color blueDark;
+
+.green
+	background greenLight; color greenDark; border-color greenDark;
+
+.yellow
+	background yellowLight; color yellowDark; border-color yellowDark;
+
+.red
+	background redLight; color redDark; border-color redDark;
+
 
 .app
 	background linear-gradient(top, color2, #fff); height 100%;
@@ -40,11 +63,13 @@ buttonShadow = 0 1px 2px #444;
 .connect, .invite
 	text-align center; width 100%;
 	.button
-		font-weight bold; font-size 22px; text-shadow textShadow; width 120px; margin 0 auto; padding 6px 8px 8px;
+		font-size 22px; text-shadow textShadow; margin 0 auto; padding 6px 8px 8px;
 	.button.active
 		text-shadow none;
 .connect .button
-	margin 160px auto;
+	font-weight bold; margin 160px auto; width 120px; 
+.invite .button
+	width 210px;
 
 .home
 	.section
@@ -97,6 +122,13 @@ buttonRadius = 10px;
 .conversation
 	.messageBubble
 		margin 4px 8px 0;
+	.dogo-info
+		width 100%; margin 4px 0; padding 4px 0 10px 0; border-width 1px 0; border-style solid;
+		.encouragement
+			font-size 23px; margin 0 0 4px 0;
+		.button
+			margin-top 4px;
+	
 	.composer
 		position absolute; bottom 0; width 320px; padding 0;
 		background linear-gradient(top, rgba(60,60,60,0.0), rgba(60,60,60,0.9))

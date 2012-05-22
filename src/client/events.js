@@ -1,3 +1,5 @@
+var each = require('std/each')
+
 // global
 events = {
 	on:on,
@@ -19,7 +21,11 @@ function fire(name) {
 }
 
 function on(name, handler) {
-	if (!_handlers[name]) { _handlers[name] = [] }
-	_handlers[name].push(handler)
+	if ($.isArray(name)) {
+		each(name, function(name) { on(name, handler) })
+	} else {
+		if (!_handlers[name]) { _handlers[name] = [] }
+		_handlers[name].push(handler)
+	}
 	return this
 }
