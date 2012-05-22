@@ -47,14 +47,13 @@ module.exports = proto(null,
 					var notification = new apns.Notification()
 					notification.payload = { id:message.id, senderAccountId:message.senderAccountId, conversationId:message.conversationId }
 					notification.badge = 1
-					// notification.sound = "vibrate.wav"
+					notification.sound = "vibrate.wav"
 					if (message.payloadId) {
 						notification.payload.payloadId = message.payloadId
 						notification.payload.payloadType = message.payloadType
-						// notification.alert = fromAccountInfo.firstName + ' sent you a drawing'
+						notification.alert = fromAccountInfo.firstName + ' sent you a drawing'
 					} else {
-						notification.alert = message.body
-						// notification.alert = fromAccountInfo.firstName + ' says: "'+message.body+'"'
+						notification.alert = fromAccountInfo.firstName + ' says: "'+message.body+'"'
 					}
 					notification.device = new apns.Device(data.pushToken, ascii=true)
 
