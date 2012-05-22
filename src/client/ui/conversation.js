@@ -47,9 +47,19 @@ function renderMessage(message) {
 	var fromMe = (message.senderAccountId == gState.myAccount().accountId)
 	return div('clear messageBubble ' + (fromMe ? 'fromMe' : ''),
 		face.load(message.senderAccountId),
-		message.body && div('body', message.body),
-		message.payloadType == 'picture' && img(style({ width:150, height:100 }), { src:'/api/image?conversationId='+message.conversationId+'&pictureId='+message.payloadId+'&authorization='+encodeURIComponent(api.getAuth()) })
+		renderContent(message)
 	)
+}
+
+function renderContent(message) {
+	var picSized = style({ width:150, height:100 })
+	if (message.body) {
+		return div('body', message.body)
+	} else if (message.base64Picture) {
+		return img(picSized, { src:message.base64Picture })
+	} else if (message.payloadType == 'picture') {
+		return img(picSized, { src:'/api/image?conversationId='+message.conversationId+'&pictureId='+message.payloadId+'&authorization='+encodeURIComponent(api.getAuth()) })
+	}
 }
 
 function addMessage(message) {
@@ -63,10 +73,7 @@ events.on('push.message', function(message) {
 })
 
 events.on('message.sending', function(message) {
-	if (message.body) {
-		// Render text messages right away
-		addMessage(message)
-	}
+	addMessage(message)
 })
 
 events.on('message.sent', function(message, toAccountId, toFacebookId) {
@@ -79,8 +86,6 @@ events.on('message.sent', function(message, toAccountId, toFacebookId) {
 		if (account.memberSince) { return }
 		promptInvite(message, account.accountId, account.facebookId)
 	})
-	if (message.body) { return } // already rendered
-	addMessage(message)
 })
 
 events.on('view.change', function() {
