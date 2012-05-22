@@ -1,9 +1,11 @@
 var face = module.exports = {
 
-	facebook: function(account, showRibbon) {
-		return div('face', showRibbon && account.memberSince && div('member-ribbon'), style({
-			background:'url("https://graph.facebook.com/'+account.facebookId+'/picture") rgba(255, 255, 255, .4)'
-		}))
+	facebook: function(account, showRibbon, lazyLoad) {
+		return div('face', showRibbon && account.memberSince && div('member-ribbon'),
+			lazyLoad
+				? [{ facebookId:account.facebookId }, style({ backgroundColor:'rgba(255, 255, 255, .4)' })]
+				: style({ background:face.background(account.facebookId) })
+		)
 		// return div('face', showRibbon && account.memberSince && div('member-ribbon'), function($tag) {
 		// 	var url = 'https://graph.facebook.com/'+account.facebookId+'/picture'
 		// 	bridge.command('net.cache', { url:url, override:false }, function(err, res) {
@@ -13,13 +15,17 @@ var face = module.exports = {
 		// })
 	},
 	
+	background:function(facebookId) {
+		return 'url("https://graph.facebook.com/'+facebookId+'/picture") rgba(255, 255, 255, .4)'
+	},
+	
 	load: function(accountId, showRibbon) {
 		return div('face', function($tag) {
 			loadAccount(accountId, null, function(account) {
 				if (showRibbon && account.memberSince) {
 					$tag.append(div('member-ribbon'))
 				}
-				$tag.css('background', 'url("https://graph.facebook.com/'+account.facebookId+'/picture") rgba(255, 255, 255, .4)')
+				$tag.css('background', face.background(account.facebookId))
 			})
 		})
 	}

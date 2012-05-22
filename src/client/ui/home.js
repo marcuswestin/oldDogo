@@ -3,7 +3,7 @@ var conversation = require('./conversation')
 var $ui
 
 module.exports = {
-	render:function(body) {
+	render:function($body) {
 		var section = function(className, headerLabel, content) {
 			return div('section clear',
 				headerLabel && div('header',
@@ -17,20 +17,41 @@ module.exports = {
 		
 		$ui = {}
 		
-		$(body).append(div('home',
+		var faceColumns = 6
+		var showingFaces = faceColumns * 2
+		var hackI = 0
+		
+		$body.append(div('home',
 			$ui.info = $(div('info')),
 			div('conversations',
 				$ui.conversations = list([], selectMessage, function(conv) { return conv.conversationId }, renderBubble)
 			),
 			div(style({ height:4 })),
-			section('friends', 'Friend', 
+			section('friends', 'Friends', 
 				list(gState.cache['contactsByFacebookId'], selectContact, function(contact) {
 					// if (contact.memberSince) {
-						return div('contact', face.facebook(contact, true))
+						return div('contact', face.facebook(contact, true, hackI++ > showingFaces))
 					// }
 				})
 			)
 		))
+		
+		setTimeout(function() {
+			var $friends = $body.find('.friends')
+			var $scrollView = $(document).find('.scroller-view')
+			var headHeight = 53
+			var sectionTitleHeight = 42
+			var viewHeight = viewport.height() - sectionTitleHeight
+			$scrollView.on('scroll', function() {
+				var showRows = Math.floor((viewHeight - $friends.position().top) / headHeight) + 2
+				var $faces = $friends.find('.face')
+				while (showingFaces < faceColumns * showRows) {
+					showingFaces++
+					if (!$faces[showingFaces]) { return }
+					$faces[showingFaces].style.background = face.background($faces[showingFaces].getAttribute('facebookId'))
+				}
+			})
+		})
 		
 		reloadConversations()
 	}
