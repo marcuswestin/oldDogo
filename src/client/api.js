@@ -29,7 +29,7 @@ function send(method, path, params, callback) {
 		delete params
 	}
 	var url = '/api/'+path
-	var headers = { 'Authorization':getAuth(), 'X-Dogo-Mode':config.mode }
+	var headers = { 'Authorization':getAuth(), 'X-Dogo-Mode':appInfo.config.mode, 'X-Dogo-BundleVersion':appInfo.bundleVersion }
 	if (method == 'post' && params) {
 		params = JSON.stringify(params)
 		headers['Content-Type'] = 'application/json'

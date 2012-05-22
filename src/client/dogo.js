@@ -38,7 +38,7 @@ var connect = require('./ui/connect'),
 	home = require('./ui/home'),
 	conversation = require('./ui/conversation')
 
-config = {}
+appInfo = {}
 
 loading = function($tag, isLoading) {
 	if (!$tag) { return }
@@ -47,7 +47,7 @@ loading = function($tag, isLoading) {
 	$tag.empty().append(div('loading', 'Loading...'))
 }
 
-getId = function(d) { console.log("HERE", d); return d.id }
+getId = function(d) { return d.id }
 
 accountKnown = function(accountId) { return !!gState.cache['contactsByAccountId'][accountId] }
 loadFacebookId = function(facebookId, callback) { return loadAccount(null, facebookId, callback) }
@@ -86,7 +86,7 @@ loadAccount = function(accountId, facebookId, callback) {
 }
 
 events.on('app.start', function(info) {
-	config = info
+	appInfo = info
 	startApp()
 })
 
@@ -130,7 +130,7 @@ function startApp() {
 	gState.load(function(err) {
 		if (err) { alert("Uh oh. It looks like you need to re-install Dogo. I'm so sorry! :()") }
 		
-		if (config.mode == 'dev') {
+		if (appInfo.config.mode == 'dev') {
 			window.onerror = function(e) { alert('ERROR ' + e) }
 		} else {
 			window.onerror = function(e) { console.log("ERROR", e) }
@@ -145,7 +145,7 @@ function startApp() {
 				$head.append(div('head',
 					showBackButton && renderBackButton(viewBelow.title || 'Home'),
 					div('title', view.title || 'Dogo'),
-					(config.mode == "dev") && div('devBar',
+					(appInfo.config.mode == "dev") && div('devBar',
 						div('button', 'R', button(function() { bridge.command('app.restart') })),
 						div('button', 'X', button(function() { gState.clear(); bridge.command('app.restart') }))
 					)
