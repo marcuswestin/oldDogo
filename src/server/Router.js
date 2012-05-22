@@ -76,7 +76,8 @@ module.exports = proto(null,
 			var logParams = JSON.stringify(params)
 			if (logParams.length > 250) { logParams = logParams.substr(0, 250) + ' (......)' }
 			
-			console.log(req.method, req.url, req.session && req.session.accountId, logParams)
+			var bundleVersion = req.headers['X-Dogo-BundleVersion']
+			console.log(req.method, req.url, req.session && req.session.accountId, bundleVersion, logParams)
 			return params
 		},
 		rest: {
