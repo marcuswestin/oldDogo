@@ -249,7 +249,7 @@ if (!tags.isTouch) {
 		ref.parentNode.insertBefore(js, ref);
 	}(document));
 
-	viewport.height = function() { return 480 }
+	viewport.height = function() { return 460 }
 	viewport.width = function() { return 320 }
 	
 	module.exports = {

@@ -52,13 +52,13 @@ function renderMessage(message) {
 }
 
 function renderContent(message) {
-	var picSized = style({ width:150, height:100 })
+	var picStyle = style({ width:180, marginBottom:-4 })
 	if (message.body) {
 		return div('body', message.body)
 	} else if (message.base64Picture) {
-		return img(picSized, { src:message.base64Picture })
+		return img(picStyle, { src:message.base64Picture })
 	} else if (message.payloadType == 'picture') {
-		return img(picSized, { src:'/api/image?conversationId='+message.conversationId+'&pictureId='+message.payloadId+'&authorization='+encodeURIComponent(api.getAuth()) })
+		return img(picStyle, { src:'/api/image?conversationId='+message.conversationId+'&pictureId='+message.payloadId+'&authorization='+encodeURIComponent(api.getAuth()) })
 	}
 }
 

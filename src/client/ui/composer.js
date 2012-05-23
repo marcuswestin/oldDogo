@@ -16,7 +16,9 @@ var $ui
 var composer = module.exports = {
 	hide:function() {
 		if (!$ui) { return }
+		scroller.$head.show()
 		$ui.surface.empty()
+		if ($ui.drawer) { $ui.drawer.remove() }
 		bridge.command('composer.hideTextInput')
 	},
 	render: function($viewUi, accountId, facebookId) {
@@ -25,6 +27,12 @@ var composer = module.exports = {
 		currentAccountId = accountId
 		currentFacebookId = facebookId
 		$currentViewUi = $viewUi
+		
+		var width = 320
+		var height = 460
+		var ratio = window.devicePixelRatio || 1
+		var canvasSize = { width:width * ratio, height:height * ratio }
+		var canvasStyle = style({ height:height, width:width })
 		
 		return function($tag) {
 			$tag.append(
@@ -53,20 +61,29 @@ var composer = module.exports = {
 		var imageTouched
 		function sendImage() {
 			if (!imageTouched) { return }
-			var data = $ui.canvas[0].toDataURL('image/png')
+			var dim = canvasSize.height // use height for both to avoid cropping
+			$('body').append(canvas('rotate', { width:canvasSize.height, height:canvasSize.width }, style({ position:'absolute', top:0 })))
+			
+			var $rotateCanvas = $('body canvas.rotate')
+			var rotateCtx = $rotateCanvas[0].getContext('2d')
+			rotateCtx.save()
+			rotateCtx.rotate(Math.PI / 2)
+			rotateCtx.translate(0, -canvasSize.height)
+			rotateCtx.drawImage($ui.canvas[0], 0, 0)
+			rotateCtx.restore()
+			
+			var data = $rotateCanvas[0].toDataURL('image/png')
 			send({ base64Picture:data })
-			selectDraw()
+			composer.hide()
+			$rotateCanvas.remove()
 		}
 		
 		function selectDraw() {
 			composer.hide()
 			
 			imageTouched = false
-			var width = 320
-			var height = 187
-			var ratio = window.devicePixelRatio || 1
 			// if (ratio < 2) { ratio = 2 }
-			$ui.canvas = $(canvas('canvas', { width:width * ratio, height:height * ratio }, style({ height:height, width:width })))
+			$ui.canvas = $(canvas('canvas', canvasSize, canvasStyle))
 			ctx = state.ctx = $ui.canvas[0].getContext('2d')
 			
 			ctx.scale(ratio, ratio);
@@ -78,12 +95,18 @@ var composer = module.exports = {
 				.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
 				.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
 			
-			$ui.surface.append(div('drawer',
-				div('pens', $.map(pens, function(pen, name) {
-					return div('button', name, button(function() { state.pen = pen }))
-				})),
+			$('body > .app').append($ui.drawer=$(div('drawer',
+				div('close button', 'X', button(composer.hide), style({ bottom:height - 20 })),
+				div('controls', style({ width:height }), // it'll be rotated
+					$.map(pens, function(pen, name) {
+						return div('button', name, button(function() { state.pen = pen }))
+					}),
+					div('button tool send', 'Send', button(onSend))
+				),
 				$ui.canvas
-			))
+			)))
+			
+			scroller.$head.hide()
 			
 			function getPoint(e) {
 				var point = {
