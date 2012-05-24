@@ -19,7 +19,7 @@ module.exports = proto(null,
 				callback(null, conversations)
 			})
 		},
-		sendMessage: function(accountId, toFacebookAccountId, toAccountId, body, base64Picture, prodPush, callback) {
+		sendMessage: function(accountId, toFacebookAccountId, toAccountId, body, base64Picture, pictureWidth, pictureHeight, prodPush, callback) {
 			if (body) {
 				body = trim(body)
 				if (!body) { return callback('Empty body') }
@@ -42,7 +42,7 @@ module.exports = proto(null,
 					})
 					
 					if (base64Picture) {
-						this.pictureService.upload(accountId, conversation, base64Picture, proceed)
+						this.pictureService.upload(accountId, conversation, base64Picture, pictureWidth, pictureHeight, proceed)
 					} else {
 						proceed(null, null)
 					}

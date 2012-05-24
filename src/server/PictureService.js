@@ -22,10 +22,10 @@ module.exports = proto(null,
 	function(database) {
 		this.db = database
 	}, {
-		upload: function(accountId, conversation, base64PictureData, callback) {
+		upload: function(accountId, conversation, base64PictureData, pictureWidth, pictureHeight, callback) {
 			this._withConversationBucket(conversation, function(err, bucket) {
 				if (err) { return callback(err) }
-				this._insertPicture(this.db, accountId, function(err, pictureId) {
+				this._insertPicture(this.db, accountId, pictureWidth, pictureHeight, function(err, pictureId) {
 					if (err) { return callback(err) }
 					var buf = new Buffer(base64PictureData.replace(/^data:image\/\w+;base64,/, ""), 'base64')
 					var path = this._getPicturePath(pictureId)
@@ -79,10 +79,10 @@ module.exports = proto(null,
 			}))
 		},
 		
-		_insertPicture: function(conn, accountId, callback) {
+		_insertPicture: function(conn, accountId, pictureWidth, pictureHeight, callback) {
 			conn.insert(this,
-				'INSERT INTO picture SET created_time=?, created_by_account_id=?',
-				[conn.time(), accountId], callback)
+				'INSERT INTO picture SET created_time=?, width=?, height=?, created_by_account_id=?',
+				[conn.time(), accountId, pictureWidth, pictureHeight], callback)
 		},
 		_updatePictureSent: function(conn, pictureId, callback) {
 			conn.updateOne(this,
