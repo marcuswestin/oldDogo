@@ -25,6 +25,8 @@ CREATE TABLE picture (
 	created_by_account_id BIGINT UNSIGNED DEFAULT NULL,
 	created_time INT UNSIGNED,
 	uploaded_time INT UNSIGNED,
+	width SMALLINT UNSIGNED DEFAULT NULL,
+	height SMALLINT UNSIGNED DEFAULT NULL,
 	FOREIGN KEY (created_by_account_id) REFERENCES account(id),
 	PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
