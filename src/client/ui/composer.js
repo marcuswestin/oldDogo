@@ -101,6 +101,7 @@ var composer = module.exports = {
 					$.map(pens, function(pen, name) {
 						return div('button', name, button(function() { state.pen = pen }))
 					}),
+					div('button clear', 'Clear', button(selectDraw)),
 					div('button tool send', 'Send', button(onSend))
 				),
 				$ui.canvas

@@ -59,7 +59,7 @@ module.exports = {
 
 function renderBubble(message) {
 	$ui.info.find('.ghostTown').remove()
-	return div('clear messageBubble', { id:bubbleId(message.accountId) }, function($bubble) {
+	return div('clear messageBubble text', { id:bubbleId(message.accountId) }, function($bubble) {
 		if (!accountKnown(message.accountId)) {
 			$bubble.append(div('loading', 'Loading...'))
 		}
@@ -68,11 +68,11 @@ function renderBubble(message) {
 				div('unreadDot'),
 				face.facebook(account),
 				div('name', account.name),
-				div('body', message.body
-					? message.body
-					: message.payloadType == 'picture'
-						? div('youStarted', 'sent you a picture')
-						: div('youStarted', "You started the conversation.")
+				div('body', (!message.body && !message.payloadType)
+					? div('youStarted', "You started the conversation.")
+					: (message.payloadType == 'picture')
+					? div('youStarted', 'sent you a picture')
+					: message.body
 				)
 			)
 			if (message.hasUnread) { $bubble.addClass('hasUnread') }

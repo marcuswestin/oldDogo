@@ -103,27 +103,36 @@ buttonRadius = 10px;
 	background linear-gradient(bottom, color4, color5); box-shadow 0 0 0;
 
 
+faceDim = 50px
 .face
-	width 50px; height 50px;
+	width faceDim; height faceDim;
 
 .loading
 	color #666; text-align center; margin 10px auto; font-style italic;
 
 .messageBubble
-	margin 4px; min-height 50px; border-radius 10px; background #fff; border 4px solid color4;
-	text-align left; 
-	.body
-		padding 5px;
+	position relative; margin 4px; min-height 50px; border-radius 10px; background #fff; border 4px solid color4;
+	.name, .body
+		padding 3px 5px 0 5px;
 	.face
-		float left; border-radius 6px 2px 2px 6px; margin 0 6px 0 0;
+		position absolute; left 0; border-radius 6px 1px 2px 1px; margin 0 6px 0 0;
 .messageBubble.fromMe
 	text-align right;
 	.face
-		float right; border-radius 2px 6px 6px 2px; margin 0 0 0 6px;
+		left auto; right 0; border-radius 1px 6px 1px 2px; margin 0 0 0 6px;
+.messageBubble.text
+	padding 0 0 0 faceDim+5px;
+.messageBubble.fromMe.text
+	padding 0 faceDim+5px 0 0
 
 .conversation
+	.messages
+		padding 0 0 44px 0;
 	.messageBubble
 		margin 4px 8px 0;
+		.picture
+			width 296px; margin 0 0 -4px 0; border-radius 6px;
+			
 	.dogo-info
 		width 100%; margin 4px 0; padding 4px 0 10px 0; border-width 1px 0; border-style solid;
 		.encouragement

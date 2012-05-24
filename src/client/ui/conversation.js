@@ -14,57 +14,62 @@ module.exports = {
 		
 		$body.append(
 			div('conversation',
+				$ui.info = $(div('info')),
 				$ui.wrapper=$(div('messagesWrapper', style({ height:viewport.height() - 45, overflow:'scroll' }),
 					$ui.invite=$(div('invite')),
-					div('messages', style({ paddingBottom:44 }), function($messageList) {
-						$ui.messages = $messageList
-						refreshMessages()
-					})
+					div('messages', $ui.messages = list([], selectItem, renderMessage))
 				)),
 				composer.render($ui, currentAccountId, currentFacebookId)
 			)
 		)
+		
+		refreshMessages()
 	}
 }
 
+function selectItem(item) {
+	console.log("HERE", item)
+}
+
 function refreshMessages() {
-	$ui.messages.append(div('loading', 'Getting messages...'))
+	$ui.info.append(div('loading', 'Getting messages...'))
 	var params = {
 		withAccountId:currentAccountId,
 		withFacebookId:currentFacebookId,
 		lastReadMessageId:currentLastReadMessageId
 	}
 	api.get('messages', params, function(err, res) {
+		$ui.info.empty()
 		if (err) { return error(err) }
-		$ui.messages.empty().append(map(res.messages, renderMessage))
+		$ui.messages.empty().append(res.messages)
 		if (!res.messages.length) {
-			$ui.messages.append(div('ghostTown', 'Start the conversation - draw something!'))
+			$ui.info.empty().append(div('ghostTown', 'Start the conversation - draw something!'))
 		}
 	})
 }
 
 function renderMessage(message) {
 	var fromMe = (message.senderAccountId == gState.myAccount().accountId)
-	return div('clear messageBubble ' + (fromMe ? 'fromMe' : ''),
+	var typeClass = message.body ? 'text' : 'picture'
+	return div('clear messageBubble ' + typeClass + (fromMe ? ' fromMe' : ''),
 		face.load(message.senderAccountId),
 		renderContent(message)
 	)
 }
 
 function renderContent(message) {
-	var picStyle = style({ width:180, marginBottom:-4 })
 	if (message.body) {
 		return div('body', message.body)
 	} else if (message.base64Picture) {
-		return img(picStyle, { src:message.base64Picture })
+		return img('picture', { src:message.base64Picture })
 	} else if (message.payloadType == 'picture') {
-		return img(picStyle, { src:'/api/image?conversationId='+message.conversationId+'&pictureId='+message.payloadId+'&authorization='+encodeURIComponent(api.getAuth()) })
+		return img('picture', { src:'/api/image?conversationId='+message.conversationId+'&pictureId='+message.payloadId+'&authorization='+encodeURIComponent(api.getAuth()) })
 	}
 }
 
 function addMessage(message) {
-	$ui.messages.prepend(renderMessage(message))
-	$ui.messages.find('.ghostTown').remove()
+	$ui.messages.prepend(message)
+	$ui.wrapper.find('.ghostTown').remove()
 }
 
 events.on('push.message', function(message) {
