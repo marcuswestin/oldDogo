@@ -316,6 +316,20 @@ var pens = {
 			min:3
 		}
 	}
+	// ribbon: {
+	// 	onDown: function(ctx, point) {
+	// 		state.brushColor = "rgba(255,255,255,0.8)"//rgba(.3)
+	// 		state.ribbonBrush = new ribbon(ctx)
+	// 		state.ribbonBrush.strokeStart(point.x, point.y)
+	// 	},
+	// 	onMove: function(ctx, point) {
+	// 		if (!state.ribbonBrush) { return }
+	// 		state.ribbonBrush.stroke(point.x, point.y);
+	// 	},
+	// 	onUp: function(ctx, point) {
+	// 		state.ribbonBrush.destroy();
+	// 	}
+	// }
 }
 
 function rgba(alpha) {
@@ -357,3 +371,57 @@ function send(params) {
 events.on('view.change', function onViewRenderEvent() {
 	composer.hide()
 })
+
+
+
+function ribbon( context ) { this.init( context ) }
+
+ribbon.prototype = {
+    context: null,
+    mouseX: null,
+    mouseY: null,
+    painters: null,
+    interval: null,
+    init: function( context ) {
+        var scope = this;
+        this.context = context;
+        // this.context.globalCompositeOperation = 'source-over';
+        this.mouseX = SCREEN_WIDTH / 2;
+        this.mouseY = SCREEN_HEIGHT / 2;
+        this.painters = new Array();
+        for (var i = 0; i < 50; i++) {
+            this.painters.push({ dx: SCREEN_WIDTH / 2, dy: SCREEN_HEIGHT / 2, ax: 0, ay: 0, div: 0.1, ease: Math.random() * 0.1 + 0.5});
+        }
+        this.interval = setInterval( bind(this, update), 1000/30 );
+        function update()
+        {
+            var i;
+            this.context.lineWidth = BRUSH_SIZE;            
+            this.context.strokeStyle = state.brushColor//rgba()//"rgba(" + COLOR[0] + ", " + COLOR[1] + ", " + COLOR[2] + ", " + 0.05 * BRUSH_PRESSURE + ")";
+            for (i = 0; i < scope.painters.length; i++)
+            {
+                scope.context.beginPath();
+                scope.context.moveTo(scope.painters[i].dx, scope.painters[i].dy);        
+                scope.painters[i].dx -= scope.painters[i].ax = (scope.painters[i].ax + (scope.painters[i].dx - scope.mouseX) * scope.painters[i].div) * scope.painters[i].ease;
+                scope.painters[i].dy -= scope.painters[i].ay = (scope.painters[i].ay + (scope.painters[i].dy - scope.mouseY) * scope.painters[i].div) * scope.painters[i].ease;
+                scope.context.lineTo(scope.painters[i].dx, scope.painters[i].dy);
+                scope.context.stroke();
+            }
+        }
+    },
+    destroy: function() {
+        clearInterval(this.interval);
+    },
+    strokeStart: function( mouseX, mouseY ) {
+        this.mouseX = mouseX
+        this.mouseY = mouseY
+        for (var i = 0; i < this.painters.length; i++) {
+            this.painters[i].dx = mouseX;
+            this.painters[i].dy = mouseY;
+        }
+    },
+    stroke: function( mouseX, mouseY ) {
+        this.mouseX = mouseX;
+        this.mouseY = mouseY;
+    }
+}
