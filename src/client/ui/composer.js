@@ -8,12 +8,18 @@ var state = {
 	pen: null
 }
 
+var width = 320
+var height = 460
+var ratio = window.devicePixelRatio || 1
+var canvasSize = { width:width * ratio, height:height * ratio }
+
 var currentAccountId
 var currentFacebookId
 var $currentViewUi
 var $ui
 
 var composer = module.exports = {
+	selectDraw:selectDraw,
 	hide:function() {
 		if (!$ui) { return }
 		scroller.$head.show()
@@ -27,12 +33,6 @@ var composer = module.exports = {
 		currentAccountId = accountId
 		currentFacebookId = facebookId
 		$currentViewUi = $viewUi
-		
-		var width = 320
-		var height = 460
-		var ratio = window.devicePixelRatio || 1
-		var canvasSize = { width:width * ratio, height:height * ratio }
-		var canvasStyle = style({ height:height, width:width })
 		
 		return function($tag) {
 			$tag.append(
@@ -48,100 +48,100 @@ var composer = module.exports = {
 			state.pen = pens.smooth
 		}
 		
-		function onSend() {
-			sendImage()
-		}
-		
 		function selectText(e) {
 			composer.hide()
 			bridge.command('composer.showTextInput', { x:0, y:224, width:320, height:40 })
 			$ui.surface.append(div('writer'))
 		}
-		
-		var imageTouched
-		function sendImage() {
-			if (!imageTouched) { return }
-			var dim = canvasSize.height // use height for both to avoid cropping
-			$('body').append(canvas('rotate', { width:canvasSize.height, height:canvasSize.width }, style({ position:'absolute', top:0 })))
-			
-			var $rotateCanvas = $('body canvas.rotate')
-			var rotateCtx = $rotateCanvas[0].getContext('2d')
-			rotateCtx.save()
-			rotateCtx.rotate(Math.PI / 2)
-			rotateCtx.translate(0, -canvasSize.height)
-			rotateCtx.drawImage($ui.canvas[0], 0, 0)
-			rotateCtx.restore()
-			
-			var data = $rotateCanvas[0].toDataURL('image/png')
-			send({ base64Picture:data })
-			composer.hide()
-			$rotateCanvas.remove()
-		}
-		
-		function selectDraw() {
-			composer.hide()
-			
-			imageTouched = false
-			// if (ratio < 2) { ratio = 2 }
-			$ui.canvas = $(canvas('canvas', canvasSize, canvasStyle))
-			ctx = state.ctx = $ui.canvas[0].getContext('2d')
-			
-			ctx.scale(ratio, ratio);
-			
-			ctx.fillStyle = '#000'
-			ctx.fillRect(0, 0, width, height)
-			
-			$ui.canvas
-				.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
-				.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
-			
-			$('body > .app').append($ui.drawer=$(div('drawer',
-				div('close button', 'X', button(composer.hide), style({ bottom:height - 20 })),
-				div('controls', style({ width:height }), // it'll be rotated
-					$.map(pens, function(pen, name) {
-						return div('button', name, button(function() { state.pen = pen }))
-					}),
-					div('button clear', 'Clear', button(selectDraw)),
-					div('button tool send', 'Send', button(onSend))
-				),
-				$ui.canvas
-			)))
-			
-			scroller.$head.hide()
-			
-			function getPoint(e) {
-				var point = {
-					x:e.originalEvent.pageX - (tags.isTouch ? 8 : $ui.canvas.offset().left),
-					y:e.originalEvent.pageY - $ui.canvas.offset().top
-				}
-				return point
-			}
-			
-			function pencilDown(e) {
-				e.preventDefault()
-				ctx.globalCompositeOperation = 'source-over'
-				state.pen.onDown(ctx, getPoint(e))
-				// ctx.lineCap = 'round'
-				// ctx.lineJoin = 'round'
-			}
-
-			function pencilMove(e) {
-				imageTouched = true
-				e.preventDefault()
-				state.pen.onMove(ctx, getPoint(e))
-				// ctx.beginPath()
-				// ctx.moveTo(points[0].x, points[0].y)
-				// ctx.lineTo(point.x , point.y )
-				// ctx.strokeStyle = rgba()
-				// ctx.stroke()
-			}
-
-			function pencilUp(e) {
-				e.preventDefault()
-				state.pen.onUp(ctx, getPoint(e))
-			}
-		}
 	}
+}
+
+function selectDraw() {
+	composer.hide()
+	
+	imageTouched = false
+	// if (ratio < 2) { ratio = 2 }
+	$ui.canvas = $(canvas('canvas', canvasSize, style({ height:height, width:width })))
+	ctx = state.ctx = $ui.canvas[0].getContext('2d')
+	
+	ctx.scale(ratio, ratio);
+	
+	ctx.fillStyle = '#000'
+	ctx.fillRect(0, 0, width, height)
+	
+	$ui.canvas
+		.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
+		.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
+	
+	$('body > .app').append($ui.drawer=$(div('drawer',
+		div('close button', 'X', button(composer.hide), style({ bottom:height - 20 })),
+		div('controls', style({ width:height }), // it'll be rotated
+			$.map(pens, function(pen, name) {
+				return div('button', name, button(function() { state.pen = pen }))
+			}),
+			div('button clear', 'Clear', button(selectDraw)),
+			div('button tool send', 'Send', button(onSend))
+		),
+		$ui.canvas
+	)))
+	
+	scroller.$head.hide()
+	
+	function getPoint(e) {
+		var point = {
+			x:e.originalEvent.pageX - (tags.isTouch ? 8 : $ui.canvas.offset().left),
+			y:e.originalEvent.pageY - $ui.canvas.offset().top
+		}
+		return point
+	}
+	
+	function pencilDown(e) {
+		e.preventDefault()
+		ctx.globalCompositeOperation = 'source-over'
+		state.pen.onDown(ctx, getPoint(e))
+		// ctx.lineCap = 'round'
+		// ctx.lineJoin = 'round'
+	}
+
+	function pencilMove(e) {
+		imageTouched = true
+		e.preventDefault()
+		state.pen.onMove(ctx, getPoint(e))
+		// ctx.beginPath()
+		// ctx.moveTo(points[0].x, points[0].y)
+		// ctx.lineTo(point.x , point.y )
+		// ctx.strokeStyle = rgba()
+		// ctx.stroke()
+	}
+
+	function pencilUp(e) {
+		e.preventDefault()
+		state.pen.onUp(ctx, getPoint(e))
+	}
+}
+
+function onSend() {
+	sendImage()
+}
+
+var imageTouched
+function sendImage() {
+	if (!imageTouched) { return }
+	var dim = canvasSize.height // use height for both to avoid cropping
+	$('body').append(canvas('rotate', { width:canvasSize.height, height:canvasSize.width }, style({ position:'absolute', top:0 })))
+	
+	var $rotateCanvas = $('body canvas.rotate')
+	var rotateCtx = $rotateCanvas[0].getContext('2d')
+	rotateCtx.save()
+	rotateCtx.rotate(Math.PI / 2)
+	rotateCtx.translate(0, -canvasSize.height)
+	rotateCtx.drawImage($ui.canvas[0], 0, 0)
+	rotateCtx.restore()
+	
+	var data = $rotateCanvas[0].toDataURL('image/png')
+	send({ base64Picture:data })
+	composer.hide()
+	$rotateCanvas.remove()
 }
 
 var pens = {

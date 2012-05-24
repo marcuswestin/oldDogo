@@ -80,11 +80,14 @@ buttonShadow = 0 1px 2px #444;
 				padding 9px; text-shadow textShadow;
 	.conversations
 		min-height 254px;
-		.unreadDot
-			width 20px; height 20px; background color1; border-radius 10px;
-			float right; margin 15px 8px 0 0; display none;
-		.hasUnread .unreadDot
-			display block;
+		.messageBubble
+			.name, .body
+				padding 3px 5px 0 5px;
+			.unreadDot
+				width 20px; height 20px; background color1; border-radius 10px;
+				float right; margin 15px 8px 0 0; display none;
+		.messageBubble.hasUnread .unreadDot
+				display block;
 		.youStarted
 			color #666; font-style italic;
 	.friends
@@ -112,8 +115,6 @@ faceDim = 50px
 
 .messageBubble
 	position relative; margin 4px; min-height 50px; border-radius 10px; background #fff; border 4px solid color4;
-	.name, .body
-		padding 3px 5px 0 5px;
 	.face
 		position absolute; left 0; border-radius 6px 1px 2px 1px; margin 0 6px 0 0;
 .messageBubble.fromMe
@@ -130,6 +131,8 @@ faceDim = 50px
 		padding 0 0 44px 0;
 	.messageBubble
 		margin 4px 8px 0;
+		.body
+			padding 4px 1px;
 		.picture
 			width 296px; margin 0 0 -4px 0; border-radius 6px;
 			
