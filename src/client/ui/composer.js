@@ -40,7 +40,7 @@ var composer = module.exports = {
 					$ui.surface = $(div('surface')),
 					div('tools',
 						div('button tool write', 'Write', button(selectText)),
-						div('button tool draw', 'Draw', button(selectDraw)),
+						div('button tool draw', 'Draw', button(onSelectDraw)),
 						div('button tool send', 'Send', button(onSend))
 					)
 				)
@@ -56,18 +56,50 @@ var composer = module.exports = {
 	}
 }
 
-function selectDraw() {
+function onSelectDraw(e) { selectDraw() }
+
+function selectDraw(img) {
 	composer.hide()
 	
 	imageTouched = false
 	// if (ratio < 2) { ratio = 2 }
 	$ui.canvas = $(canvas('canvas', canvasSize, style({ height:height, width:width })))
 	ctx = state.ctx = $ui.canvas[0].getContext('2d')
-	
+
 	ctx.scale(ratio, ratio);
 	
 	ctx.fillStyle = '#000'
 	ctx.fillRect(0, 0, width, height)
+
+	if (img) {
+		var doDraw = function(drawImg) {
+			ctx.save()
+			ctx.rotate(-Math.PI / 2)
+			ctx.translate(-canvasSize.height / ratio, 0)
+			ctx.drawImage(drawImg, 0, 0, height, width)
+			ctx.restore()
+		}
+		if (!tags.isTouch) {
+			doDraw(img)
+		} else {
+			var underlyingUrlMatch = img.style.background.match(/url\((.*)\)/)
+			if (!underlyingUrlMatch) { return }
+			var underlyingUrl = underlyingUrlMatch[1]
+			if (underlyingUrl.match(/^data/)) {
+					var loadImg = new Image()
+					loadImg.onload = function() { doDraw(loadImg) }
+					loadImg.src = underlyingUrl
+			} else {
+				var asUrl = location.protocol+'//'+location.host+'/url='+encodeURIComponent(underlyingUrl)
+				bridge.command('net.cache', { url:underlyingUrl, asUrl:asUrl, override:false }, function(err, res) {
+					if (err) { return }
+					var loadImg = new Image()
+					loadImg.onload = function() { doDraw(loadImg) }
+					loadImg.src = asUrl
+				})
+			}
+		}
+	}
 	
 	$ui.canvas
 		.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
@@ -79,7 +111,7 @@ function selectDraw() {
 			$.map(pens, function(pen, name) {
 				return div('button', name, button(function() { state.pen = pen }))
 			}),
-			div('button clear', 'Clear', button(selectDraw)),
+			div('button clear', 'Clear', button(onSelectDraw)),
 			div('button tool send', 'Send', button(onSend))
 		),
 		$ui.canvas
@@ -139,7 +171,7 @@ function sendImage() {
 	rotateCtx.restore()
 	
 	var data = $rotateCanvas[0].toDataURL('image/png')
-	send({ base64Picture:data })
+	send({ pictureWidth:canvasSize.width, pictureHeight:canvasSize.height, base64Picture:data })
 	composer.hide()
 	$rotateCanvas.remove()
 }

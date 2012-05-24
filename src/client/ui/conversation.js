@@ -17,7 +17,7 @@ module.exports = {
 				$ui.info = $(div('info')),
 				$ui.wrapper=$(div('messagesWrapper', style({ height:viewport.height() - 45, overflow:'scroll' }),
 					$ui.invite=$(div('invite')),
-					div('messages', $ui.messages = list([], selectItem, renderMessage))
+					div('messages', $ui.messages = list([], selectMessage, renderMessage))
 				)),
 				composer.render($ui, currentAccountId, currentFacebookId)
 			)
@@ -27,8 +27,12 @@ module.exports = {
 	}
 }
 
-function selectItem(item) {
-	console.log("HERE", item)
+function selectMessage(message, _, $el) {
+	if (message.payloadType == 'picture' || message.base64Picture) {
+		composer.selectDraw($el.find('.messageBubble .picture')[0])
+	} else {
+		// do nothing
+	}
 }
 
 function refreshMessages() {
@@ -51,19 +55,21 @@ function refreshMessages() {
 function renderMessage(message) {
 	var fromMe = (message.senderAccountId == gState.myAccount().accountId)
 	var typeClass = message.body ? 'text' : 'picture'
-	return div('clear messageBubble ' + typeClass + (fromMe ? ' fromMe' : ''),
+	return div(div('clear messageBubble ' + typeClass + (fromMe ? ' fromMe' : ''),
 		face.load(message.senderAccountId),
 		renderContent(message)
-	)
+	))
 }
 
 function renderContent(message) {
 	if (message.body) {
 		return div('body', message.body)
 	} else if (message.base64Picture) {
-		return img('picture', { src:message.base64Picture })
+		return div('picture', style({ background:'url('+message.base64Picture+')' }))
 	} else if (message.payloadType == 'picture') {
-		return img('picture', { src:'/api/image?conversationId='+message.conversationId+'&pictureId='+message.payloadId+'&authorization='+encodeURIComponent(api.getAuth()) })
+		return div('picture', style({
+			background:'url(/api/image?conversationId='+message.conversationId+'&pictureId='+message.payloadId+'&authorization='+encodeURIComponent(api.getAuth())+')'
+		}))
 	}
 }
 
