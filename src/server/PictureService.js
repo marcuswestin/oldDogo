@@ -81,7 +81,7 @@ module.exports = proto(null,
 		
 		_insertPicture: function(conn, accountId, pictureWidth, pictureHeight, callback) {
 			conn.insert(this,
-				'INSERT INTO picture SET created_time=?, width=?, height=?, created_by_account_id=?',
+				'INSERT INTO picture SET created_time=?, created_by_account_id=?, width=?, height=?',
 				[conn.time(), accountId, pictureWidth, pictureHeight], callback)
 		},
 		_updatePictureSent: function(conn, pictureId, callback) {
