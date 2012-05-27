@@ -1,3 +1,4 @@
+var colorPicker = require('./colorPicker')
 var trim = require('std/trim')
 var placeholder = 'Say something :)'
 
@@ -68,7 +69,7 @@ function selectDraw(img) {
 
 	ctx.scale(ratio, ratio);
 	
-	ctx.fillStyle = '#000'
+	ctx.fillStyle = '#F5F4F0'
 	ctx.fillRect(0, 0, width, height)
 
 	if (img) {
@@ -79,25 +80,25 @@ function selectDraw(img) {
 			ctx.drawImage(drawImg, 0, 0, height, width)
 			ctx.restore()
 		}
-		if (!tags.isTouch) {
-			doDraw(img)
+		var underlyingUrlMatch = img.style.background.match(/url\((.*)\)/)
+		if (!underlyingUrlMatch) { return }
+		var underlyingUrl = underlyingUrlMatch[1]
+		if (underlyingUrl.match(/^data/)) {
+			var loadImg = new Image()
+			loadImg.onload = function() { doDraw(loadImg) }
+			loadImg.src = underlyingUrl
+		} else if (!tags.isTouch) {
+			var loadImg = new Image()
+			loadImg.onload = function() { doDraw(loadImg) }
+			loadImg.src = underlyingUrl
 		} else {
-			var underlyingUrlMatch = img.style.background.match(/url\((.*)\)/)
-			if (!underlyingUrlMatch) { return }
-			var underlyingUrl = underlyingUrlMatch[1]
-			if (underlyingUrl.match(/^data/)) {
-					var loadImg = new Image()
-					loadImg.onload = function() { doDraw(loadImg) }
-					loadImg.src = underlyingUrl
-			} else {
-				var asUrl = location.protocol+'//'+location.host+'/url='+encodeURIComponent(underlyingUrl)
-				bridge.command('net.cache', { url:underlyingUrl, asUrl:asUrl, override:false }, function(err, res) {
-					if (err) { return }
-					var loadImg = new Image()
-					loadImg.onload = function() { doDraw(loadImg) }
-					loadImg.src = asUrl
-				})
-			}
+			var asUrl = location.protocol+'//'+location.host+'/url='+encodeURIComponent(underlyingUrl)
+			bridge.command('net.cache', { url:underlyingUrl, asUrl:asUrl, override:false }, function(err, res) {
+				if (err) { return }
+				var loadImg = new Image()
+				loadImg.onload = function() { doDraw(loadImg) }
+				loadImg.src = asUrl
+			})
 		}
 	}
 	
@@ -108,11 +109,16 @@ function selectDraw(img) {
 	$('body > .app').append($ui.drawer=$(div('drawer',
 		div('close button', 'X', button(composer.hide), style({ bottom:height - 20 })),
 		div('controls', style({ width:height }), // it'll be rotated
-			$.map(pens, function(pen, name) {
-				return div('button', name, button(function() { state.pen = pen }))
-			}),
-			div('button clear', 'Clear', button(onSelectDraw)),
-			div('button tool send', 'Send', button(onSend))
+			div(style({ position:'relative', bottom:10 }),
+				state.colorPicker = colorPicker({ color:'steelblue' })
+			),
+			div('tools',
+				$.map(pens, function(pen, name) {
+					return div('button', name, button(function() { state.pen = pen }))
+				}),
+				div('button clear', 'Clear', button(onSelectDraw)),
+				div('button tool send', 'Send', button(onSend))
+			)
 		),
 		$ui.canvas
 	)))
@@ -333,16 +339,18 @@ var pens = {
 }
 
 function rgba(alpha) {
-	var colors = []
-	for(var i = 0; i< 3; i++) {
-		colors.push(Math.floor(Math.random() * 255))
-	}
-	if (alpha) {
-		colors.push(alpha)
-		return 'rgba('+colors.join(',')+')'
-	} else {
-		return 'rgb('+colors.join(',')+')'
-	}
+	// console.log("HERE ", state.colorPicker.color)
+	return state.colorPicker.getColor()
+	// var colors = []
+	// for(var i = 0; i< 3; i++) {
+	// 	colors.push(Math.floor(Math.random() * 255))
+	// }
+	// if (alpha) {
+	// 	colors.push(alpha)
+	// 	return 'rgba('+colors.join(',')+')'
+	// } else {
+	// 	return 'rgb('+colors.join(',')+')'
+	// }
 }
 
 events.on('composer.sendText', function(info) {

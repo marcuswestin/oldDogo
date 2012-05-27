@@ -8,6 +8,7 @@ require('tags/scroller')
 require('./events')
 require('./state')
 
+options = require('std/options')
 create = require('std/create')
 map = require('std/map')
 api = require('./api')
