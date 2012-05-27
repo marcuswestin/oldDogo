@@ -107,7 +107,7 @@ function selectDraw(img) {
 		.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
 	
 	$('body > .app').append($ui.drawer=$(div('drawer',
-		div('close button', 'X', button(composer.hide), style({ bottom:height - 20 })),
+		div('close button', 'X', button(composer.hide), style({ bottom:height - 30, left:3 })),
 		div('controls', style({ width:height }), // it'll be rotated
 			div(style({ position:'relative', bottom:10 }),
 				state.colorPicker = colorPicker({ color:'steelblue' })
