@@ -250,6 +250,15 @@ if (!tags.isTouch) {
 	function getSize() { return { width:width(), height:height() } }
 
 	var $win = $(window)
+	
+	var $buttons = $(div())
+	each([-180, -90, 0, 90, 180], function(deg) {
+		$buttons.append(div(style({ padding:10, color:'#fff' }), 'Rotate: ', deg, button(function() {
+			events.fire('device.rotated', { deg:deg })
+		})))
+	})
+	$('body').append($buttons)
+	
 } else {
 	console.log = function() {
 		bridge.command('console.log', JSON.stringify(slice(arguments)))
