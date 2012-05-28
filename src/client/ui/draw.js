@@ -145,9 +145,9 @@ var imageTouched
 function sendImage() {
 	if (!imageTouched) { return }
 	var dim = canvasSize.height // use height for both to avoid cropping
-	$('body').append(canvas('rotate', { width:canvasSize.height, height:canvasSize.width }, style({ position:'absolute', top:0 })))
 	
 	if (rotationDeg) {
+		$('body').append(canvas('rotate', { width:canvasSize.height, height:canvasSize.width }, style({ position:'absolute', top:0 })))
 		var $rotateCanvas = $('body canvas.rotate')
 		var rotateCtx = $rotateCanvas[0].getContext('2d')
 		rotateCtx.save()
