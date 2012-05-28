@@ -3,7 +3,8 @@ var express = require('express'),
 	fs = require('fs'),
 	path = require('path'),
 	curry = require('std/curry'),
-	slice = require('std/slice')
+	slice = require('std/slice'),
+	http = require('http')
 
 require('color')
 

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2C09E4A11550D10B0089ECD5 /* BTState.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C09E4A01550D10B0089ECD5 /* BTState.m */; };
+		2C4EF9EF1573196800EE57C8 /* BTViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C4EF9EE1573196800EE57C8 /* BTViewController.m */; };
 		2C5C1C651566200800035E03 /* app.html in Resources */ = {isa = PBXBuildFile; fileRef = 2C5C1C621566200800035E03 /* app.html */; };
 		2C5C1C661566200800035E03 /* appCss.css in Resources */ = {isa = PBXBuildFile; fileRef = 2C5C1C631566200800035E03 /* appCss.css */; };
 		2C5C1C671566200800035E03 /* appJs.html in Resources */ = {isa = PBXBuildFile; fileRef = 2C5C1C641566200800035E03 /* appJs.html */; };
@@ -47,6 +48,8 @@
 /* Begin PBXFileReference section */
 		2C09E49F1550D10B0089ECD5 /* BTState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTState.h; sourceTree = "<group>"; };
 		2C09E4A01550D10B0089ECD5 /* BTState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTState.m; sourceTree = "<group>"; };
+		2C4EF9ED1573196800EE57C8 /* BTViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTViewController.h; sourceTree = "<group>"; };
+		2C4EF9EE1573196800EE57C8 /* BTViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTViewController.m; sourceTree = "<group>"; };
 		2C5C1C621566200800035E03 /* app.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = app.html; sourceTree = "<group>"; };
 		2C5C1C631566200800035E03 /* appCss.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = appCss.css; sourceTree = "<group>"; };
 		2C5C1C641566200800035E03 /* appJs.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = appJs.html; sourceTree = "<group>"; };
@@ -270,6 +273,8 @@
 			children = (
 				2CD1A05F153FB7B6008949F2 /* BTAppDelegate.h */,
 				2CD1A060153FB7B6008949F2 /* BTAppDelegate.m */,
+				2C4EF9ED1573196800EE57C8 /* BTViewController.h */,
+				2C4EF9EE1573196800EE57C8 /* BTViewController.m */,
 				2C09E49F1550D10B0089ECD5 /* BTState.h */,
 				2C09E4A01550D10B0089ECD5 /* BTState.m */,
 				2CD13240156783CA002386F3 /* DebugUIWebView.h */,
@@ -424,6 +429,7 @@
 				2C720C7415684C3100AC9BF4 /* MKNetworkEngine.m in Sources */,
 				2C720C7515684C3100AC9BF4 /* MKNetworkOperation.m in Sources */,
 				2C720C7615684C3100AC9BF4 /* Reachability.m in Sources */,
+				2C4EF9EF1573196800EE57C8 /* BTViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
