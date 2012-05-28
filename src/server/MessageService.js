@@ -167,7 +167,7 @@ module.exports = proto(null,
 				[conn.time(), accountId, convoId, body, pictureId], callback)
 		},
 		_selectMessage: function(conn, messageId, callback) {
-			conn.selectOne(this, this.sql.selectMessage+' WHERE id=?', [messageId], function(err, message) {
+			conn.selectOne(this, this.sql.selectMessage+' WHERE message.id=?', [messageId], function(err, message) {
 				// BACKCOMPAT, REMOVE
 				if (!err && message.pictureId) {
 					message.payloadId = message.pictureId
@@ -217,13 +217,15 @@ module.exports = proto(null,
 		sql: {
 
 			selectMessage:sql.selectFrom('message', {
-				id:'id',
-				senderAccountId:'sender_account_id',
-				conversationId:'conversation_id',
-				sentTime:'sent_time',
-				body:'body',
-				pictureId:'picture_id'
-			}),
+				id:'message.id',
+				senderAccountId:'message.sender_account_id',
+				conversationId:'message.conversation_id',
+				sentTime:'message.sent_time',
+				body:'message.body',
+				pictureId:'picture.id',
+				pictureWidth:'picture.width',
+				pictureHeight:'picture.height'
+			}) + 'LEFT OUTER JOIN picture ON message.picture_id=picture.id',
 			
 			selectConvo:sql.selectFrom('conversation', {
 				id:'id',

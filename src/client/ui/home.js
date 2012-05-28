@@ -68,11 +68,9 @@ function renderBubble(message) {
 				div('unreadDot'),
 				face.facebook(account),
 				div('name', account.name),
-				div('body', (!message.body && !message.payloadType)
+				div('body', (!message.body && !message.pictureId)
 					? div('youStarted', "You started the conversation.")
-					: (message.payloadType == 'picture')
-					? div('youStarted', 'sent you a picture')
-					: message.body
+					: (message.pictureId ? div('youStarted', 'sent you a picture') : message.body)
 				)
 			)
 			if (message.hasUnread) { $bubble.addClass('hasUnread') }
@@ -88,8 +86,7 @@ function messageFromConvo(convo) {
 		hasUnread: hasUnread,
 		body: convo.lastReceivedBody,
 		lastReceivedMessageId: convo.lastReceivedMessageId,
-		payloadType: convo.lastReceivedPayloadType,
-		payloadId: convo.lastReceivedPayloadId,
+		pictureId: convo.lastReceivedPictureId,
 		conversationId: convo.id
 	}
 }
@@ -102,8 +99,7 @@ function messageFromPush(pushMessage) {
 		hasUnread: !isCurrent,
 		body: pushMessage.body,
 		lastReceivedMessageId: pushMessage.id,
-		payloadType: pushMessage.payloadType,
-		payloadId: pushMessage.payloadId,
+		pictureId: pushMessage.pictureId,
 		conversationId: pushMessage.conversationId
 	}
 }
@@ -112,7 +108,7 @@ function messageFromSentMessage(message, accountId) {
 	return {
 		accountId: accountId,
 		hasUnread: false,
-		body: null, payloadType: null, payloadId:null, // So that it will still show the most recent received message
+		body: null, pictureId: null, // So that it will still show the most recent received message
 		lastReceivedMessageId: null,
 		conversationId: message.conversationId
 	}

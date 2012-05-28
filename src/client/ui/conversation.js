@@ -15,7 +15,7 @@ module.exports = {
 		$body.append(
 			div('conversation',
 				$ui.info = $(div('info')),
-				$ui.wrapper=$(div('messagesWrapper', style({ height:viewport.height() - 45, overflow:'scroll' }),
+				$ui.wrapper=$(div('messagesWrapper', style({ height:viewport.height() - 45 }),
 					$ui.invite=$(div('invite')),
 					div('messages', $ui.messages = list([], selectMessage, renderMessage))
 				)),
@@ -28,8 +28,8 @@ module.exports = {
 }
 
 function selectMessage(message, _, $el) {
-	if (message.payloadType == 'picture' || message.base64Picture) {
-		composer.selectDraw($el.find('.messageBubble .picture')[0])
+	if (message.pictureId || message.base64Picture) {
+		composer.selectDraw($el.find('.messageBubble .picture')[0], message)
 	} else {
 		// do nothing
 	}
@@ -61,14 +61,32 @@ function renderMessage(message) {
 	))
 }
 
+function picSize(message) {
+	var maxWidth = 306
+	var maxHeight = 370
+	var width = message.pictureWidth
+	var height = message.pictureHeight
+	var ratio = 1
+	if (width > height && width > maxWidth) {
+		width = maxWidth
+		ratio = width / message.pictureWidth
+		height = Math.round(message.pictureHeight * ratio)
+	} else if (height > width && height > maxHeight) {
+		height = maxHeight
+		ratio = height / message.pictureHeight
+		width = Math.round(message.pictureWidth * ratio)
+	}
+	return style({ width:width, height:height, backgroundSize:width+'px '+height+'px' })
+}
+
 function renderContent(message) {
 	if (message.body) {
 		return div('body', message.body)
 	} else if (message.base64Picture) {
-		return div('picture', style({ background:'url('+message.base64Picture+')' }))
-	} else if (message.payloadType == 'picture') {
-		return div('picture', style({
-			background:'url(/api/image?conversationId='+message.conversationId+'&pictureId='+message.payloadId+'&authorization='+encodeURIComponent(api.getAuth())+')'
+		return div('picture', picSize(message), style({ background:'url('+message.base64Picture+')' }))
+	} else if (message.pictureId) {
+		return div('picture', picSize(message), style({
+			background:'url(/api/image?conversationId='+message.conversationId+'&pictureId='+message.pictureId+'&authorization='+encodeURIComponent(api.getAuth())+')'
 		}))
 	}
 }
@@ -117,7 +135,7 @@ function promptInvite(message, accountId, facebookId) {
 		
 		var $infoBar = $(div('dogo-info blue',
 			div('invite',
-				div('encouragement', 'Nice ', message.payloadType=='picture' ? 'Picture' : 'Message', '!'),
+				div('encouragement', 'Nice ', message.pictureId ? 'Picture' : 'Message', '!'),
 				div('personal', account.name, " doesn't have Dogo yet ..."),
 				div('button', 'Send via Facebook', button(function() {
 					// TODO events.on('facebook.dialogDidComplete', function() { ... })

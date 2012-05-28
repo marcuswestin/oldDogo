@@ -48,10 +48,14 @@ module.exports = proto(null,
 					notification.payload = { id:message.id, senderAccountId:message.senderAccountId, conversationId:message.conversationId }
 					notification.badge = 1
 					notification.sound = "vibrate.wav"
-					if (message.payloadId) {
-						notification.payload.payloadId = message.payloadId
-						notification.payload.payloadType = message.payloadType
-						notification.alert = fromAccountInfo.firstName + ' sent you a drawing'
+					if (message.pictureId) {
+						notification.payload.pictureId = message.pictureId
+						notification.payload.pictureWidth = message.pictureWidth
+						notification.payload.pictureHeight = message.pictureHeight
+						notification.alert = fromAccountInfo.firstName + ' sent you a drawing' // NOTE Clients depend on "\w+ sent you a drawing"
+						// BACKCOMPAT
+						notification.payload.payloadId = message.pictureId
+						notification.payload.payloadType = 'picture'
 					} else {
 						notification.alert = fromAccountInfo.firstName + ' says: "'+message.body+'"'
 					}
