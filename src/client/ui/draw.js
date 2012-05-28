@@ -103,12 +103,15 @@ function render(_opts) {
 		return pen({ colorPicker:state.colorPicker, ctx:ctx, width:width, height:height })
 	}
 	
-	function getPoint(e) {
-		var point = {
-			x:e.originalEvent.pageX - (tags.isTouch ? 8 : $canvas.offset().left),
-			y:e.originalEvent.pageY - $canvas.offset().top
+	function getPoint($e) {
+		var coords = $e.originalEvent
+		if (tags.isTouch) {
+			coords = coords.changedTouches[0]
 		}
-		return point
+		return [
+			coords.pageX - (tags.isTouch ? 0 : $canvas.offset().left),
+			coords.pageY - $canvas.offset().top
+		]
 	}
 	
 	function pencilDown(e) {
