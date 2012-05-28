@@ -17,13 +17,6 @@ var height = 460
 var ratio = window.devicePixelRatio || 1
 var canvasSize = { width:width * ratio, height:height * ratio }
 
-var SCREEN_WIDTH = width; // REMOVE
-var SCREEN_HEIGHT = height; // REMOVE
-var BRUSH_SIZE = 2 // REMOVE
-var COLOR = [250, 250, 250] // REMOVE
-var BRUSH_PRESSURE = 1
-var BACKGROUND_COLOR = [0, 0, 0]
-
 var $ui
 
 var opts
@@ -38,7 +31,7 @@ function render(_opts) {
 	var $canvas = $(canvas('canvas', canvasSize, style({ height:height, width:width })))
 	$canvas.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
 	$canvas.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
-	ctx = $canvas[0].getContext('2d')
+	var ctx = $canvas[0].getContext('2d')
 
 	ctx.scale(ratio, ratio);
 	
@@ -92,7 +85,7 @@ function render(_opts) {
 					div('tools',
 						$.map(pens, function(pen, name) {
 							return div('button', name, button(function() {
-								state.pen = pen({ colorPicker:state.colorPicker })
+								state.pen = pen({ colorPicker:state.colorPicker, ctx:ctx })
 							}))
 						}),
 						// div('button clear', 'Clear', button(function() { alert("MAKE CLEAR") })),
@@ -104,7 +97,7 @@ function render(_opts) {
 		$canvas
 	))
 	
-	state.pen = pens.smooth({ colorPicker:state.colorPicker })
+	state.pen = pens.smooth({ ctx:ctx, colorPicker:state.colorPicker })
 	
 	return $ui
 	
@@ -118,18 +111,18 @@ function render(_opts) {
 	
 	function pencilDown(e) {
 		e.preventDefault()
-		state.pen.onDown(ctx, getPoint(e))
+		state.pen.handleDown(getPoint(e))
 	}
 
 	function pencilMove(e) {
 		imageTouched = true
 		e.preventDefault()
-		state.pen.onMove(ctx, getPoint(e))
+		state.pen.handleMove(getPoint(e))
 	}
 
 	function pencilUp(e) {
 		e.preventDefault()
-		state.pen.onUp(ctx, getPoint(e))
+		state.pen.handleUp(getPoint(e))
 	}
 }
 
