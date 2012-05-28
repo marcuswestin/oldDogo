@@ -2,33 +2,42 @@ var pens = module.exports
 
 var basePen = {
 	rgba: function(alpha) {
-		return this.colorPicker.getColor()
-		// var colors = []
-		// for(var i = 0; i< 3; i++) {
-		// 	colors.push(Math.floor(Math.random() * 255))
-		// }
-		// if (alpha) {
-		// 	colors.push(alpha)
-		// 	return 'rgba('+colors.join(',')+')'
-		// } else {
-		// 	return 'rgb('+colors.join(',')+')'
-		// }
+		// return this.colorPicker.getColor()
+		var colors = []
+		for(var i = 0; i< 3; i++) {
+			colors.push(Math.floor(Math.random() * 255))
+		}
+		if (alpha) {
+			colors.push(alpha)
+			return 'rgba('+colors.join(',')+')'
+		} else {
+			return 'rgb('+colors.join(',')+')'
+		}
+	},
+	handleDown:function(point) {
+		this.down(this.ctx, point)
+	},
+	handleMove:function(point) {
+		this.move(this.ctx, point)
+	},
+	handleUp:function(point) {
+		this.up(this.ctx, point)
 	}
 }
 
 var collectPointsPen = create(basePen, {
 	handleDown:function(point) {
 		this.points = [point]
-		this.down(point, this.points, this.ctx)
+		this.down(this.ctx, point, this.points)
 	},
 	handleMove:function(point) {
 		if (!this.points) { return }
 		this.points.push(point)
-		this.move(point, this.points, this.ctx)
+		this.move(this.ctx, point, this.points)
 	},
 	handleUp:function(point) {
 		this.points.push(point)
-		this.up(point, this.points, this.ctx)
+		this.up(this.ctx, point, this.points)
 		this.points = null
 	}
 })
@@ -39,14 +48,14 @@ var initPen = function(opts) {
 }
 
 pens.smooth = proto(collectPointsPen, initPen, {
-	down: function(point, points, ctx) {
+	down: function(ctx, point, points) {
 		ctx.moveTo(point.x, point.y)
 		ctx.beginPath()
 		ctx.lineWidth = 5
 		ctx.strokeStyle = this.rgba()
 		ctx.globalCompositeOperation = 'source-over'
 	},
-	move: function(point, points, ctx) {
+	move: function(ctx, point, points) {
 		if (points.length > 2) {
 			var pN2 = points[points.length - 3]
 			var pN1 = points[points.length - 2]
@@ -55,7 +64,7 @@ pens.smooth = proto(collectPointsPen, initPen, {
 			ctx.stroke()
 		}
 	},
-	up: function(point, points, ctx) {
+	up: function(ctx, point, points) {
 		if (points.length == 2) {
 			// dot
 			ctx.fillStyle = ctx.strokeStyle
@@ -73,13 +82,13 @@ pens.smooth = proto(collectPointsPen, initPen, {
 
 
 pens.zebra = proto(collectPointsPen, initPen, {
-	down: function(point, points, ctx) {
+	down: function(ctx, point, points) {
 		ctx.moveTo(point.x, point.y)
 		ctx.strokeStyle = this.rgba()
 		ctx.lineWidth = 10
 		ctx.globalCompositeOperation = 'source-over'
 	},
-	move: function(point, points, ctx) {
+	move: function(ctx, point, points) {
 		ctx.beginPath()
 		var dw = 10
 		ctx.lineWidth += Math.round((Math.random() * dw) - (dw/2 + .3))
@@ -93,7 +102,7 @@ pens.zebra = proto(collectPointsPen, initPen, {
 			ctx.stroke()
 		}
 	},
-	up: function(point, points, ctx) {
+	up: function(ctx, point, points) {
 		if (points && points.length > 1) {
 			var pN0 = points[points.length - 1]
 			var pN1 = points[points.length - 2]
@@ -103,14 +112,14 @@ pens.zebra = proto(collectPointsPen, initPen, {
 })
 
 pens.glow = proto(collectPointsPen, initPen, {
-	down: function(point, points, ctx) {
+	down: function(ctx, point, points) {
 		ctx.moveTo(point.x, point.y)
 		ctx.beginPath()
 		ctx.lineWidth = 10
 		ctx.strokeStyle = this.rgba(.01)
 		ctx.globalCompositeOperation = 'darker'
 	},
-	move: function(point, points, ctx) {
+	move: function(ctx, point, points) {
 		if (points.length > 2) {
 			var pN2 = points[points.length - 3]
 			var pN1 = points[points.length - 2]
@@ -119,7 +128,7 @@ pens.glow = proto(collectPointsPen, initPen, {
 			ctx.stroke()
 		}
 	},
-	up: function(point, points, ctx) {
+	up: function(ctx, point, points) {
 		if (points && points.length > 1) {
 			// curve through the last two points
 			var pN0 = points[points.length - 1]

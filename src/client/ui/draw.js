@@ -6,9 +6,7 @@ module.exports = {
 }
 
 var state = {
-	points: null,
-	color: null,
-	ctx: null,
+	colorPicker: null,
 	pen: null
 }
 
@@ -70,22 +68,22 @@ function render(_opts) {
 			ctx.drawImage(drawImg, 0, 0, outputWidth, outputHeight)
 			ctx.restore()
 		}
-		loadImg.src = url
+		drawImg.src = url
 	}
 	
 	
 	var controlsTrans = function(name) { return style({ '-webkit-transition':name+' '+controlsDuration/1000+'s' })}
 	
-	var $ui = $(div('draw-composer',
+	$ui = $(div('draw-composer',
 		div('close button', 'X', controlsTrans('-webkit-transform'), style({ bottom:height - 30, left:3 }), button(function() { opts.onHide() })),
 		div('controls-pos', controlsTrans('-webkit-transform'),
 			div('controls-rot', controlsTrans('-webkit-transform'),
-				div('controls', controlsTrans('width'),
+				div('controls', controlsTrans('width'), style({ width:width }),
 					state.colorPicker = colorPicker({ color:'steelblue' }),
 					div('tools',
 						$.map(pens, function(pen, name) {
 							return div('button', name, button(function() {
-								state.pen = pen({ colorPicker:state.colorPicker, ctx:ctx })
+								state.pen = createPen(pen)
 							}))
 						}),
 						// div('button clear', 'Clear', button(function() { alert("MAKE CLEAR") })),
@@ -97,9 +95,13 @@ function render(_opts) {
 		$canvas
 	))
 	
-	state.pen = pens.smooth({ ctx:ctx, colorPicker:state.colorPicker })
+	state.pen = createPen(pens.smooth)
 	
 	return $ui
+	
+	function createPen(pen) {
+		return pen({ colorPicker:state.colorPicker, ctx:ctx, width:width, height:height })
+	}
 	
 	function getPoint(e) {
 		var point = {
@@ -153,6 +155,7 @@ function sendImage() {
 	}
 	
 	opts.onSend(data, picWidth, picHeight)
+	
 }
 
 var changeWidthTimeout
@@ -171,16 +174,16 @@ events.on('device.rotated', function(info) {
 		$controls.css({ width:width })
 		$pos.css({ '-webkit-transform':'none' })
 		$rot.css({ '-webkit-transform':'none' })
-		changeWidthTimeout=setTimeout(function() {
-			$controls.css({ width:'100%' })
-		}, controlsDuration)
 	} else if (Math.abs(deg) == 90) {
-		$controls.css({ width:height })
-		var closeOffset = deg < 0 ? [0, height - 35] : [width - 35, 0]
-		$close.css({ '-webkit-transform':'translate('+closeOffset[0]+'px, '+closeOffset[1]+'px)' })
-		
-		var offset = deg < 0 ? [68, 208] : [-208, 208]
-		$pos.css({ '-webkit-transform':'translate('+offset[0]+'px, '+-offset[1]+'px)' })
-		$rot.css({ '-webkit-transform':'rotate('+deg+'deg)' })
+		$controls.css({ width:'100%' })
+		setTimeout(function() {
+			$controls.css({ width:height })
+			var closeOffset = deg < 0 ? [0, height - 35] : [width - 35, 0]
+			$close.css({ '-webkit-transform':'translate('+closeOffset[0]+'px, '+closeOffset[1]+'px)' })
+
+			var offset = deg < 0 ? [68, 208] : [-208, 208]
+			$pos.css({ '-webkit-transform':'translate('+offset[0]+'px, '+-offset[1]+'px)' })
+			$rot.css({ '-webkit-transform':'rotate('+deg+'deg)' })
+		})
 	}
 })
