@@ -104,13 +104,13 @@ module.exports = proto(null,
 				this.accountService.getContacts(req.session.accountId, this.wrapRespond(req, res, 'contacts'))
 			},
 			postMessage: function(req, res) {
-				var params = this._getParams(req, 'toFacebookId', 'toAccountId', 'body', 'base64Picture', 'pictureWidth', 'pictureHeight', 'devPush')
+				var params = this._getParams(req, 'toFacebookId', 'toAccountId', 'body', 'base64Picture', 'picWidth', 'picHeight', 'devPush')
 				var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
-				if (!params.pictureWidth) { params.pictureWidth = 920 }
-				if (!params.pictureHeight) { params.pictureHeight = 640 }
+				if (!params.picWidth) { params.picWidth = 920 }
+				if (!params.picHeight) { params.picHeight = 640 }
 				this.messageService.sendMessage(req.session.accountId,
 					params.toFacebookId, params.toAccountId, params.body,
-					params.base64Picture, params.pictureWidth, params.pictureHeight,
+					params.base64Picture, params.picWidth, params.picHeight,
 					prodPush, bind(this, this.respond, req, res))
 			},
 			getConversationMessages: function(req, res) {
