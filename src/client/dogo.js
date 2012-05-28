@@ -113,7 +113,7 @@ function startApp() {
 			window.onerror = function(e) { console.log("ERROR", e) }
 		}
 		
-		scroller = tags.scroller(function onViewChange() { events.fire('view.change') })
+		scroller = tags.scroller({ onViewChange:function onViewChange() { events.fire('view.change') }, duration:400 })
 		$(document.body).append(div('app', viewport.fit,
 
 			scroller.renderHead(45, function($head, view, viewBelow, fromView) {
