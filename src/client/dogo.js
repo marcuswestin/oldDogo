@@ -89,8 +89,8 @@ events.on('push.notification', function(info) {
 		
 		if (match=alert.match(/^\w+ says: "(.*)"/i)) {
 			data.body = match[1]
-		} else if (alert.match(/^\w+ sent you a drawing/i)) {
-			// No body for drawings
+		} else if (alert.match(/^\w+ sent you a \w+/i)) {
+			// No body for drawings/pictures/etc
 		} else {
 			data.body = alert
 			// backcompat
