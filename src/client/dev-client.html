@@ -9,11 +9,11 @@
 </head><body>
 	<script src="/socket.io/socket.io.js"></script>
 	<pre id="error"></pre>
-	<iframe id="output" frameborder='0' style="height:100%; width:100%;"></iframe>
+	<div id="output"></div>
 	<script>
-		var socket = io.connect('http://localhost'),
+		var socket = io.connect('http://'+location.host),
 			error = document.getElementById('error'),
-			outputIframe = document.getElementById('output')
+			output = document.getElementById('output')
 
 		socket.on('change', function (data) {
 			if (data.error) {
@@ -23,12 +23,17 @@
 			} else {
 				error.style.display = 'none'
 				try {
-					var doc = outputIframe.contentWindow.document
+					output.innerHTML = ''
+					var iframe = document.createElement('iframe')
+					iframe.style.height = iframe.style.width = '100%'
+					iframe.frameBorder = 0
+					output.appendChild(iframe)
+					var doc = iframe.contentWindow.document
 					doc.open()
 					doc.write(data.html)
 					doc.close()
 				} catch(e) {
-					console.log("dev-client error", e)
+					alert("dev-client error: " + e)
 				}
 			}
 		});

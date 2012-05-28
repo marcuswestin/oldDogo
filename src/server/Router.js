@@ -15,13 +15,18 @@ module.exports = proto(null,
 		this.messageService = messageService
 		this.pictureService = pictureService
 		this._opts = opts
-		this._router = express.createServer()
+		this._router = express()
+		this._server = http.createServer(this._router)
 		this._configureRouter(opts || {})
+		if (this._opts.dev) {
+			isDev = true
+			this._setupDev(this._router, this._server)
+		}
 		this._createRoutes()
 	}, {
 		listen:function(port) {
 			if (!port) { throw new Error("Router expected a port") }
-			this._router.listen(port)
+			this._server.listen(port)
 			console.log("dogo-web listening on :"+port)
 		},
 		_configureRouter:function() {
@@ -37,8 +42,7 @@ module.exports = proto(null,
 				router = this._router
 			
 			if (this._opts.dev) {
-				isDev = true
-				this._setupDev(router)
+				router.get('/', function(req, res) { res.redirect('/dev-client.html') })
 			} else {
 				router.get('/', misc.ping)
 			}
@@ -194,7 +198,7 @@ module.exports = proto(null,
 				res.end("Error sending message")
 			}
 		},
-		_setupDev:function(app) {
+		_setupDev:function(app, server) {
 			var nib = require('nib'),
 				jsCompiler = require('require/server'),
 				stylus = require('stylus'),
@@ -204,8 +208,6 @@ module.exports = proto(null,
 				res.sendfile('src/client/dogo.html')
 			})
 			
-			app.get('/', function(req, res) { res.redirect('/dev-client.html') })
-
 			app.get('/jquery.js', function(req, res) {
 				sendFile(res, 'src/client/lib/jquery-1.7.2.js')
 			})
@@ -255,17 +257,17 @@ module.exports = proto(null,
 			
 			
 			// Auto-reload dev client stuff
-			return;
+			// return;
+			var serverIo = require('socket.io').listen(server)
 			app.get('/dev-client.html', function(req, res) {
 				sendFile(res, 'src/client/dev-client.html')
 			})
 			
-			var serverIo = socketIo.listen(app)
 			serverIo.set('log level', 0)
 			
 			serverIo.sockets.on('connection', function(socket) {
 				console.log("Dev client connected")
-				fs.readFile('src/client/dogo.html', function(err, html) {
+				fs.readFile('src/client/playground/playground.html', function(err, html) {
 					socket.emit('change', { error:err, html:html.toString() })
 				})
 			})
@@ -275,13 +277,12 @@ module.exports = proto(null,
 				if (time.now() - lastChange < 1000) { return } // Node bug calls twice per change, see https://github.com/joyent/node/issues/2126
 				lastChange = time.now()
 				console.log("detected change.", "Compiling and sending.")
-				fs.readFile('src/client/dogo.html', function(err, html) {
+				fs.readFile('src/client/playground/playground.html', function(err, html) {
 					serverIo.sockets.emit('change', { error:err, html:html.toString() })
 				})
 			}
 			
-			var socketIo = require('socket.io'),
-			watch = require('watch')
+			var watch = require('watch')
 			var watchedFiles = {}
 			var walkFiles = function() {
 				walk('src/client', function(err, files) {
