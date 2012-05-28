@@ -10,6 +10,7 @@ require('./state')
 
 options = require('std/options')
 create = require('std/create')
+proto = require('std/proto')
 map = require('std/map')
 api = require('./api')
 bridge = require('./bridge')
