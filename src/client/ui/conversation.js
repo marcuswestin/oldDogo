@@ -15,7 +15,7 @@ module.exports = {
 		$body.append(
 			div('conversation',
 				$ui.info = $(div('info')),
-				$ui.wrapper=$(div('messagesWrapper', style({ height:viewport.height() - 45 }),
+				$ui.wrapper=$(div('messagesWrapper', style({ height:viewport.height() - 45, overflow:'scroll' }),
 					$ui.invite=$(div('invite')),
 					div('messages', $ui.messages = list([], selectMessage, renderMessage))
 				)),
