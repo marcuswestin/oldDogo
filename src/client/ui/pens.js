@@ -28,6 +28,12 @@ var basePen = {
 		if (from[0] == to[0] && from[1] == to[1]) { return }
 		this.ctx.moveTo(from[0], from[1])
 		this.ctx.lineTo(to[0], to[1])
+	},
+	
+	distance: function(from, to) {
+		var dx = to[0] - from[0]
+		var dy = to[1] - from[1]
+		return Math.sqrt(dx*dx + dy*dy)
 	}
 }
 
@@ -98,13 +104,14 @@ pens.zebra = proto(collectPointsPen, initPen, {
 	},
 	move: function(ctx, point, points) {
 		ctx.beginPath()
-		var dw = 10
-		ctx.lineWidth += Math.round((Math.random() * dw) - (dw/2 + .3))
-		if (ctx.lineWidth < 1) ctx.lineWidth = 1
-		if (ctx.lineWidth > 50) ctx.lineWidth = 50
+		// var dw = 10
+		// ctx.lineWidth += Math.round((Math.random() * dw) - (dw/2 + .3))
+		// if (ctx.lineWidth < 1) ctx.lineWidth = 1
+		// if (ctx.lineWidth > 50) ctx.lineWidth = 50
 		if (points.length > 2) {
 			var pN2 = points[points.length - 3]
 			var pN1 = points[points.length - 2]
+			ctx.lineWidth = Math.floor(this.distance(pN1, pN2) * 1.2)
 			var interp = [(pN2[0] + pN1[0])/2, (pN2[1] + pN1[1])/2]
 			ctx.quadraticCurveTo(pN2[0], pN2[1], interp[0], interp[1])
 			ctx.stroke()
@@ -164,23 +171,23 @@ pens.dots = proto(basePen, initPen, {
 	}
 })
 
-pens.simple = proto(basePen, initPen, {
-	down:function(ctx, point) {
-		this.last = point
-	},
-	move:function(ctx, point) {
-		if (!this.last) { return }
-		ctx.beginPath()
-		ctx.strokeStyle = this.rgba()
-		ctx.lineWidth = 2
-		this.line([this.last[0], this.last[1]], [point[0], point[1]])
-		ctx.stroke()
-		this.last = point
-	},
-	up:function() {
-		this.last = null
-	}
-})
+// pens.simple = proto(basePen, initPen, {
+// 	down:function(ctx, point) {
+// 		this.last = point
+// 	},
+// 	move:function(ctx, point) {
+// 		if (!this.last) { return }
+// 		ctx.beginPath()
+// 		ctx.strokeStyle = this.rgba()
+// 		ctx.lineWidth = Math.floor(this.distance(this.last, point))
+// 		this.line([this.last[0], this.last[1]], [point[0], point[1]])
+// 		ctx.stroke()
+// 		this.last = point
+// 	},
+// 	up:function() {
+// 		this.last = null
+// 	}
+// })
 
 // var lineWidth = this.lineWidth
 // var dw = lineWidth.vary
@@ -218,8 +225,9 @@ pens.ribbon = proto(basePen,
 		up:function(ctx, point) { this.strokeEnd() },
 		
 		init: function( SCREEN_WIDTH, SCREEN_HEIGHT ) {
-			this.ctx.globalCompositeOperation = 'source-over';
-			this.ctx.strokeStyle = "rgba(" + COLOR[0] + ", " + COLOR[1] + ", " + COLOR[2] + ", " + 0.05 * BRUSH_PRESSURE + ")";
+			var ctx = this.ctx
+			ctx.globalCompositeOperation = 'source-over';
+			ctx.strokeStyle = "rgba(" + COLOR[0] + ", " + COLOR[1] + ", " + COLOR[2] + ", " + 0.05 * BRUSH_PRESSURE + ")";
 			// ctx.strokeStyle = this.rgba()
 			this.mouseX = SCREEN_WIDTH / 2;
 			this.mouseY = SCREEN_HEIGHT / 2;
