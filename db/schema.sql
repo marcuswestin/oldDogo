@@ -91,8 +91,7 @@ CREATE TABLE message (
 	sender_account_id BIGINT UNSIGNED NOT NULL,
 	conversation_id BIGINT UNSIGNED NOT NULL,
 	body VARCHAR(255) DEFAULT NULL,
-	payload_type ENUM('picture', 'sound') DEFAULT NULL,
-	payload_id BIGINT UNSIGNED DEFAULT NULL,
+	message_id BIGINT UNSIGNED DEFAULT NULL,
 	sent_time INT UNSIGNED,
 	FOREIGN KEY (sender_account_id) REFERENCES account(id),
 	PRIMARY KEY (id)

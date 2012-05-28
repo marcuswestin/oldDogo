@@ -15,6 +15,12 @@ module.exports = proto(null,
 					var acc1 = convo.account1Id,
 						acc2 = convo.account2Id
 					convo.withAccountId = (acc1 == accountId ? acc2 : acc1)
+					
+					// BACKCOMPAT REMOVE
+					if (convo.lastReceivedPictureId) {
+						convo.lastReceivedPayloadId = convo.lastReceivedPictureId
+						convo.lastReceivedPayloadType = 'picture'
+					}
 				}
 				callback(null, conversations)
 			})
@@ -156,17 +162,33 @@ module.exports = proto(null,
 				[convoId, accountId], callback)
 		},
 		_insertMessage: function(conn, accountId, convoId, body, pictureId, callback) {
-			var payloadType = pictureId ? 'picture' : null
-			var payloadId = pictureId ? pictureId : null
 			conn.insert(this,
-				'INSERT INTO message SET sent_time=?, sender_account_id=?, conversation_id=?, body=?, payload_type=?, payload_id=?',
-				[conn.time(), accountId, convoId, body, payloadType, payloadId], callback)
+				'INSERT INTO message SET sent_time=?, sender_account_id=?, conversation_id=?, body=?, picture_id=?',
+				[conn.time(), accountId, convoId, body, pictureId], callback)
 		},
 		_selectMessage: function(conn, messageId, callback) {
-			conn.selectOne(this, this.sql.selectMessage+' WHERE id=?', [messageId], callback)
+			conn.selectOne(this, this.sql.selectMessage+' WHERE id=?', [messageId], function(err, message) {
+				// BACKCOMPAT, REMOVE
+				if (!err && message.pictureId) {
+					message.payloadId = message.pictureId
+					message.payloadType = 'picture'
+				}
+				callback(err, message)
+			})
 		},
 		_selectMessages: function(conn, convoId, callback) {
-			conn.select(this, this.sql.selectMessage+' WHERE conversation_id=? ORDER BY id DESC', [convoId], callback)
+			conn.select(this, this.sql.selectMessage+' WHERE conversation_id=? ORDER BY id DESC', [convoId], function(err, messages) {
+				// BACKCOMPAT, REMOVE
+				if (!err) {
+					each(messages, function(message) {
+						if (message.pictureId) {
+							message.payloadId = message.pictureId
+							message.payloadType = 'picture'
+						}
+					})
+				}
+				callback(err, messages)
+			})
 		},
 		_selectParticipations: function(conn, accountId, callback) {
 			conn.select(this, this.sql.selectParticipation
@@ -200,8 +222,7 @@ module.exports = proto(null,
 				conversationId:'conversation_id',
 				sentTime:'sent_time',
 				body:'body',
-				payloadId:'payload_id',
-				payloadType:'payload_type'
+				pictureId:'picture_id'
 			}),
 			
 			selectConvo:sql.selectFrom('conversation', {
@@ -219,8 +240,7 @@ module.exports = proto(null,
 				id: 'partic.conversation_id',
 				lastReceivedBody: 'last_received.body',
 				lastReceivedTime: 'last_received.sent_time',
-				lastReceivedPayloadType: 'last_received.payload_type',
-				lastReceivedPayloadId: 'last_received.payload_id',
+				lastReceivedPictureId: 'last_received.picture_id',
 				lastReceivedMessageId: 'last_received.id',
 				lastReadMessageId: 'partic.last_read_message_id',
 				// TODO Remove lastMessage*
