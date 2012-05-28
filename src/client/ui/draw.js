@@ -89,7 +89,7 @@ function render(_opts) {
 	
 	var controlsTrans = function(name) { return style({ '-webkit-transition':name+' '+controlsDuration/1000+'s' })}
 	
-	return $ui = $(div('draw',
+	return $ui = $(div('draw-composer',
 		div('close button', 'X', controlsTrans('-webkit-transform'), style({ bottom:height - 30, left:3 }), button(function() { opts.onHide() })),
 		div('controls-pos', controlsTrans('-webkit-transform'),
 			div('controls-rot', controlsTrans('-webkit-transform'),
