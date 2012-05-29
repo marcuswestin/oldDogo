@@ -35,8 +35,8 @@ module.exports = function(opts) {
 			for (var i=0; i<colors.length; i++) {
 				ctx.beginPath()
 				ctx.fillStyle = getRgba(colors[i], alpha)
-				// ctx.strokeStyle = '#fff'
-				// ctx.lineWidth = 4
+				ctx.strokeStyle = '#fff'
+				ctx.lineWidth = 1
 				ctx.lineTo(0, d2)
 				ctx.moveTo(0, 0)
 				ctx.arc(0, 0, d2, 0, rotation, false)
@@ -44,7 +44,7 @@ module.exports = function(opts) {
 				ctx.moveTo(0, 0)
 				ctx.rotate(rotation)
 				ctx.closePath()
-				// ctx.stroke()
+				ctx.stroke()
 				ctx.fill()
 			}
 			content = canvas.tag

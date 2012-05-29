@@ -69,7 +69,7 @@ var initPen = function(opts) {
 	this.ctx = opts.ctx
 }
 
-pens.smooth = proto(collectPointsPen, initPen, {
+pens.pen = proto(collectPointsPen, initPen, {
 	down: function(ctx, point, points) {
 		ctx.lineWidth = 5
 		ctx.strokeStyle = this.rgba()
@@ -134,10 +134,10 @@ pens.zebra = proto(collectPointsPen, initPen, {
 	}
 })
 
-pens.glow = proto(collectPointsPen, initPen, {
+pens.marker = proto(collectPointsPen, initPen, {
 	down: function(ctx, point, points) {
-		ctx.lineWidth = 10
-		ctx.strokeStyle = this.rgba(.01)
+		ctx.lineWidth = 8
+		ctx.strokeStyle = this.rgba(.05)
 		ctx.globalCompositeOperation = 'darker'
 		ctx.moveTo(point[0], point[1])
 	},
@@ -166,9 +166,10 @@ pens.dots = proto(basePen, initPen, {
 	down:function(ctx, point) {
 		this.last = point
 		this.i = 0
+		ctx.globalCompositeOperation = 'source-over'
 	},
 	move:function(ctx, point) {
-		if (!this.last || (this.i++ % 3 != 0)) { return }
+		if (!this.last || (this.i++ % 2 != 0)) { return }
 		this.ctx.fillStyle = this.rgba()
 		this.dot(point, 1 + this.distance(this.last, point) / 5)
 		this.last = point
@@ -178,9 +179,10 @@ pens.dots = proto(basePen, initPen, {
 	}
 })
 
-pens.arrows = proto(basePen, initPen, {
+pens.pearls = proto(basePen, initPen, {
 	down:function(ctx, point) {
 		this.last = point
+		ctx.globalCompositeOperation = 'source-over'
 	},
 	move:function(ctx, point) {
 		if (!this.last) { return }
@@ -197,7 +199,7 @@ pens.arrows = proto(basePen, initPen, {
 		ctx.fillStyle = this.rgba()
 		
 		for (var i=0; i<=num; i++) {
-			this.dot([from[0] + stepX * i, from[1] + stepY*i], i / 5)
+			this.dot([from[0] + stepX * i, from[1] + stepY*i], i / 3)
 		}
 		
 		this.last = point
@@ -216,6 +218,7 @@ pens.fill = proto(basePen, initPen, {
 		this.drawing = true
 		this.p2 = point
 		this.ctx.fillStyle = this.rgba()
+		ctx.globalCompositeOperation = 'source-over'
 		
 		// points.push(point)
 		// if (points.length == 3) {
@@ -346,7 +349,7 @@ BRUSH_SIZE = 2
 COLOR = [100, 50, 20]
 BRUSH_PRESSURE = 1
 
-pens.ribbon = proto(basePen,
+pens.silk = proto(basePen,
 	function(opts) {
 		initPen.apply(this, arguments)
 		this.init(opts.width, opts.height)
@@ -362,7 +365,6 @@ pens.ribbon = proto(basePen,
 		init: function( SCREEN_WIDTH, SCREEN_HEIGHT ) {
 			var ctx = this.ctx
 			ctx.globalCompositeOperation = 'source-over';
-			ctx.strokeStyle = "rgba(" + COLOR[0] + ", " + COLOR[1] + ", " + COLOR[2] + ", " + 0.05 * BRUSH_PRESSURE + ")";
 			// ctx.strokeStyle = this.rgba()
 			this.mouseX = SCREEN_WIDTH / 2;
 			this.mouseY = SCREEN_HEIGHT / 2;
@@ -392,6 +394,7 @@ pens.ribbon = proto(basePen,
 
 			this.shouldDraw = true;
 			
+			this.ctx.strokeStyle = this.rgba(0.05 * BRUSH_PRESSURE)
 			this.interval = setInterval(bind(this, this.update), 1000 / 30)
 		},
 		
