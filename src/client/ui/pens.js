@@ -2,17 +2,7 @@ var pens = module.exports
 
 var basePen = {
 	rgba: function(alpha) {
-		return this.colorPicker.getColor()
-		var colors = []
-		for(var i = 0; i< 3; i++) {
-			colors.push(Math.floor(Math.random() * 255))
-		}
-		if (alpha) {
-			colors.push(alpha)
-			return 'rgba('+colors.join(',')+')'
-		} else {
-			return 'rgb('+colors.join(',')+')'
-		}
+		return this.colorPicker.getColor(alpha)
 	},
 	handleDown:function(point) {
 		this.down(this.ctx, point)
@@ -34,6 +24,25 @@ var basePen = {
 		var dx = to[0] - from[0]
 		var dy = to[1] - from[1]
 		return Math.sqrt(dx*dx + dy*dy)
+	},
+	slope: function(from, to) {
+		var dx = to[0] - from[0]
+		var dy = to[1] - from[1]
+		return dy / dx
+	},
+	dot: function(pos, size) {
+		if (size < 1) { size = 1 }
+		var ctx = this.ctx
+		ctx.beginPath()
+		ctx.arc(pos[0], pos[1], size, 0, Math.PI*2, true)
+		ctx.closePath()
+		ctx.fill()
+	},
+	sub: function(p1, p2) {
+		return [p1[0] - p2[0], p1[1] - p2[1]]
+	},
+	add: function(p1, p2) {
+		return [p1[0] + p2[0], p1[1] + p2[1]]
 	}
 }
 
@@ -62,7 +71,7 @@ var initPen = function(opts) {
 
 pens.smooth = proto(collectPointsPen, initPen, {
 	down: function(ctx, point, points) {
-		ctx.lineWidth = 2
+		ctx.lineWidth = 5
 		ctx.strokeStyle = this.rgba()
 		ctx.globalCompositeOperation = 'source-over'
 		ctx.beginPath()
@@ -94,7 +103,6 @@ pens.smooth = proto(collectPointsPen, initPen, {
 	}
 })
 
-
 pens.zebra = proto(collectPointsPen, initPen, {
 	down: function(ctx, point, points) {
 		ctx.moveTo(point[0], point[1])
@@ -111,7 +119,7 @@ pens.zebra = proto(collectPointsPen, initPen, {
 		if (points.length > 2) {
 			var pN2 = points[points.length - 3]
 			var pN1 = points[points.length - 2]
-			ctx.lineWidth = Math.floor(this.distance(pN1, pN2) * 1.2)
+			ctx.lineWidth = Math.floor(this.distance(pN1, pN2))
 			var interp = [(pN2[0] + pN1[0])/2, (pN2[1] + pN1[1])/2]
 			ctx.quadraticCurveTo(pN2[0], pN2[1], interp[0], interp[1])
 			ctx.stroke()
@@ -156,20 +164,147 @@ pens.glow = proto(collectPointsPen, initPen, {
 
 pens.dots = proto(basePen, initPen, {
 	down:function(ctx, point) {
+		this.last = point
+		this.i = 0
+	},
+	move:function(ctx, point) {
+		if (!this.last || (this.i++ % 3 != 0)) { return }
+		this.ctx.fillStyle = this.rgba()
+		this.dot(point, 1 + this.distance(this.last, point) / 5)
+		this.last = point
+	},
+	up:function() {
+		this.last = null
+	}
+})
+
+pens.arrows = proto(basePen, initPen, {
+	down:function(ctx, point) {
+		this.last = point
+	},
+	move:function(ctx, point) {
+		if (!this.last) { return }
+		
+		var from = point
+		var to = this.last
+		var distance = Math.ceil(this.distance(from, to))
+		var dx = to[0] - from[0]
+		var dy = to[1] - from[1]
+		var num = distance
+		var stepX = dx / num
+		var stepY = dy / num
+		
+		ctx.fillStyle = this.rgba()
+		
+		for (var i=0; i<=num; i++) {
+			this.dot([from[0] + stepX * i, from[1] + stepY*i], i / 5)
+		}
+		
+		this.last = point
+	},
+	up:function(ctx, point) {
+		this.last = null
+	}
+})
+
+var points = []
+
+var i = 0
+
+pens.fill = proto(basePen, initPen, {
+	down:function(ctx, point) {
 		this.drawing = true
+		this.p2 = point
+		this.ctx.fillStyle = this.rgba()
+		
+		// points.push(point)
+		// if (points.length == 3) {
+		// 	this.doDraw(points[2], points[1], points[0])
+		// 	
+		// 	this.dot(points[2], 10)
+		// 	this.dot(points[1], 10)
+		// 	this.dot(points[0], 10)
+		// 	this.dot(bezControlPt(points[0], points[1], points[2], 1/2), 15)
+		// 	
+		// 	points = []
+		// }
+		this.p0 = point
+		this.minSize = this.lastSize = 2
+		this.lastDistance = 0
+		
+		this.interval = setInterval(bind(this, this.drawNext), 1000 / 15)
 	},
 	move:function(ctx, point) {
 		if (!this.drawing) { return }
-		ctx.beginPath()
-		ctx.fillStyle = this.rgba()
-		ctx.arc(point[0], point[1], 5, 0, Math.PI*2, true)
-		ctx.closePath()
-		ctx.fill()
+		if (i++ % 30 != 0) { return }
+		i = 0
+		
+		if (!this.p1) { this.p1 = point }
+		else { this.p2 = point }
+		
+		
+		// if (!(this.p0 && this.p1 && this.p2)) { return }
+		// this.doDraw(this.p0, this.p1, this.p2)
 	},
-	up:function() {
+	up:function(ctx, point) {
 		this.drawing = false
+		this.p0 = this.p1 = this.p2 = null
+		clearInterval(this.interval)
+	},
+	drawNext:function() {
+		if (!this.p1 || !this.p2) { return }
+		this.doDraw(this.p0, this.p1, this.p2)
+		this.p0 = this.p1
+		this.p1 = this.p2
+		this.p2 = null
+	},
+	doDraw:function(p0, f, p2) {
+		// infer bezier control point
+		var u = 1/2 // calculate this based on the relative lengths of p01/p12. For now, assume it's just halfway
+		var p1 = bezControlPt(p0, f, p2, u)
+		
+		var distance = this.distance(p1, p2)
+		var startSize = this.lastSize
+		var targetSize = distance / 8
+		if (Math.abs(targetSize - startSize) > 1) {
+			targetSize = startSize + (targetSize > startSize ? 1 : -1)
+		}
+		if (targetSize < this.minSize) {
+			targetSize = this.minSize
+		}
+		this.lastDistance = distance
+		
+		var num = Math.ceil(distance) * 2
+		var sizeStep = (targetSize - startSize) / num
+		
+		// Draw the second half of the bezier curve - the first half is already drawn by the previous stroke
+		for (var i=num*u; i<=num; i++) {
+			var t = i / num
+			var x = bez(p0, p1, p2, t, 0)
+			var y = bez(p0, p1, p2, t, 1)
+			this.dot([x,y], this.lastSize=startSize + sizeStep*i)
+			this.ctx.closePath()
+		}
 	}
 })
+
+// value_i of bezier curve with control points p0, p1, p2 at time t
+var bez = function(p0, p1, p2, t, i) {
+	var t2 = t*t
+	var _t = 1-t
+	var _t2 = _t*_t
+	return _t2 * p0[i] + 2 * _t * t * p1[i] + t2 * p2[i]
+}
+
+// we know the three points p0, f, and p2 that we want the bezier curve to go through.
+// the question is, what's the control point p1 that gives us the curve that goes through f at t=u?
+// 
+function bezControlPt(p0, f, p2, u) {
+	var coord = function(i) {
+		return f[i]/(2*(1-u)*u) - (1-u)*p0[i]/(2*u) - u*p2[i]/(2*(1-u))
+	}
+	return [coord(0), coord(1)]
+}
 
 // pens.simple = proto(basePen, initPen, {
 // 	down:function(ctx, point) {
@@ -256,6 +391,8 @@ pens.ribbon = proto(basePen,
 			}
 
 			this.shouldDraw = true;
+			
+			this.interval = setInterval(bind(this, this.update), 1000 / 30)
 		},
 		
 		update:function() {
@@ -280,11 +417,11 @@ pens.ribbon = proto(basePen,
 		stroke: function( mouseX, mouseY ) {
 			this.mouseX = mouseX;
 			this.mouseY = mouseY;
-			this.update()
 		},
 
 		strokeEnd: function() {
 			this.shouldDraw = false
+			clearInterval(this.interval)
 		}
 	}
 )

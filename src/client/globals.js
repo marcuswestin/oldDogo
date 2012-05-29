@@ -24,3 +24,13 @@ button = tags.button
 list = tags.list
 style = tags.style
 tags.expose()
+
+createCanvas = function(className, width, height, parent, styles) {
+	var ratio = window.devicePixelRatio || 1
+	var canvasSize = { width:width * ratio, height:height * ratio }
+	var $canvas = $(canvas(className, canvasSize, style({ width:width, height:height }), styles))
+	if (parent) { $canvas.appendTo(parent) }
+	var ctx = $canvas[0].getContext('2d')
+	ctx.scale(ratio, ratio)
+	return ctx
+}

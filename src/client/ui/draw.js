@@ -26,12 +26,10 @@ function render(_opts) {
 	
 	imageTouched = false
 	
-	var $canvas = $(canvas('canvas', canvasSize, style({ height:height, width:width })))
+	var $canvas = $(div())
+	var ctx = createCanvas('canvas', width, height, $canvas)
 	$canvas.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
 	$canvas.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
-	var ctx = $canvas[0].getContext('2d')
-
-	ctx.scale(ratio, ratio);
 	
 	// Background
 	ctx.fillStyle = '#F4F3EF' //'#424242'
@@ -79,7 +77,7 @@ function render(_opts) {
 		div('controls-pos', controlsTrans('-webkit-transform'),
 			div('controls-rot', controlsTrans('-webkit-transform'),
 				div('controls', controlsTrans('width'), style({ width:width }),
-					state.colorPicker = colorPicker({ color:'steelblue' }),
+					state.colorPicker = colorPicker(),
 					div('tools',
 						$.map(pens, function(pen, name) {
 							return div('button', name, button(function() {
@@ -95,7 +93,7 @@ function render(_opts) {
 		$canvas
 	))
 	
-	state.pen = createPen(pens.smooth)
+	state.pen = createPen(pens.fill)
 	
 	return $ui
 	
@@ -137,16 +135,15 @@ function sendImage() {
 	var dim = canvasSize.height // use height (largest dimension) for both w/h to avoid cropping
 	
 	if (rotationDeg) {
-		$('body').append(canvas('rotate', { width:canvasSize.height, height:canvasSize.width }, style({ position:'absolute', top:0 })))
-		var $rotateCanvas = $('body canvas.rotate')
-		var rotateCtx = $rotateCanvas[0].getContext('2d')
+		console.log("HERE1")
+		var rotateCtx = createCanvas('rotateCanvas', width, height, $('body'), style({ position:'absolute', top:0 }))
 		rotateCtx.save()
 		rotateCtx.rotate(Math.PI / 2)
 		rotateCtx.translate(0, -canvasSize.height)
 		rotateCtx.drawImage($ui.find('canvas')[0], 0, 0)
 		rotateCtx.restore()
 
-		var data = $rotateCanvas[0].toDataURL('image/png')
+		var data = $('body rotateCanvas')[0].toDataURL('image/png')
 		$rotateCanvas.remove()
 
 		var picWidth = canvasSize.height
