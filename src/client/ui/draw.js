@@ -26,8 +26,9 @@ function render(_opts) {
 	
 	imageTouched = false
 	
-	var $canvas = $(div())
-	var ctx = createCanvas('canvas', width, height, $canvas)
+	var canvas = createCanvas(width, height)
+	var ctx = canvas.ctx
+	var $canvas = $(canvas.tag)
 	$canvas.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
 	$canvas.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
 	
@@ -135,8 +136,9 @@ function sendImage() {
 	var dim = canvasSize.height // use height (largest dimension) for both w/h to avoid cropping
 	
 	if (rotationDeg) {
-		console.log("HERE1")
-		var rotateCtx = createCanvas('rotateCanvas', width, height, $('body'), style({ position:'absolute', top:0 }))
+		var canvas = createCanvas(width, height, style({ position:'absolute', top:0 }))
+		$('body').append(canvas.tag)
+		var rotateCtx = canvas.ctx
 		rotateCtx.save()
 		rotateCtx.rotate(Math.PI / 2)
 		rotateCtx.translate(0, -canvasSize.height)
