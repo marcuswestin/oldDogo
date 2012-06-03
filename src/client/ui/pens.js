@@ -6,18 +6,15 @@ var basePen = {
 	},
 	handleDown:function(point) {
 		this.down(this.ctx, point)
+		return this
 	},
 	handleMove:function(point) {
 		this.move(this.ctx, point)
+		return this
 	},
 	handleUp:function(point) {
 		this.up(this.ctx, point)
-	},
-	
-	line: function(from, to) {
-		if (from[0] == to[0] && from[1] == to[1]) { return }
-		this.ctx.moveTo(from[0], from[1])
-		this.ctx.lineTo(to[0], to[1])
+		return this
 	},
 	
 	distance: function(p1, p2) {
@@ -42,26 +39,88 @@ var collectPointsPen = create(basePen, {
 	handleDown:function(point) {
 		this.points = [point]
 		this.down(this.ctx, point, this.points)
+		return this
 	},
 	handleMove:function(point) {
 		if (!this.points) { return }
 		this.points.push(point)
 		this.move(this.ctx, point, this.points)
+		return this
 	},
 	handleUp:function(point) {
 		if (!this.points) { return }
 		this.points.push(point)
 		this.up(this.ctx, point, this.points)
+		// console.log(JSON.stringify(this.points))
 		this.points = null
+		return this
 	}
 })
 
 var initPen = function(opts) {
 	this.colorPicker = opts.colorPicker
-	this.ctx = opts.ctx
+	this.ctx = opts.draw
 }
 
-pens.pen = proto(collectPointsPen, initPen, {
+pens.fill = proto(basePen, initPen, {
+	u:1/2,
+	dt:0.1,
+	rate:1000 / 100,
+	down:function(ctx, point) {
+		this.nextPoint = point
+		ctx.style(this.rgba()).lineWidth(4).globalCompositeOperation('source-over')
+		this.thickness = 4
+		this.interval = setInterval(bind(this, this.draw), this.rate)
+	},
+	move:function(ctx, point) {
+		if (!this.interval) { return }
+		this.nextPoint = point
+	},
+	up:function(ctx, point) {
+		clearInterval(this.interval)
+		this.interval = null
+		this.drawing = false
+		this.p0 = this.f = this.nextPoint = null
+		clearInterval(this.interval)
+	},
+	draw:function() {
+		if (!this.p0) { return this.p0 = this.nextPoint }
+		if (!this.f) { return this.f = this.nextPoint }
+		
+		var c = this.ctx
+		var p0 = this.p0
+		var f = this.f
+		var p2 = this.nextPoint
+		var u = this.u
+		var deltaT = this.dt
+		var p1 = bezControlPt(p0, f, p2, u)
+		
+		var p0_delta = bez(p0, p1, p2, 0 + deltaT)
+		var f_delta = bez(p0, p1, p2, u + deltaT)
+		
+		var distance = Math.ceil(this.distance(f, f_delta) / 4)
+
+		var thickness0 = this.thickness
+		var thicknessTarget = distance // should be something else
+		var thicknessDelta = thicknessTarget - thickness0
+		var thicknessStep = thicknessDelta / distance
+
+		var tStep = distance ? (deltaT / distance) : 1
+		// var pixel = ctx.createImageData(onePixel)
+
+		// c.fillStyle(this.rgba())
+		for (var i=0; i<=distance; i++) {
+			var point = bez(p0, p1, p2, u + i*tStep)
+			c.beginPath().dot(point, (thickness0 + i*thicknessStep)).stroke().fill()
+		}
+		
+		this.p0 = p0_delta
+		this.f = f_delta
+		this.thickness = thicknessTarget
+	}
+})
+
+pens.line = proto(collectPointsPen, initPen, {
 	down: function(ctx, point, points) {
 		ctx.lineWidth(5).style(this.rgba()).globalCompositeOperation('source-over').beginPath().moveTo(point)
 	},
@@ -143,7 +202,7 @@ pens.dots = proto(basePen, initPen, {
 	},
 	move:function(ctx, point) {
 		if (!this.last) { return }
-		ctx.beginPath().fillStyle(this.rgba()).dot(point, this.distance(this.last, point) / 2.5).fill()
+		ctx.beginPath().style(this.rgba(.9)).dot(point, Math.round(this.distance(this.last, point) / 2.5)).fill()
 		this.last = point
 	},
 	up:function() {
@@ -151,97 +210,36 @@ pens.dots = proto(basePen, initPen, {
 	}
 })
 
-pens.pearl = proto(basePen, initPen, {
-	down:function(ctx, point) {
-		this.last = point
-		ctx.globalCompositeOperation('source-over').lineWidth(1)
-	},
-	move:function(ctx, point) {
-		if (!this.last) { return }
-		
-		var from = point
-		var to = this.last
-		var distance = Math.ceil(this.distance(from, to))
-		var dx = to[0] - from[0]
-		var dy = to[1] - from[1]
-		var num = distance
-		var stepX = dx / num
-		var stepY = dy / num
-		
-		ctx.fillStyle(this.rgba())
-		
-		for (var i=0; i<=num; i++) {
-			ctx.beginPath().dot([from[0] + stepX * i, from[1] + stepY*i], i / 3).fill()
-		}
-		
-		this.last = point
-	},
-	up:function(ctx, point) {
-		this.last = null
-	}
-})
+// pens.pearl = proto(basePen, initPen, {
+// 	down:function(ctx, point) {
+// 		this.last = point
+// 		ctx.globalCompositeOperation('source-over').lineWidth(1)
+// 	},
+// 	move:function(ctx, point) {
+// 		if (!this.last) { return }
+// 		
+// 		var from = point
+// 		var to = this.last
+// 		var distance = Math.ceil(this.distance(from, to))
+// 		var dx = to[0] - from[0]
+// 		var dy = to[1] - from[1]
+// 		var num = distance
+// 		var stepX = dx / num
+// 		var stepY = dy / num
+// 		
+// 		ctx.fillStyle(this.rgba())
+// 		
+// 		for (var i=0; i<=num; i++) {
+// 			ctx.beginPath().dot([from[0] + stepX * i, from[1] + stepY*i], i / 3).fill()
+// 		}
+// 		
+// 		this.last = point
+// 	},
+// 	up:function(ctx, point) {
+// 		this.last = null
+// 	}
+// })
 
-var points = []
-
-var i = 0
-
-pens.fill = proto(basePen, initPen, {
-	u:1/2,
-	dt:0.1,
-	rate:1000 / 100,
-	down:function(ctx, point) {
-		this.nextPoint = point
-		ctx.style(this.rgba()).lineWidth(4).globalCompositeOperation('source-over')
-		this.thickness = 4
-		this.interval = setInterval(bind(this, this.draw), this.rate)
-	},
-	move:function(ctx, point) {
-		if (!this.interval) { return }
-		this.nextPoint = point
-	},
-	up:function(ctx, point) {
-		clearInterval(this.interval)
-		this.interval = null
-		this.drawing = false
-		this.p0 = this.f = this.nextPoint = null
-		clearInterval(this.interval)
-	},
-	draw:function() {
-		if (!this.p0) { return this.p0 = this.nextPoint }
-		if (!this.f) { return this.f = this.nextPoint }
-		
-		var c = this.ctx
-		var p0 = this.p0
-		var f = this.f
-		var p2 = this.nextPoint
-		var u = this.u
-		var deltaT = this.dt
-		var p1 = bezControlPt(p0, f, p2, u)
-		
-		var p0_delta = bez(p0, p1, p2, 0 + deltaT)
-		var f_delta = bez(p0, p1, p2, u + deltaT)
-		
-		var distance = Math.ceil(this.distance(f, f_delta) / 4)
-
-		var thickness0 = this.thickness
-		var thicknessTarget = distance // should be something else
-		var thicknessDelta = thicknessTarget - thickness0
-		var thicknessStep = thicknessDelta / distance
-
-		var tStep = distance ? (deltaT / distance) : 1
-		// var pixel = ctx.createImageData(onePixel)
-
-		// c.fillStyle(this.rgba())
-		for (var i=0; i<=distance; i++) {
-			var point = bez(p0, p1, p2, u + i*tStep)
-			c.beginPath().dot(point, (thickness0 + i*thicknessStep)).stroke().fill()
-		}
-		
-		this.p0 = p0_delta
-		this.f = f_delta
-		this.thickness = thicknessTarget
-	}
-})
 
 // value_i of bezier curve with control points p0, p1, p2 at time t
 function bez(p0, p1, p2, t) {
@@ -334,10 +332,10 @@ pens.silk = proto(basePen,
 			this.shouldDraw = true;
 			
 			this.ctx.strokeStyle(this.rgba(0.1 * BRUSH_PRESSURE))
-			this.interval = setInterval(bind(this, this.update), 1000 / 30)
+			this.interval = setInterval(bind(this, this.draw), 1000 / 30)
 		},
 		
-		update:function() {
+		draw:function() {
 			if (!this.shouldDraw) { return }
 			var scope = this
 			var ctx = this.ctx

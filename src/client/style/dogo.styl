@@ -157,18 +157,22 @@ faceDim = 50px
 .draw-composer
 	line-height 0;
 	position absolute; bottom 0;
-	.colorPicker
-		position relative; bottom 12px; left 2px;
 	.controls-pos
 		position absolute; bottom 0;
 	.controls
-		line-height 20px; background linear-gradient(top, #bbb, #666); padding 2px 0; box-shadow -1px 0 3px #000; width 100%;
-		.tools
-			margin 0 0 0 50px;
+		line-height 20px; background linear-gradient(top, #bbb, #666); padding 2px 0; box-shadow -1 0 3px #000; width 100%; height 33px;
+		.picker
+			position absolute;
+		.colorPicker
+			bottom 49px; left 2px;
+		.penPicker
+			bottom 47px; left 55px; box-shadow 0 0 1px #ccc;
 		.button
 			margin 0 2px 2px; padding 2px 5px 4px;
 		.send
-			float right;
+			position absolute; right 0; bottom 1px;
+		.clear
+			position absolute; right 60px; bottom 1px;
 	.close.button
 		position absolute; z-index 1; font-size 14px; padding 11px 7px;
 

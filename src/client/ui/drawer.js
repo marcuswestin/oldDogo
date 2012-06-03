@@ -1,6 +1,6 @@
-var colorPicker = require('./colorPicker')
+var pickers = require('./pickers')
 var pens = require('./pens')
-var draw = require('./draw')
+var makeDraw = require('./draw')
 
 module.exports = {
 	render:render
@@ -15,6 +15,7 @@ var width = 320
 var height = 460
 var ratio = window.devicePixelRatio || 1
 var canvasSize = { width:width * ratio, height:height * ratio }
+var background = '#F4F3EF' //'#424242'
 
 var $ui
 
@@ -27,16 +28,16 @@ function render(_opts) {
 	
 	imageTouched = false
 	
-	var ctx = draw([width, height])
-	ctx.canvas.className = 'drawCanvas'
+	var draw = makeDraw([width, height])
+	draw.canvas.className = 'drawCanvas'
 	
-	var $canvas = $(ctx.canvas)
+	var $canvas = $(draw.canvas)
 	$canvas.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
 	$canvas.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
 	
 	// Background
-	ctx.fillStyle('#F4F3EF').fillRect([0, 0], [width, height]) //'#424242'
-
+	draw.background(background) 
+	
 	if (opts.img) {
 		// TODO Show loading indicator
 		var underlyingUrl = opts.img.style.background.match(/url\((.*)\)/)[1]
@@ -55,18 +56,20 @@ function render(_opts) {
 		var drawImg = new Image()
 		drawImg.onload = function() {
 			var message = opts.message
-			ctx.save()
+			draw.save()
 			if (message.pictureWidth > message.pictureHeight) {
-				ctx.rotate(-Math.PI / 2)
-				ctx.translate([-canvasSize.height / ratio, 0])
+				draw
+					.rotate(-Math.PI / 2)
+					.translate([-canvasSize.height / ratio, 0])
 				var outputWidth = Math.min(message.pictureWidth, height) // rotate, then max canvas height
 				var outputHeight = Math.min(message.pictureHeight, width)
 			} else {
 				var outputWidth = Math.min(message.pictureWidth, width) // rotate, then max canvas height
 				var outputHeight = Math.min(message.pictureHeight, height)
 			}
-			ctx.drawImage(drawImg, [0, 0], [outputWidth, outputHeight])
-			ctx.restore()
+			draw
+				.drawImage(drawImg, [0, 0], [outputWidth, outputHeight])
+				.restore()
 		}
 		drawImg.src = url
 	}
@@ -79,10 +82,10 @@ function render(_opts) {
 		div('controls-pos', controlsTrans('-webkit-transform'),
 			div('controls-rot', controlsTrans('-webkit-transform'),
 				div('controls', controlsTrans('width'), style({ width:width }),
-					state.colorPicker = colorPicker(),
 					div('tools',
-						$.map(pens, renderPen),
-						// div('button clear', 'Clear', button(function() { alert("MAKE CLEAR") })),
+						state.colorPicker = pickers.color(),
+						state.penPicker = pickers.pen({ background:background, colorPicker:state.colorPicker }),
+						div('button clear', 'Clear', button(function() { draw.background(background) })),
 						div('button tool send', 'Send', button(sendImage))
 					)
 				)
@@ -91,28 +94,10 @@ function render(_opts) {
 		$canvas
 	))
 	
-	function renderPen(pen, name) {
-		var width = 30
-		var height = 30
-		var styles = {
-			width:width, height:height, overflow:'hidden', display:'inline-block', margin:'0 4px 0 0',
-			border:'2px solid #fff', borderRadius:4
-		}
-		return div('pen', style(styles), button(curry(selectPen, pen)), function($tag) {
-			var c = draw([width, height])
-			c.style('#333').dot([20, 20], 5).fill()
-			$tag.append(c.canvas)
-		})
-	}
-	
-	function selectPen(pen) { state.pen = createPen(pen) }
-	
-	state.pen = createPen(pens.pen)
-	
 	return $ui
 	
 	function createPen(pen) {
-		return pen({ colorPicker:state.colorPicker, ctx:ctx, width:width, height:height })
+		return pen({ colorPicker:state.colorPicker, draw:draw, width:width, height:height })
 	}
 	
 	function getPoint($e) {
@@ -128,10 +113,13 @@ function render(_opts) {
 	
 	function pencilDown(e) {
 		e.preventDefault()
+		var pen = state.penPicker.getItem()
+		state.pen = createPen(pen)
 		state.pen.handleDown(getPoint(e))
 	}
 
 	function pencilMove(e) {
+		if (!state.pen) { return }
 		imageTouched = true
 		e.preventDefault()
 		state.pen.handleMove(getPoint(e))
@@ -140,6 +128,7 @@ function render(_opts) {
 	function pencilUp(e) {
 		e.preventDefault()
 		state.pen.handleUp(getPoint(e))
+		delete state.pen
 	}
 }
 

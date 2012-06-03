@@ -1,8 +1,10 @@
 
 ;(function(global) {
-	function DrawContext(canvas) {
+	function DrawContext(canvas, width, height) {
 		this.canvas = canvas
 		this.ctx = canvas.getContext('2d')
+		this.w = width
+		this.h = height
 	}
 	DrawContext.prototype = {
 		moveTo:function(p) { this.ctx.moveTo(p[0], p[1]); return this },
@@ -30,7 +32,8 @@
 		
 		line:function(p1,p2) { return this.moveTo(p1).lineTo(p2) },
 		dot:function(p,r) { return this.arc(p, r, [0, Math.PI*2], true) },
-		style:function(style) { return this.strokeStyle(style).fillStyle(style) }
+		style:function(style) { return this.strokeStyle(style).fillStyle(style) },
+		background:function(color) { return this.fillStyle(color).fillRect([0, 0], [this.w, this.h]) },
 	}
 	
 	function draw(d) {
@@ -38,11 +41,11 @@
 		var height = d[1]
 		var canvas = document.createElement('canvas')
 		var scale = window.devicePixelRatio || 1
-		canvas.setAttribute('width', width * scale)
-		canvas.setAttribute('height', height * scale)
+		canvas.setAttribute('width', width)
+		canvas.setAttribute('height', height)
 		canvas.style.width = width
 		canvas.style.height = height
-		return new DrawContext(canvas).scale([scale,scale])
+		return new DrawContext(canvas, width, height)
 	}
 	
 	if (typeof module == 'undefined') { global.draw = draw }
