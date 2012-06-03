@@ -1,6 +1,6 @@
 var trim = require('std/trim')
 var placeholder = 'Say something :)'
-var draw = require('./draw')
+var drawer = require('./drawer')
 
 var currentAccountId
 var currentFacebookId
@@ -48,7 +48,7 @@ function onSelectDraw(e) { selectDraw() }
 function selectDraw(img, message) {
 	composer.hide()
 	scroller.$head.hide()
-	$('body > .app').append($ui.drawer=draw.render({ onSend:sendImage, onHide:composer.hide, img:img, message:message }))
+	$('body > .app').append($ui.drawer=drawer.render({ onSend:sendImage, onHide:composer.hide, img:img, message:message }))
 }
 
 function sendImage(data, width, height) {

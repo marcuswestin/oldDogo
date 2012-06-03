@@ -2,7 +2,7 @@ require('../globals')
 
 window.onerror = function(e) { alert('error ' + e) }
 
-var draw = require('../ui/draw')
+var drawer = require('../ui/drawer')
 
 var $buttons = $(div())
 each([-180, -90, 0, 90, 180], function(deg) {
@@ -13,7 +13,7 @@ each([-180, -90, 0, 90, 180], function(deg) {
 $('body').append($buttons)
 
 $('body').append(div(
-	draw.render()
+	drawer.render()
 ))//.find('.draw').css({ margin:'0 0 1200px 0' })
 
 

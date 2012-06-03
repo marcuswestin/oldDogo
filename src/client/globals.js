@@ -20,15 +20,16 @@ viewport = require('tags/viewport')
 each = require('std/each')
 slice = require('std/slice')
 curry = require('std/curry')
+draw = require('./ui/draw')
 button = tags.button
 list = tags.list
 style = tags.style
 tags.expose()
 
-createCanvas = function(width, height, styles) {
+createCanvas = function(className, width, height, styles) {
 	var ratio = window.devicePixelRatio || 1
 	var canvasSize = { width:width * ratio, height:height * ratio }
-	var tag = canvas(canvasSize, style({ width:width, height:height }), styles)
+	var tag = canvas(className, canvasSize, style({ width:width, height:height }), styles)
 	var ctx = $(tag)[0].getContext('2d')
 	ctx.scale(ratio, ratio)
 	return { tag:tag, ctx:ctx }

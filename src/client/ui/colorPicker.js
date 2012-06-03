@@ -14,7 +14,7 @@ module.exports = function(opts) {
 		'random':[[255, 0, 0], [255, 125, 0], [125, 255, 125], [0, 125, 255], [0, 0, 255]]
 	}
 
-	var currentColor = colorLists[0][1]
+	var currentColor = colorLists[0][2]
 	
 	var renderDot = function(onSelect, color, giveAlpha) {
 		var alpha = giveAlpha ? .90 : 1
@@ -26,28 +26,26 @@ module.exports = function(opts) {
 		}
 		var content
 		if (typeof color == 'string') {
-			var canvas = createCanvas(diameter, diameter)
-			var ctx = canvas.ctx
-			var d2 = diameter/2
+			var c = draw([diameter, diameter])
+			c.canvas.className = 'multiDot'
+			var r = diameter/2
 			var colors = multiColors[color]
 			var rotation = Math.PI*2/(colors.length)
-			ctx.translate(d2, d2) // center
+			var origin = [0,0]
+			c.translate([r, r]) // center
 			for (var i=0; i<colors.length; i++) {
-				ctx.beginPath()
-				ctx.fillStyle = getRgba(colors[i], alpha)
-				ctx.strokeStyle = '#fff'
-				ctx.lineWidth = 1
-				ctx.lineTo(0, d2)
-				ctx.moveTo(0, 0)
-				ctx.arc(0, 0, d2, 0, rotation, false)
-				ctx.lineTo(0, Math.sin(d2))
-				ctx.moveTo(0, 0)
-				ctx.rotate(rotation)
-				ctx.closePath()
-				ctx.stroke()
-				ctx.fill()
+				c.beginPath()
+					.fillStyle(getRgba(colors[i], alpha)).strokeStyle('#fff')
+					.lineWidth(1)
+					.lineTo([0, r])
+					.moveTo(origin)
+					.arc(origin, r, [0, rotation], false)
+					.lineTo([0, Math.sin(r)])
+					.moveTo(origin)
+					.rotate(rotation)
+					.closePath().stroke().fill()
 			}
-			content = canvas.tag
+			content = c.canvas
 		} else {
 			styles.background = getRgba(color, alpha)
 		}
