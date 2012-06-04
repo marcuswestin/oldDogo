@@ -136,7 +136,7 @@ var colorPicker = proto(picker,
 		getPos: function(i, j, num) {
 			var quarterCircle = Math.PI / 2
 			var expand = 63
-			return [Math.cos(j * quarterCircle/num)*expand*i, -Math.sin(j * quarterCircle/num)*expand*i]
+			return [Math.cos(j * quarterCircle/num)*expand*i, -Math.sin(j * quarterCircle/num)*expand*i - 50]
 		},
 		
 		getRgba: function(color, alpha) {
