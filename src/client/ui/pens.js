@@ -121,55 +121,29 @@ pens.fill = proto(basePen, initPen, {
 	}
 })
 
-pens.line = proto(collectPointsPen, initPen, {
-	down: function(ctx, point, points) {
-		ctx.lineWidth(5).style(this.rgba()).globalCompositeOperation('source-over').beginPath().moveTo(point)
-	},
-	move: function(ctx, point, points) {
-		if (points.length > 2) {
-			var pN2 = points[points.length - 3]
-			var pN1 = points[points.length - 2]
-			var interp = [(pN2[0] + pN1[0])/2, (pN2[1] + pN1[1])/2]
-			ctx.quadraticCurveTo(pN2, interp).stroke()
-		}
-	},
-	up: function(ctx, point, points) {
-		if (points.length == 2) {
-			// dot
-			ctx.dot(points[0], 4).fill().closePath()
-		} else if (points.length > 2) {
-			var pN0 = points[points.length - 1]
-			var pN1 = points[points.length - 2]
-			ctx.quadraticCurveTo(pN0, pN1).stroke().closePath()
-		}
-	}
-})
-
-pens.zebra = proto(collectPointsPen, initPen, {
-	down: function(ctx, point, points) {
-		ctx.moveTo(point).strokeStyle(this.rgba(.8)).lineWidth(10).globalCompositeOperation('source-over')
-	},
-	move: function(ctx, point, points) {
-		ctx.beginPath()
-		// var dw = 10
-		// ctx.lineWidth += Math.round((Math.random() * dw) - (dw/2 + .3))
-		// if (ctx.lineWidth < 1) ctx.lineWidth = 1
-		// if (ctx.lineWidth > 50) ctx.lineWidth = 50
-		if (points.length > 2) {
-			var pN2 = points[points.length - 3]
-			var pN1 = points[points.length - 2]
-			var interp = [(pN2[0] + pN1[0])/2, (pN2[1] + pN1[1])/2]
-			ctx.lineWidth(Math.floor(this.distance(pN1, pN2))).quadraticCurveTo(pN2, interp).stroke()
-		}
-	},
-	up: function(ctx, point, points) {
-		if (points && points.length > 1) {
-			var pN0 = points[points.length - 1]
-			var pN1 = points[points.length - 2]
-			ctx.quadraticCurveTo(pN0, pN1)
-		}
-	}
-})
+// pens.line = proto(collectPointsPen, initPen, {
+// 	down: function(ctx, point, points) {
+// 		ctx.lineWidth(5).style(this.rgba()).globalCompositeOperation('source-over').beginPath().moveTo(point)
+// 	},
+// 	move: function(ctx, point, points) {
+// 		if (points.length > 2) {
+// 			var pN2 = points[points.length - 3]
+// 			var pN1 = points[points.length - 2]
+// 			var interp = [(pN2[0] + pN1[0])/2, (pN2[1] + pN1[1])/2]
+// 			ctx.quadraticCurveTo(pN2, interp).stroke()
+// 		}
+// 	},
+// 	up: function(ctx, point, points) {
+// 		if (points.length == 2) {
+// 			// dot
+// 			ctx.dot(points[0], 4).fill().closePath()
+// 		} else if (points.length > 2) {
+// 			var pN0 = points[points.length - 1]
+// 			var pN1 = points[points.length - 2]
+// 			ctx.quadraticCurveTo(pN0, pN1).stroke().closePath()
+// 		}
+// 	}
+// })
 
 pens.mark = proto(collectPointsPen, initPen, {
 	down: function(ctx, point, points) {
@@ -195,6 +169,33 @@ pens.mark = proto(collectPointsPen, initPen, {
 	}
 })
 
+pens.zebra = proto(collectPointsPen, initPen, {
+	down: function(ctx, point, points) {
+		ctx.moveTo(point).lineWidth(10).globalCompositeOperation('source-over')
+	},
+	move: function(ctx, point, points) {
+		ctx.beginPath()
+		// var dw = 10
+		// ctx.lineWidth += Math.round((Math.random() * dw) - (dw/2 + .3))
+		// if (ctx.lineWidth < 1) ctx.lineWidth = 1
+		// if (ctx.lineWidth > 50) ctx.lineWidth = 50
+		ctx.strokeStyle(this.rgba(.8))
+		if (points.length > 2) {
+			var pN2 = points[points.length - 3]
+			var pN1 = points[points.length - 2]
+			var interp = [(pN2[0] + pN1[0])/2, (pN2[1] + pN1[1])/2]
+			ctx.lineWidth(Math.floor(this.distance(pN1, pN2))).quadraticCurveTo(pN2, interp).stroke()
+		}
+	},
+	up: function(ctx, point, points) {
+		if (points && points.length > 1) {
+			var pN0 = points[points.length - 1]
+			var pN1 = points[points.length - 2]
+			ctx.quadraticCurveTo(pN0, pN1)
+		}
+	}
+})
+
 pens.dots = proto(basePen, initPen, {
 	down:function(ctx, point) {
 		this.last = point
@@ -211,35 +212,35 @@ pens.dots = proto(basePen, initPen, {
 	}
 })
 
-// pens.pearl = proto(basePen, initPen, {
-// 	down:function(ctx, point) {
-// 		this.last = point
-// 		ctx.globalCompositeOperation('source-over').lineWidth(1)
-// 	},
-// 	move:function(ctx, point) {
-// 		if (!this.last) { return }
-// 		
-// 		var from = point
-// 		var to = this.last
-// 		var distance = Math.ceil(this.distance(from, to))
-// 		var dx = to[0] - from[0]
-// 		var dy = to[1] - from[1]
-// 		var num = distance
-// 		var stepX = dx / num
-// 		var stepY = dy / num
-// 		
-// 		ctx.fillStyle(this.rgba())
-// 		
-// 		for (var i=0; i<=num; i++) {
-// 			ctx.beginPath().dot([from[0] + stepX * i, from[1] + stepY*i], i / 3).fill()
-// 		}
-// 		
-// 		this.last = point
-// 	},
-// 	up:function(ctx, point) {
-// 		this.last = null
-// 	}
-// })
+pens.pearl = proto(basePen, initPen, {
+	down:function(ctx, point) {
+		this.last = point
+		ctx.globalCompositeOperation('source-over').lineWidth(1)
+	},
+	move:function(ctx, point) {
+		if (!this.last) { return }
+		
+		var from = point
+		var to = this.last
+		var distance = Math.ceil(this.distance(from, to))
+		var dx = to[0] - from[0]
+		var dy = to[1] - from[1]
+		var num = distance
+		var stepX = dx / num
+		var stepY = dy / num
+		
+		ctx.fillStyle(this.rgba())
+		
+		for (var i=0; i<=num; i++) {
+			ctx.beginPath().dot([from[0] + stepX * i, from[1] + stepY*i], i / 2).fill()
+		}
+		
+		this.last = point
+	},
+	up:function(ctx, point) {
+		this.last = null
+	}
+})
 
 
 // value_i of bezier curve with control points p0, p1, p2 at time t
