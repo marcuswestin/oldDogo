@@ -30,29 +30,33 @@ var picker = {
 		this.isOpen = !this.isOpen
 	},
 	renderTag: function($tag) {
-		var toggle = bind(this, this.toggle)
-		
-		var renderItem = bind(this, function(index, isCurrent, onSelect) {
-			return div('item', this.renderItem(this.getItem(index), isCurrent), button(onSelect), style({
-				'-webkit-transition':'-webkit-transform 0.20s',
-				position:'absolute'
-			}))
-		})
-		
+		this.$ui=$(div('picker '+this.className,
+			div('lists'),
+			div('current', this._renderItem(this.current, true, bind(this, this.toggle)))
+		))
+		setTimeout(bind(this, function() {
+			this.renderLists()
+		}), 10)
+		return this.$ui
+	},
+	_renderItem:function(index, isCurrent, onSelect) {
+		return div('item', this.renderItem(this.getItem(index), isCurrent), button(onSelect), style({
+			'-webkit-transition':'-webkit-transform 0.20s',
+			position:'absolute'
+		}))
+	},
+	renderLists:function() {
 		var selectItem = bind(this, function(i, j) {
 			this.current = [i,j]
-			this.$ui.find('.current').empty().append(renderItem([i, j], false, curry(selectItem, i, j)))
-			toggle()
+			this.$ui.find('.current').empty().append(this._renderItem([i, j], true, curry(selectItem, i, j)))
+			this.toggle()
 		})
 		
-		return this.$ui=$(div('picker '+this.className,
-			div('lists', map(this.items, this, function(list, i) {
-				return div('list', map(list, this, function(item, j) {
-					return renderItem([i, j], false, curry(selectItem, i, j))
-				}))
-			})),
-			div('current', renderItem(this.current, true, toggle))
-		))
+		this.$ui.find('.lists').empty().append(div(map(this.items, this, function(list, i) {
+			return div('list', map(list, this, function(item, j) {
+				return this._renderItem([i, j], false, curry(selectItem, i, j))
+			}))
+		})))
 	},
 	delay:function(i,j) {
 		return i * 5 + j * 40
