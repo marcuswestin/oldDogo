@@ -81,7 +81,7 @@ var colorPicker = proto(picker,
 		},
 		
 		renderItem: function(color, isCurrent) {
-			var alpha = isCurrent ? 1 : .90
+			var alpha = isCurrent ? 1 : .95
 			var diameter = 40
 			var styles = {
 				width:diameter, height:diameter,
