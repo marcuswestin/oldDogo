@@ -138,26 +138,28 @@ function render(_opts) {
 var imageTouched
 function sendImage() {
 	if (!imageTouched) { return }
-	var dim = canvasSize.height // use height (largest dimension) for both w/h to avoid cropping
+	var original = $ui.find('.drawCanvas')[0]
 	
 	if (rotationDeg) {
-		var canvas = createCanvas('rotateCanvas', width, height, style({ position:'absolute', top:0 }))
-		var $canvas = $(canvas.tag)
-		$('body').append($canvas)
-		var rotateCtx = canvas.ctx
-		rotateCtx.save()
-		rotateCtx.rotate(Math.PI / 2)
-		rotateCtx.translate(0, -canvasSize.height)
-		rotateCtx.drawImage($canvas[0], 0, 0)
-		rotateCtx.restore()
-
-		var data = $canvas[0].toDataURL('image/png')
-		$canvas.remove()
-
+		var draw = makeDraw([canvasSize.height, canvasSize.width])
+		var canvas = draw.canvas
+		// $('body').append(canvas); canvas.style.marginLeft = '400px'; console.log(canvas)
+		// draw.fillStyle('#000').fillRect([0, 0], [canvasSize.height, canvasSize.width])
+		
+		var direction = rotationDeg < 0 ? 1 : -1
+		draw
+			.save()
+			.rotate(direction * Math.PI / 2)
+			.translate(direction == 1 ? [0, -canvasSize.height * direction] : [-canvasSize.width, 0])
+			.drawImage(original, [0, 0], [canvasSize.width, canvasSize.height])
+			.restore()
+		
+		// $(canvas).remove()
+		var data = canvas.toDataURL('image/png')
 		var picWidth = canvasSize.height
 		var picHeight = canvasSize.width
 	} else {
-		var data = $ui.find('.drawCanvas')[0].toDataURL('image/png')
+		var data = original.toDataURL('image/png')
 		var picWidth = canvasSize.width
 		var picHeight = canvasSize.height
 	}
