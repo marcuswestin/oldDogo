@@ -179,6 +179,10 @@ module.exports = proto(null,
 						console.warn('error', content, req.url, logBody, stackError.stack)
 					}
 				}
+			} else {
+				if (req.url.match(/\.html$/)) {
+					contentType = 'text/html'
+				}
 			}
 			
 			if (!contentType) {
