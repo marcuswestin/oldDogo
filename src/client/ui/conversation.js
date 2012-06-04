@@ -63,30 +63,29 @@ function renderMessage(message) {
 
 function picSize(message) {
 	var maxWidth = 306
-	var maxHeight = 370
+	var maxHeight = 306
 	var width = message.pictureWidth
 	var height = message.pictureHeight
 	var ratio = 1
-	if (width > height && width > maxWidth) {
+	if (width > maxWidth) {
 		width = maxWidth
 		ratio = width / message.pictureWidth
 		height = Math.round(message.pictureHeight * ratio)
-	} else if (height > width && height > maxHeight) {
-		height = maxHeight
-		ratio = height / message.pictureHeight
-		width = Math.round(message.pictureWidth * ratio)
 	}
-	return style({ width:width, height:height, backgroundSize:width+'px '+height+'px' })
+	var offset = height > maxHeight ? -Math.floor((height - maxHeight) / 2) : 0
+	return style({ width:width, height:Math.min(height, maxHeight), backgroundSize:width+'px '+height+'px', backgroundPosition:'0 '+offset+'px' })
 }
 
 function renderContent(message) {
 	if (message.body) {
 		return div('body', message.body)
 	} else if (message.base64Picture) {
-		return div('picture', picSize(message), style({ background:'url('+message.base64Picture+')' }))
+		return div('picture', picSize(message), style({
+			backgroundImage:'url('+message.base64Picture+')'
+		}))
 	} else if (message.pictureId) {
 		return div('picture', picSize(message), style({
-			background:'url(/api/image?conversationId='+message.conversationId+'&pictureId='+message.pictureId+'&authorization='+encodeURIComponent(api.getAuth())+')'
+			backgroundImage:'url(/api/image?conversationId='+message.conversationId+'&pictureId='+message.pictureId+'&authorization='+encodeURIComponent(api.getAuth())+')'
 		}))
 	}
 }

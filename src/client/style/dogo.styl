@@ -54,11 +54,11 @@ buttonShadow = 0 1px 2px #444;
 		text-shadow textShadow; color:#fff; font-size 16px; padding 0 4px;
 		font-size 20px; text-align center; padding 8px 0 0 0; font-weight 600;
 	.back
-		position absolute; top 5px; left 4px; border-width 2px;
+		position absolute; top 4px; left 4px; border-width 2px;
 	.devBar
 		absolute top right;
 		.button
-			margin 2px;
+			margin 4px 2px 0;
 	
 
 .connect, .invite
@@ -98,12 +98,12 @@ buttonShadow = 0 1px 2px #444;
 			width 16px; height 16px; background url("http://icons.iconarchive.com/icons/famfamfam/silk/16/award-star-gold-3-icon.png"); float right; margin 2px 0;
 	
 
-buttonRadius = 10px;
+buttonRadius = 4px;
 .button
-	padding 4px 8px 6px; border-radius buttonRadius; background linear-gradient(top, color4, color5); border 3px solid #fff;
+	padding 5px 10px 7px; border-radius buttonRadius; background linear-gradient(top, color4, color5); border 2px solid #fff;
 	color #fff; text-align center; display inline-block; cursor pointer; box-shadow buttonShadow;
 .button.active
-	background linear-gradient(bottom, color4, color5); box-shadow 0 0 0;
+	background linear-gradient(bottom, darken(color4, 10%), color5); border-color #eee; color #eee;
 
 
 faceDim = 50px
@@ -114,13 +114,13 @@ faceDim = 50px
 	color #666; text-align center; margin 10px auto; font-style italic;
 
 .messageBubble
-	margin 4px 4px 0; min-height 50px; border-radius 10px; background #fff; border 3px solid color4; word-wrap break-word;
+	margin 4px 4px 0; min-height 50px; border-radius 5px; background #fff; border 3px solid color4; word-wrap break-word;
 	.face
-		float left; border-radius 6px 1px 2px 1px; margin 0 6px 0 0;
+		float left; border-radius 3px 1px 2px 1px; margin 0 6px 0 0;
 .messageBubble.fromMe
 	text-align right;
 	.face
-		float right; border-radius 1px 6px 1px 2px; margin 0 0 0 6px;
+		float right; border-radius 1px 4px 1px 2px; margin 0 0 0 6px;
 
 .conversation
 	.messages
@@ -149,6 +149,8 @@ faceDim = 50px
 					border none; width bodyWidth - 4px; height 50px;
 
 		.tools
+			.right
+				float right;
 			.tool
 				display inline-block; border 2px solid #fff; margin 2px 4px 2px 0; border-radius 4px;
 			.tool.send
@@ -160,19 +162,17 @@ faceDim = 50px
 	.controls-pos
 		position absolute; bottom 0;
 	.controls
-		line-height 20px; background linear-gradient(top, #bbb, #666); padding 2px 0; box-shadow -1 0 3px #000; width 100%; height 33px;
+		line-height 20px; background linear-gradient(top, blueLight, blueDark); padding 2px 0; box-shadow -1px 0 3px #000; width 100%; height 33px;
 		.picker
 			position absolute;
 		.colorPicker
-			bottom 49px; left 2px;
+			bottom 45px; left 5px;
 		.penPicker
-			bottom 47px; left 55px; box-shadow 0 0 1px #ccc;
-		.button
-			margin 0 2px 2px; padding 2px 5px 4px;
-		.send
-			position absolute; right 0; bottom 1px;
-		.clear
-			position absolute; right 60px; bottom 1px;
+			bottom 45px; left 55px; box-shadow 0 0 1px #ccc;
+		.right
+			float right; position relative; bottom 1px;
+			.button
+				margin 0 2px; padding 4px 10px 6px;
 	.close.button
 		position absolute; z-index 1; font-size 14px; padding 11px 7px;
 

@@ -85,8 +85,10 @@ function render(_opts) {
 					div('tools',
 						state.colorPicker = pickers.color(),
 						state.penPicker = pickers.pen({ background:background, colorPicker:state.colorPicker }),
-						div('button clear', 'Clear', button(function() { draw.background(background) })),
-						div('button tool send', 'Send', button(sendImage))
+						div('right',
+							div('button clear', 'Clear', button(function() { draw.background(background) })),
+							div('button tool send', 'Send', button(sendImage))
+						)
 					)
 				)
 			)
@@ -119,14 +121,15 @@ function render(_opts) {
 	}
 
 	function pencilMove(e) {
+		e.preventDefault()
 		if (!state.pen) { return }
 		imageTouched = true
-		e.preventDefault()
 		state.pen.handleMove(getPoint(e))
 	}
 
 	function pencilUp(e) {
 		e.preventDefault()
+		if (!state.pen) { return }
 		state.pen.handleUp(getPoint(e))
 		delete state.pen
 	}
