@@ -305,10 +305,12 @@ module.exports = proto(null,
 					})
 				})
 			}
-			watch.watchTree(__dirname + '/../client', function(f, curr, prev) {
-				if (prev) { return } // not new file
-				walkFiles()
-			})
+			walkFiles()
+			
+			// watch.watchTree(__dirname + '/../client/playground', function(f, curr, prev) {
+			// 	if (prev) { return } // not new file
+			// 	walkFiles()
+			// })
 		}
 	}
 )
