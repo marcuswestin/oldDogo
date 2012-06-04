@@ -30,10 +30,19 @@ client:
 	mkdir -p ~/dogo-builds
 	node scripts/build-client.js
 
-testflight: client
+fly-build: client
 	xcodebuild -project src/client/ios/dogo.xcodeproj -sdk iphoneos GCC_PREPROCESSOR_DEFINITIONS="TESTFLIGHT" -configuration Release
 	# xcodebuild -project src/client/ios/dogo.xcodeproj -sdk iphonesimulator5.1 GCC_PREPROCESSOR_DEFINITIONS="TESTFLIGHT" -configuration Release
 	/usr/bin/xcrun -sdk iphoneos PackageApplication src/client/ios/build/Release-iphoneos/dogo.app -o ~/Desktop/dogo.ipa
+
+fly-dev: fly-build
+	curl http://testflightapp.com/api/builds.json \
+	-F file=@/Users/marcus/Desktop/dogo.ipa \
+	-F api_token='fa8a4a8d04599e74e456e4968117ad25_NDE5NDk0MjAxMi0wNC0yOSAyMzoxNTo0MC4zMzk0Njk' \
+	-F team_token='ac1087f484666207583bb7c62daf1fa2_ODU2NTUyMDEyLTA0LTI5IDIzOjQ1OjIwLjQ2Nzg2Ng' \
+	-F notes='This build was uploaded via the upload API' \
+	-F notify=True \
+	-F distribution_lists='dev'
 
 clean:
 	rm -rf build
