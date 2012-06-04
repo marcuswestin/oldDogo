@@ -218,9 +218,13 @@ module.exports = proto(null,
 			
 			function sendFile(res, path) {
 				fs.readFile(path, function(err, content) {
-					if (err) { throw err }
-					res.writeHead(200)
-					res.end(content.toString())
+					if (err) {
+						res.writeHead(500)
+						res.end(err.stack || err.message || err.toString())
+					} else {
+						res.writeHead(200)
+						res.end(content.toString())
+					}
 				})
 			}
 			
