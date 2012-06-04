@@ -68,8 +68,9 @@ pens.fill = proto(basePen, initPen, {
 	rate:1000 / 100,
 	down:function(ctx, point) {
 		this.nextPoint = point
-		ctx.style(this.rgba()).lineWidth(4).globalCompositeOperation('source-over')
-		this.thickness = 4
+		this.thickness = 2
+		// ctx.style(this.rgba(.05)) // - watercolor
+		ctx.style(this.rgba(1)).lineWidth(this.thickness).globalCompositeOperation('source-over')
 		this.interval = setInterval(bind(this, this.draw), this.rate)
 	},
 	move:function(ctx, point) {
@@ -98,7 +99,7 @@ pens.fill = proto(basePen, initPen, {
 		var p0_delta = bez(p0, p1, p2, 0 + deltaT)
 		var f_delta = bez(p0, p1, p2, u + deltaT)
 		
-		var distance = Math.ceil(this.distance(f, f_delta) / 4)
+		var distance = Math.ceil(this.distance(f, f_delta) / 2)
 
 		var thickness0 = this.thickness
 		var thicknessTarget = distance // should be something else
