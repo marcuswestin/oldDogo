@@ -167,10 +167,15 @@ var penPicker = proto(picker,
 				var c = makeDraw([width, height]).background(this.opts.background)
 				$tag.append(c.canvas)
 				var p = pen({ colorPicker:this.opts.colorPicker, draw:c, width:width, height:height })
-				var coords = [[156,627],[165,627],[170,627],[177,626],[184,622],[192,618],[198,613],[204,607],[209,601],[212,596],[214,590],[215,584],[215,578],[215,573],[215,568],[211,566],[207,564],[203,563],[199,563],[195,563],[192,563],[189,563],[187,565],[186,570],[186,575],[186,583],[186,592],[189,598],[192,605],[197,610],[203,615],[209,619],[216,623],[222,626],[227,627],[230,628],[233,628],[235,628],[235,628]]
+				var points = [
+					[156,627],[165,627],[170,627],[177,626],[184,622],[192,618],[198,613],[204,607],
+					[209,601],[212,596],[214,590],[215,584],[215,578],[215,573],[215,568],[211,566],
+					[207,564],[203,563],[199,563],[195,563],[192,563],[189,563],[187,565],[186,570],
+					[186,575],[186,583],[186,592],[189,598],[192,605],[197,610],[203,615],[209,619],
+					[216,623],[222,626],[227,627],[230,628],[233,628],[235,628],[235,628]]
 				var max = [0,0]
 				var min = [9999999,999999]
-				each(coords, function(p) {
+				each(points, function(p) {
 					if (p[0] > max[0]) { max[0] = p[0] }
 					if (p[1] > max[1]) { max[1] = p[1] }
 					if (p[0] < min[0]) { min[0] = p[0] }
@@ -182,15 +187,16 @@ var penPicker = proto(picker,
 				// max[1] += 5
 				var delta = [max[0] - min[0], max[1] - min[1]]
 				c.scale([.425, .425])
-				coords = map(coords, function(p) {
+				points = map(points, function(p) {
 					return [p[0] - min[0], p[1] - min[1]]
 				})
-				p.handleDown([coords[0][0], coords[0][1]])
-				for (var i=1; i<coords.length - 2; i++) {
-					p.handleMove([coords[i][0], coords[i][1]])
+				p.handleDown([points[0][0], points[0][1]])
+				for (var i=1; i<points.length - 2; i++) {
+					if (i % 2 == 0) { continue }
+					p.handleMove([points[i][0], points[i][1]])
 					if (p.draw) { p.draw() }
 				}
-				p.handleUp([coords[i][0], coords[i][1]])
+				p.handleUp([points[i][0], points[i][1]])
 			}))
 		},
 		getPos:function(i, j, num) {
