@@ -97,12 +97,16 @@ var colorPicker = proto(picker,
 				var origin = [0,0]
 				c.translate([r, r]) // center
 				for (var i=0; i<colors.length; i++) {
+					var color = this.getRgba(colors[i], alpha)
+					var lineColor = '#333'
 					c.beginPath()
-						.fillStyle(this.getRgba(colors[i], alpha)).strokeStyle('#333')
+						.fillStyle(color).strokeStyle(lineColor)
 						.lineWidth(1)
 						.lineTo([0, r])
 						.moveTo(origin)
+						.strokeStyle(color)
 						.arc(origin, r, [0, rotation], false)
+						.strokeStyle(lineColor)
 						.lineTo([0, Math.sin(r)])
 						.moveTo(origin)
 						.rotate(rotation)
