@@ -20,8 +20,14 @@
 		fillRect:function(p,d) { this.ctx.fillRect(p[0], p[1], d[0], d[1]); return this },
 		rotate:function(rad) { this.ctx.rotate(rad); return this },
 		translate:function(d) { this.ctx.translate(d[0],d[1]); return this },
-		drawImage:function(img, p, d) { this.ctx.drawImage(img, p[0], p[1], d[0], d[1]); return this },
 		translate:function(p) { this.ctx.translate(p[0], p[1]); return this },
+
+		drawImage:function(img, p, d) {
+			var args = [img, p[0], p[1]]
+			if (d) { args = args.concat([d[0], d[1]]) } // drawImage doesn't like undefined width/height arguments
+			this.ctx.drawImage.apply(this.ctx, args)
+			return this
+		},
 		
 		globalCompositeOperation:function(operation) { this.ctx.globalCompositeOperation = operation; return this },
 		quadraticCurveTo:function(p1, p2) { this.ctx.quadraticCurveTo(p1[0], p1[1], p2[0], p2[1]); return this },
