@@ -32,14 +32,18 @@ loading = function loading(isLoading) {
 	}
 	
 	if (isLoading) {
-		if (loading.timer) { return }
-		loading.timer = setTimeout(function(){ loading.$ui.css({ top:gHeadHeight }) }, 100)
+		clearTimeout(loading.hideTimer)
+		loading.hideTimer = null
+		if (loading.showTimer) { return }
+		loading.showTimer = setTimeout(curry(loading.pos, gHeadHeight), 100)
 	} else {
-		clearTimeout(loading.timer)
-		loading.timer = null
-		return loading.$ui.css({ top:0 })
+		clearTimeout(loading.showTimer)
+		loading.showTimer = null
+		if (loading.hideTimer) { return }
+		loading.hideTimer = setTimeout(curry(loading.pos, 0), 100)
 	}
 }
+loading.pos = function(y) { loading.$ui.css({ '-webkit-transform':'translateY('+y+'px)' })}
 
 getId = function getId(d) { return d.id }
 
