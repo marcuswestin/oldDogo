@@ -38,10 +38,31 @@ var composer = module.exports = {
 		
 		function selectText(e) {
 			composer.hide()
+			var y0 = viewport.height() + 20
+			var y1 = 229
+			var pos = { x:0, y:y0, width:320, height:35 }
 			bridge.command('textInput.show', {
-				at:{ x:0, y:224, width:320, height:40  },
+				at:pos,
 				returnKeyType:'Send'
 			})
+			events.once('keyboard.willShow', function(info) {
+				pos.y = y1
+				bridge.command('textInput.animate', {
+					duration:info.keyboardAnimationDuration,
+					to:pos
+				})
+			})
+			events.once('keyboard.willHide', function(info) {
+				pos.y = y0
+				bridge.command('textInput.animate', {
+					duration:info.keyboardAnimationDuration,
+					to:pos
+				})
+				setTimeout(function() {
+					bridge.command('textInput.hide')
+				}, info.keyboardAnimationDuration * 1000)
+			})
+			
 			$ui.surface.append(div('writer'))
 		}
 	}

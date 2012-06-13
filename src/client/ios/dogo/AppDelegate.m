@@ -78,6 +78,7 @@
 
 
 - (void)showTextInput:(NSDictionary *)params {
+    if (textInput) { [self hideTextInput]; }
     textInput = [[UITextView alloc] initWithFrame:[self rectFromDict:[params objectForKey:@"at"]]];
     
     textInput.font = [UIFont systemFontOfSize:15];
@@ -88,6 +89,7 @@
     textInput.layer.cornerRadius = 0.0;
     textInput.backgroundColor = [UIColor whiteColor];
     textInput.clipsToBounds = YES;
+    textInput.scrollEnabled = NO;
     textInput.keyboardType = UIKeyboardTypeDefault;
     textInput.delegate = self;
     
@@ -96,6 +98,8 @@
         textInput.returnKeyType = returnKeyType;
     }
     
+    textInput.text = @"";
+    [self sizeTextInput];
     [self.window addSubview:textInput];
     [textInput becomeFirstResponder];
 }
@@ -106,7 +110,16 @@
     textInput = nil;
 }
 
+- (void)sizeTextInput {
+    CGRect frame = textInput.frame;
+    frame.size.height = textInput.contentSize.height;
+    int dHeight = textInput.frame.size.height - frame.size.height;
+    frame.origin.y += dHeight;
+    textInput.frame = frame;
+}
+
 - (void)textViewDidChange:(UITextView *)textView {
+    [self sizeTextInput];
     [self notify:@"textInput.didChange" info:[NSDictionary dictionaryWithObjectsAndKeys:
                                               self.textInput.text, @"text",
                                               nil]];
@@ -127,11 +140,25 @@
 }
 
 - (CGRect)rectFromDict:(NSDictionary *)params {
-    float x = [[params objectForKey:@"x"] doubleValue];
-    float y = [[params objectForKey:@"y"] doubleValue];
-    float width = [[params objectForKey:@"width"] doubleValue];
-    float height = [[params objectForKey:@"height"] doubleValue];
-    return CGRectMake(x, y, width, height);
+    CGRect frame;
+    if (textInput) {
+        frame = textInput.frame;
+    } else {
+        frame = CGRectMake(0, 0, 0, 0);
+    }
+    if ([params objectForKey:@"x"]) {
+        frame.origin.x = [[params objectForKey:@"x"] doubleValue];
+    }
+    if ([params objectForKey:@"y"]) {
+        frame.origin.y = [[params objectForKey:@"y"] doubleValue];
+    }
+    if ([params objectForKey:@"width"]) {
+        frame.size.width = [[params objectForKey:@"width"] doubleValue];
+    }
+    if ([params objectForKey:@"height"]) {
+        frame.size.height = [[params objectForKey:@"height"] doubleValue];
+    }
+    return frame;
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
@@ -152,6 +179,7 @@
     NSNumber* duration = [params objectForKey:@"duration"];
     [UIView setAnimationDuration:[duration doubleValue]];
     textInput.frame = [self rectFromDict:[params objectForKey:@"to"]];
+    [self sizeTextInput];
     [UIView commitAnimations];
     if ([params objectForKey:@"blur"]) {
         [textInput resignFirstResponder];

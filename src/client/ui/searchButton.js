@@ -7,9 +7,9 @@ module.exports = {
 function renderSearchButton() {
 	return $search = $(div('search-control',
 		div('button search', div('icon'), button(function() {
-			var margin = 3
+			var margin = 4
 			var width = viewport.width() - margin*2
-			var height = $('.head').height() - margin*2 - 1
+			var height = 35
 			var y = 20 + margin
 			var pos0 = { x:margin+width, y:y, width:0, height:height }
 			var pos1 = { x:0+margin, y:y, width:width, height:height }
@@ -34,7 +34,6 @@ function renderSearchButton() {
 					$searchResults.empty().append(div('people', list(res.matches, onSelect, function renderFbMatch(facebookId) {
 						return div('person loading', 'Loading...', function($match) {
 							loadFacebookId(facebookId, function(account) {
-								// if (info.text == 'marc' && account.facebookId == 1216062275) { debugger }
 								$match.removeClass('loading').empty().append(div(
 									face.facebook(account, true),
 									div('name', account.name)
