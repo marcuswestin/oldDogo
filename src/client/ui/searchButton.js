@@ -67,11 +67,10 @@ function renderSearchButton() {
 			function hideInput() {
 				events.off('textInput.return', hideInput)
 				$searchResults.remove()
-				pos1.x = viewport.width()
 				bridge.command('textInput.animate', {
 					blur:true,
 					duration:animateDuration,
-					to:pos1
+					to:pos0
 				})
 				events.off('textInput.didChange', onTextChange)
 				events.fire('searchButton.results', { showing:false })
