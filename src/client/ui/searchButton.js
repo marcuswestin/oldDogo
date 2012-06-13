@@ -14,6 +14,7 @@ function renderSearchButton() {
 			var pos0 = { x:margin+width, y:y, width:0, height:height }
 			var pos1 = { x:0+margin, y:y, width:width, height:height }
 			var animateDuration
+			var hidden = false
 			events.once('keyboard.willShow', function(info) {
 				animateDuration = info.keyboardAnimationDuration
 				bridge.command('textInput.animate', {
@@ -31,6 +32,7 @@ function renderSearchButton() {
 				var params = { name:'facebookIdByName', searchString:info.text }
 				bridge.command('index.lookup', params, function renderSearchMatches(err, res) {
 					if (err) { return error(err) }
+					if (hidden) { return }
 					$searchResults.empty().append(div('people', list(res.matches, onSelect, function renderFbMatch(facebookId) {
 						return div('person loading', 'Loading...', function($match) {
 							loadFacebookId(facebookId, function(account) {
@@ -65,6 +67,7 @@ function renderSearchButton() {
 			})
 			
 			function hideInput() {
+				hidden = true
 				events.off('textInput.return', hideInput)
 				$searchResults.remove()
 				bridge.command('textInput.animate', {
