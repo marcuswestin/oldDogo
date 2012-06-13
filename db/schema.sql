@@ -8,7 +8,7 @@
 -- # reset with new schema
 -- cat schema.sql | mysql -u dogo_tester --password=test
 
--- mysql -h dogo-db1.cqka8vcdrksp.us-east-1.rds.amazonaws.com -u dogo_rw -p
+-- mysql -h dogo-db1.cqka8vcdrksp.us-east-1.rds.amazonaws.com -u dogo_rw -p dogo
 
 DROP DATABASE IF EXISTS dogo_test;
 CREATE DATABASE dogo_test;
