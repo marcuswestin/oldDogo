@@ -42,7 +42,11 @@ function renderSearchButton() {
 						}, div('clear'))
 					})))
 					
-					events.fire('searchButton.results', { showing:res.matches.length > 0 })
+					if (res.matches.length == 0) {
+						$searchResults.append(div('ghostTown dark', searchString ? 'No matches' : "Type a friend's name"))
+					}
+					
+					events.fire('searchButton.results', { showing:true })
 				})
 				function onSelect(facebookId, id, $el, $event) {
 					$event.preventDefault()
