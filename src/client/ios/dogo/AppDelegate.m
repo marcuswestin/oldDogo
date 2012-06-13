@@ -105,6 +105,7 @@
 }
 
 - (void)hideTextInput {
+    if (!textInput) { return; }
     [textInput resignFirstResponder];
     [textInput removeFromSuperview];
     textInput = nil;
