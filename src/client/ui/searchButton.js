@@ -26,6 +26,7 @@ function renderSearchButton() {
 			var onTextChange
 			var $searchResults = $(div('searchResults'))
 				.css({ maxHeight:viewport.height() - gHeadHeight - gKeyboardHeight })
+				.append(div('ghostTown dark', "Type a friend's name"))
 				.appendTo($('.app > .scroller-body'))
 			events.on('textInput.didChange', onTextChange=function onTextChange(info) {
 				var searchString = trim(info.text).toLowerCase().replace(/[\\D\\W]/g, '')
