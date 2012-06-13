@@ -81,7 +81,8 @@ function sendImage(data, width, height) {
 	composer.hide()
 }
 
-events.on('textInput.return', function(info) {
+var onReturnHandler
+events.on('textInput.return', onReturn=function(info) {
 	if (!$ui) { return }
 	bridge.command('textInput.set', { text:'' })
 	var body = trim(info.text)
@@ -111,5 +112,6 @@ function send(params) {
 }
 
 events.on('view.change', function onViewRenderEvent() {
+	events.off('textInput.return', onReturnHandler)
 	composer.hide()
 })
