@@ -40,7 +40,7 @@ var composer = module.exports = {
 			composer.hide()
 			var y0 = viewport.height() + 20
 			var y1 = 229
-			var pos = { x:0, y:y0, width:320, height:35 }
+			var pos = { x:0, y:y0, width:320, height:37 }
 			bridge.command('textInput.show', {
 				at:pos,
 				returnKeyType:'Send'

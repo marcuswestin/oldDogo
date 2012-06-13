@@ -9,7 +9,7 @@ function renderSearchButton() {
 		div('button search', div('icon'), button(function() {
 			var margin = 4
 			var width = viewport.width() - margin*2
-			var height = 35
+			var height = 37
 			var y = 20 + margin
 			var pos0 = { x:margin+width, y:y, width:0, height:height }
 			var pos1 = { x:0+margin, y:y, width:width, height:height }

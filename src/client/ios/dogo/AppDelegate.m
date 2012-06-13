@@ -81,7 +81,7 @@
     if (textInput) { [self hideTextInput]; }
     textInput = [[UITextView alloc] initWithFrame:[self rectFromDict:[params objectForKey:@"at"]]];
     
-    textInput.font = [UIFont systemFontOfSize:15];
+    textInput.font = [UIFont systemFontOfSize:17];
     
     textInput.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     textInput.layer.borderWidth = 1.0;
