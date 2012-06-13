@@ -36,7 +36,7 @@ function selectMessage(message, _, $el) {
 }
 
 function refreshMessages() {
-	loading('Getting messages...')
+	loading(true)
 	var params = {
 		withAccountId:currentAccountId,
 		withFacebookId:currentFacebookId,

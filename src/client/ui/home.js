@@ -115,7 +115,7 @@ function messageFromSentMessage(message, accountId) {
 }
 
 function reloadConversations() {
-	loading('Getting new messages...')
+	loading(true)
 	api.get('conversations', function(err, res) {
 		loading(false)
 		if (err) { return error(err, $ui.info) }
