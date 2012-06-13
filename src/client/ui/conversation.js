@@ -36,14 +36,14 @@ function selectMessage(message, _, $el) {
 }
 
 function refreshMessages() {
-	$ui.info.append(div('loading', 'Getting messages...'))
+	loading('Getting messages...')
 	var params = {
 		withAccountId:currentAccountId,
 		withFacebookId:currentFacebookId,
 		lastReadMessageId:currentLastReadMessageId
 	}
 	api.get('messages', params, function(err, res) {
-		$ui.info.empty()
+		loading(false)
 		if (err) { return error(err) }
 		$ui.messages.empty().append(res.messages)
 		if (!res.messages.length) {
@@ -56,7 +56,7 @@ function renderMessage(message) {
 	var fromMe = (message.senderAccountId == gState.myAccount().accountId)
 	var typeClass = message.body ? 'text' : 'picture'
 	return div(div('clear messageBubble ' + typeClass + (fromMe ? ' fromMe' : ''),
-		face.load(message.senderAccountId),
+		face.loadAccount(message.senderAccountId),
 		renderContent(message)
 	))
 }

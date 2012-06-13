@@ -26,11 +26,58 @@ list = tags.list
 style = tags.style
 tags.expose()
 
-createCanvas = function(className, width, height, styles) {
-	var ratio = window.devicePixelRatio || 1
-	var canvasSize = { width:width * ratio, height:height * ratio }
-	var tag = canvas(className, canvasSize, style({ width:width, height:height }), styles)
-	var ctx = $(tag)[0].getContext('2d')
-	ctx.scale(ratio, ratio)
-	return { tag:tag, ctx:ctx }
+loading = function loading(isLoading) {
+	if (!loading.$ui) {
+		loading.$ui = $(div('loading-wrapper', div('icon'))).appendTo('.app')
+	}
+	
+	if (isLoading) {
+		if (loading.timer) { return }
+		loading.timer = setTimeout(function(){ loading.$ui.css({ top:gHeadHeight }) }, 100)
+	} else {
+		clearTimeout(loading.timer)
+		loading.timer = null
+		return loading.$ui.css({ top:0 })
+	}
 }
+
+getId = function getId(d) { return d.id }
+
+accountKnown = function(accountId) { return !!gState.cache['contactsByAccountId'][accountId] }
+loadFacebookId = function loadFacebookId(facebookId, callback) { return loadAccount(null, facebookId, callback) }
+loadFacebookId.queue = {}
+loadAccountId = function loadAccountId(accountId, callback) { return loadAccount(accountId, null, callback) }
+loadAccountId.queue = {}
+loadAccount = function loadAccount(accountId, facebookId, callback) {
+	if (!accountId && !facebookId) { throw new Error("loadAccount: Undefined accountId") }
+	if (accountId) {
+		var cacheKey = 'contactsByAccountId'
+		var queue = loadAccountId.queue
+		var id = accountId
+	} else {
+		var cacheKey = 'contactsByFacebookId'
+		var queue = loadFacebookId.queue
+		var id = facebookId
+	}
+	
+	var cache = gState.cache[cacheKey]
+	var account = cache[id]
+	if (account) {
+		callback && callback(account)
+		return account
+	} else if (queue[id]) {
+		queue[id].push(callback)
+	} else {
+		queue[id] = [callback]
+		api.get('account_info', { accountId:accountId, facebookId:facebookId }, function onApiGetAccountInfo(err, res) {
+			if (err) { return error(err) }
+			cache[id] = res.account
+			gState.set(cacheKey, cache)
+			each(queue[id], function(callback) { callback(res.account) })
+			delete queue[id]
+		})
+	}
+}
+
+gHeadHeight = 45
+gKeyboardHeight = 216

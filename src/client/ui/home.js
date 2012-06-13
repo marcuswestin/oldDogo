@@ -92,7 +92,7 @@ function messageFromConvo(convo) {
 }
 
 function messageFromPush(pushMessage) {
-	var currentConvo = scroller.current().conversation
+	var currentConvo = gScroller.current().conversation
 	var isCurrent = (currentConvo && (currentConvo.accountId == pushMessage.senderAccountId)) // TODO also check facebookId
 	return {
 		accountId: pushMessage.senderAccountId,
@@ -115,9 +115,9 @@ function messageFromSentMessage(message, accountId) {
 }
 
 function reloadConversations() {
-	loading($ui.info)
+	loading('Getting new messages...')
 	api.get('conversations', function(err, res) {
-		loading($ui.info, false)
+		loading(false)
 		if (err) { return error(err, $ui.info) }
 		var messages = map(res.conversations, messageFromConvo)
 		$ui.conversations.append(messages)
@@ -132,13 +132,13 @@ function selectMessage(message) {
 	var account = accountKnown(accountId) && loadAccountId(accountId)
 	var title = (account ? account.name : 'Friend')
 	var conversation = { accountId:accountId }
-	scroller.push({ title:title, conversation:conversation })
+	gScroller.push({ title:title, conversation:conversation })
 	$ui.conversations.find('#'+bubbleId(accountId)).removeClass('hasUnread')
 }
 
 function selectContact(contact) {
 	var conversation = { accountId:contact.accountId, facebookId:contact.facebookId }
-	scroller.push({ conversation:conversation, title: contact.name })
+	gScroller.push({ conversation:conversation, title: contact.name })
 	$ui.conversations.find('#'+bubbleId(contact.accountId)).removeClass('hasUnread')
 }
 

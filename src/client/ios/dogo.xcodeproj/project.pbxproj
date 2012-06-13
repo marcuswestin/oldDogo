@@ -21,6 +21,7 @@
 		2C720C7415684C3100AC9BF4 /* MKNetworkEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C6815684C3100AC9BF4 /* MKNetworkEngine.m */; };
 		2C720C7515684C3100AC9BF4 /* MKNetworkOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C6B15684C3100AC9BF4 /* MKNetworkOperation.m */; };
 		2C720C7615684C3100AC9BF4 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C6E15684C3100AC9BF4 /* Reachability.m */; };
+		2CA150C61587E387001A073B /* img in Resources */ = {isa = PBXBuildFile; fileRef = 2CA150C51587E387001A073B /* img */; };
 		2CA99250154FCAA900CF92FC /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CA9924C154FCAA900CF92FC /* Default.png */; };
 		2CA99251154FCAA900CF92FC /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CA9924D154FCAA900CF92FC /* Default@2x.png */; };
 		2CA99252154FCAA900CF92FC /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CA9924E154FCAA900CF92FC /* logo.png */; };
@@ -43,6 +44,7 @@
 		2CD1A077153FB7B6008949F2 /* WebViewJavascriptBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1A069153FB7B6008949F2 /* WebViewJavascriptBridge.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CD1A089153FB85D008949F2 /* FBDialog.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2CD1A07C153FB85D008949F2 /* FBDialog.bundle */; };
 		2CD1A08A153FB85D008949F2 /* libfacebook_ios_sdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD1A082153FB85D008949F2 /* libfacebook_ios_sdk.a */; };
+		2CFE18D91580A48100188E06 /* BTIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFE18D81580A48100188E06 /* BTIndex.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -72,6 +74,7 @@
 		2C720C6B15684C3100AC9BF4 /* MKNetworkOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKNetworkOperation.m; sourceTree = "<group>"; };
 		2C720C6D15684C3100AC9BF4 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		2C720C6E15684C3100AC9BF4 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		2CA150C51587E387001A073B /* img */ = {isa = PBXFileReference; lastKnownFileType = folder; name = img; path = ../img; sourceTree = "<group>"; };
 		2CA9924C154FCAA900CF92FC /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = images/Default.png; sourceTree = "<group>"; };
 		2CA9924D154FCAA900CF92FC /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "images/Default@2x.png"; sourceTree = "<group>"; };
 		2CA9924E154FCAA900CF92FC /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = logo.png; path = images/logo.png; sourceTree = "<group>"; };
@@ -118,6 +121,8 @@
 		2CD1A086153FB85D008949F2 /* SBJsonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonBase.h; sourceTree = "<group>"; };
 		2CD1A087153FB85D008949F2 /* SBJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonParser.h; sourceTree = "<group>"; };
 		2CD1A088153FB85D008949F2 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
+		2CFE18D71580A48100188E06 /* BTIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTIndex.h; sourceTree = "<group>"; };
+		2CFE18D81580A48100188E06 /* BTIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTIndex.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -197,6 +202,7 @@
 				2CA9924D154FCAA900CF92FC /* Default@2x.png */,
 				2CA9924E154FCAA900CF92FC /* logo.png */,
 				2CA9924F154FCAA900CF92FC /* logo@2x.png */,
+				2CA150C51587E387001A073B /* img */,
 			);
 			name = images;
 			path = ..;
@@ -282,6 +288,8 @@
 				2C720C151567C59100AC9BF4 /* BTNet.h */,
 				2C720C161567C59100AC9BF4 /* BTNet.m */,
 				2CD133081567C010002386F3 /* BTTypes.h */,
+				2CFE18D71580A48100188E06 /* BTIndex.h */,
+				2CFE18D81580A48100188E06 /* BTIndex.m */,
 				2CD1A061153FB7B6008949F2 /* JSONKit */,
 				2CD1A064153FB7B6008949F2 /* Light-Untar */,
 				2CD1A067153FB7B6008949F2 /* WebViewJavascriptBridge */,
@@ -402,6 +410,7 @@
 				2C5C1C661566200800035E03 /* appCss.css in Resources */,
 				2C5C1C671566200800035E03 /* appJs.html in Resources */,
 				2CCAFE691569EC1C002766A1 /* vibrate.wav in Resources */,
+				2CA150C61587E387001A073B /* img in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -430,6 +439,7 @@
 				2C720C7515684C3100AC9BF4 /* MKNetworkOperation.m in Sources */,
 				2C720C7615684C3100AC9BF4 /* Reachability.m in Sources */,
 				2C4EF9EF1573196800EE57C8 /* BTViewController.m in Sources */,
+				2CFE18D91580A48100188E06 /* BTIndex.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -16,12 +16,23 @@ var face = module.exports = {
 	},
 	
 	background:function(facebookId) {
-		return 'url("https://graph.facebook.com/'+facebookId+'/picture") rgba(255, 255, 255, .4)'
+		return 'url("http://graph.facebook.com/'+facebookId+'/picture") rgba(255, 255, 255, .4)'
 	},
 	
-	load: function(accountId, showRibbon) {
+	loadAccount: function(accountId, showRibbon) {
 		return div('face', function($tag) {
 			loadAccount(accountId, null, function(account) {
+				if (showRibbon && account.memberSince) {
+					$tag.append(div('member-ribbon'))
+				}
+				$tag.css('background', face.background(account.facebookId))
+			})
+		})
+	},
+	
+	loadFacebook:function(facebookId, showRibbon) {
+		return div('face', function($tag) {
+			loadFacebook(facebookId, null, function(account) {
 				if (showRibbon && account.memberSince) {
 					$tag.append(div('member-ribbon'))
 				}

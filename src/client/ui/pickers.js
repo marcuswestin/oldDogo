@@ -20,7 +20,7 @@ var picker = {
 		this.$ui.css({ 'z-index':zIndex++ }).find('.list').each(function(i) {
 			$(this).find('.item').each(function(j) {
 				var $el = $(this)
-				var pos = wasOpen ? [0,0] : self.getPos(i+1, j, self.items[i].length - 1)
+				var pos = wasOpen ? [0,0] : self.getPos(i, j, self.items[i].length - 1)
 				
 				setTimeout(function() {
 					$el.css('-webkit-transform', 'translate('+Math.round(pos[0])+'px, '+Math.round(pos[1])+'px)')
@@ -64,7 +64,9 @@ var picker = {
 }
 
 var colorLists = [
-	['multi1', 'multi2', 'random'],
+	//['multi1', 'multi2', 'random'],
+	['multi2'],
+	[[0,0,0], [180,180,180], [255,255,255]],
 	[[255,255,0],[255,165,0],[255,0,255],[255,192,203],[0,255,255]],
 	[[212,69,3],[236,169,31], [79,124,128], [145,161,112], [184,143,170], [171,128,88], [70,130,180]]
 ]
@@ -75,8 +77,8 @@ var colorPicker = proto(picker,
 		items:colorLists,
 		
 		multiColors: {
-			'multi1':colorLists[1],
-			'multi2':colorLists[2],
+			'multi1':colorLists[2],
+			'multi2':colorLists[3],
 			'random':[[255, 0, 0], [255, 125, 0], [125, 255, 125], [0, 125, 255], [0, 0, 255]]
 		},
 		
@@ -136,6 +138,7 @@ var colorPicker = proto(picker,
 		getPos: function(i, j, num) {
 			var quarterCircle = Math.PI / 2
 			var expand = 63
+			if (!num) { num = 1 }
 			return [Math.cos(j * quarterCircle/num)*expand*i, -Math.sin(j * quarterCircle/num)*expand*i - 50]
 		},
 		

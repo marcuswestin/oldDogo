@@ -3,7 +3,9 @@ var each = require('std/each')
 // global
 events = {
 	on:on,
-	fire:fire
+	fire:fire,
+	once:once,
+	off:off
 }
 
 var _handlers = {}
@@ -28,4 +30,21 @@ function on(name, handler) {
 		_handlers[name].push(handler)
 	}
 	return this
+}
+
+function once(name, handler) {
+	var fn
+	on(name, fn=function() {
+		off(name, fn)
+		handler.apply(this, arguments)
+	})
+}
+
+function off(name, handler) {
+	var handlers = _handlers[name]
+	for (var i=handlers.length-1; i>=0; i--) {
+		if (handlers[i] != handler) { continue }
+		handlers.splice(i, 1)
+		break
+	}
 }

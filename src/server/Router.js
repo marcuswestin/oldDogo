@@ -208,6 +208,8 @@ module.exports = proto(null,
 				stylus = require('stylus'),
 				time = require('std/time')
 			
+			var self = this
+			
 			app.get('/app.html', function(req, res) {
 				res.sendfile('src/client/dogo.html')
 			})
@@ -228,11 +230,20 @@ module.exports = proto(null,
 				})
 			}
 			
+			app.get('/blowtorch/img/*', function(req, res) {
+				var path = req.path.replace('/blowtorch/img/', '')
+				fs.readFile('src/client/img/'+path, function(err, content) {
+					if (err) { return self.respond(req, res, err) }
+					res.writeHead(200, { 'Content-Type':'image/png' })
+					res.end(content)
+				})
+			})
+			
 			app.get('/stylus/*', function(req, res) {
 				var filename = req.path.replace('/stylus/', '')
 				fs.readFile(filename, function(err, content) {
 					if (err) { return respond(err) }
-					stylus(content.toString())
+					stylus(content.toString().replace(/\/\/blowtorch\/img\//gi, '/blowtorch/img/')) // Replace the domain in url('//blowtorch/img/...') to url('/domain/img/...')
 						.set('filename', filename)
 						.set('compress', false)
 						.use(nib())

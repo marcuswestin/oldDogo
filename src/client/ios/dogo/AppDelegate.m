@@ -1,11 +1,3 @@
-//
-//  AppDelegate.m
-//  dogo
-//
-//  Created by Marcus Westin on 4/18/12.
-//  Copyright (c) 2012. All rights reserved.
-//
-
 #import "AppDelegate.h"
 #import <QuartzCore/QuartzCore.h>
 
@@ -71,56 +63,100 @@
         responseCallback(nil, [NSDictionary dictionaryWithObject:jsonBool([facebook isSessionValid]) forKey:@"isValid"]);
     } else if ([command isEqualToString:@"facebook.extendAccessTokenIfNeeded"]) {
         [self.facebook extendAccessTokenIfNeeded];
-    } else if ([command isEqualToString:@"composer.showTextInput"]) {
+    } else if ([command isEqualToString:@"textInput.show"]) {
         [self showTextInput:data];
-    } else if ([command isEqualToString:@"composer.hideTextInput"]) {
-        [textInput resignFirstResponder];
-        [textInput removeFromSuperview];
+    } else if ([command isEqualToString:@"textInput.hide"]) {
+        [self hideTextInput];
+    } else if ([command isEqualToString:@"textInput.animate"]) {
+        [self animateTextInput:data];
+    } else if ([command isEqualToString:@"textInput.set"]) {
+        if (textInput) { textInput.text = [data objectForKey:@"text"]; }
     } else {
         NSLog(@"WARNING ObjC Got unknown command: %@ %@", command, data);
     }
 }
 
 
-
-// Composer
 - (void)showTextInput:(NSDictionary *)params {
+    textInput = [[UITextView alloc] initWithFrame:[self rectFromDict:[params objectForKey:@"at"]]];
+    
+    textInput.font = [UIFont systemFontOfSize:15];
+    
+    textInput.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    textInput.layer.borderWidth = 1.0;
+    textInput.layer.borderColor = [[UIColor grayColor] CGColor];
+    textInput.layer.cornerRadius = 0.0;
+    textInput.backgroundColor = [UIColor whiteColor];
+    textInput.clipsToBounds = YES;
+    textInput.keyboardType = UIKeyboardTypeDefault;
+    textInput.delegate = self;
+    
+    UIReturnKeyType returnKeyType = [self returnKeyTypeFromDict:params];
+    if (returnKeyType) {
+        textInput.returnKeyType = returnKeyType;
+    }
+    
+    [self.window addSubview:textInput];
+    [textInput becomeFirstResponder];
+}
+
+- (void)hideTextInput {
+    [textInput resignFirstResponder];
+    [textInput removeFromSuperview];
+    textInput = nil;
+}
+
+- (void)textViewDidChange:(UITextView *)textView {
+    [self notify:@"textInput.didChange" info:[NSDictionary dictionaryWithObjectsAndKeys:
+                                              self.textInput.text, @"text",
+                                              nil]];
+}
+
+- (UIReturnKeyType)returnKeyTypeFromDict:(NSDictionary *)params {
+    NSString* returnKeyType = [params objectForKey:@"returnKeyType"];
+    if ([returnKeyType isEqualToString:@"Done"]) { return UIReturnKeyDone; }
+    if ([returnKeyType isEqualToString:@"EmergencyCall"]) { return UIReturnKeyEmergencyCall; }
+    if ([returnKeyType isEqualToString:@"Go"]) { return UIReturnKeyGo; }
+    if ([returnKeyType isEqualToString:@"Google"]) { return UIReturnKeyGoogle; }
+    if ([returnKeyType isEqualToString:@"Join"]) { return UIReturnKeyJoin; }
+    if ([returnKeyType isEqualToString:@"Next"]) { return UIReturnKeyNext; }
+    if ([returnKeyType isEqualToString:@"Route"]) { return UIReturnKeyRoute; }
+    if ([returnKeyType isEqualToString:@"Search"]) { return UIReturnKeySearch; }
+    if ([returnKeyType isEqualToString:@"Send"]) { return UIReturnKeySend; }
+    return UIReturnKeyDefault;
+}
+
+- (CGRect)rectFromDict:(NSDictionary *)params {
     float x = [[params objectForKey:@"x"] doubleValue];
     float y = [[params objectForKey:@"y"] doubleValue];
     float width = [[params objectForKey:@"width"] doubleValue];
     float height = [[params objectForKey:@"height"] doubleValue];
-    textInput = [[UITextView alloc] initWithFrame:CGRectMake(x, y, width, height)];
-    
-    UITextView* textField = textInput;
-    textField.font = [UIFont systemFontOfSize:15];
-    
-    textField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    textField.layer.borderWidth = 1.0;
-    textField.layer.borderColor = [[UIColor grayColor] CGColor];
-    textField.layer.cornerRadius = 0.0;
-    textField.backgroundColor = [UIColor whiteColor];
-    textField.clipsToBounds = YES;
-    textField.keyboardType = UIKeyboardTypeDefault;
-    textField.returnKeyType = UIReturnKeySend;
-    textField.delegate = self;
-    [self.window addSubview:textInput];
-
-    [textField becomeFirstResponder];
+    return CGRectMake(x, y, width, height);
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
     if([text isEqualToString:@"\n"]) {
-        [self notify:@"composer.sendText" info:[NSDictionary dictionaryWithObject:textInput.text forKey:@"text"]];
-        textInput.text = @"";
+        [self notify:@"textInput.return" info:[NSDictionary dictionaryWithObject:textInput.text forKey:@"text"]];
         return NO;
     }
     return YES;
 }
 
 - (void)textViewDidEndEditing:(UITextView *)textView {
-    [textInput removeFromSuperview];
+    [self notify:@"textInput.didEndEditing"];
 }
 
+- (void)animateTextInput:(NSDictionary *)params {
+    if (!textInput) { return; }
+    [UIView beginAnimations:nil context:NULL];
+    NSNumber* duration = [params objectForKey:@"duration"];
+    [UIView setAnimationDuration:[duration doubleValue]];
+    textInput.frame = [self rectFromDict:[params objectForKey:@"to"]];
+    [UIView commitAnimations];
+    if ([params objectForKey:@"blur"]) {
+        [textInput resignFirstResponder];
+    }
+}
 
 // Facebook
 /**

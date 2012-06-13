@@ -1,11 +1,3 @@
-//
-//  AppDelegate.h
-//  dogo
-//
-//  Created by Marcus Westin on 4/18/12.
-//  Copyright (c) 2012. All rights reserved.
-//
-
 #import "BTAppDelegate.h"
 #import "FBConnect.h"
 
@@ -18,5 +10,8 @@
 
 @property (atomic, strong) UITextView* textInput;
 - (void) showTextInput:(NSDictionary*) params;
-
+- (void) hideTextInput;
+- (CGRect) rectFromDict:(NSDictionary*) params;
+- (UIReturnKeyType) returnKeyTypeFromDict:(NSDictionary*) params;
+- (void) animateTextInput:(NSDictionary*) params;
 @end

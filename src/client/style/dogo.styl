@@ -25,6 +25,22 @@ headGr2 = color5
 textShadow = 0 1px 0 #888;
 buttonShadow = 0 1px 2px #444;
 
+@-webkit-keyframes rotate {
+	from {-webkit-transform: rotate(0deg);}
+	to {-webkit-transform: rotate(360deg);}
+}
+
+rotate(duration)
+	-webkit-transition-property: -webkit-transform; -webkit-transition-duration: duration;
+	-webkit-animation-name: rotate;
+	-webkit-animation-duration: duration;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-timing-function: linear;
+
+icon(width, height, name, xOffset=0, yOffset=0)
+	width width+xOffset; height height+yOffset; background transparent xOffset yOffset no-repeat;
+	background-image url('//blowtorch/img/glyphish/'+name); background-size width height;
+
 .blue
 	background blueLight; color blueDark; border-color blueDark;
 
@@ -39,26 +55,47 @@ buttonShadow = 0 1px 2px #444;
 
 
 .app
-	background linear-gradient(top, color2, #fff); height 100%;
+	background linear-gradient(top, color2, #fff); height 100%; overflow hidden;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none; /* Disable selection/Copy of UIWebView */
 	position relative;
 
 .scroller-head
 	z-index 1; box-shadow 0 1px 4px #333;
+.scroller-head.flat
+	box-shadow none;
+
 	
 .head
-	height 100%;
+	height 100%; width 100%; overflow hidden;
 	background linear-gradient(top, headGr1, headGr2); borderTop 1px solid #E3E9ED;
 	.title
 		text-shadow textShadow; color:#fff; font-size 16px; padding 0 4px;
 		font-size 20px; text-align center; padding 8px 0 0 0; font-weight 600;
 	.back
-		position absolute; top 4px; left 4px; border-width 2px;
+		absolute top 4px left 4px; border-width 2px;
+	.search-control
+		.search, .search.active
+			absolute top 4px right 4px; width 11px; height 19px;
+			background #fff; border-color color3; //overflow hidden;
+			.icon
+				icon(32px, 21px, 'gray/112-group.png', 0, 5px); absolute top left;
+		.input
+			inputWidth = 300px;
+			background red; width inputWidth; height 30px;
+			absolute top 4px right; background #fff;
+			box-shadow buttonShadow;
+			border 2px solid color3; border-radius 3px;
+			-webkit-transform translateX(inputWidth + 30px)
+			-webkit-transition -webkit-transform .4s;
+	.search-control.expand
+		.input
+			-webkit-transform translateX(3px)
 	.devBar
-		absolute top right;
+		absolute top right 50px;
 		.button
 			margin 4px 2px 0;
+	
 	
 
 .connect, .invite
@@ -94,8 +131,6 @@ buttonShadow = 0 1px 2px #444;
 		padding 1px 0 0 2px;
 		.face
 			float left; margin 2px 2px 1px 1px;
-		.member-ribbon
-			width 16px; height 16px; background url("http://icons.iconarchive.com/icons/famfamfam/silk/16/award-star-gold-3-icon.png"); float right; margin 2px 0;
 	
 
 buttonRadius = 4px;
@@ -104,11 +139,19 @@ buttonRadius = 4px;
 	color #fff; text-align center; display inline-block; cursor pointer; box-shadow buttonShadow;
 .button.active
 	background linear-gradient(bottom, darken(color4, 10%), color5); border-color #eee; color #eee;
+	box-shadow none;
 
 
 faceDim = 50px
 .face
 	width faceDim; height faceDim;
+	.member-ribbon
+		width 16px; height 16px; background url("//blowtorch/img/badge.png"); float right; margin 32px 0 0;
+
+.loading-wrapper
+	absolute top 0 right 0; width 30px; height 30px; border-radius 0 0 8px 8px; border 1px solid rgba(blueDark, .7); background rgba(blueDark, .5); z-index 1; transition top .5s;
+	.icon
+		absolute top 1px left 2px; icon(26px, 26px, 'white/171-sun.png', 0, 0); rotate(1.5s)
 
 .loading
 	color #666; text-align center; margin 10px auto; font-style italic;
@@ -116,11 +159,11 @@ faceDim = 50px
 .messageBubble
 	margin 4px 4px 0; min-height 50px; border-radius 5px; background #fff; border 3px solid color4; word-wrap break-word;
 	.face
-		float left; border-radius 3px 1px 2px 1px; margin 0 6px 0 0;
+		float left; border-radius 2px 1px 2px 1px; margin 0 6px 0 0;
 .messageBubble.fromMe
 	text-align right;
 	.face
-		float right; border-radius 1px 4px 1px 2px; margin 0 0 0 6px;
+		float right; border-radius 1px 2px 1px 2px; margin 0 0 0 6px;
 
 .conversation
 	.messages
@@ -129,7 +172,7 @@ faceDim = 50px
 		.body
 			padding 4px 1px;
 		.picture
-			border-radius 6px;
+			border-radius 2px;
 			
 	.dogo-info
 		width 100%; margin 4px 0; padding 4px 0 10px 0; border-width 1px 0; border-style solid;
@@ -182,3 +225,15 @@ faceDim = 50px
 .ghostTown
 	text-align center; color #fff; text-shadow textShadow; margin 10px 0;
 
+.searchResults
+	absolute top 0 left 0; background #fff; width 100%; box-shadow 0 1px 4px #333;
+	overflow-y scroll; -webkit-overflow-scrolling touch; overflow-x hidden;
+	.people
+		.person
+			padding 4px 4px 2px; clear both; background linear-gradient(top, #fff, #ececec); cursor pointer;
+			.face
+				float left;
+			.name
+				float left; margin 0 0 0 4px;
+		.person:last-child
+			padding-bottom 4px;

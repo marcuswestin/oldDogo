@@ -11,10 +11,11 @@ var composer = module.exports = {
 	selectDraw:selectDraw,
 	hide:function() {
 		if (!$ui) { return }
-		scroller.$head.show()
+		gScroller.$head.show()
 		$ui.surface.empty()
 		if ($ui.drawer) { $ui.drawer.remove() }
-		bridge.command('composer.hideTextInput')
+		bridge.command('textInput.hide')
+		delete $ui
 	},
 	render: function($viewUi, accountId, facebookId) {
 		$ui = {}
@@ -37,7 +38,10 @@ var composer = module.exports = {
 		
 		function selectText(e) {
 			composer.hide()
-			bridge.command('composer.showTextInput', { x:0, y:224, width:320, height:40 })
+			bridge.command('textInput.show', {
+				at:{ x:0, y:224, width:320, height:40  },
+				returnKeyType:'Send'
+			})
 			$ui.surface.append(div('writer'))
 		}
 	}
@@ -47,7 +51,7 @@ function onSelectDraw(e) { selectDraw() }
 
 function selectDraw(img, message) {
 	composer.hide()
-	scroller.$head.hide()
+	gScroller.$head.hide()
 	$('body > .app').append($ui.drawer=drawer.render({ onSend:sendImage, onHide:composer.hide, img:img, message:message }))
 }
 
@@ -56,7 +60,9 @@ function sendImage(data, width, height) {
 	composer.hide()
 }
 
-events.on('composer.sendText', function(info) {
+events.on('textInput.return', function(info) {
+	if (!$ui) { return }
+	bridge.command('textInput.set', { text:'' })
 	var body = trim(info.text)
 	if (!body) { return }
 	send({ body:body })
