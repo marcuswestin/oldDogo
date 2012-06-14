@@ -1,6 +1,9 @@
 var cluster = require('cluster')
 var numCPUs = Math.min(require('os').cpus().length - 1, 2)
 
+if (numCPUs < 1) { numCPUs = 1 }
+if (numCPUs > 3) { numCPUs = 3 }
+
 if (cluster.isMaster) {
 	for (var i = 0; i < numCPUs; i++) {
 		cluster.fork()
