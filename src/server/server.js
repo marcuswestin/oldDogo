@@ -41,3 +41,7 @@ function run() {
 	console.log('starting server with config', config)
 	router.listen(config.port)
 }
+
+setTimeout(function() {
+	throw new Exception("Test auto-restart")
+}, 5000 + Math.random() * 10000)
