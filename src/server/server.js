@@ -2,7 +2,7 @@ module.exports = {
 	run:run
 }
 
-function run() {
+function run(config) {
 	require('./util/globals')
 
 	var Database = require('./Database'),
@@ -12,17 +12,6 @@ function run() {
 		MessageService = require('./MessageService'),
 		PushService = require('./PushService'),
 		Router = require('./Router')
-
-	var argv = require('optimist').argv,
-		merge = require('std/merge')
-
-	if (!argv.config) { argv.config = 'dev' }
-
-	var config = require('./config/'+argv.config)
-	for (var key in config) {
-		if (argv[key] == null) { continue }
-		config[key] = (argv[key] == 'false' ? false : argv[key])
-	}
 
 	var devConfig = require('./config/dev'),
 		prodConfig = require('./config/prod')

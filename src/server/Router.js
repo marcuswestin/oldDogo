@@ -58,8 +58,21 @@ module.exports = proto(null,
 			router.post('/api/push_auth', filter.session.bind(this), rest.postPushAuth.bind(this))
 			router.get('/api/account_info', filter.session.bind(this), rest.getAccountInfo.bind(this))
 			router.get('/api/image', filter.session.bind(this), rest.getPicture.bind(this))
+			// router.get('/web/*', bind(this, function(req, res) {
+			// 	var file = path.join(__dirname, '..', req.url.replace(/\.\./g, '').replace(/\^\/web\//, ''))
+			// 	fs.readFile(file, bind(this, this.respondHtml, req, res))
+			// }))
+			// 
+			// router.get('/api/fubar', function(req, res) {
+			// 	res.writeHead(200, { 'X-Dogo-Process':'alert("foobar")' })
+			// 	res.end('hi!')
+			// })
+			// router.all('/facebook_canvas/*', function(req, res) {
+			// 	self.respond(req, res, null, '<div style="font-size:40px;">Hi Jon!</div>', 'text/html')
+			// })
 			
 			var self = this
+
 			router.use(function onError(err, req, res, next){
 				console.log("ERROR".red, err)
 				self.respond(req, res, err)
@@ -159,6 +172,9 @@ module.exports = proto(null,
 				response[name] = data
 				this.respond(req, res, err, err ? null : response)
 			})
+		},
+		respondHtml:function(req, res, err, content) {
+			this.respond(req, res, err, !err && content.toString(), 'text/html')
 		},
 		respond:function(req, res, err, content, contentType) {
 			try {
@@ -280,6 +296,10 @@ module.exports = proto(null,
 			var serverIo = require('socket.io').listen(server)
 			app.get('/dev-client.html', function(req, res) {
 				sendFile(res, 'src/client/dev-client.html')
+			})
+			
+			app.get('/test/*', function(req, res) {
+				sendFile(res, 'src/client'+req.url)
 			})
 			
 			serverIo.set('log level', 0)

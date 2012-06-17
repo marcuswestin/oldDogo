@@ -1,6 +1,6 @@
 var pickers = require('./pickers')
 var pens = require('./pens')
-var makeDraw = require('./draw')
+var paint = require('./paint')
 
 module.exports = {
 	render:render
@@ -23,20 +23,23 @@ var opts
 
 var controlsDuration = 350
 
+var p
+
 function render(_opts) {
 	opts = options(_opts, { onHide:null, onSend:null, img:null, message:null })
 	
 	imageTouched = false
 	
-	var draw = makeDraw([width, height])
-	draw.canvas.className = 'drawCanvas'
+	p = paint([width, height])
 	
-	var $canvas = $(draw.canvas)
-	$canvas.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
-	$canvas.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
+	var $paint = $(p.el)
+	$paint.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
+	$paint.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
 	
 	// Background
-	draw.background(background) 
+	p.withBackground(function(bg) {
+		bg.fillAll(background)
+	})
 	
 	if (opts.img) {
 		// TODO Show loading indicator
@@ -56,9 +59,9 @@ function render(_opts) {
 		var drawImg = new Image()
 		drawImg.onload = function() {
 			var message = opts.message
-			draw.save()
+			p.save()
 			if (message.pictureWidth > message.pictureHeight) {
-				draw
+				p
 					.rotate(-Math.PI / 2)
 					.translate([-canvasSize.height / ratio, 0])
 				var outputWidth = Math.min(message.pictureWidth, height) // rotate, then max canvas height
@@ -67,7 +70,7 @@ function render(_opts) {
 				var outputWidth = Math.min(message.pictureWidth, width) // rotate, then max canvas height
 				var outputHeight = Math.min(message.pictureHeight, height)
 			}
-			draw
+			p
 				.drawImage(drawImg, [0, 0], [outputWidth, outputHeight])
 				.restore()
 		}
@@ -78,6 +81,7 @@ function render(_opts) {
 	var controlsTrans = function(name) { return style({ '-webkit-transition':name+' '+controlsDuration/1000+'s' })}
 	
 	$ui = $(div('draw-composer',
+		$paint,
 		div('close button', 'X', controlsTrans('-webkit-transform'), style({ bottom:height - 30, left:3 }), button(function() { opts.onHide() })),
 		div('controls-pos', controlsTrans('-webkit-transform'),
 			div('controls-rot', controlsTrans('-webkit-transform'),
@@ -92,14 +96,13 @@ function render(_opts) {
 					)
 				)
 			)
-		),
-		$canvas
+		)
 	))
 	
 	return $ui
 	
 	function createPen(pen) {
-		return pen({ colorPicker:state.colorPicker, draw:draw, width:width, height:height })
+		return pen({ colorPicker:state.colorPicker, paint:p, width:width, height:height })
 	}
 	
 	function getPoint($e) {
@@ -108,8 +111,8 @@ function render(_opts) {
 			coords = coords.changedTouches[0]
 		}
 		return [
-			coords.pageX - (tags.isTouch ? 0 : $canvas.offset().left),
-			coords.pageY - $canvas.offset().top
+			coords.pageX - (tags.isTouch ? 0 : $paint.offset().left),
+			coords.pageY - $paint.offset().top
 		]
 	}
 	
@@ -138,28 +141,23 @@ function render(_opts) {
 var imageTouched
 function sendImage() {
 	if (!imageTouched) { return }
-	var original = $ui.find('.drawCanvas')[0]
 	
 	if (rotationDeg) {
-		var draw = makeDraw([canvasSize.height, canvasSize.width])
-		var canvas = draw.canvas
-		// $('body').append(canvas); canvas.style.marginLeft = '400px'; console.log(canvas)
-		// draw.fillStyle('#000').fillRect([0, 0], [canvasSize.height, canvasSize.width])
-		
+		var rotated = paint([canvasSize.height, canvasSize.width])
 		var direction = rotationDeg < 0 ? 1 : -1
-		draw
+
+		rotated
 			.save()
 			.rotate(direction * Math.PI / 2)
 			.translate(direction == 1 ? [0, -canvasSize.height * direction] : [-canvasSize.width, 0])
-			.drawImage(original, [0, 0], [canvasSize.width, canvasSize.height])
+			.drawImage(p.snapshot(), [0, 0], [canvasSize.width, canvasSize.height])
 			.restore()
 		
-		// $(canvas).remove()
-		var data = canvas.toDataURL('image/png')
+		var data = rotated.snapshot().toDataURL('image/png')
 		var picWidth = canvasSize.height
 		var picHeight = canvasSize.width
 	} else {
-		var data = original.toDataURL('image/png')
+		var data = p.snapshot().toDataURL('image/png')
 		var picWidth = canvasSize.width
 		var picHeight = canvasSize.height
 	}

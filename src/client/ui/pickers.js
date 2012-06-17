@@ -17,6 +17,9 @@ var picker = {
 		}
 		currentPicker = this
 		var self = this
+		// if (!this.isOpen) {
+		// 	this.renderLists() // for re-rendering icons with new styles. Performance issue
+		// }
 		this.$ui.css({ 'z-index':zIndex++ }).find('.list').each(function(i) {
 			$(this).find('.item').each(function(j) {
 				var $el = $(this)
@@ -91,8 +94,7 @@ var colorPicker = proto(picker,
 			}
 			var content
 			if (typeof color == 'string') {
-				var c = draw([diameter, diameter])
-				c.canvas.className = 'multiDot'
+				var c = paint([diameter, diameter])
 				var r = diameter/2
 				var colors = this.multiColors[color]
 				var rotation = Math.PI*2/(colors.length)
@@ -150,7 +152,7 @@ var colorPicker = proto(picker,
 
 
 var pens = require('./pens')
-var makeDraw = require('./draw')
+var paint = require('./paint')
 var penPicker = proto(picker,
 	function(opts) {
 		this.opts = opts
@@ -167,9 +169,11 @@ var penPicker = proto(picker,
 				border:'2px solid #333', borderRadius:4
 			}
 			return div('pen', style(styles), bind(this, function($tag) {
-				var c = makeDraw([width, height]).background(this.opts.background)
-				$tag.append(c.canvas)
-				var p = pen({ colorPicker:this.opts.colorPicker, draw:c, width:width, height:height })
+				var c = paint([width, height])
+				var background = this.opts.background
+				c.withBackground(function(bg) { bg.fillAll(background) })
+				$tag.append(c.el)
+				var p = pen({ colorPicker:this.opts.colorPicker, paint:c, width:width, height:height })
 				var points = [
 					[156,627],[165,627],[170,627],[177,626],[184,622],[192,618],[198,613],[204,607],
 					[209,601],[212,596],[214,590],[215,584],[215,578],[215,573],[215,568],[211,566],

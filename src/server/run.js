@@ -1,8 +1,21 @@
 var cluster = require('cluster')
 var numCPUs = Math.min(require('os').cpus().length - 1, 2)
 
-if (numCPUs < 1) { numCPUs = 1 }
-if (numCPUs > 3) { numCPUs = 3 }
+var argv = require('optimist').argv
+
+if (!argv.config) { argv.config = 'dev' }
+
+var config = require('./config/'+argv.config)
+for (var key in config) {
+	if (argv[key] == null) { continue }
+	config[key] = (argv[key] == 'false' ? false : argv[key])
+}
+
+var minCpus = 1
+var maxCpus = argv.config == 'dev' ? 2 : 3
+
+if (numCPUs < minCpus) { numCPUs = minCpus }
+if (numCPUs > maxCpus) { numCPUs = maxCpus }
 
 if (cluster.isMaster) {
 	for (var i = 0; i < numCPUs; i++) {
@@ -22,5 +35,5 @@ if (cluster.isMaster) {
 	})
 } else {
 	console.log('starting', process.pid)
-	require('./server').run()
+	require('./server').run(config)
 }

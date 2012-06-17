@@ -59,7 +59,8 @@ var collectPointsPen = create(basePen, {
 
 var initPen = function(opts) {
 	this.colorPicker = opts.colorPicker
-	this.ctx = opts.draw
+	if (!opts.paint) debugger
+	this.ctx = opts.paint
 }
 
 pens.fill = proto(basePen, initPen, {
