@@ -1,15 +1,16 @@
 test:
 	./node_modules/mocha/bin/mocha --bail --reporter list
 
-setup-server: setup
-	bash scripts/npm-install-modules.sh
-
-setup-dev: setup
+setup-dev: setup-server
 	cd node_modules/require && npm install --production .
 	cd dependencies/blowtorch && make setup
 	cd dependencies/facebook-ios-sdk && scripts/build_facebook_ios_sdk_static_lib.sh
 	cd node_modules/watch && npm install .
 	cd node_modules/socket.io && npm install .
+	cd node_modules/stylus && npm install .
+
+setup-server: setup
+	bash scripts/npm-install-modules.sh
 
 setup:
 	echo "node_modules" > ~/.__npm_installed__gitignore

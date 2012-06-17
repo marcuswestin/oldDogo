@@ -1,24 +1,14 @@
--- # one-time setup
--- mysql -u root
--- 	CREATE USER dogo_tester@localhost IDENTIFIED BY 'test';
--- 	GRANT ALL ON dogo_test.* TO dogo_tester@localhost;
--- 	CREATE USER dogo_rw@localhost IDENTIFIED BY 'dogo';
--- 	GRANT ALL ON dogo.* TO 'dogo_rw'@'localhost';
-
--- # reset with new schema
--- cat schema.sql | mysql -u dogo_tester --password=test
-
--- mysql -h dogo-db1.cqka8vcdrksp.us-east-1.rds.amazonaws.com -u dogo_rw -p dogo
-
-DROP DATABASE IF EXISTS dogo_test;
-CREATE DATABASE dogo_test;
-USE dogo_test;
--- DROP DATABASE IF EXISTS dogo;
--- CREATE DATABASE dogo;
--- USE dogo;
-
+-- CREATE USER dogo_tester@localhost IDENTIFIED BY 'test';
+-- GRANT ALL ON dogo_test.* TO dogo_tester@localhost;
+-- DROP DATABASE IF EXISTS dogo_test;
+-- CREATE DATABASE dogo_test;
+-- USE dogo_test;
 
 set foreign_key_checks = 0;
+
+DROP DATABASE IF EXISTS dogo;
+CREATE DATABASE dogo;
+USE dogo;
 
 CREATE TABLE picture (
 	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -91,7 +81,7 @@ CREATE TABLE message (
 	sender_account_id BIGINT UNSIGNED NOT NULL,
 	conversation_id BIGINT UNSIGNED NOT NULL,
 	body VARCHAR(255) DEFAULT NULL,
-	message_id BIGINT UNSIGNED DEFAULT NULL,
+	picture_id BIGINT UNSIGNED DEFAULT NULL,
 	sent_time INT UNSIGNED,
 	FOREIGN KEY (sender_account_id) REFERENCES account(id),
 	PRIMARY KEY (id)

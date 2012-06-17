@@ -55,3 +55,6 @@
 [submodule "node_modules/color"]
 	path = node_modules/color
 	url = https://github.com/harthur/color.git
+[submodule "node_modules/stylus"]
+	path = node_modules/stylus
+	url = https://github.com/LearnBoost/stylus.git
