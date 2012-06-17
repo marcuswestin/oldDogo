@@ -1,6 +1,7 @@
 ;(function(global) {
 	
 	function PaintContext(dim) {
+		this.ratio = window.devicePixelRatio || 1
 		this.dim = dim
 		this.el = this.create('div', true)
 		this.bg = this.addCanvas(this.el)
@@ -94,17 +95,19 @@
 		 ***********/
 		create:function(tag, relative) {
 			var el = document.createElement(tag)
-			var scale = window.devicePixelRatio || 1
+			var ratio = this.ratio
 			var dim = this.dim
-			el.setAttribute('width', dim[0] * scale)
-			el.setAttribute('height', dim[1] * scale)
+			el.setAttribute('width', dim[0] * ratio)
+			el.setAttribute('height', dim[1] * ratio)
 			el.style.width = dim[0]+'px'
 			el.style.height = dim[1]+'px'
 			el.style.position = relative ? 'relative' : 'absolute'
 			return el
 		},
 		addCanvas:function(el) {
-			return el.appendChild(this.create('canvas')).getContext('2d')
+			var ctx = el.appendChild(this.create('canvas')).getContext('2d')
+			this.scale(ctx, [this.ratio, this.ratio])
+			return ctx
 		},
 		toTag:function() {
 			return this.el
