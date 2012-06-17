@@ -59,7 +59,6 @@ var collectPointsPen = create(basePen, {
 
 var initPen = function(opts) {
 	this.colorPicker = opts.colorPicker
-	if (!opts.paint) debugger
 	this.ctx = opts.paint
 }
 
@@ -83,7 +82,6 @@ pens.fill = proto(basePen, initPen, {
 		this.interval = null
 		this.drawing = false
 		this.p0 = this.f = this.nextPoint = null
-		clearInterval(this.interval)
 	},
 	draw:function() {
 		if (!this.p0) { return this.p0 = this.nextPoint }
