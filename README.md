@@ -29,7 +29,15 @@ Run dev server
 
 	make run
 	# go to localhost:9000/app.html
-	
+
+Build ios client
+################
+
+	mkdir -p /build/dogo-ios-build
+	chmod 777 /build/dogo-ios-build
+	make client
+	# install client in xcode
+
 Get to Prod
 ###########
 
