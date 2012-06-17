@@ -37,13 +37,17 @@ function render(_opts) {
 	$paint.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
 	
 	// Background
-	p.withBackground(function(bg) {
+	p.withBackground(function withPaintBackground(bg) {
 		bg.fillAll(background)
 	})
 	
 	if (opts.img) {
+		loadBackgroundImage(opts.img)
+	}
+	
+	function loadBackgroundImage(img) {
 		// TODO Show loading indicator
-		var underlyingUrl = opts.img.style.background.match(/url\((.*)\)/)[1]
+		var underlyingUrl = img.style.background.match(/url\((.*)\)/)[1]
 		if (underlyingUrl.match(/^data/) || !tags.isTouch) {
 			doDraw(underlyingUrl)
 		} else {
