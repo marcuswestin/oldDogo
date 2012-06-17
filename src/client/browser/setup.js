@@ -44,6 +44,9 @@ function setupBrowserDebugMode() {
 			case 'textInput.animate':
 				textInput.animate(data)
 				break
+			case 'textInput.set':
+				textInput.set(data)
+				break
 			case 'textInput.hide':
 				textInput.hide()
 				break

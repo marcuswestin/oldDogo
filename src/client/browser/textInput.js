@@ -1,11 +1,16 @@
 module.exports = {
 	show:showTextInput,
 	animate:animateTextInput,
-	hide:hideTextInput
+	hide:hideTextInput,
+	set:setTextInput
 }
 
 var $input
 var topBarOffset = 20
+
+function setTextInput(data) {
+	$input.val(data.text)
+}
 
 function showTextInput(data) {
 	var at = data.at
@@ -39,8 +44,10 @@ function hideTextInput() {
 	delete $input
 }
 
-var onKeyPress = function() {
+var onKeyPress = function($e) {
 	setTimeout(function() {
-		events.fire('textInput.didChange', { text:$input.val() })
+		var params = { text:$input.val() }
+		events.fire('textInput.didChange', params)
+		if ($e.keyCode == 13) { events.fire('textInput.return', params) }
 	}, 0)
 }
