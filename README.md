@@ -1,6 +1,8 @@
 Setup
 #####
 
+	# Brew
+	/usr/bin/ruby -e "$(/usr/bin/curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)"
 	# Redis
 	brew install redis
 	# Mysql
@@ -43,3 +45,6 @@ Get to Prod
 
 	ssh dogo-web1
 	mysql -h dogo-db1.cqka8vcdrksp.us-east-1.rds.amazonaws.com -u dogo_rw -p dogo
+	# Fabric
+	sudo easy_install fabric
+	
