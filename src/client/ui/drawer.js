@@ -24,25 +24,55 @@ var opts
 var controlsDuration = 350
 
 var p
+var $paint
 
 function render(_opts) {
 	opts = options(_opts, { onHide:null, onSend:null, img:null, message:null })
 	
-	imageTouched = false
+	var controlsTrans = function(name) { return style({ '-webkit-transition':name+' '+controlsDuration/1000+'s' })}
 	
-	p = paint([width, height])
+	$ui = $(div('draw-composer',
+		div('close button', 'X', controlsTrans('-webkit-transform'), style({ bottom:height - 30, left:3 }), button(function() { opts.onHide() })),
+		div('controls-pos', controlsTrans('-webkit-transform'),
+			div('controls-rot', controlsTrans('-webkit-transform'),
+				div('controls', controlsTrans('width'), style({ width:width }),
+					div('tools',
+						state.colorPicker = pickers.color(),
+						state.penPicker = pickers.pen({ background:background, colorPicker:state.colorPicker }),
+						div('right',
+							div('button clear', 'Clear', button(createP)),
+							div('button tool send', 'Send', button(sendImage))
+						)
+					)
+				)
+			)
+		)
+	))
 	
-	var $paint = $(p.el)
-	$paint.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
-	$paint.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
-	
-	// Background
-	p.withBackground(function withPaintBackground(bg) {
-		bg.fillAll(background)
-	})
+	createP()
 	
 	if (opts.img) {
 		loadBackgroundImage(opts.img)
+	}
+	
+	return $ui
+	
+	function createP() {
+		if (p) { $(p.el).remove() }
+
+		imageTouched = false
+		
+		p = paint([width, height])
+
+		p.withBackground(function withPaintBackground(bg) {
+			bg.fillAll(background)
+		})
+		
+		$paint = $(p.el)
+		$paint.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
+		$paint.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
+		
+		$ui.append($paint)
 	}
 	
 	function loadBackgroundImage(img) {
@@ -80,30 +110,6 @@ function render(_opts) {
 		}
 		drawImg.src = url
 	}
-	
-	
-	var controlsTrans = function(name) { return style({ '-webkit-transition':name+' '+controlsDuration/1000+'s' })}
-	
-	$ui = $(div('draw-composer',
-		$paint,
-		div('close button', 'X', controlsTrans('-webkit-transform'), style({ bottom:height - 30, left:3 }), button(function() { opts.onHide() })),
-		div('controls-pos', controlsTrans('-webkit-transform'),
-			div('controls-rot', controlsTrans('-webkit-transform'),
-				div('controls', controlsTrans('width'), style({ width:width }),
-					div('tools',
-						state.colorPicker = pickers.color(),
-						state.penPicker = pickers.pen({ background:background, colorPicker:state.colorPicker }),
-						div('right',
-							div('button clear', 'Clear', button(function() { draw.background(background) })),
-							div('button tool send', 'Send', button(sendImage))
-						)
-					)
-				)
-			)
-		)
-	))
-	
-	return $ui
 	
 	function createPen(pen) {
 		return pen({ colorPicker:state.colorPicker, paint:p, width:width, height:height })
