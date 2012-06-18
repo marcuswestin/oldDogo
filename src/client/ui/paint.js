@@ -14,29 +14,55 @@
 	PaintContext.prototype = {
 		/* Regular canvas functions
 		 **************************/
-		moveTo:ctxFunction(function(ctx, p) { ctx.moveTo(p[0], p[1]) }),
-		lineTo:ctxFunction(function(ctx, p) { ctx.lineTo(p[0], p[1]) }),
+		moveTo:ctxFunction(function(ctx, p) {
+			if (!checkNum(p)) { return }
+			ctx.moveTo(p[0], p[1])
+		}),
+		lineTo:ctxFunction(function(ctx, p) {
+			if (!checkNum(p)) { return }
+			ctx.lineTo(p[0], p[1])
+		}),
 		stroke:ctxFunction(function(ctx) { ctx.stroke() }),
 		fill:ctxFunction(function(ctx) { ctx.fill() }),
 		beginPath:ctxFunction(function(ctx) { ctx.beginPath() }),
 		closePath:ctxFunction(function(ctx) { ctx.closePath() }),
-		arc:ctxFunction(function(ctx, p,r,angle,clockwise) { ctx.arc(p[0], p[1], r, angle[0], angle[1], clockwise) }),
+		arc:ctxFunction(function(ctx, p, r, angle, clockwise) {
+			if (!r) { return }
+			if (!checkNum(p, angle)) { return }
+			ctx.arc(p[0], p[1], r, angle[0], angle[1], !!clockwise)
+		}),
 		strokeStyle:ctxFunction(function(ctx, strokeStyle) { ctx.strokeStyle = strokeStyle }),
 		fillStyle:ctxFunction(function(ctx, fillStyle) { ctx.fillStyle = fillStyle }),
-		scale:ctxFunction(function(ctx, d) { ctx.scale(d[0], d[1]) }),
-		fillRect:ctxFunction(function(ctx, p,d) { ctx.fillRect(p[0], p[1], d[0], d[1]) }),
+		scale:ctxFunction(function(ctx, d) {
+			if (!checkNum(d)) { return }
+			ctx.scale(d[0], d[1])
+		}),
+		fillRect:ctxFunction(function(ctx, p, d) {
+			if (!checkNum(p, d)) { return }
+			ctx.fillRect(p[0], p[1], d[0], d[1])
+		}),
 		rotate:ctxFunction(function(ctx, rad) { ctx.rotate(rad) }),
-		translate:ctxFunction(function(ctx, d) { ctx.translate(d[0],d[1]) }),
-		translate:ctxFunction(function(ctx, p) { ctx.translate(p[0], p[1]) }),
+		translate:ctxFunction(function(ctx, p) {
+			if (!checkNum(p)) { return }
+			ctx.translate(p[0], p[1])
+		}),
 		globalCompositeOperation:ctxFunction(function(ctx, operation) { ctx.globalCompositeOperation = operation }),
-		quadraticCurveTo:ctxFunction(function(ctx, p1, p2) { ctx.quadraticCurveTo(p1[0], p1[1], p2[0], p2[1]) }),
+		quadraticCurveTo:ctxFunction(function(ctx, p1, p2) {
+			if (!checkNum(p1, p2)) { return }
+			ctx.quadraticCurveTo(p1[0], p1[1], p2[0], p2[1])
+		}),
 		lineWidth:ctxFunction(function(ctx, lineWidth) { ctx.lineWidth = lineWidth }),
 		save:ctxFunction(function(ctx) { ctx.save() }),
 		restore:ctxFunction(function(ctx) { ctx.restore() }),
 		drawImage:ctxFunction(function(ctx, img, p, d) {
 			var args = [is2dContext(img) ? img.canvas : img]
 			if (!p) { args = args.concat([0, 0]) } // default to origin
-			if (d) { args = args.concat([d[0], d[1]]) } // drawImage doesn't like undefined width/height arguments
+			if (!checkNum(p)) { return }
+			if (d) {
+				// drawImage doesn't like undefined width/height arguments
+				args = args.concat([d[0], d[1]])
+				if (!checkNum(d)) { return }
+			}
 			ctx.drawImage.apply(ctx, args)
 		}),
 		
@@ -129,9 +155,26 @@
 	function is2dContext(obj) {
 		return ({}).toString.call(obj) == '[object CanvasRenderingContext2D]'
 	}
+	function isArray(obj) {
+		return ({}).toString.call(obj) == '[object Array]'
+	}
 
 	function paint(dim) { return new PaintContext(dim) }
-
+	
+	function checkNum() {
+		for (var i=0; i<arguments.length; i++) {
+			var arg = arguments[i]
+			if (isArray(arg)) {
+				if (!checkNum.apply(this, arg)) { return false }
+			} else if (typeof arg == 'number') {
+				continue
+			} else {
+				return false
+			}
+		}
+		return true
+	}
+	
 	if (typeof module == 'undefined') { global.paint = paint }
 	else { module.exports = paint }
 })(this);
