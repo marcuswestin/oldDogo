@@ -92,21 +92,29 @@ function render(_opts) {
 	function doDraw(url) {
 		var drawImg = new Image()
 		drawImg.onload = function() {
+			// Show spinner
 			var message = opts.message
-			p.save()
+			
 			if (message.pictureWidth > message.pictureHeight) {
-				p
-					.rotate(-Math.PI / 2)
-					.translate([-canvasSize.height / ratio, 0])
 				var outputWidth = Math.min(message.pictureWidth, height) // rotate, then max canvas height
 				var outputHeight = Math.min(message.pictureHeight, width)
+				p.withBackground(function(bg) {
+					bg
+						.save()
+						.rotate(-Math.PI / 2)
+						.translate([-canvasSize.height / ratio, 0])
+						.drawImage(drawImg, [0, 0], [outputWidth, outputHeight])
+						.restore()
+				})
 			} else {
-				var outputWidth = Math.min(message.pictureWidth, width) // rotate, then max canvas height
+				var outputWidth = Math.min(message.pictureWidth, width)
 				var outputHeight = Math.min(message.pictureHeight, height)
+				p.withBackground(function(bg) {
+					console.log("HERE")
+					bg
+						.drawImage(drawImg, [0, 0], [outputWidth, outputHeight])
+				})
 			}
-			p
-				.drawImage(drawImg, [0, 0], [outputWidth, outputHeight])
-				.restore()
 		}
 		drawImg.src = url
 	}
