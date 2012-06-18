@@ -21,17 +21,31 @@ module.exports = {
 		var showingFaces = faceColumns * 2
 		var hackI = 0
 		
+		var someFriends = []
+		for (var id in gState.cache['contactsByFacebookId']) {
+			if (someFriends.length >= 24) { break }
+			var contact = gState.cache['contactsByFacebookId'][id]
+			if (contact.memberSince) {
+				someFriends.push(contact)
+			}
+		}
+		for (var id in gState.cache['contactsByFacebookId']) {
+			if (someFriends.length >= 24) { break }
+			var contact = gState.cache['contactsByFacebookId'][id]
+			if (!contact.memberSince) {
+				someFriends.push(contact)
+			}
+		}
+		
 		$body.append(div('home',
 			$ui.info = $(div('info')),
 			div('conversations',
 				$ui.conversations = list([], selectMessage, function(conv) { return conv.conversationId }, renderBubble)
 			),
 			div(style({ height:4 })),
-			section('friends', 'Friends', 
-				list(gState.cache['contactsByFacebookId'], selectContact, function(contact) {
-					// if (contact.memberSince) {
-						return div('contact', face.facebook(contact, true, hackI++ > showingFaces))
-					// }
+			section('friends', 'Some of Your Friends',
+				list(someFriends, selectContact, function(contact) {
+					return div('contact', face.facebook(contact, true, hackI++ > showingFaces))
 				})
 			)
 		))
@@ -122,7 +136,7 @@ function reloadConversations() {
 		var messages = map(res.conversations, messageFromConvo)
 		$ui.conversations.append(messages)
 		if (res.conversations.length == 0) {
-			$ui.info.empty().append(div('ghostTown', "Start a conversation with a friend below"))
+			$ui.info.empty().append(div('ghostTown', "Send a message to a friend", div('icon arrow')))
 		}
 	})
 }

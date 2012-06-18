@@ -30,7 +30,7 @@ buttonShadow = 0 1px 2px #444;
 	to {-webkit-transform: rotate(360deg);}
 }
 
-rotate(duration)
+animate-rotation(duration)
 	-webkit-transition-property: -webkit-transform; -webkit-transition-duration: duration;
 	-webkit-animation-name: rotate;
 	-webkit-animation-duration: duration;
@@ -38,7 +38,7 @@ rotate(duration)
 	-webkit-animation-timing-function: linear;
 
 icon(width, height, name, xOffset=0, yOffset=0)
-	width width+xOffset; height height+yOffset; background transparent xOffset yOffset no-repeat;
+	width width+xOffset; height height+yOffset; background transparent xOffset yOffset no-repeat; display inline-block;
 	background-image url('//blowtorch/img/glyphish/'+name); background-size width height;
 
 .blue
@@ -110,6 +110,13 @@ icon(width, height, name, xOffset=0, yOffset=0)
 	width 210px;
 
 .home
+	.ghostTown
+		position relative; top 10px; margin-left 20px;
+		.arrow.icon
+			icon(23px, 17px, 'white/213-reply.png');
+			-webkit-transform: rotate(120deg);
+			margin 0 0 1px 6px;
+			
 	.section
 		.header
 			height 40px; background color4; color #fff; // gradient(color4, color5); 
@@ -152,7 +159,7 @@ faceDim = 50px
 	absolute top 0 right 5px; width 31px; height 31px; border-radius 0 0 4px 4px; border 1px solid rgba(blueDark, .7);
 	background rgba(blueDark, .5); z-index 1; transition -webkit-transform 0.5s;
 	.icon
-		absolute top 2px left 3px; icon(26px, 26px, 'white/171-sun.png', 0, 0); rotate(1.5s)
+		absolute top 2px left 3px; icon(26px, 26px, 'white/171-sun.png', 0, 0); animate-rotation(1.5s)
 
 .loading
 	color #666; text-align center; margin 10px auto; font-style italic;
@@ -184,7 +191,7 @@ faceDim = 50px
 	
 	.composer
 		position absolute; bottom 0; width 320px; padding 0;
-		background linear-gradient(top, rgba(220,220,220,0.0), rgba(60,60,60,0.9))
+		background linear-gradient(top, rgba(220,220,220,0.0), rgba(60,60,60,0.8));
 		.surface
 			bodyRadius = 6px; bodyWidth = 320px;
 			.writer
@@ -196,11 +203,13 @@ faceDim = 50px
 			.right
 				float right;
 			.tool
-				display inline-block; border 2px solid #fff; margin 2px 0 2px 4px; border-radius 4px; height 18px; width 24px;
+				display inline-block; border 2px solid #fff; margin 2px 0 1px 4px; border-radius 4px; height 18px; width 24px;
 				.icon.draw
 					icon(24px, 20px, 'white/98-palette.png')
 				.icon.write
 					icon(24px, 22px, 'white/09-chat-2.png')
+				.icon.photo
+					icon(24px, 18px, 'white/86-camera.png')
 			.tool.send
 				float right; margin-right 1px;
 
@@ -228,7 +237,7 @@ faceDim = 50px
 	clear both
 
 .ghostTown
-	text-align center; color #fff; text-shadow textShadow; margin 10px 0;
+	text-align center; color #fff; text-shadow 0 1px 0 #888; margin 10px 0; font-size 17px;
 .ghostTown.dark
 	color #333; text-shadow 0 1px 0 #ccc;
 
