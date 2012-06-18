@@ -29,8 +29,8 @@ var composer = module.exports = {
 				div('composer',
 					$ui.surface = $(div('surface')),
 					div('tools',
-						div('button tool write', 'Write', button(selectText)),
-						div('button tool draw', 'Draw', button(onSelectDraw))
+						div('button tool', div('icon write'), button(selectText)),
+						div('button tool', div('icon draw'), button(onSelectDraw))
 					)
 				)
 			)
