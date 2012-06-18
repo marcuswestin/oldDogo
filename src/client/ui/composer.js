@@ -72,6 +72,7 @@ var composer = module.exports = {
 function onSelectDraw($e) { selectDraw() }
 function onSelectPhoto($e) {
 	bridge.command('media.pick', function(err, res) {
+		if (!res.mediaId) { return }
 		selectDraw({ mediaId:res.mediaId }, { pictureWidth:res.width, pictureHeight:res.height })
 	})
 }
