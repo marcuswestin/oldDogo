@@ -39,7 +39,7 @@ animate-rotation(duration)
 
 icon(width, height, name, xOffset=0, yOffset=0)
 	width width+xOffset; height height+yOffset; background transparent xOffset yOffset no-repeat;
-	background-image url('//blowtorch/img/glyphish/'+name); background-size width height;
+	background-image url('/blowtorch/img/glyphish/'+name); background-size width height;
 
 .blue
 	background blueLight; color blueDark; border-color blueDark;
@@ -153,7 +153,7 @@ faceDim = 50px
 .face
 	width faceDim; height faceDim;
 	.member-ribbon
-		width 16px; height 16px; background url("//blowtorch/img/badge.png"); float right; margin 32px 0 0;
+		width 16px; height 16px; background url("/blowtorch/img/badge.png"); float right; margin 32px 0 0;
 
 .loading-wrapper
 	absolute top 0 right 5px; width 31px; height 31px; border-radius 0 0 4px 4px; border 1px solid rgba(blueDark, .7);

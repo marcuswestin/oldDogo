@@ -77,8 +77,8 @@ function render(_opts) {
 	
 	function loadBackgroundImage(img) {
 		if (img.mediaId) {
-			var mediaUrl = '//blowtorchmediapng/'+img.mediaId
-			doDraw(mediaUrl)
+			var mediaUrl = '/blowtorch/mediapng/'+img.mediaId
+			doDraw(mediaUrl, true)
 		} else if (img.style) {
 			// TODO Show loading indicator
 			var underlyingUrl = img.style.background.match(/url\((.*)\)/)[1]
@@ -94,13 +94,13 @@ function render(_opts) {
 		}
 	}
 	
-	function doDraw(url) {
+	function doDraw(url, supressRotate) {
 		var drawImg = new Image()
 		drawImg.onload = function() {
 			// Show spinner
 			var message = opts.message
 			
-			if (message.pictureWidth > message.pictureHeight) {
+			if (message.pictureWidth > message.pictureHeight && !supressRotate) {
 				var outputWidth = Math.min(message.pictureWidth, height) // rotate, then max canvas height
 				var outputHeight = Math.min(message.pictureHeight, width)
 				p.withBackground(function(bg) {

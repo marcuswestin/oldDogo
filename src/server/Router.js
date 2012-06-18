@@ -259,7 +259,7 @@ module.exports = proto(null,
 				var filename = req.path.replace('/stylus/', '')
 				fs.readFile(filename, function(err, content) {
 					if (err) { return respond(err) }
-					stylus(content.toString().replace(/\/\/blowtorch\/img\//gi, '/blowtorch/img/')) // Replace the domain in url('//blowtorch/img/...') to url('/domain/img/...')
+					stylus(content.toString())
 						.set('filename', filename)
 						.set('compress', false)
 						.use(nib())
