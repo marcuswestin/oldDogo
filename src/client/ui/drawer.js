@@ -76,16 +76,21 @@ function render(_opts) {
 	}
 	
 	function loadBackgroundImage(img) {
-		// TODO Show loading indicator
-		var underlyingUrl = img.style.background.match(/url\((.*)\)/)[1]
-		if (underlyingUrl.match(/^data/) || !tags.isTouch) {
-			doDraw(underlyingUrl)
-		} else {
-			var asUrl = location.protocol+'//'+location.host+'/url='+encodeURIComponent(underlyingUrl)
-			bridge.command('net.cache', { url:underlyingUrl, asUrl:asUrl, override:false }, function(err, res) {
-				if (err) { return }
-				doDraw(asUrl)
-			})
+		if (img.mediaId) {
+			var mediaUrl = '//blowtorchmediapng/'+img.mediaId
+			doDraw(mediaUrl)
+		} else if (img.style) {
+			// TODO Show loading indicator
+			var underlyingUrl = img.style.background.match(/url\((.*)\)/)[1]
+			if (underlyingUrl.match(/^data/) || !tags.isTouch) {
+				doDraw(underlyingUrl)
+			} else {
+				var asUrl = location.protocol+'//'+location.host+'/url='+encodeURIComponent(underlyingUrl)
+				bridge.command('net.cache', { url:underlyingUrl, asUrl:asUrl, override:false }, function(err, res) {
+					if (err) { return }
+					doDraw(asUrl)
+				})
+			}
 		}
 	}
 	

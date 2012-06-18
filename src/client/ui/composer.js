@@ -30,6 +30,7 @@ var composer = module.exports = {
 					$ui.surface = $(div('surface')),
 					div('tools',
 						div('button tool', div('icon write'), button(selectText)),
+						div('button tool', div('icon photo'), button(onSelectPhoto)),
 						div('button tool', div('icon draw'), button(onSelectDraw))
 					)
 				)
@@ -68,7 +69,12 @@ var composer = module.exports = {
 	}
 }
 
-function onSelectDraw(e) { selectDraw() }
+function onSelectDraw($e) { selectDraw() }
+function onSelectPhoto($e) {
+	bridge.command('media.pick', function(err, res) {
+		selectDraw({ mediaId:res.mediaId }, { pictureWidth:res.width, pictureHeight:res.height })
+	})
+}
 
 function selectDraw(img, message) {
 	composer.hide()
