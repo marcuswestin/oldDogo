@@ -64,11 +64,11 @@ var initPen = function(opts) {
 
 pens.fill = proto(basePen, initPen, {
 	u:1/2,
-	dt:0.1,
-	rate:1000 / 100,
+	dt:0.08,
+	rate:10,
 	down:function(ctx, point) {
 		this.nextPoint = point
-		this.thickness = 2
+		this.thickness = 3
 		// ctx.style(this.rgba(.05)) // - watercolor
 		ctx.style(this.rgba(1)).lineWidth(this.thickness).globalCompositeOperation('source-over')
 		this.interval = setInterval(bind(this, this.draw), this.rate)
@@ -81,11 +81,15 @@ pens.fill = proto(basePen, initPen, {
 		clearInterval(this.interval)
 		this.interval = null
 		this.drawing = false
-		this.p0 = this.f = this.nextPoint = null
+		if (!this.drew) {
+			this.dot(this.nextPoint, this.thickness)
+		}
+		this.p0 = this.f = this.nextPoint = this.drew = null
 	},
 	draw:function() {
 		if (!this.p0) { return this.p0 = this.nextPoint }
 		if (!this.f) { return this.f = this.nextPoint }
+		this.drew = true
 		
 		var c = this.ctx
 		var p0 = this.p0
@@ -100,23 +104,20 @@ pens.fill = proto(basePen, initPen, {
 		
 		var distance = Math.ceil(this.distance(f, f_delta) / 2)
 
-		var thickness0 = this.thickness
-		var thicknessTarget = distance // should be something else
-		var thicknessDelta = thicknessTarget - thickness0
-		var thicknessStep = thicknessDelta / distance
-
 		var tStep = distance ? (deltaT / distance) : 1
 		// var pixel = ctx.createImageData(onePixel)
 
 		// c.fillStyle(this.rgba())
 		for (var i=0; i<=distance; i++) {
 			var point = bez(p0, p1, p2, u + i*tStep)
-			c.beginPath().dot(point, (thickness0 + i*thicknessStep)).stroke().fill()
+			this.dot(point, this.thickness)
 		}
 		
 		this.p0 = p0_delta
 		this.f = f_delta
-		this.thickness = thicknessTarget
+	},
+	dot:function(p,t) {
+		this.ctx.beginPath().dot(p, t).fill()
 	}
 })
 
@@ -348,9 +349,7 @@ pens.silk = proto(basePen,
 				scope.painters[i].dx -= scope.painters[i].ax = (scope.painters[i].ax + (scope.painters[i].dx - scope.mouseX) * scope.painters[i].div) * scope.painters[i].ease;
 				scope.painters[i].dy -= scope.painters[i].ay = (scope.painters[i].ay + (scope.painters[i].dy - scope.mouseY) * scope.painters[i].div) * scope.painters[i].ease;
 				var to = [scope.painters[i].dx, scope.painters[i].dy]
-				ctx.line(from, to)
-				
-				ctx.stroke()
+				ctx.line(from, to).stroke()
 			}
 		},
 
