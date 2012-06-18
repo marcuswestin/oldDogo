@@ -25,15 +25,24 @@ def setup_dogo_web():
 
 def deploy_dogo_web(git_hash):
 	build_name = "dogo-web-%s-%s" % (int(time.time()), git_hash)
-	do('if [ ! -d %s ]; then git clone git@github.com:marcuswestin/dogo.git %s; fi' % (src_dir, src_dir))
-	with go(src_dir):
-		do('git pull origin master; git checkout %s; git submodule init; git submodule sync; git submodule update;' % git_hash)
-		do('make setup-server')
+	update_src_dir(git_hash)
 	do('mkdir -p %s' % builds_dir)
 	do('cp -RH %s %s/%s' % (src_dir, builds_dir, build_name))
 	with settings(warn_only=True):
 		sudo_do('killall -q node')
 	sudo_do('nohup node %s/%s/src/server/run.js --config=prod' % (builds_dir, build_name))
+
+def deploy_nginx_conf(git_hash):
+	update_src_dir(git_hash)
+	sudo("cp %s/src/server/config/nginx.conf /etc/nginx/nginx.conf" % src_dir)
+	sudo('/etc/init.d/nginx reload')
+
+def update_src_dir(git_hash):
+	do('if [ ! -d %s ]; then git clone git@github.com:marcuswestin/dogo.git %s; fi' % (src_dir, src_dir))
+	with go(src_dir):
+		do('git pull origin master; git checkout %s; git submodule init; git submodule sync; git submodule update;' % git_hash)
+		do('make setup-server')
+	
 
 # NEXT Use cluster to run app
 # One app per cpu
@@ -76,12 +85,6 @@ def deploy_dogo_web(git_hash):
 # 	    sudo('killall -q node')
 # 	sudo('nohup node %s/server/run.js --config=prod' % build_name)
 # 
-# def deploy_nginx_conf(git_hash):
-# 	def with_updated_build(src_dir):
-# 		put("%s/src/server/config/nginx.conf" % src_dir, '/tmp/nginx.conf')
-# 		sudo('cp /tmp/nginx.conf /etc/nginx/nginx.conf')
-# 		sudo('/etc/init.d/nginx reload')
-# 	update_build(git_hash, with_updated_build)
 # 
 # def update_build(git_hash, then):
 # 	src_dir = '/build/dogo'
