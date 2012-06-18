@@ -56,8 +56,12 @@
 		restore:ctxFunction(function(ctx) { ctx.restore() }),
 		drawImage:ctxFunction(function(ctx, img, p, d) {
 			var args = [is2dContext(img) ? img.canvas : img]
-			if (!p) { args = args.concat([0, 0]) } // default to origin
-			if (!checkNum(p)) { return }
+			if (p) { 
+				if (!checkNum(p)) { return }
+				args = args.concat(p)
+			} else {
+				args = args.concat([0, 0]) // default to origin
+			}
 			if (d) {
 				// drawImage doesn't like undefined width/height arguments
 				args = args.concat([d[0], d[1]])
@@ -68,10 +72,13 @@
 		
 		/* Drawing conveniences
 		 **********************/
-		line:ctxFunction(function(ctx, p1, p2) { return this.moveTo(ctx, p1).lineTo(ctx, p2) }),
-		dot:ctxFunction(function(ctx, p, r) { return this.arc(ctx, p, r, [0, Math.PI*2], true) }),
-		style:ctxFunction(function(ctx, style) { return this.strokeStyle(ctx, style).fillStyle(ctx, style) }),
-		fillAll:ctxFunction(function(ctx, color) { return this.fillStyle(ctx, color).fillRect(ctx, [0, 0], [this.dim[0], this.dim[1]]) }),
+		line:ctxFunction(function(ctx, p1, p2) {
+			if (p1[0] - p2[0] == 0 && p1[1] - p1[1] == 0) { return }
+			this.moveTo(ctx, p1).lineTo(ctx, p2)
+		}),
+		dot:ctxFunction(function(ctx, p, r) { this.arc(ctx, p, r, [0, Math.PI*2], true) }),
+		style:ctxFunction(function(ctx, style) { this.strokeStyle(ctx, style).fillStyle(ctx, style) }),
+		fillAll:ctxFunction(function(ctx, color) { this.fillStyle(ctx, color).fillRect(ctx, [0, 0], [this.dim[0], this.dim[1]]) }),
 		
 		/* Layer selections
 		 ******************/
