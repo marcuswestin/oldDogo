@@ -1,5 +1,6 @@
-var trim = require('std/trim'),
-	sql = require('./util/sql')
+var trim = require('std/trim')
+var sql = require('./util/sql')
+var uuid = require('uuid')
 
 module.exports = proto(null,
 	function(database, accountService, pushService, pictureService) {
@@ -152,9 +153,10 @@ module.exports = proto(null,
 				: { account1Id:id2, account2Id:id1 }
 		},
 		_insertConversation: function(conn, ids, callback) {
+			var secret = uuid.v4()
 			conn.insert(this,
-				'INSERT INTO conversation SET created_time=?, account_1_id=?, account_2_id=?',
-				[conn.time(), ids.account1Id, ids.account2Id], callback)
+				'INSERT INTO conversation SET created_time=?, account_1_id=?, account_2_id=?, secret=?',
+				[conn.time(), ids.account1Id, ids.account2Id, secret], callback)
 		},
 		_insertParticipation: function(conn, convoId, accountId, callback) {
 			conn.insert(this,

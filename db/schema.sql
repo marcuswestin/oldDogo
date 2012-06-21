@@ -56,6 +56,7 @@ CREATE TABLE conversation (
 	created_time INT UNSIGNED,
 	last_message_id BIGINT UNSIGNED DEFAULT NULL,
 	bucket_created_time INT UNSIGNED DEFAULT NULL,
+	secret CHAR(36) NOT NULL,
 	FOREIGN KEY (last_message_id) REFERENCES message(id),
 	FOREIGN KEY (account_1_id) REFERENCES account(id),
 	FOREIGN KEY (account_2_id) REFERENCES account(id),
