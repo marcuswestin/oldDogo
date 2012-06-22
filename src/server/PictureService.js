@@ -3,6 +3,7 @@ var secretAccessKey = 'GGmu7dUQBRjGEUdoglQ4GQCR/pET92lFgJjpJN8l'
 var region = 'us-west-1'
 var s3 = require('aws2js').load('s3', accessKeyId, secretAccessKey)
 var knox = require('knox')
+var uuid = require('uuid')
 
 function getSignedUrl(bucket, filename) {
 	var knoxClient = knox.createClient({
@@ -80,9 +81,10 @@ module.exports = proto(null,
 		},
 		
 		_insertPicture: function(conn, accountId, pictureWidth, pictureHeight, callback) {
+			var secret = uuid.v4()
 			conn.insert(this,
-				'INSERT INTO picture SET created_time=?, created_by_account_id=?, width=?, height=?',
-				[conn.time(), accountId, pictureWidth, pictureHeight], callback)
+				'INSERT INTO picture SET created_time=?, created_by_account_id=?, width=?, height=?, secret=?',
+				[conn.time(), accountId, pictureWidth, pictureHeight, secret], callback)
 		},
 		_updatePictureSent: function(conn, pictureId, callback) {
 			conn.updateOne(this,
