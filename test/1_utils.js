@@ -18,7 +18,7 @@ var u = module.exports = {
 	checkConnectionLeaks:checkConnectionLeaks
 }
 
-u.database = new Database('localhost', 'dogo_test', 'dogo_tester', 'test'),
+u.database = new Database({ host:'localhost', database:'dogo_test', user:'dogo_tester', password:'test' })
 u.accountService = new AccountService(u.database)
 u.pushService = new PushService(u.database, null, null)
 u.pictureService = new PictureService(u.database)
