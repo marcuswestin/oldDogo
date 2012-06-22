@@ -11,11 +11,11 @@ var state = {
 	pen: null
 }
 
-var width = 320
-var height = 460
-var ratio = window.devicePixelRatio || 1
-var canvasSize = { width:width * ratio, height:height * ratio }
-var background = '#F4F3EF' //'#424242'
+var width
+var height
+var ratio
+var canvasSize
+var background
 
 var $ui
 
@@ -27,6 +27,13 @@ var p
 var $paint
 
 function render(_opts) {
+	
+	width = viewport.width()
+	height = viewport.height()
+	ratio = window.devicePixelRatio || 1
+	canvasSize = { width:width * ratio, height:height * ratio }
+	background = '#F4F3EF' //'#424242'
+	
 	opts = options(_opts, { onHide:null, onSend:null, img:null, message:null })
 	
 	var controlsTrans = function(name) { return style({ '-webkit-transition':name+' '+controlsDuration/1000+'s' })}

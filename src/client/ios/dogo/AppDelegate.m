@@ -100,7 +100,7 @@
     
     textInput.text = @"";
     [self sizeTextInput];
-    [self.window addSubview:textInput];
+    [self.webView addSubview:textInput];
     [textInput becomeFirstResponder];
 }
 
@@ -176,15 +176,14 @@
 
 - (void)animateTextInput:(NSDictionary *)params {
     if (!textInput) { return; }
-    [UIView beginAnimations:nil context:NULL];
     NSNumber* duration = [params objectForKey:@"duration"];
-    [UIView setAnimationDuration:[duration doubleValue]];
-    textInput.frame = [self rectFromDict:[params objectForKey:@"to"]];
-    [self sizeTextInput];
-    [UIView commitAnimations];
-    if ([params objectForKey:@"blur"]) {
-        [textInput resignFirstResponder];
-    }
+    [UIView animateWithDuration:[duration doubleValue] animations:^{
+        textInput.frame = [self rectFromDict:[params objectForKey:@"to"]];
+        [self sizeTextInput];
+    }];
+     if ([params objectForKey:@"blur"]) {
+         [textInput resignFirstResponder];
+     }
 }
 
 // Facebook

@@ -24,6 +24,7 @@ paint = require('./ui/paint')
 button = tags.button
 list = tags.list
 style = tags.style
+transition = style.transition
 tags.expose()
 
 loading = function loading(isLoading) {

@@ -6,7 +6,7 @@ module.exports = {
 }
 
 var $input
-var topBarOffset = 20
+var topBarOffset = 0
 
 function setTextInput(data) {
 	$input.val(data.text)
