@@ -4,8 +4,12 @@ module.exports = {
 	log:true,
 	dev:false,
 	port:9000,
-	dbHost:"dogo-db1.cqka8vcdrksp.us-east-1.rds.amazonaws.com",
-	dbPassword:"dogopass9",
+	db: {
+		host:"dogo-db1.cqka8vcdrksp.us-east-1.rds.amazonaws.com",
+		password:"dogopass9",
+		database:"dogo",
+		user:"dogo_rw"
+	},
 	push: {
 		certData:fs.readFileSync(__dirname + '/prod/cert.pem'),
 		keyData:fs.readFileSync(__dirname + '/prod/key.pem'),

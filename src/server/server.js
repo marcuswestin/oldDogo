@@ -15,8 +15,8 @@ function run(config) {
 
 	var devConfig = require('./config/dev'),
 		prodConfig = require('./config/prod')
-
-	var database = new Database(config.dbHost, 'dogo', 'dogo_rw', config.dbPassword),
+	
+	var database = new Database(config.db),
 		accountService = new AccountService(database),
 		pushService = new PushService(database, devConfig.push, prodConfig.push),
 		sessionService = new SessionService(accountService),
@@ -24,7 +24,7 @@ function run(config) {
 		messageService = new MessageService(database, accountService, pushService, pictureService),
 		router = new Router(accountService, messageService, sessionService, pictureService, { log:config.log, dev:config.dev })
 
-	config.dbPassword = config.dbPassword.replace(/[^\*]/g, '*')
+	config.db.password = config.db.password.replace(/[^\*]/g, '*')
 	config.push.keyData = '******'
 	config.push.certData = '******'
 	console.log('starting server with config', config)
