@@ -105,6 +105,7 @@ events.on('push.message', function(message) {
 })
 
 events.on('message.sending', function(message) {
+	$ui.info.empty()
 	addMessage(message)
 })
 
@@ -132,15 +133,14 @@ events.on('app.willEnterForeground', function() {
 })
 
 function promptInvite(message, accountId, facebookId) {
-	return
 	composer.hide()
 	loadAccountId(accountId, function(account) {
 		
-		var $infoBar = $(div('dogo-info blue',
+		var $infoBar = $(div(transition('height', 500), div('dogo-info blue',
 			div('invite',
 				div('encouragement', 'Nice ', message.pictureId ? 'Picture' : 'Message', '!'),
-				div('personal', account.name, " doesn't have Dogo yet ..."),
-				div('button', 'Send via Facebook', button(function() {
+				div('personal', account.name.split(' ')[0], " doesn't have Dogo yet."),
+				div('button', 'Send on Facebook', button(function() {
 					// TODO events.on('facebook.dialogDidComplete', function() { ... })
 					// https://developers.facebook.com/docs/reference/dialogs/requests/
 					// https://developers.facebook.com/docs/mobile/ios/build/
@@ -168,7 +168,10 @@ function promptInvite(message, accountId, facebookId) {
 					})
 				}))
 			)
-		))
-		$infoBar.insertAfter($ui.messages.find('.messageBubble')[0])
+		)))
+		$infoBar.css({ height:0, overflowY:'hidden' }).insertBefore($ui.messages.find('.messageBubble')[0])
+		setTimeout(function() {
+			$infoBar.css({ height:$infoBar.find('.dogo-info').height() + 30 })
+		}, 500)
 	})
 }
