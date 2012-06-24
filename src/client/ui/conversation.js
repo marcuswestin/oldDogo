@@ -88,8 +88,9 @@ function renderContent(message) {
 			backgroundImage:'url('+message.base64Picture+')'
 		}))
 	} else if (message.pictureId) {
+		var url = '/api/image?conversationId='+message.conversationId+'&pictureId='+message.pictureId+'&pictureSecret='+message.pictureSecret+'&authorization='+encodeURIComponent(api.getAuth())
 		return div('picture', picSize(message), style({
-			backgroundImage:'url(/api/image?conversationId='+message.conversationId+'&pictureId='+message.pictureId+'&authorization='+encodeURIComponent(api.getAuth())+')'
+			backgroundImage:'url('+url+')'
 		}))
 	}
 }

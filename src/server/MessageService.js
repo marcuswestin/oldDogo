@@ -225,6 +225,7 @@ module.exports = proto(null,
 				sentTime:'message.sent_time',
 				body:'message.body',
 				pictureId:'picture.id',
+				pictureSecret:'picture.secret',
 				pictureWidth:'picture.width',
 				pictureHeight:'picture.height'
 			}) + 'LEFT OUTER JOIN picture ON message.picture_id=picture.id',
@@ -235,6 +236,7 @@ module.exports = proto(null,
 				account2Id:'account_2_id',
 				createdTime: 'created_time',
 				lastMessageId: 'last_message_id',
+				secret: 'secret',
 				hasBucket: 'bucket_created_time IS NOT NULL' 
 			}),
 			

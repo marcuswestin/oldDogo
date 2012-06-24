@@ -146,8 +146,8 @@ module.exports = proto(null,
 				this.accountService.getAccount(params.accountId, params.facebookId, this.wrapRespond(req, res, 'account'))
 			},
 			getPicture: function(req, res) {
-				var params = this._getParams(req, 'conversationId', 'pictureId')
-				var url = this.pictureService.getImageUrl(req.session.accountId, params.conversationId, params.pictureId)
+				var params = this._getParams(req, 'conversationId', 'pictureId', 'pictureSecret')
+				var url = this.pictureService.getPictureUrl(req.session.accountId, params.conversationId, params.pictureId, params.pictureSecret)
 				res.redirect(url)
 			}
 		},

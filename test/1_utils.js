@@ -21,7 +21,7 @@ var u = module.exports = {
 u.database = new Database({ host:'localhost', database:'dogo_test', user:'dogo_tester', password:'test' })
 u.accountService = new AccountService(u.database)
 u.pushService = new PushService(u.database, null, null)
-u.pictureService = new PictureService(u.database)
+u.pictureService = new PictureService(u.database, { bucket:'test' })
 u.messageService = new MessageService(u.database, u.accountService, u.pushService)
 u.sessionService = new SessionService(u.accountService)
 u.fbAppId = '219049001532833'

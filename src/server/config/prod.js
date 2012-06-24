@@ -10,6 +10,9 @@ module.exports = {
 		database:"dogo",
 		user:"dogo_rw"
 	},
+	s3: {
+		bucket:'dogo-prod-conv'
+	},
 	push: {
 		certData:fs.readFileSync(__dirname + '/prod/cert.pem'),
 		keyData:fs.readFileSync(__dirname + '/prod/key.pem'),
