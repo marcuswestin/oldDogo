@@ -236,8 +236,7 @@ module.exports = proto(null,
 				account2Id:'account_2_id',
 				createdTime: 'created_time',
 				lastMessageId: 'last_message_id',
-				secret: 'secret',
-				hasBucket: 'bucket_created_time IS NOT NULL' 
+				secret: 'secret'
 			}),
 			
 			selectParticipation:sql.selectFrom('conversation_participation partic', {
