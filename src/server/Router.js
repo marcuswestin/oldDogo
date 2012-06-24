@@ -331,7 +331,6 @@ module.exports = proto(null,
 						if (watchedFiles[file]) { return }
 						var ext = file.split('.').pop()
 						if (ext == 'js' || ext == 'styl' || ext == 'html') {
-							console.log('Watching', file)
 							watchedFiles[file] = true
 							fs.watch(file, onChange)
 						}
