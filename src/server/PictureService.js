@@ -22,8 +22,8 @@ function getSignedUrl(bucket, filename) {
 module.exports = proto(null,
 	function(database, s3conf) {
 		this.db = database
-		this.bucket = s3conf.bucket
-		s3.setBucket(this.bucket)
+		this.urlBase = 'http://'+s3conf.bucket+'.s3.amazonaws.com/'
+		s3.setBucket(s3conf.bucket)
 	}, {
 		upload: function(accountId, conversation, base64PictureData, pictureWidth, pictureHeight, callback) {
 				this._insertPicture(this.db, accountId, pictureWidth, pictureHeight, function(err, pictureId, pictureSecret) {
@@ -42,8 +42,15 @@ module.exports = proto(null,
 				})
 		},
 		
-		getPictureUrl: function(accountId, conversationId, pictureId, pictureSecret) {
-			return 'http://'+this.bucket+'.s3.amazonaws.com/'+this.getPicturePath(conversationId, pictureSecret)
+		getPictureUrl: function(accountId, conversationId, pictureId, pictureSecret, callback) {
+			if (pictureSecret) {
+				callback(null, this.urlBase+this.getPicturePath(conversationId, pictureSecret))
+			} else {
+				this._selectSecret(this.db, accountId, conversationId, pictureId, function(err, res) {
+					if (err) { return callback(err) }
+					callback(null, this.urlBase+this.getPicturePath(conversationId, res && res.pictureSecret))
+				})
+			}
 		},
 		
 		getPicturePath: function(conversationId, pictureSecret) {
@@ -62,6 +69,11 @@ module.exports = proto(null,
 			conn.updateOne(this,
 				'UPDATE picture SET uploaded_time=? WHERE id=?',
 				[conn.time(), pictureId], callback)
+		},
+		_selectSecret: function(conn, accountId, conversationId, pictureId, callback) {
+			conn.selectOne(this,
+				'SELECT pic.secret as pictureSecret FROM picture pic INNER JOIN message msg on msg.picture_id=pic.id INNER JOIN conversation conv ON msg.conversation_id=conv.id INNER JOIN conversation_participation cp ON cp.conversation_id=conv.id WHERE cp.account_id=? AND conv.id=? AND pic.id=?',
+				[accountId, conversationId, pictureId], callback)
 		}
 	}
 )

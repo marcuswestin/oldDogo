@@ -147,8 +147,10 @@ module.exports = proto(null,
 			},
 			getPicture: function(req, res) {
 				var params = this._getParams(req, 'conversationId', 'pictureId', 'pictureSecret')
-				var url = this.pictureService.getPictureUrl(req.session.accountId, params.conversationId, params.pictureId, params.pictureSecret)
-				res.redirect(url)
+				this.pictureService.getPictureUrl(req.session.accountId, params.conversationId, params.pictureId, params.pictureSecret, bind(this, function(err, url) {
+					if (err) { return this.respond(req, res, err) }
+					res.redirect(url)
+				}))
 			}
 		},
 		misc: {
