@@ -22,9 +22,10 @@ function scrollerRenderHeadContent($head, view, viewBelow, fromView) {
 	var showBackButton = viewBelow && stackIsAboveHome
 	var showSearch = stackIsAtHome
 	$head.append(div('head',
-		(appInfo.config.mode == "dev") && div('devBar',
+		(appInfo.config.mode == 'dev') && div('devBar',
 			div('button', 'R', button(function() { bridge.command('app.restart') })),
-			div('button', 'X', button(function() { gState.clear(); bridge.command('app.restart') }))
+			div('button', 'X', button(function() { gState.clear(); bridge.command('app.restart') })),
+			div('button', 'U', button(function() { gState.checkNewVersion() }))
 		),
 		showBackButton && renderBackButton(viewBelow.title || 'Home'),
 		div('title', view.title || 'Dogo'),

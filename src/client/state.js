@@ -26,5 +26,14 @@ gState = {
 		var sessionInfo = gState.cache['sessionInfo']
 		return sessionInfo && sessionInfo['facebookSession']
 	},
-	cache: {}
+	cache: {},
+	checkNewVersion:function() {
+		api.get('version/info', function(err, res) {
+			if (err || !res.url) { return }
+			bridge.command('version.download', { url:res.url, headers:api.getHeaders() }, function(err) {
+				if (err) { alert('upgrade failed ' + err) }
+				else { alert("upgrade done") }
+			})
+		})
+	}
 }

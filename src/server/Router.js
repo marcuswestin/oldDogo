@@ -58,6 +58,8 @@ module.exports = proto(null,
 			router.post('/api/push_auth', filter.session.bind(this), rest.postPushAuth.bind(this))
 			router.get('/api/account_info', filter.session.bind(this), rest.getAccountInfo.bind(this))
 			router.get('/api/image', filter.session.bind(this), rest.getPicture.bind(this))
+			router.get('/api/version/info', filter.session.bind(this), rest.getVersionInfo.bind(this))
+			router.get('/api/version/download/*', filter.session.bind(this), rest.downloadVersion.bind(this))
 			// router.get('/web/*', bind(this, function(req, res) {
 			// 	var file = path.join(__dirname, '..', req.url.replace(/\.\./g, '').replace(/\^\/web\//, ''))
 			// 	fs.readFile(file, bind(this, this.respondHtml, req, res))
@@ -151,6 +153,13 @@ module.exports = proto(null,
 					if (err) { return this.respond(req, res, err) }
 					res.redirect(url)
 				}))
+			},
+			getVersionInfo: function(req, res) {
+				this.respond(req, res, null, { url:null })
+			},
+			downloadVersion: function(req, res) {
+				
+				this.respond(req, res, null, null)
 			}
 		},
 		misc: {

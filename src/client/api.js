@@ -7,7 +7,8 @@ var base64 = require('std/base64')
 module.exports = {
 	post:post,
 	get:get,
-	getAuth:getAuth
+	getAuth:getAuth,
+	getHeaders:getHeaders
 }
 
 function post(path, params, callback) {
@@ -29,7 +30,7 @@ function send(method, path, params, callback) {
 		delete params
 	}
 	var url = '/api/'+path
-	var headers = { 'Authorization':getAuth(), 'X-Dogo-Mode':appInfo.config.mode, 'X-Dogo-BundleVersion':appInfo.bundleVersion }
+	var headers = getHeaders()
 	if (method == 'post' && params) {
 		params = JSON.stringify(params)
 		headers['Content-Type'] = 'application/json'
@@ -42,6 +43,10 @@ function send(method, path, params, callback) {
 		success:function(res, textStatus, xhr) { handleResponse(callback, null, res, xhr) },
 		error:function(xhr, textStatus, err) { handleResponse(callback, textStatus || err, null, xhr) }
 	})
+}
+
+function getHeaders() {
+	return { 'Authorization':getAuth(), 'X-Dogo-Mode':appInfo.config.mode, 'X-Dogo-BundleVersion':appInfo.bundleVersion }
 }
 
 function handleResponse(callback, err, res, xhr) {
