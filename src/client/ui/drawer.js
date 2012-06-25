@@ -1,6 +1,7 @@
 var pickers = require('./pickers')
 var pens = require('./pens')
 var paint = require('./paint')
+var parseUrl = require('std/url')
 
 module.exports = {
 	render:render
@@ -84,7 +85,7 @@ function render(_opts) {
 	
 	function loadBackgroundImage(img) {
 		if (img.mediaId) {
-			var mediaUrl = '/blowtorch/mediapng/'+img.mediaId
+			var mediaUrl = '/blowtorch/media/'+img.mediaId+'.jpg'
 			doDraw(mediaUrl, true)
 		} else if (img.style) {
 			// TODO Show loading indicator
@@ -92,7 +93,8 @@ function render(_opts) {
 			if (underlyingUrl.match(/^data/) || !tags.isTouch) {
 				doDraw(underlyingUrl)
 			} else {
-				var asUrl = location.protocol+'//'+location.host+'/url='+encodeURIComponent(underlyingUrl)
+				var url = parseUrl(underlyingUrl)
+				var asUrl = location.protocol+'//'+location.host+'/local_cache?pictureId='+url.getSearchParam('pictureId')
 				bridge.command('net.cache', { url:underlyingUrl, asUrl:asUrl, override:false }, function(err, res) {
 					if (err) { return }
 					doDraw(asUrl)
@@ -122,7 +124,6 @@ function render(_opts) {
 				var outputWidth = Math.min(message.pictureWidth, width)
 				var outputHeight = Math.min(message.pictureHeight, height)
 				p.withBackground(function(bg) {
-					console.log("HERE")
 					bg
 						.drawImage(drawImg, [0, 0], [outputWidth, outputHeight])
 				})
@@ -183,11 +184,11 @@ function sendImage() {
 			.drawImage(p.snapshot(), [0, 0], [canvasSize.width, canvasSize.height])
 			.restore()
 		
-		var data = rotated.snapshot().toDataURL('image/png')
+		var data = rotated.snapshot().toDataURL('image/jpg')
 		var picWidth = canvasSize.height
 		var picHeight = canvasSize.width
 	} else {
-		var data = p.snapshot().toDataURL('image/png')
+		var data = p.snapshot().toDataURL('image/jpg')
 		var picWidth = canvasSize.width
 		var picHeight = canvasSize.height
 	}

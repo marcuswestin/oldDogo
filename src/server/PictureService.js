@@ -31,7 +31,7 @@ module.exports = proto(null,
 					var buf = new Buffer(base64PictureData.replace(/^data:image\/\w+;base64,/, ""), 'base64')
 					var path = this.getPicturePath(conversation.id, pictureSecret)
 					console.log('Uploading picture:', path)
-					s3.putBuffer(path, buf, 'public-read', { 'content-type':'image/png' }, bind(this, function(err, resHeaders) {
+					s3.putBuffer(path, buf, 'public-read', { 'content-type':'image/jpg' }, bind(this, function(err, resHeaders) {
 						console.log('Upload picture DONE:', pictureId, err, resHeaders)
 						if (err) { return callback(err) }
 						this._updatePictureSent(this.db, pictureId, function(err) {
@@ -54,7 +54,7 @@ module.exports = proto(null,
 		},
 		
 		getPicturePath: function(conversationId, pictureSecret) {
-			return 'conversation/'+conversationId+'/picture/'+pictureSecret+'.png'
+			return 'conversation/'+conversationId+'/picture/'+pictureSecret+'.jpg'
 		},
 		
 		_insertPicture: function(conn, accountId, pictureWidth, pictureHeight, callback) {
