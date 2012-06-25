@@ -29,7 +29,6 @@
         self.webView.dataDetectorTypes = UIDataDetectorTypeNone;
         
         [self startApp:devMode];
-//        [self requestUpgrade];
         
         return YES;
     } else {
@@ -47,7 +46,6 @@
 
 
 // Commands
-
 - (void)handleCommand:(NSString *)command data:(id)data responseCallback:(ResponseCallback)responseCallback {
     if ([command isEqualToString:@"facebook.connect"]) {
         self.facebookCallback = responseCallback;
