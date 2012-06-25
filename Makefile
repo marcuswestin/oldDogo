@@ -52,4 +52,7 @@ deploy-latest-dogo-web:
 	# echo "BUILDING AND DEPLOYING ${GIT_REV}"
 	fab deploy_dogo_web:${GIT_REV} -H dogo-web1
 
+deploy-latest-nginx-conf:
+	fab deploy_nginx_conf:${GIT_REV} -H dogo-web1
+
 .PHONY: test
