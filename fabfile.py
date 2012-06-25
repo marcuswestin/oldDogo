@@ -28,6 +28,7 @@ def deploy_dogo_web(git_hash):
 	update_src_dir(git_hash)
 	do('mkdir -p %s' % builds_dir)
 	do('cp -RH %s %s/%s' % (src_dir, builds_dir, build_name))
+	do('ln -snf %s/%s %s/current' % (src_dir, builds_dir, build_name, builds_dir))
 	with settings(warn_only=True):
 		sudo_do('killall -q node')
 	sudo_do('nohup node %s/%s/src/server/run.js --config=prod' % (builds_dir, build_name))
