@@ -155,11 +155,19 @@ module.exports = proto(null,
 				}))
 			},
 			getVersionInfo: function(req, res) {
-				this.respond(req, res, null, { url:null })
+				var url = null // 'http://marcus.local:9000/api/version/download/latest.tar'
+				this.respond(req, res, null, { url:url })
 			},
 			downloadVersion: function(req, res) {
-				
-				this.respond(req, res, null, null)
+				res.writeHead(204)
+				res.end()
+				return
+				console.log('download version', req.url)
+				fs.readFile('/build/dogo-ios-build.tar', bind(this, function(err, tar) {
+					if (err) { return this.respond(req, res, err) }
+					console.log("send download response", tar.length)
+					this.respond(req, res, null, tar, 'application/x-tar')
+				}))
 			}
 		},
 		misc: {

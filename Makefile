@@ -28,7 +28,6 @@ run-prod:
 	node src/server/run.js --config=prod
 
 client:
-	mkdir -p ~/dogo-builds
 	node scripts/build-client.js
 
 fly-build: client

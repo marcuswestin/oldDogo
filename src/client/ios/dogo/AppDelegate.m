@@ -17,6 +17,7 @@
 #endif
         
         [self.config setValue:mode forKey:@"mode"];
+        [self.config setValue:[self getCurrentVersion] forKey:@"currentVersion"];
         
         BOOL devMode = [mode isEqualToString:@"dev"];
         
