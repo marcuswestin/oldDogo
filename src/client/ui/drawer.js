@@ -63,6 +63,13 @@ function render(_opts) {
 		loadBackgroundImage(opts.img)
 	}
 	
+	var $touchDetect = $ui
+	if (tags.isTouch) {
+		$touchDetect.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
+	} else {
+		$touchDetect.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
+	}
+	
 	return $ui
 	
 	function createP() {
@@ -76,17 +83,13 @@ function render(_opts) {
 			bg.fillAll(background)
 		})
 		
-		$paint = $(p.el)
-		$paint.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
-		$paint.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
-		
-		$ui.append($paint)
+		$ui.append($paint = $(p.el))
 	}
 	
 	function loadBackgroundImage(img) {
 		if (img.mediaId) {
 			var mediaUrl = '/blowtorch/media/'+img.mediaId+'.jpg'
-			doDraw(mediaUrl, true)
+			doDraw(mediaUrl)
 		} else if (img.style) {
 			// TODO Show loading indicator
 			var underlyingUrl = img.style.background.match(/url\((.*)\)/)[1]
@@ -103,31 +106,48 @@ function render(_opts) {
 		}
 	}
 	
-	function doDraw(url, supressRotate) {
+	function doDraw(url) {
 		var drawImg = new Image()
 		drawImg.onload = function() {
-			// Show spinner
 			var message = opts.message
+			var picWidth = message.pictureWidth
+			var picHeight = message.pictureHeight
+			var rotate = 0
+			var translate = [0, 0]
+			var size
 			
-			if (message.pictureWidth > message.pictureHeight && !supressRotate) {
-				var outputWidth = Math.min(message.pictureWidth, height) // rotate, then max canvas height
-				var outputHeight = Math.min(message.pictureHeight, width)
-				p.withBackground(function(bg) {
-					bg
-						.save()
-						.rotate(-Math.PI / 2)
-						.translate([-canvasSize.height / ratio, 0])
-						.drawImage(drawImg, [0, 0], [outputWidth, outputHeight])
-						.restore()
-				})
-			} else {
-				var outputWidth = Math.min(message.pictureWidth, width)
-				var outputHeight = Math.min(message.pictureHeight, height)
-				p.withBackground(function(bg) {
-					bg
-						.drawImage(drawImg, [0, 0], [outputWidth, outputHeight])
-				})
+			var target = [width, height]
+			if (picWidth > picHeight) {
+				target = [height, width] // rotate
 			}
+			
+			var dWidth = picWidth - target[0]
+			var dHeight = picHeight - target[1]
+			if (dWidth > 0 && dHeight > 0) {
+				var resizeRatio = Math.max(target[1] / picHeight, target[0] / picWidth) // scale by as little as possible to fit the image precicesly into the viewport
+				size = [picWidth * resizeRatio, picHeight * resizeRatio]
+			} else {
+				size = [picWidth, picHeight]
+			}
+			
+			if (size[0] > size[1]) {
+				rotate = -Math.PI / 2
+				translate = [-canvasSize.height / ratio, 0]
+			} else {
+				rotate = 0
+				translate = [0, 0]
+			}
+			
+			p.withBackground(function(bg) {
+				var center = [(target[0] - size[0]) / 2, (target[1] - size[1]) / 2]
+				bg.save()
+					.rotate(rotate)
+					.translate(translate)
+					.translate(center)
+					.drawImage(drawImg, [0, 0], size)
+					.restore()
+			})
+			
 		}
 		drawImg.src = url
 	}
@@ -219,8 +239,8 @@ events.on('device.rotated', function(info) {
 			var closeOffset = deg < 0 ? [0, height - 35] : [width - 35, 0]
 			$close.css({ '-webkit-transform':'translate('+closeOffset[0]+'px, '+closeOffset[1]+'px)' })
 
-			var offset = deg < 0 ? [72, 211] : [-212, 211]
-			$pos.css({ '-webkit-transform':'translate('+offset[0]+'px, '+-offset[1]+'px)' })
+			var offset = deg < 0 ? [62, -221] : [-222, -221]
+			$pos.css({ '-webkit-transform':'translate('+offset[0]+'px, '+offset[1]+'px)' })
 			$rot.css({ '-webkit-transform':'rotate('+deg+'deg)' })
 		})
 	}
