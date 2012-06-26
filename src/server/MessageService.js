@@ -179,7 +179,7 @@ module.exports = proto(null,
 			})
 		},
 		_selectMessages: function(conn, convoId, callback) {
-			conn.select(this, this.sql.selectMessage+' WHERE conversation_id=? ORDER BY id DESC', [convoId], function(err, messages) {
+			conn.select(this, this.sql.selectMessage+' WHERE conversation_id=? ORDER BY id DESC LIMIT 50', [convoId], function(err, messages) {
 				// BACKCOMPAT, REMOVE
 				if (!err) {
 					each(messages, function(message) {
