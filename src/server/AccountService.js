@@ -82,15 +82,19 @@ module.exports = proto(null,
 				next()
 			})
 		},
-		_insertClaimedAccount: function(conn, fbAccount, callback) {
+		_insertClaimedAccount: function(conn, fbAcc, callback) {
+			var timestamp = conn.time()
+			var emailVerifiedTime = fbAcc.email ? timestamp : null
 			conn.insert(this,
-				'INSERT INTO account SET created_time=?, claimed_time=?, facebook_id=?, full_name=?, first_name=?, last_name=?, gender=?, locale=?',
-				[conn.time(), conn.time(), fbAccount.id, fbAccount.name, fbAccount.first_name, fbAccount.last_name, fbAccount.gender, fbAccount.locale], callback)
+				'INSERT INTO account SET created_time=?, claimed_time=?, facebook_id=?, full_name=?, first_name=?, last_name=?, gender=?, locale=?, timezone=?, email=?, email_verified_time=?',
+				[timestamp, timestamp, fbAcc.id, fbAcc.name, fbAcc.first_name, fbAcc.last_name, fbAcc.gender, fbAcc.locale, fbAcc.timezone, fbAcc.email, emailVerifiedTime], callback)
 		},
-		_updateAccountClaimed: function(conn, fbAccount, callback) {
+		_updateAccountClaimed: function(conn, fbAcc, callback) {
+			var timestamp = conn.time()
+			var emailVerifiedTime = fbAcc.email ? timestamp : null
 			conn.updateOne(this,
-				'UPDATE account SET claimed_time=?, full_name=?, first_name=?, last_name=?, gender=?, locale=? WHERE facebook_id=?',
-				[conn.time(), fbAccount.name, fbAccount.first_name, fbAccount.last_name, fbAccount.gender, fbAccount.locale, fbAccount.id], callback)
+				'UPDATE account SET claimed_time=?, full_name=?, first_name=?, last_name=?, gender=?, locale=?, timezone=?, email=?, email_verified_time=? WHERE facebook_id=?',
+				[timestamp, fbAcc.name, fbAcc.first_name, fbAcc.last_name, fbAcc.gender, fbAcc.locale, fbAcc.timezone, fbAcc.email, emailVerifiedTime, fbAcc.id], callback)
 		},
 		_updateAccountPushAuth: function(conn, accountId, pushToken, pushSystem, callback) {
 			conn.updateOne(this,
