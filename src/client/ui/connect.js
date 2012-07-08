@@ -3,7 +3,7 @@ module.exports = {
 		$(body).append(div('connect',
 			div('button', 'Connect', button(function() {
 				var $el = $(this).text('Loading...').addClass('disabled')
-				bridge.command('facebook.connect', { permissions:[] }, function(err, data) {
+				bridge.command('facebook.connect', { permissions:['email'] }, function(err, data) {
 					if (err) {
 						$el.text('Try again').removeClass('disabled')
 						return error(err)

@@ -17,7 +17,7 @@ function setupBrowserDebugMode() {
 			case 'facebook.connect':
 				FB.login(function(response) {
 					callback(null, response.authResponse)
-				}, data && data.opts)
+				}, { scope:data.permissions.join(',') })
 				break
 			case 'app.restart':
 				location.reload()
