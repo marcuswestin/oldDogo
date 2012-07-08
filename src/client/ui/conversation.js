@@ -15,7 +15,7 @@ module.exports = {
 		$body.append(
 			div('conversation',
 				$ui.info = $(div('info')),
-				$ui.wrapper=$(div('messagesWrapper', style({ height:viewport.height() - 45, overflow:'scroll' }),
+				$ui.wrapper=$(div('messagesWrapper', style({ height:viewport.height() - 45, overflowY:'scroll', overflowX:'hidden' }),
 					$ui.invite=$(div('invite')),
 					div('messages', $ui.messages = list([], selectMessage, renderMessage))
 				)),
@@ -66,8 +66,8 @@ function renderMessage(message) {
 }
 
 function picSize(message) {
-	var maxWidth = 306
-	var maxHeight = 306
+	var maxWidth = 275
+	var maxHeight = 275
 	var width = message.pictureWidth
 	var height = message.pictureHeight
 	var ratio = 1

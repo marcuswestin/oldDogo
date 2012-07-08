@@ -44,7 +44,7 @@ loading = function loading(isLoading) {
 		loading.hideTimer = setTimeout(curry(loading.pos, 0), 100)
 	}
 }
-loading.pos = function(y) { loading.$ui.css({ '-webkit-transform':'translateY('+y+'px)' })}
+loading.pos = function(y) { loading.$ui.css({ '-webkit-transform':'translateY('+(y-5)+'px)' })}
 
 getId = function getId(d) { return d.id }
 

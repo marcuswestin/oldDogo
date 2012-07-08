@@ -3,16 +3,9 @@ var face = module.exports = {
 	facebook: function(account, showRibbon, lazyLoad) {
 		return div('face', showRibbon && account.memberSince && div('member-ribbon'),
 			lazyLoad
-				? [{ facebookId:account.facebookId }, style({ backgroundColor:'rgba(255, 255, 255, .4)' })]
+				? [{ facebookId:account.facebookId }, style({ backgroundColor:'#fff' })]
 				: style({ background:face.background(account.facebookId) })
 		)
-		// return div('face', showRibbon && account.memberSince && div('member-ribbon'), function($tag) {
-		// 	var url = 'https://graph.facebook.com/'+account.facebookId+'/picture'
-		// 	bridge.command('net.cache', { url:url, override:false }, function(err, res) {
-		// 		if (err) { return }
-		// 		$tag.css('background', 'url("'+url+'")')
-		// 	})
-		// })
 	},
 	
 	background:function(facebookId) {

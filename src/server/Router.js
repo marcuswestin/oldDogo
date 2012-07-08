@@ -273,6 +273,15 @@ module.exports = proto(null,
 					res.end(content)
 				})
 			})
+
+			app.get('/blowtorch/fonts/*', function(req, res) {
+				var path = req.path.replace('/blowtorch/fonts/', '')
+				fs.readFile('src/client/fonts/'+path, function(err, content) {
+					if (err) { return self.respond(req, res, err) }
+					res.writeHead(200, { 'Content-Type':'font/woff' })
+					res.end(content)
+				})
+			})
 			
 			app.get('/stylus/*', function(req, res) {
 				var filename = req.path.replace('/stylus/', '')

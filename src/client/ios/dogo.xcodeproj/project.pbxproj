@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2C09E4A11550D10B0089ECD5 /* BTState.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C09E4A01550D10B0089ECD5 /* BTState.m */; };
 		2C4EF9EF1573196800EE57C8 /* BTViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C4EF9EE1573196800EE57C8 /* BTViewController.m */; };
+		2C5AEAEB15A5F49E00E8BF14 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 2C5AEAEA15A5F49E00E8BF14 /* fonts */; };
 		2C5C1C651566200800035E03 /* app.html in Resources */ = {isa = PBXBuildFile; fileRef = 2C5C1C621566200800035E03 /* app.html */; };
 		2C5C1C661566200800035E03 /* appCss.css in Resources */ = {isa = PBXBuildFile; fileRef = 2C5C1C631566200800035E03 /* appCss.css */; };
 		2C5C1C671566200800035E03 /* appJs.html in Resources */ = {isa = PBXBuildFile; fileRef = 2C5C1C641566200800035E03 /* appJs.html */; };
@@ -52,6 +53,7 @@
 		2C09E4A01550D10B0089ECD5 /* BTState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTState.m; sourceTree = "<group>"; };
 		2C4EF9ED1573196800EE57C8 /* BTViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTViewController.h; sourceTree = "<group>"; };
 		2C4EF9EE1573196800EE57C8 /* BTViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTViewController.m; sourceTree = "<group>"; };
+		2C5AEAEA15A5F49E00E8BF14 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../fonts; sourceTree = "<group>"; };
 		2C5C1C621566200800035E03 /* app.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = app.html; sourceTree = "<group>"; };
 		2C5C1C631566200800035E03 /* appCss.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = appCss.css; sourceTree = "<group>"; };
 		2C5C1C641566200800035E03 /* appJs.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = appJs.html; sourceTree = "<group>"; };
@@ -202,6 +204,7 @@
 				2CA9924D154FCAA900CF92FC /* Default@2x.png */,
 				2CA9924E154FCAA900CF92FC /* logo.png */,
 				2CA9924F154FCAA900CF92FC /* logo@2x.png */,
+				2C5AEAEA15A5F49E00E8BF14 /* fonts */,
 				2CA150C51587E387001A073B /* img */,
 			);
 			name = images;
@@ -411,6 +414,7 @@
 				2C5C1C671566200800035E03 /* appJs.html in Resources */,
 				2CCAFE691569EC1C002766A1 /* vibrate.wav in Resources */,
 				2CA150C61587E387001A073B /* img in Resources */,
+				2C5AEAEB15A5F49E00E8BF14 /* fonts in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

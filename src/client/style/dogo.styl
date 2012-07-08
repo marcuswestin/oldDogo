@@ -21,8 +21,6 @@ yellowDark = #9F6000
 redLight = #FFBABA
 redDark = #D8000C
 
-headGr1 = color4
-headGr2 = color5
 textShadow = 0 1px 0 #888;
 buttonShadow = 0 1px 2px #444;
 
@@ -54,36 +52,50 @@ icon(width, height, name, xOffset=0, yOffset=0)
 .red
 	background redLight; color redDark; border-color redDark;
 
+body
+	background #000;
 
 .app
-	background linear-gradient(top, color2, #fff); height 100%; overflow hidden;
+	font-family "Open Sans";
+	color #333;
+	font-weight 300;
+	border-radius 12px 12px 0 0;
+	// background linear-gradient(top, color2, #fff);
+	// background url('/blowtorch/img/background/planks-vertical.jpg');
+	// background url('/blowtorch/img/background/grass-vertical.jpg');
+	background url('/blowtorch/img/background/bark-vertical.png');
+	// background url('/blowtorch/img/background/orange-linen.png');
+	background-size 100% 100%;
+	height 100%; overflow hidden;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none; /* Disable selection/Copy of UIWebView */
 	position relative;
 
 .scroller-head
-	z-index 1; box-shadow 0 1px 4px #333;
+	z-index 1; box-shadow 0 2px 3px #222;
 .scroller-head.flat
 	box-shadow none;
 
 	
 .head
 	height 100%; width 100%; overflow hidden;
-	background linear-gradient(top, headGr1, headGr2); borderTop 1px solid #E3E9ED;
+	border-radius 5px 5px 0 0;
+	background url('/blowtorch/img/background/orange-linen.png'); background-size 654px 654px;
+	borderTop 1px solid #E3E9ED;
 	.title
-		text-shadow textShadow; color:#fff; font-size 16px; padding 0 4px;
-		font-size 20px; text-align center; padding 8px 0 0 0; font-weight 600;
+		text-shadow 0 1px 2px #999; color:#fff; padding 0 4px;
+		font-size 22px; text-align center; padding 4px 0 0 0; font-weight 300;
 	.back
-		absolute top 4px left 4px; border-width 2px;
+		absolute top 6px left 4px; border-width 1px;
 	.search-control
 		.search, .search.active
-			absolute top 4px right 4px; width 11px; height 19px;
+			absolute top 4px right 4px; width 15px; height 22px;
 			background #fff; border-color color3; //overflow hidden;
 			.icon
 				icon(32px, 21px, 'gray/112-group.png', 0, 5px); absolute top left;
 		.input
 			inputWidth = 300px;
-			background red; width inputWidth; height 30px;
+			width inputWidth; height 30px;
 			absolute top 4px right; background #fff;
 			box-shadow buttonShadow;
 			border 2px solid color3; border-radius 3px;
@@ -126,15 +138,17 @@ icon(width, height, name, xOffset=0, yOffset=0)
 	.conversations
 		min-height 254px;
 		.messageBubble
-			.name, .body
-				padding 3px 5px 0 5px;
+			.name
+				padding 3px 5px 0 5px; font-weight 400;
+			.body
+				padding 0px 5px 0 5px;
 			.unreadDot
 				width 20px; height 20px; background color1; border-radius 10px;
 				float right; margin 15px 8px 0 0; display none;
 		.messageBubble.hasUnread .unreadDot
 				display block;
 		.youStarted
-			color #666; font-style italic;
+			font-style italic;
 	.friends
 		padding 1px 0 0 2px;
 		.face
@@ -143,16 +157,16 @@ icon(width, height, name, xOffset=0, yOffset=0)
 
 buttonRadius = 4px;
 .button
-	padding 5px 10px 7px; border-radius buttonRadius; background linear-gradient(top, color4, color5); border 2px solid #fff;
+	padding 3px 8px 5px; border-radius buttonRadius; background linear-gradient(top, color5, #E44212); border 2px solid #fff;
 	color #fff; text-align center; display inline-block; cursor pointer; box-shadow buttonShadow;
 .button.active
 	background linear-gradient(bottom, darken(color4, 10%), color5); border-color #eee; color #eee;
 	box-shadow none;
 
 
-faceDim = 50px
+faceDim = 25px
 .face
-	width faceDim; height faceDim;
+	width faceDim; height faceDim; background-size faceDim faceDim;
 	.member-ribbon
 		width 16px; height 16px; background url("/blowtorch/img/badge.png"); float right; margin 32px 0 0;
 
@@ -166,20 +180,24 @@ faceDim = 50px
 	color #666; text-align center; margin 10px auto; font-style italic;
 
 .messageBubble
-	margin 4px 4px 0; min-height 50px; border-radius 5px; background #fff; border 3px solid color4; word-wrap break-word;
+	margin 8px 8px 0 36px; min-height 50px; border-radius 3px; word-wrap break-word;
+	// background url('/blowtorch/img/paper/paper-trans.png')
+	// background url('/blowtorch/img/paper/vintage_speckles-trans.png')
+	// background url('/blowtorch/img/paper/exclusive_paper.png')
+	background url('/blowtorch/img/paper/exclusive_paper-trans.png')
 	.face
-		float left; border-radius 2px 1px 2px 1px; margin 0 6px 0 0;
+		float left; border-radius 18px; margin 1px 0 0 -31px; width 25px; height 25px; border 1px solid #fff;
 .messageBubble.fromMe
-	text-align right;
+	margin 8px 36px 0 8px;
 	.face
-		float right; border-radius 1px 2px 1px 2px; margin 0 0 0 6px;
+		float right; margin 1px -31px 0 0;
 
 .conversation
 	.messages
 		padding 0 0 44px 0;
 	.messageBubble
 		.body
-			padding 4px 1px;
+			padding 4px 6px;
 		.picture
 			border-radius 2px;
 			
@@ -206,7 +224,7 @@ faceDim = 50px
 			.right
 				float right;
 			.tool
-				display inline-block; border 2px solid #fff; margin 2px 0 1px 4px; border-radius 4px; height 18px; width 24px;
+				display inline-block; margin 2px 0 1px 4px; border-radius 4px; height 18px; width 24px; padding 4px 8px 6px;
 				.icon.draw
 					icon(24px, 20px, 'white/98-palette.png')
 				.icon.write
@@ -222,7 +240,8 @@ faceDim = 50px
 	.controls-pos
 		position absolute; bottom 0; z-index 1;
 	.controls
-		line-height 20px; background linear-gradient(top, blueLight, blueDark); padding 2px 0; box-shadow -1px 0 3px #000; width 100%; height 33px;
+		line-height 20px; padding 2px 0; box-shadow 0 -2px 3px #222; width 100%; height 33px;
+		background url('/blowtorch/img/background/orange-linen.png'); background-size 654px 654px;
 		.picker
 			position absolute;
 		.colorPicker
@@ -251,8 +270,8 @@ faceDim = 50px
 		.person
 			padding 4px 4px 2px; clear both; background linear-gradient(top, #fff, #ececec); cursor pointer;
 			.face
-				float left;
+				float left; width faceDim*2; height faceDim*2; background-size faceDim*2 faceDim*2;
 			.name
-				float left; margin 0 0 0 4px;
+				float left; margin 0 0 0 4px; font-weight 400;
 		.person:last-child
 			padding-bottom 4px;
