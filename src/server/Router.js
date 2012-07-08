@@ -343,7 +343,6 @@ module.exports = proto(null,
 			var onChange = function(event, changedFilename) {
 				if (time.now() - lastChange < 1000) { return } // Node bug calls twice per change, see https://github.com/joyent/node/issues/2126
 				lastChange = time.now()
-				console.log("detected change.", "Compiling and sending.")
 				fs.readFile('src/client/playground/playground.html', function(err, html) {
 					serverIo.sockets.emit('change', { error:err, html:html.toString() })
 				})
