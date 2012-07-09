@@ -68,8 +68,8 @@ function renderMessage(message) {
 }
 
 function picSize(message) {
-	var maxWidth = 275
-	var maxHeight = 275
+	var maxWidth = 276
+	var maxHeight = 276
 	var width = message.pictureWidth
 	var height = message.pictureHeight
 	var ratio = 1
