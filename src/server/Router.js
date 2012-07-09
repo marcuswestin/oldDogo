@@ -97,7 +97,9 @@ module.exports = proto(null,
 			if (logParams.length > 250) { logParams = logParams.substr(0, 250) + ' (......)' }
 			
 			var bundleVersion = req.headers['X-Dogo-BundleVersion']
-			console.log(req.method, req.url, req.session && req.session.accountId, bundleVersion, logParams)
+			var d = new Date()
+			var time = d.getMonth+'/'+d.getDate()+'-'+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()
+			console.log(time, req.method, req.url, req.session && req.session.accountId, bundleVersion, logParams)
 			return params
 		},
 		rest: {
