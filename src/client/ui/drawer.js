@@ -60,7 +60,9 @@ function render(_opts) {
 	createP()
 	
 	if (opts.img) {
-		loadBackgroundImage(opts.img)
+		loadBackgroundImage({ mediaId:opts.img.mediaId, style:opts.img.style, width:opts.message.pictureWidth, height:opts.message.pictureHeight })
+	} else {
+		loadBackgroundImage({ backgroundPath:'background/exclusive_paper.jpg', width:640, height:960 })
 	}
 	
 	var $touchDetect = $ui
@@ -88,30 +90,29 @@ function render(_opts) {
 	
 	function loadBackgroundImage(img) {
 		if (img.mediaId) {
-			var mediaUrl = '/blowtorch/media/'+img.mediaId+'.jpg'
-			doDraw(mediaUrl)
+			doDraw('/blowtorch/media/'+img.mediaId+'.jpg', img.width, img.height)
+		} else if (img.backgroundPath) {
+			doDraw('/blowtorch/img/'+img.backgroundPath, img.width, img.height)
 		} else if (img.style) {
 			// TODO Show loading indicator
 			var underlyingUrl = img.style.background.match(/url\((.*)\)/)[1]
 			if (underlyingUrl.match(/^data/) || !tags.isTouch) {
-				doDraw(underlyingUrl)
+				doDraw(underlyingUrl, img.width, img.height)
 			} else {
 				var url = parseUrl(underlyingUrl)
 				var asUrl = location.protocol+'//'+location.host+'/local_cache?pictureId='+url.getSearchParam('pictureId')
 				bridge.command('net.cache', { url:underlyingUrl, asUrl:asUrl, override:false }, function(err, res) {
 					if (err) { return }
-					doDraw(asUrl)
+					doDraw(asUrl, img.width, img.height)
 				})
 			}
 		}
 	}
 	
-	function doDraw(url) {
+	function doDraw(url, picWidth, picHeight) {
 		var drawImg = new Image()
 		drawImg.onload = function() {
 			var message = opts.message
-			var picWidth = message.pictureWidth
-			var picHeight = message.pictureHeight
 			var rotate = 0
 			var translate = [0, 0]
 			var size
