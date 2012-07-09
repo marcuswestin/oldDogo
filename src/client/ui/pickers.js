@@ -17,17 +17,14 @@ var picker = {
 		}
 		currentPicker = this
 		var self = this
-		// if (!this.isOpen) {
-		// 	this.renderLists() // for re-rendering icons with new styles. Performance issue
-		// }
 		this.$ui.css({ 'z-index':zIndex++ }).find('.list').each(function(i) {
 			$(this).find('.item').each(function(j) {
 				var $el = $(this)
 				var pos = wasOpen ? [0,0] : self.getPos(i, j, self.items[i].length - 1)
 				
-				setTimeout(function() {
+				// setTimeout(function() {
 					$el.css('-webkit-transform', 'translate('+Math.round(pos[0])+'px, '+Math.round(pos[1])+'px)')
-				}, self.delay(i,j))
+				// }, self.delay(i,j))
 			})
 		})
 		this.isOpen = !this.isOpen
@@ -37,13 +34,13 @@ var picker = {
 			div('lists'),
 			div('current', this._renderItem(this.current, true, bind(this, this.toggle)))
 		))
-		setTimeout(bind(this, function() {
+		// setTimeout(bind(this, function() {
 			this.renderLists()
-		}), 10)
+		// }), 10)
 		return this.$ui
 	},
 	_renderItem:function(index, isCurrent, onSelect) {
-		return div('item', this.renderItem(this.getItem(index), isCurrent), button(onSelect), style({
+		return div('item', this.renderItem(this.getItem(index), isCurrent, index), button(onSelect), style({
 			'-webkit-transition':'-webkit-transform 0.20s',
 			position:'absolute'
 		}))
@@ -85,7 +82,7 @@ var colorPicker = proto(picker,
 			'random':[[255, 0, 0], [255, 125, 0], [125, 255, 125], [0, 125, 255], [0, 0, 255]]
 		},
 		
-		renderItem: function(color, isCurrent) {
+		renderItem: function(color, isCurrent, index) {
 			var alpha = isCurrent ? 1 : .95
 			var diameter = 40
 			var styles = {
@@ -161,50 +158,14 @@ var penPicker = proto(picker,
 		className:'penPicker',
 		width:40, height:40,
 		items:[map(pens, function(pen, i) { return pen })],
-		renderItem:function(pen, isCurrent) {
+		renderItem:function(pen, isCurrent, index) {
 			var width = this.width
 			var height = this.height
 			var styles = {
 				width:width, height:height, overflow:'hidden', display:'inline-block', margin:'0 4px 0 0',
 				border:'2px solid #333', borderRadius:4
 			}
-			return div('pen', style(styles), bind(this, function($tag) {
-				var c = paint([width, height])
-				var background = this.opts.background
-				c.withBackground(function(bg) { bg.fillAll(background) })
-				$tag.append(c.el)
-				var p = pen({ colorPicker:this.opts.colorPicker, paint:c, width:width, height:height })
-				var points = [
-					[156,627],[165,627],[170,627],[177,626],[184,622],[192,618],[198,613],[204,607],
-					[209,601],[212,596],[214,590],[215,584],[215,578],[215,573],[215,568],[211,566],
-					[207,564],[203,563],[199,563],[195,563],[192,563],[189,563],[187,565],[186,570],
-					[186,575],[186,583],[186,592],[189,598],[192,605],[197,610],[203,615],[209,619],
-					[216,623],[222,626],[227,627],[230,628],[233,628],[235,628],[235,628]]
-				var max = [0,0]
-				var min = [9999999,999999]
-				each(points, function(p) {
-					if (p[0] > max[0]) { max[0] = p[0] }
-					if (p[1] > max[1]) { max[1] = p[1] }
-					if (p[0] < min[0]) { min[0] = p[0] }
-					if (p[1] < min[1]) { min[1] = p[1] }
-				})
-				min[0] -= 5
-				min[1] -= 10
-				// max[0] += 5
-				// max[1] += 5
-				var delta = [max[0] - min[0], max[1] - min[1]]
-				c.scale([.425, .425])
-				points = map(points, function(p) {
-					return [p[0] - min[0], p[1] - min[1]]
-				})
-				p.handleDown([points[0][0], points[0][1]])
-				for (var i=1; i<points.length - 2; i++) {
-					if (i % 2 == 0) { continue }
-					p.handleMove([points[i][0], points[i][1]])
-					if (p.draw) { p.draw() }
-				}
-				p.handleUp([points[i][0], points[i][1]])
-			}))
+			return img('pen', style(styles), { src:'/blowtorch/img/pens/'+(index[1]+1)+'.png' })
 		},
 		getPos:function(i, j, num) {
 			var w = this.width + 10
