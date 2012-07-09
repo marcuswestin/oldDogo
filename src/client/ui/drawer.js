@@ -77,8 +77,6 @@ function render(_opts) {
 	function createP() {
 		if (p) { $(p.el).remove() }
 
-		imageTouched = false
-		
 		p = paint([width, height])
 
 		p.withBackground(function withPaintBackground(bg) {
@@ -178,7 +176,6 @@ function render(_opts) {
 	function pencilMove(e) {
 		e.preventDefault()
 		if (!state.pen) { return }
-		imageTouched = true
 		state.pen.handleMove(getPoint(e))
 	}
 
@@ -190,10 +187,7 @@ function render(_opts) {
 	}
 }
 
-var imageTouched
 function sendImage() {
-	if (!imageTouched) { return }
-	
 	if (rotationDeg) {
 		var rotated = paint([canvasSize.height, canvasSize.width])
 		var direction = rotationDeg < 0 ? 1 : -1
