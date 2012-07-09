@@ -17,7 +17,7 @@ module.exports = {
 				$ui.info = $(div('info')),
 				$ui.wrapper=$(div('messagesWrapper', style({ height:viewport.height() - 45, overflowY:'scroll', overflowX:'hidden' }),
 					$ui.invite=$(div('invite')),
-					div('messages', $ui.messages = list([], selectMessage, renderMessage))
+					div('messages', $ui.messages = list({ items:[], onSelect:selectMessage, renderItem:renderMessage }))
 				)),
 				composer.render($ui, currentAccountId, currentFacebookId)
 			)
@@ -49,8 +49,10 @@ function refreshMessages() {
 	api.get('messages', params, function(err, res) {
 		loading(false)
 		if (err) { return error(err) }
-		$ui.messages.empty().append(res.messages)
-		if (!res.messages.length) {
+		$ui.messages.empty().prepend(res.messages)
+		if (res.messages.length) {
+			$ui.wrapper.scrollTop($ui.messages.height())
+		} else {
 			$ui.info.empty().append(div('ghostTown', 'Start the conversation - draw something!'))
 		}
 	})
@@ -96,8 +98,11 @@ function renderContent(message) {
 }
 
 function addMessage(message) {
-	$ui.messages.prepend(message)
 	$ui.wrapper.find('.ghostTown').remove()
+	$ui.messages.append(message)
+	if ($ui.wrapper.scrollTop() + $ui.wrapper.height() + gScroller.$head.height() > $ui.messages.height()) {
+		$ui.wrapper.scrollTop($ui.messages.height())
+	}
 }
 
 events.on('push.message', function(message) {
@@ -134,6 +139,7 @@ events.on('app.willEnterForeground', function() {
 })
 
 function promptInvite(message, accountId, facebookId) {
+	return
 	composer.hide()
 	loadAccountId(accountId, function(account) {
 		

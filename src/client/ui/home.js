@@ -36,7 +36,7 @@ module.exports = {
 		$body.append(div('home',
 			$ui.info = $(div('info')),
 			div('conversations',
-				$ui.conversations = list([], selectMessage, function(conv) { return conv.conversationId }, renderBubble)
+				$ui.conversations = list({ items:[], onSelect:selectMessage, getItemId:function(conv) { return conv.conversationId }, renderItem:renderBubble })
 			)
 		))
 		
@@ -69,9 +69,9 @@ module.exports = {
 // 	return [
 // 		div(style({ height:4 }))
 // 		section('friends', 'Some of Your Friends',
-// 			list(someFriends, selectContact, function(contact) {
+// 			list({ items:someFriends, onSelect:selectContact, renderItem:function(contact) {
 // 				return div('contact', face.facebook(contact, true, hackI++ > showingFaces))
-// 			})
+// 			}})
 // 		)
 // 	]
 // }

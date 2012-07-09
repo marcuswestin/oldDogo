@@ -34,7 +34,7 @@ function renderSearchButton() {
 				bridge.command('index.lookup', params, function renderSearchMatches(err, res) {
 					if (err) { return error(err) }
 					if (hidden) { return }
-					$searchResults.empty().append(div('people', list(res.matches, onSelect, function renderFbMatch(facebookId) {
+					$searchResults.empty().append(div('people', list({ items:res.matches, onSelect:onSelect, renderItem:function renderFbMatch(facebookId) {
 						return div('person loading', 'Loading...', function($match) {
 							loadFacebookId(facebookId, function(account) {
 								$match.removeClass('loading').empty().append(div(
@@ -43,7 +43,7 @@ function renderSearchButton() {
 								))
 							})
 						}, div('clear'))
-					})))
+					}})))
 					
 					if (res.matches.length == 0) {
 						$searchResults.append(div('ghostTown dark', searchString ? 'No matches' : "Type a friend's name"))
