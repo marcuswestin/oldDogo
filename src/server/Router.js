@@ -98,7 +98,7 @@ module.exports = proto(null,
 			
 			var bundleVersion = req.headers['X-Dogo-BundleVersion']
 			var d = new Date()
-			var time = d.getMonth+'/'+d.getDate()+'-'+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()
+			var time = d.getFullYear()+'/'+d.getMonth()+'/'+d.getDate()+'-'+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()
 			console.log(time, req.method, req.url, req.session && req.session.accountId, bundleVersion, logParams)
 			return params
 		},
