@@ -32,7 +32,7 @@ module.exports = proto(null,
 					var size = buf.length
 					var path = this.getPicturePath(conversation.id, pictureSecret)
 					console.log('Uploading picture size', size, 'path', path)
-					s3.putBuffer(path, buf, 'public-read', { 'content-type':'image/jpg', 'content-length':buf.length }, bind(this, function(err, resHeaders) {
+					s3.putBuffer(path, buf, 'public-read', { 'content-type':'image/jpg', 'content-length':size }, bind(this, function(err, resHeaders) {
 						console.log('Upload picture DONE:', pictureId, err, resHeaders)
 						if (err) { return callback(err) }
 						this._updatePictureSent(this.db, pictureId, function(err) {
