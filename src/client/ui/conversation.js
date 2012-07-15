@@ -1,4 +1,5 @@
 var composer = require('./composer')
+var once = require('std/once')
 
 var currentView
 var $ui
@@ -7,7 +8,7 @@ module.exports = {
 	render:function($body, view) {
 		currentView = view
 		$ui = {}
-		
+
 		$body.append(
 			div('conversation',
 				$ui.info = $(div('info')),
@@ -18,6 +19,8 @@ module.exports = {
 				composer.render($ui, currentView.accountId, currentView.facebookId)
 			)
 		)
+
+		$ui.wrapper.on('scroll', checkScrollBounds)
 		
 		refreshMessages()
 	}
@@ -54,9 +57,25 @@ function refreshMessages() {
 	})
 }
 
+var checkScrollBounds = once(function checkScrollBounds() {
+	var pictures = $ui.wrapper.find('.messageBubble .pictureContent')
+	var viewTop = $ui.wrapper.scrollTop()
+	var viewBottom = viewTop + $ui.wrapper.height()
+	for (var i=pictures.length - 1; i >= 0; i--) { // loop in reverse order since you're likelier to be viewing the bottom of the conversation
+		var pic = pictures[i]
+		var picTop = pic.offsetTop
+		var picBottom = picTop + pic.offsetHeight
+		if (picBottom > viewTop && picTop < viewBottom && pic.getAttribute('pictureUrl')) {
+			pic.style.backgroundImage = 'url('+pic.getAttribute('pictureUrl')+')'
+			pic.removeAttribute('pictureUrl')
+		}
+	}
+})
+
 function renderMessage(message) {
 	var fromMe = (message.senderAccountId == gState.myAccount().accountId)
 	var typeClass = message.body ? 'text' : 'picture'
+	checkScrollBounds()
 	return div(div('clear messageBubble ' + typeClass + (fromMe ? ' fromMe' : ''),
 		face.loadAccount(message.senderAccountId),
 		renderContent(message)
@@ -80,14 +99,12 @@ function picSize(message) {
 
 function renderContent(message) {
 	if (message.body) {
-		return div('body', message.body)
+		return div('textContent', message.body)
 	} else if (message.base64Picture || message.pictureId) {
 		var url = message.base64Picture
 			? message.base64Picture
 			: '/api/image?conversationId='+message.conversationId+'&pictureId='+message.pictureId+'&pictureSecret='+message.pictureSecret+'&authorization='+encodeURIComponent(api.getAuth())
-		return div('picture', picSize(message), style({
-			backgroundImage:'url('+url+')'
-		}))
+		return div('pictureContent', picSize(message), { pictureUrl:url })
 	}
 }
 
