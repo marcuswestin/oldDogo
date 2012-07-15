@@ -18,7 +18,7 @@ def cp(cpFrom, to):
 
 def setup_dogo_web():
 	# Intentionally remote-only
-	sudo('apt-get install build-essential make nginx redis-server libssl-dev curl git-core libxml2-dev nodejs npm') # ? mysql-client-core-5.5
+	sudo('apt-get install build-essential make nginx redis-server libssl-dev curl git-core libxml2-dev nodejs npm imagemagick') # ? mysql-client-core-5.5
 	put('~/flutterby-keys/dogo/secure/aws_dogo_github_id_rsa', '~/.ssh/id_rsa')
 	run('mkdir -p %s' % builds_dir)
 	run('chmod 600 ~/.ssh/id_rsa')

@@ -58,3 +58,6 @@
 [submodule "node_modules/stylus"]
 	path = node_modules/stylus
 	url = https://github.com/LearnBoost/stylus.git
+[submodule "node_modules/imagemagick"]
+	path = node_modules/imagemagick
+	url = git://github.com/rsms/node-imagemagick.git
