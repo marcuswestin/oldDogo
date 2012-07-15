@@ -85,12 +85,10 @@ function picSize(message) {
 function renderContent(message) {
 	if (message.body) {
 		return div('body', message.body)
-	} else if (message.base64Picture) {
-		return div('picture', picSize(message), style({
-			backgroundImage:'url('+message.base64Picture+')'
-		}))
-	} else if (message.pictureId) {
-		var url = '/api/image?conversationId='+message.conversationId+'&pictureId='+message.pictureId+'&pictureSecret='+message.pictureSecret+'&authorization='+encodeURIComponent(api.getAuth())
+	} else if (message.base64Picture || message.pictureId) {
+		var url = message.base64Picture
+			? message.base64Picture
+			: '/api/image?conversationId='+message.conversationId+'&pictureId='+message.pictureId+'&pictureSecret='+message.pictureSecret+'&authorization='+encodeURIComponent(api.getAuth())
 		return div('picture', picSize(message), style({
 			backgroundImage:'url('+url+')'
 		}))
