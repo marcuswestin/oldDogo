@@ -71,7 +71,7 @@ pens.fill = proto(basePen, initPen, {
 		this.thickness = 3
 		// ctx.style(this.rgba(.05)) // - watercolor
 		ctx.style(this.rgba(1)).lineWidth(this.thickness).globalCompositeOperation('source-over')
-		this.interval = setInterval(bind(this, this.draw), this.rate)
+		this.interval = setInterval(bind(this, this.onInterval), this.rate)
 	},
 	move:function(ctx, point) {
 		if (!this.interval) { return }
@@ -81,40 +81,55 @@ pens.fill = proto(basePen, initPen, {
 		clearInterval(this.interval)
 		this.interval = null
 		this.drawing = false
-		if (!this.drew) {
+		if (this.drew) {
+			this.completeLine()
+		} else {
 			this.dot(this.nextPoint, this.thickness)
 		}
 		this.p0 = this.f = this.nextPoint = this.drew = null
 	},
-	draw:function() {
+	onInterval:function() {
 		if (!this.p0) { return this.p0 = this.nextPoint }
 		if (!this.f) { return this.f = this.nextPoint }
 		this.drew = true
-		
-		var c = this.ctx
-		var p0 = this.p0
-		var f = this.f
-		var p2 = this.nextPoint
-		var u = this.u
-		var deltaT = this.dt
-		var p1 = bezControlPt(p0, f, p2, u)
-		
-		var p0_delta = bez(p0, p1, p2, 0 + deltaT)
-		var f_delta = bez(p0, p1, p2, u + deltaT)
-		
+		var res = this.draw(this.p0, this.f, this.nextPoint)
+		this.p0 = res.p0_delta
+		this.f = res.f_delta
+	},
+	draw:function(p0, f, p2) {
+		// p1 is the bezier control point which gives us a 2nd degree bezier curve through point f
+		var p1 = bezControlPt(p0, f, p2, this.u)
+		// f_delta is the point at "time" (u + dt) along the bezier curve (i.e. right after f)
+		var f_delta = bez(p0, p1, p2, this.u + this.dt)
+		var p0_delta = bez(p0, p1, p2, 0 + this.dt)
+		// distance is the number of pixels to draw this iteration
 		var distance = Math.ceil(this.distance(f, f_delta) / 2)
-
-		var tStep = distance ? (deltaT / distance) : 1
+		// tStep is the amount of "time" to travel per draw-loop in this iteration
+		var tStep = distance ? (this.dt / distance) : 1
+		
 		// var pixel = ctx.createImageData(onePixel)
-
-		// c.fillStyle(this.rgba())
+		
 		for (var i=0; i<=distance; i++) {
-			var point = bez(p0, p1, p2, u + i*tStep)
+			var point = bez(p0, p1, p2, this.u + i*tStep)
 			this.dot(point, this.thickness)
 		}
 		
-		this.p0 = p0_delta
-		this.f = f_delta
+		return {
+			// move p0 up by dt along the bezier curve
+			p0_delta: bez(p0, p1, p2, 0 + this.dt),
+			// and f as well
+			f_delta: f_delta
+		}
+	},
+	completeLine:function() {
+		var p0 = this.p0
+		var f = this.f
+		var p2 = this.nextPoint
+		while (p0 && p2 && this.distance(p0, p2) > .5) {
+			var res = this.draw(p0, f, p2)
+			p0 = res.p0_delta
+			f = res.f_delta
+		}
 	},
 	dot:function(p,t) {
 		this.ctx.beginPath().dot(p, t).fill()
