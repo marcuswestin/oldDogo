@@ -1,15 +1,11 @@
 var composer = require('./composer')
 
-var currentAccountId
-var currentFacebookId
-var currentLastReadMessageId
+var currentView
 var $ui
 
 module.exports = {
 	render:function($body, view) {
-		currentAccountId = view.accountId
-		currentFacebookId = view.facebookId
-		currentLastReadMessageId = view.lastReadMessageId
+		currentView = view
 		$ui = {}
 		
 		$body.append(
@@ -19,7 +15,7 @@ module.exports = {
 					$ui.invite=$(div('invite')),
 					div('messages', $ui.messages = list({ items:[], onSelect:selectMessage, renderItem:renderMessage }))
 				)),
-				composer.render($ui, currentAccountId, currentFacebookId)
+				composer.render($ui, currentView.accountId, currentView.facebookId)
 			)
 		)
 		
@@ -42,9 +38,9 @@ function selectMessage(message, _, $el) {
 function refreshMessages() {
 	loading(true)
 	var params = {
-		withAccountId:currentAccountId,
-		withFacebookId:currentFacebookId,
-		lastReadMessageId:currentLastReadMessageId
+		withAccountId:currentView.accountId,
+		withFacebookId:currentView.facebookId,
+		lastReadMessageId:currentView.lastReadMessageId
 	}
 	api.get('messages', params, function(err, res) {
 		loading(false)
@@ -104,7 +100,7 @@ function addMessage(message) {
 }
 
 events.on('push.message', function(message) {
-	if (!currentAccountId || currentAccountId != message.senderAccountId) { return }
+	if (!currentView.accountId || currentView.accountId != message.senderAccountId) { return }
 	addMessage(message)
 })
 
@@ -114,11 +110,11 @@ events.on('message.sending', function(message) {
 })
 
 events.on('message.sent', function(message, toAccountId, toFacebookId) {
-	if (!currentAccountId && toFacebookId && toFacebookId == currentFacebookId) {
+	if (!currentView.accountId && toFacebookId && toFacebookId == currentView.facebookId) {
 		// A first message was sent to this facebook id, and the server responds with the newly created account id as well as the facebook id
-		currentAccountId = toAccountId
+		currentView.accountId = toAccountId
 	}
-	if (currentAccountId != toAccountId) { return }
+	if (currentView.accountId != toAccountId) { return }
 	loadAccountId(toAccountId, function(account) {
 		if (account.memberSince) { return }
 		promptInvite(message, account.accountId, account.facebookId)
@@ -126,14 +122,13 @@ events.on('message.sent', function(message, toAccountId, toFacebookId) {
 })
 
 events.on('view.change', function() {
-	currentAccountId = null
-	currentFacebookId = null
-	currentLastMessageId = null
+	currentView = null
 	$ui = null
 })
 
 events.on('app.willEnterForeground', function() {
-	if ($ui) { refreshMessages() }
+	currentView
+	refreshMessages()
 })
 
 function promptInvite(message, accountId, facebookId) {
