@@ -26,21 +26,21 @@ module.exports = proto(null,
 		s3.setBucket(s3conf.bucket)
 	}, {
 		upload: function(accountId, conversation, base64PictureData, pictureWidth, pictureHeight, callback) {
-				this._insertPicture(this.db, accountId, pictureWidth, pictureHeight, function(err, pictureId, pictureSecret) {
+			this._insertPicture(this.db, accountId, pictureWidth, pictureHeight, function(err, pictureId, pictureSecret) {
+				if (err) { return callback(err) }
+				var buf = new Buffer(base64PictureData.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+				var size = buf.length
+				var path = this.getPicturePath(conversation.id, pictureSecret)
+				console.log('Uploading picture size', size, 'path', path)
+				s3.putBuffer(path, buf, 'public-read', { 'content-type':'image/jpg', 'content-length':size }, bind(this, function(err, resHeaders) {
+					console.log('Upload picture DONE:', pictureId, err, resHeaders)
 					if (err) { return callback(err) }
-					var buf = new Buffer(base64PictureData.replace(/^data:image\/\w+;base64,/, ""), 'base64')
-					var size = buf.length
-					var path = this.getPicturePath(conversation.id, pictureSecret)
-					console.log('Uploading picture size', size, 'path', path)
-					s3.putBuffer(path, buf, 'public-read', { 'content-type':'image/jpg', 'content-length':size }, bind(this, function(err, resHeaders) {
-						console.log('Upload picture DONE:', pictureId, err, resHeaders)
+					this._updatePictureSent(this.db, pictureId, function(err) {
 						if (err) { return callback(err) }
-						this._updatePictureSent(this.db, pictureId, function(err) {
-							if (err) { return callback(err) }
-							callback(null, pictureId)
-						})
-					}))
-				})
+						callback(null, pictureId)
+					})
+				}))
+			})
 		},
 		
 		getPictureUrl: function(accountId, conversationId, pictureId, pictureSecret, callback) {
