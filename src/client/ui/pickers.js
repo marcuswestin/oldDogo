@@ -65,7 +65,7 @@ var picker = {
 
 var colorLists = [
 	//['multi1', 'multi2', 'random'],
-	['multi2'],
+	[[0,0,0]],
 	[[0,0,0], [180,180,180], [255,255,255]],
 	[[255,255,0],[255,165,0],[255,0,255],[255,192,203],[0,255,255]],
 	[[212,69,3],[236,169,31], [79,124,128], [145,161,112], [184,143,170], [171,128,88], [70,130,180]]
@@ -91,29 +91,7 @@ var colorPicker = proto(picker,
 			}
 			var content
 			if (typeof color == 'string') {
-				var c = paint([diameter, diameter])
-				var r = diameter/2
-				var colors = this.multiColors[color]
-				var rotation = Math.PI*2/(colors.length)
-				var origin = [0,0]
-				c.translate([r, r]) // center
-				for (var i=0; i<colors.length; i++) {
-					var color = this.getRgba(colors[i], alpha)
-					var lineColor = '#333'
-					c.beginPath()
-						.fillStyle(color).strokeStyle(lineColor)
-						.lineWidth(1)
-						.lineTo([0, r])
-						.moveTo(origin)
-						.strokeStyle(color)
-						.arc(origin, r, [0, rotation], false)
-						.strokeStyle(lineColor)
-						.lineTo([0, Math.sin(r)])
-						.moveTo(origin)
-						.rotate(rotation)
-						.closePath().stroke().fill()
-				}
-				content = c.canvas
+				// TODO Render mutli-select pen
 			} else {
 				styles.background = this.getRgba(color, alpha)
 			}
@@ -149,7 +127,6 @@ var colorPicker = proto(picker,
 
 
 var pens = require('./pens')
-var paint = require('./paint')
 var penPicker = proto(picker,
 	function(opts) {
 		this.opts = opts
