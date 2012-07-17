@@ -67,7 +67,7 @@ var checkScrollBounds = once(function checkScrollBounds() {
 		var pic = pics[i]
 		var picTop = pic.offsetTop
 		var picBottom = picTop + pic.offsetHeight
-		if (picBottom > viewTop && picTop < viewBottom && pic.getAttribute('pictureUrl')) {
+		if (picTop > viewTop && picBottom < viewBottom && pic.getAttribute('pictureUrl')) {
 			pic.style.backgroundImage = 'url('+pic.getAttribute('pictureUrl')+')'
 			pic.removeAttribute('pictureUrl')
 		}
