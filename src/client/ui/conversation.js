@@ -135,6 +135,7 @@ events.on('message.sending', function(message) {
 })
 
 events.on('message.sent', function(message, toAccountId, toFacebookId) {
+	if (!currentView) { return }
 	if (!currentView.accountId && toFacebookId && toFacebookId == currentView.facebookId) {
 		// A first message was sent to this facebook id, and the server responds with the newly created account id as well as the facebook id
 		currentView.accountId = toAccountId
