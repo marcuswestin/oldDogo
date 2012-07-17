@@ -21,7 +21,6 @@ database.select(this, "select COALESCE(p.meta_json, '{}') as metaJson, p.id as p
 		console.log("NEXT")
 		if (!res.length) {
 			console.log("ALL DONE WOOT")
-			process.exit(0)
 			return
 		}
 		var r = res.pop()
