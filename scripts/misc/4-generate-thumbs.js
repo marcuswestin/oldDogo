@@ -7,7 +7,6 @@ var accessKeyId = 'AKIAJDUJ4DPW4DE7552Q'
 var secretAccessKey = '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'
 var s3 = require('aws2js').load('s3', accessKeyId, secretAccessKey)
 var region = 'us-west-1'
-var Image = require('canvas').Image
 var fs = require('fs')
 var pictures = require('../../src/data/pictures')
 
