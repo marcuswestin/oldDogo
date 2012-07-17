@@ -103,6 +103,7 @@ function render(_opts) {
 	function doDraw(url, picWidth, picHeight) {
 		var drawImg = new Image()
 		drawImg.onload = function() {
+			console.log('doDraw: drawImg.onload')
 			var message = opts.message
 			var rotate = 0
 			var translate = [0, 0]
@@ -115,6 +116,7 @@ function render(_opts) {
 			
 			var dWidth = picWidth - target[0]
 			var dHeight = picHeight - target[1]
+			console.log('doDraw: calculate size')
 			if (dWidth > 0 && dHeight > 0) {
 				var resizeRatio = Math.max(target[1] / picHeight, target[0] / picWidth) // scale by as little as possible to fit the image precicesly into the viewport
 				size = [picWidth * resizeRatio, picHeight * resizeRatio]
@@ -122,6 +124,7 @@ function render(_opts) {
 				size = [picWidth, picHeight]
 			}
 			
+			console.log('doDraw: resize + rotate')
 			if (size[0] > size[1]) {
 				rotate = -Math.PI / 2
 				translate = [-canvasSize.height / ratio, 0]
@@ -130,6 +133,7 @@ function render(_opts) {
 				translate = [0, 0]
 			}
 			
+			console.log('doDraw: draw background', !!p)
 			p.withBackground(function(bg) {
 				var center = [(target[0] - size[0]) / 2, (target[1] - size[1]) / 2]
 				bg.save()
@@ -139,7 +143,7 @@ function render(_opts) {
 					.drawImage(drawImg, [0, 0], size)
 					.restore()
 			})
-			
+			console.log('doDraw: draw done')
 		}
 		drawImg.src = url
 	}
