@@ -2,6 +2,7 @@ var pickers = require('./pickers')
 var pens = require('./pens')
 var paint = require('./paint')
 var parseUrl = require('std/url')
+var pictures = require('../../data/pictures')
 
 module.exports = {
 	render:render
@@ -33,7 +34,6 @@ function render(_opts) {
 	height = viewport.height()
 	ratio = window.devicePixelRatio || 1
 	canvasSize = { width:width * ratio, height:height * ratio }
-	background = '#F4F3EF' //'#424242'
 	
 	opts = options(_opts, { onHide:null, onSend:null, img:null, message:null })
 	
@@ -48,7 +48,7 @@ function render(_opts) {
 						state.colorPicker = pickers.color(),
 						state.penPicker = pickers.pen({ background:background, colorPicker:state.colorPicker }),
 						div('right',
-							div('button clear', 'Clear', button(createP)),
+							div('button clear', 'Clear', button(clearFg)),
 							div('button tool send', 'Send', button(sendImage))
 						)
 					)
@@ -57,15 +57,16 @@ function render(_opts) {
 		)
 	))
 	
-	createP()
-	
 	if (opts.img) {
-		loadBackgroundImage({ mediaId:opts.img.mediaId, style:opts.img.style, width:opts.message.pictureWidth, height:opts.message.pictureHeight })
+		// TODO this call is way overloaded
+		loadBackgroundImage({ mediaId:opts.img.mediaId, style:opts.img.style, width:opts.message.pictureWidth, height:opts.message.pictureHeight, pictureSecret:opts.message.pictureSecret, conversationId:opts.message.conversationId })
 	} else {
 		loadBackgroundImage({ backgroundPath:'background/exclusive_paper.jpg', width:640, height:960 })
 	}
 	
 	var $touchDetect = $ui
+	p = paint([width, height])
+	$ui.append($paint = $(p.el))
 	if (tags.isTouch) {
 		$touchDetect.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
 	} else {
@@ -74,35 +75,27 @@ function render(_opts) {
 	
 	return $ui
 	
-	function createP() {
-		if (p) { $(p.el).remove() }
-
-		p = paint([width, height])
-
-		p.withBackground(function withPaintBackground(bg) {
-			bg.fillAll(background)
-		})
-		
-		$ui.append($paint = $(p.el))
+	function clearFg() {
+		p.clearDrawn()
 	}
 	
-	function loadBackgroundImage(img) {
-		if (img.mediaId) {
-			doDraw('/blowtorch/media/'+img.mediaId+'.jpg', img.width, img.height)
-		} else if (img.backgroundPath) {
-			doDraw('/blowtorch/img/'+img.backgroundPath, img.width, img.height)
-		} else if (img.style) {
+	function loadBackgroundImage(opts) {
+		if (opts.mediaId) {
+			doDraw('/blowtorch/media/'+opts.mediaId+'.jpg', opts.width, opts.height)
+		} else if (opts.backgroundPath) {
+			doDraw('/blowtorch/img/'+opts.backgroundPath, opts.width, opts.height)
+		} else if (opts.pictureSecret) {
 			// TODO Show loading indicator
-			var underlyingUrl = img.style.background.match(/url\((.*)\)/)[1]
+			var pictureUrl = pictures.url(opts.conversationId, opts.pictureSecret)
+			var asUrl = location.protocol+'//'+location.host+'/local_cache?pictureSecret='+opts.pictureSecret
+			bridge.command('net.cache', { url:pictureUrl, asUrl:asUrl, override:false }, function(err, res) {
+				if (err) { return }
+				doDraw(asUrl, opts.width, opts.height)
+			})
+		} else if (opts.style) {
+			var underlyingUrl = opts.style.background.match(/url\((.*)\)/)[1]
 			if (underlyingUrl.match(/^data/) || !tags.isTouch) {
-				doDraw(underlyingUrl, img.width, img.height)
-			} else {
-				var url = parseUrl(underlyingUrl)
-				var asUrl = location.protocol+'//'+location.host+'/local_cache?pictureId='+url.getSearchParam('pictureId')
-				bridge.command('net.cache', { url:underlyingUrl, asUrl:asUrl, override:false }, function(err, res) {
-					if (err) { return }
-					doDraw(asUrl, img.width, img.height)
-				})
+				doDraw(underlyingUrl, opts.width, opts.height)
 			}
 		}
 	}

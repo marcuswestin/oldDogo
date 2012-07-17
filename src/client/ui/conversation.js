@@ -1,5 +1,6 @@
 var composer = require('./composer')
 var once = require('std/once')
+var pictures = require('../../data/pictures')
 
 var currentView
 var $ui
@@ -32,7 +33,7 @@ $('body').on('touchmove', '.conversation', function() {
 
 function selectMessage(message, _, $el) {
 	if (message.pictureId || message.base64Picture) {
-		composer.selectDraw($el.find('.messageBubble .picture')[0], message)
+		composer.selectDraw($el.find('.messageBubble .pictureContent')[0], message)
 	} else {
 		// do nothing
 	}
@@ -58,11 +59,12 @@ function refreshMessages() {
 }
 
 var checkScrollBounds = once(function checkScrollBounds() {
-	var pictures = $ui.wrapper.find('.messageBubble .pictureContent')
-	var viewTop = $ui.wrapper.scrollTop()
-	var viewBottom = viewTop + $ui.wrapper.height()
-	for (var i=pictures.length - 1; i >= 0; i--) { // loop in reverse order since you're likelier to be viewing the bottom of the conversation
-		var pic = pictures[i]
+	var pics = $ui.wrapper.find('.messageBubble .pictureContent')
+	var viewHeight = $ui.wrapper.height()
+	var viewTop = $ui.wrapper.scrollTop() - (viewHeight * 3/4) // preload 3/4 of a view above
+	var viewBottom = viewTop + viewHeight + (viewHeight * 1/2) // prelado 1/2 of a view below
+	for (var i=pics.length - 1; i >= 0; i--) { // loop in reverse order since you're likelier to be viewing the bottom of the conversation
+		var pic = pics[i]
 		var picTop = pic.offsetTop
 		var picBottom = picTop + pic.offsetHeight
 		if (picBottom > viewTop && picTop < viewBottom && pic.getAttribute('pictureUrl')) {
@@ -83,8 +85,13 @@ function renderMessage(message) {
 }
 
 function picSize(message) {
-	var maxWidth = 276
-	var maxHeight = 276
+	var size = pictures.display.thumb
+	return style({ width:size, height:size, backgroundSize:size+'px '+size+'px' })
+}
+
+function clipPicSize(message) {
+	var maxWidth = pictures.display.thumb
+	var maxHeight = pictures.display.thumb
 	var width = message.pictureWidth
 	var height = message.pictureHeight
 	var ratio = 1
@@ -100,11 +107,12 @@ function picSize(message) {
 function renderContent(message) {
 	if (message.body) {
 		return div('textContent', message.body)
-	} else if (message.base64Picture || message.pictureId) {
-		var url = message.base64Picture
-			? message.base64Picture
-			: '/api/image?conversationId='+message.conversationId+'&pictureId='+message.pictureId+'&pictureSecret='+message.pictureSecret+'&authorization='+encodeURIComponent(api.getAuth())
-		return div('pictureContent', picSize(message), { pictureUrl:url })
+	} else if (message.pictureId) {
+		var pictureUrl = pictures.urlFromMessage(message, pictures.pixels.thumb)
+		return div('pictureContent', picSize(message), { pictureUrl:pictureUrl })
+	} else {
+		var pictureUrl = message.base64Picture
+		return div('pictureContent', clipPicSize(message), { pictureUrl:pictureUrl })
 	}
 }
 

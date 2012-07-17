@@ -4,6 +4,9 @@ var region = 'us-west-1'
 var s3 = require('aws2js').load('s3', accessKeyId, secretAccessKey)
 var knox = require('knox')
 var uuid = require('uuid')
+var imagemagick = require('imagemagick')
+var pictures = require('../data/pictures')
+var s3Permission = 'public-read'
 
 function getSignedUrl(bucket, filename) {
 	var knoxClient = knox.createClient({
@@ -22,7 +25,7 @@ function getSignedUrl(bucket, filename) {
 module.exports = proto(null,
 	function(database, s3conf) {
 		this.db = database
-		this.urlBase = 'http://'+s3conf.bucket+'.s3.amazonaws.com/'
+		pictures.bucket = s3conf.bucket
 		s3.setBucket(s3conf.bucket)
 	}, {
 		upload: function(accountId, conversation, base64PictureData, pictureWidth, pictureHeight, callback) {
@@ -30,32 +33,64 @@ module.exports = proto(null,
 				if (err) { return callback(err) }
 				var buf = new Buffer(base64PictureData.replace(/^data:image\/\w+;base64,/, ""), 'base64')
 				var size = buf.length
-				var path = this.getPicturePath(conversation.id, pictureSecret)
-				console.log('Uploading picture size', size, 'path', path)
-				s3.putBuffer(path, buf, 'public-read', { 'content-type':'image/jpg', 'content-length':size }, bind(this, function(err, resHeaders) {
-					console.log('Upload picture DONE:', pictureId, err, resHeaders)
-					if (err) { return callback(err) }
-					this._updatePictureSent(this.db, pictureId, function(err) {
+				var path = pictures.path(conversation.id, pictureSecret)
+				var waitingFor = 2
+				var proceed = bind(this, function(err) {
+					if (err && callback) {
+						callback(err)
+						callback = null
+						return
+					}
+					waitingFor--
+					if (waitingFor) { return }
+					var meta = { sizes:[pictures.pixels.thumb] }
+					this._updatePictureSent(this.db, pictureId, meta, function(err) {
 						if (err) { return callback(err) }
 						callback(null, pictureId)
 					})
-				}))
+				})
+				console.log('Uploading picture', pictureId, pictures.url(conversation.id, pictureSecret))
+				s3.putBuffer(path, buf, s3Permission, getHeaders(buf.length), function(err, resHeaders) {
+					console.log('Upload picture DONE', pictureId, err)
+					proceed(err)
+				})
+				this.uploadThumb(buf, conversation.id, pictureSecret, pictures.pixels.thumb, proceed)
+			})
+		},
+		
+		uploadThumb: function(buf, conversationId, pictureSecret, thumbSize, callback) {
+			var thumbPath = pictures.path(conversationId, pictureSecret, thumbSize)
+			var customArgs = [
+				"-gravity", "center",
+				"-extent", thumbSize+"x"+thumbSize
+			]
+			
+			imagemagick.resize({
+				srcData : buf,
+				strip : false,
+				width : thumbSize,
+				height : thumbSize+"^",
+				customArgs: customArgs
+			}, function(err, stdout, stderr) {
+				if (err) { return proceed(err) }
+				console.log('Uploading thumbnail', pictures.url(conversationId, pictureSecret, thumbSize))
+				var thumbBuf = new Buffer(stdout, 'binary')
+				s3.putBuffer(thumbPath, thumbBuf, s3Permission, getHeaders(thumbBuf.length), function(err, resHeaders) {
+					console.log('Upload thumbnail DONE', err)
+					callback(err, null)
+				})
 			})
 		},
 		
 		getPictureUrl: function(accountId, conversationId, pictureId, pictureSecret, callback) {
 			if (pictureSecret) {
-				callback(null, this.urlBase+this.getPicturePath(conversationId, pictureSecret))
+				callback(null, pictures.url(conversationId, pictureSecret))
 			} else {
 				this._selectSecret(this.db, accountId, conversationId, pictureId, function(err, res) {
 					if (err) { return callback(err) }
-					callback(null, this.urlBase+this.getPicturePath(conversationId, res && res.pictureSecret))
+					callback(null, pictures.url(conversationId, res && res.pictureSecret))
 				})
 			}
-		},
-		
-		getPicturePath: function(conversationId, pictureSecret) {
-			return 'conversation/'+conversationId+'/picture/'+pictureSecret+'.jpg'
 		},
 		
 		_insertPicture: function(conn, accountId, pictureWidth, pictureHeight, callback) {
@@ -66,10 +101,10 @@ module.exports = proto(null,
 					callback.call(this, err, pictureId, secret)
 				})
 		},
-		_updatePictureSent: function(conn, pictureId, callback) {
+		_updatePictureSent: function(conn, pictureId, meta, callback) {
 			conn.updateOne(this,
-				'UPDATE picture SET uploaded_time=? WHERE id=?',
-				[conn.time(), pictureId], callback)
+				'UPDATE picture SET uploaded_time=?, meta_json=? WHERE id=?',
+				[conn.time(), JSON.stringify(meta), pictureId], callback)
 		},
 		_selectSecret: function(conn, accountId, conversationId, pictureId, callback) {
 			conn.selectOne(this,
@@ -78,3 +113,7 @@ module.exports = proto(null,
 		}
 	}
 )
+
+function getHeaders(length) {
+	return { 'content-type':'image/jpg', 'content-length':length }
+}

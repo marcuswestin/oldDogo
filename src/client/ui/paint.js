@@ -41,6 +41,10 @@
 			if (!checkNum(p, d)) { return }
 			ctx.fillRect(p[0], p[1], d[0], d[1])
 		}),
+		clearRect:ctxFunction(function(ctx, p, d) {
+			if (!checkNum(p, d)) { return }
+			ctx.clearRect(p[0], p[1], d[0], d[1])
+		}),
 		rotate:ctxFunction(function(ctx, rad) { ctx.rotate(rad) }),
 		translate:ctxFunction(function(ctx, p) {
 			if (!checkNum(p)) { return }
@@ -121,6 +125,17 @@
 		},
 		flattenAll: function() {
 			while (this.buf.firstChild) { this.flattenLayer() }
+			return this
+		},
+		
+		/* Utils
+		 *******/
+		clearDrawn: function() {
+			var stack = this.buf.childNodes
+			for (var i=stack.length-1; i>=0; i--) {
+				this.buf.removeChild(stack[i])
+			}
+			this.clearRect(this.fg, [0,0], this.dim)
 			return this
 		},
 		

@@ -1,6 +1,7 @@
 require('./globals')
 
 var time = require('std/time')
+var pictures = require('../data/pictures')
 
 button.onError = error = function error(err, $tag) {
 	var message = "Oops! "+JSON.stringify(err)
@@ -60,8 +61,10 @@ function startApp() {
 		
 		if (appInfo.config.mode == 'dev') {
 			window.onerror = function windowOnError(e) { alert('ERROR ' + e) }
+			pictures.bucket = 'dogo-dev-conv'
 		} else {
 			window.onerror = function windowOnError(e) { console.log("ERROR", e) }
+			pictures.bucket = 'dogo-prod-conv'
 		}
 		
 		appScroller.createAndRender()
