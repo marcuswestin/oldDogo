@@ -22,6 +22,7 @@ module.exports = {
 		)
 
 		$ui.wrapper.on('scroll', checkScrollBounds)
+		checkScrollBounds()
 		
 		refreshMessages()
 	}
@@ -59,6 +60,8 @@ function refreshMessages() {
 }
 
 var checkScrollBounds = once(function checkScrollBounds() {
+	console.log("checkScrollBounds start")
+	if (!$ui.wrapper) { return }
 	var pics = $ui.wrapper.find('.messageBubble .pictureContent')
 	var viewHeight = $ui.wrapper.height()
 	var viewTop = $ui.wrapper.scrollTop() - (viewHeight * 3/4) // preload 3/4 of a view above
@@ -67,11 +70,12 @@ var checkScrollBounds = once(function checkScrollBounds() {
 		var pic = pics[i]
 		var picTop = pic.offsetTop
 		var picBottom = picTop + pic.offsetHeight
-		if (picTop > viewTop && picBottom < viewBottom && pic.getAttribute('pictureUrl')) {
+		if (picBottom > viewTop && picTop < viewBottom && pic.getAttribute('pictureUrl')) {
 			pic.style.backgroundImage = 'url('+pic.getAttribute('pictureUrl')+')'
 			pic.removeAttribute('pictureUrl')
 		}
 	}
+	console.log("checkScrollBounds done")
 })
 
 function renderMessage(message) {
@@ -149,7 +153,7 @@ events.on('message.sent', function(message, toAccountId, toFacebookId) {
 
 events.on('view.change', function() {
 	currentView = null
-	$ui = null
+	$ui = {}
 })
 
 events.on('app.willEnterForeground', function() {
