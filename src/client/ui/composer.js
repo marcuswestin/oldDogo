@@ -47,6 +47,7 @@ var composer = module.exports = {
 				returnKeyType:'Send'
 			})
 			events.once('keyboard.willShow', function(info) {
+				$('body > .app').css('-webkit-transform', 'translateY(-213px)')
 				pos.y = y1
 				bridge.command('textInput.animate', {
 					duration:info.keyboardAnimationDuration,
@@ -54,6 +55,7 @@ var composer = module.exports = {
 				})
 			})
 			events.once('keyboard.willHide', function(info) {
+				$('body > .app').css('-webkit-transform', 'translateY(0px)')
 				pos.y = y0
 				bridge.command('textInput.animate', {
 					duration:info.keyboardAnimationDuration,
