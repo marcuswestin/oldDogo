@@ -64,13 +64,12 @@ function render(_opts) {
 		loadBackgroundImage({ backgroundPath:'background/exclusive_paper.jpg', width:640, height:960 })
 	}
 	
-	var $touchDetect = $ui
 	p = paint([width, height])
 	$ui.append($paint = $(p.el))
 	if (tags.isTouch) {
-		$touchDetect.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
+		$paint.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
 	} else {
-		$touchDetect.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
+		$paint.on('mousedown', pencilDown).on('mousemove', pencilMove).on('mouseup', pencilUp)
 	}
 	
 	return $ui
