@@ -36,10 +36,6 @@ module.exports = {
 	}
 }
 
-$('body').on('touchmove', '.conversation', function() {
-	composer.hide()
-})
-
 function selectMessage(message, _, $el) {
 	if (message.pictureId || message.base64Picture) {
 		composer.selectDraw($el.find('.messageBubble .pictureContent')[0], message)

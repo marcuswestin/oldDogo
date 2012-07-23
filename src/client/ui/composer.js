@@ -6,11 +6,14 @@ var currentAccountId
 var currentFacebookId
 var $currentViewUi
 var $ui
+var hidden = true
 
 var composer = module.exports = {
 	selectDraw:selectDraw,
 	hide:function() {
 		if (!$ui) { return }
+		if (hidden) { return }
+		hidden = true
 		gScroller.$head.show()
 		$ui.surface.empty()
 		if ($ui.drawer) { $ui.drawer.remove() }
@@ -39,6 +42,7 @@ var composer = module.exports = {
 		
 		function selectText(e) {
 			composer.hide()
+			hidden = false
 			var y0 = viewport.height()
 			var y1 = 229
 			var pos = { x:0, y:y0, width:320, height:35 }
@@ -139,5 +143,9 @@ function send(params) {
 
 events.on('view.change', function onViewRenderEvent() {
 	events.off('textInput.return', onReturnHandler)
+	composer.hide()
+})
+
+$('body').on('touchmove', '.conversation', function() {
 	composer.hide()
 })
