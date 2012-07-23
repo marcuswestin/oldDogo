@@ -120,8 +120,9 @@ function renderContent(message) {
 
 function addMessage(message) {
 	$ui.wrapper.find('.ghostTown').remove()
+	var deltaFromBottom = Math.abs(($ui.wrapper.scrollTop() + $ui.wrapper.height()) - ($ui.messages.height() + 50))
 	$ui.messages.append(message)
-	if ($ui.wrapper.scrollTop() + $ui.wrapper.height() + gScroller.$head.height() > $ui.messages.height()) {
+	if (deltaFromBottom < 100) {
 		$ui.wrapper.scrollTop($ui.messages.height())
 	}
 }
