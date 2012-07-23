@@ -60,7 +60,6 @@ function refreshMessages() {
 }
 
 var checkScrollBounds = once(function checkScrollBounds() {
-	console.log("checkScrollBounds start")
 	if (!$ui.wrapper) { return }
 	var pics = $ui.wrapper.find('.messageBubble .pictureContent')
 	var viewHeight = $ui.wrapper.height()
@@ -75,7 +74,6 @@ var checkScrollBounds = once(function checkScrollBounds() {
 			pic.removeAttribute('pictureUrl')
 		}
 	}
-	console.log("checkScrollBounds done")
 })
 
 function renderMessage(message) {
