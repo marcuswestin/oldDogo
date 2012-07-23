@@ -27,6 +27,9 @@ module.exports = {
 
 		$ui.wrapper.on('scroll', checkScrollBounds)
 		$ui.messages.empty().prepend(gState.cache[convId()])
+		setTimeout(function() {
+			$ui.wrapper.scrollTop($ui.messages.height())
+		}, 100)
 		
 		checkScrollBounds()
 		refreshMessages()
