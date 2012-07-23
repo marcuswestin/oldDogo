@@ -29,6 +29,10 @@ buttonShadow = 0 1px 2px #444;
 	to {-webkit-transform: rotate(360deg);}
 }
 
+// Annoying, crazy font hacks - not sure what's going on but it's related to the ordering of fonts in plist.info
+light() { font-weight 400; }
+light-italic() { font-style italic; font-weight 100; }
+
 animate-rotation(duration)
 	-webkit-transition-property: -webkit-transform; -webkit-transition-duration: duration;
 	-webkit-animation-name: rotate;
@@ -56,9 +60,8 @@ body
 	background #000; tap-highlight-color: rgba(0,0,0,0); -webkit-user-select: none;
 
 .app
-	font-family "Open Sans";
+	font-family "Open Sans"; font-weight 300;
 	color #333;
-	font-weight 300;
 	border-radius 12px 12px 0 0;
 	// background linear-gradient(top, color2, #fff);
 	// background url('/blowtorch/img/background/planks-vertical.jpg');
@@ -85,7 +88,7 @@ body
 	borderTop 1px solid #E3E9ED;
 	.title
 		text-shadow 0 1px 2px #999; color:#fff; padding 0 4px;
-		font-size 22px; text-align center; padding 4px 0 0 0; font-weight 300;
+		font-size 22px; text-align center; padding 4px 0 0 0;
 	.back
 		absolute top 6px left 4px; border-width 1px;
 	.search-control
@@ -119,7 +122,7 @@ body
 	.button.active
 		text-shadow none;
 .connect .button
-	font-weight bold; margin 160px auto; width 120px; 
+	margin 160px auto; width 120px; 
 .invite .button
 	width 210px;
 
@@ -140,16 +143,16 @@ body
 		min-height 254px;
 		.messageBubble
 			.name
-				padding 3px 5px 0 5px; font-weight 400;
+				padding 3px 5px 0 5px;
 			.body
-				padding 0px 5px 0 5px;
+				padding 0px 5px 0 5px; light()
 			.unreadDot
 				width 20px; height 20px; background color1; border-radius 10px;
 				float right; margin 15px 8px 0 0; display none;
 		.messageBubble.hasUnread .unreadDot
 				display block;
 		.youStarted
-			font-style italic;
+			light-italic()
 	.friends
 		padding 1px 0 0 2px;
 		.face
@@ -198,7 +201,7 @@ faceDim = 25px
 		padding 0 0 44px 0;
 	.messageBubble
 		.textContent
-			padding 4px 6px;
+			padding 4px 6px; light();
 		.picture, .pictureContent
 			border-radius 2px;
 			
@@ -273,6 +276,6 @@ faceDim = 25px
 			.face
 				float left; width faceDim*2; height faceDim*2; background-size faceDim*2 faceDim*2;
 			.name
-				float left; margin 0 0 0 4px; font-weight 400;
+				float left; margin 0 0 0 4px;
 		.person:last-child
 			padding-bottom 4px;

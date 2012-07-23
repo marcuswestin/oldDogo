@@ -60,10 +60,10 @@
 	</array>
 	<key>UIAppFonts</key>
 	<array>
-		<string>opensans-italic.ttf</string>
-		<string>opensans-light-italic.ttf</string>
-		<string>opensans-light.ttf</string>
+		<string>fonts/opensans-light.ttf</string>
 		<string>fonts/opensans.ttf</string>
+		<string>fonts/opensans-light-italic.ttf</string>
+		<string>fonts/opensans-italic.ttf</string>
 	</array>
 </dict>
 </plist>
