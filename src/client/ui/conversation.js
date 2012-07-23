@@ -5,6 +5,10 @@ var pictures = require('../../data/pictures')
 var currentView
 var $ui
 
+function convId() {
+	return 'conv-messages-'+(currentView.accountId ? 'dogo-'+currentView.accountId : 'fb-'+currentView.facebookId)
+}
+
 module.exports = {
 	render:function($body, view) {
 		currentView = view
@@ -22,8 +26,10 @@ module.exports = {
 		)
 
 		$ui.wrapper.on('scroll', checkScrollBounds)
-		checkScrollBounds()
+		$ui.messages.empty().prepend(gState.cache[convId()])
+		$ui.wrapper.scrollTop($ui.messages.height())
 		
+		checkScrollBounds()
 		refreshMessages()
 	}
 }
@@ -41,21 +47,25 @@ function selectMessage(message, _, $el) {
 }
 
 function refreshMessages() {
-	loading(true)
+	if (!currentView) { return }
 	var params = {
 		withAccountId:currentView.accountId,
 		withFacebookId:currentView.facebookId,
 		lastReadMessageId:currentView.lastReadMessageId
 	}
+	var wasCurrentView = currentView
+	loading(true)
 	api.get('messages', params, function(err, res) {
 		loading(false)
+		if (wasCurrentView != currentView) { return }
 		if (err) { return error(err) }
 		$ui.messages.empty().prepend(res.messages)
-		if (res.messages.length) {
-			$ui.wrapper.scrollTop($ui.messages.height())
-		} else {
+		if (!res.messages.length) {
 			$ui.info.empty().append(div('ghostTown', 'Start the conversation - draw something!'))
 		}
+		setTimeout(function() {
+			gState.set(convId(), res.messages)
+		}, 0)
 	})
 }
 
@@ -156,7 +166,6 @@ events.on('view.change', function() {
 })
 
 events.on('app.willEnterForeground', function() {
-	currentView
 	refreshMessages()
 })
 
