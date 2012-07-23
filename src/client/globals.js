@@ -33,17 +33,20 @@ loading = function loading(isLoading) {
 	}
 	
 	if (isLoading) {
+		loading.count += 1
+		if (loading.count > 1) { return }
 		clearTimeout(loading.hideTimer)
 		loading.hideTimer = null
-		if (loading.showTimer) { return }
 		loading.showTimer = setTimeout(curry(loading.pos, gHeadHeight), 100)
 	} else {
+		loading.count -= 1
+		if (loading.count) { return }
 		clearTimeout(loading.showTimer)
 		loading.showTimer = null
-		if (loading.hideTimer) { return }
 		loading.hideTimer = setTimeout(curry(loading.pos, 0), 100)
 	}
 }
+loading.count = 0
 loading.pos = function(y) { loading.$ui.css({ '-webkit-transform':'translateY('+(y-5)+'px)' })}
 
 getId = function getId(d) { return d.id }
