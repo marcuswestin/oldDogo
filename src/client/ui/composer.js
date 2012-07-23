@@ -41,12 +41,15 @@ var composer = module.exports = {
 			composer.hide()
 			var y0 = viewport.height()
 			var y1 = 229
-			var pos = { x:0, y:y0, width:320, height:37 }
+			var pos = { x:0, y:y0, width:320, height:35 }
 			var appOffset = -213
 			bridge.command('textInput.show', {
 				at:pos,
 				returnKeyType:'Send',
-				font: { name:'Open Sans', size:16 }
+				font: { name:'Open Sans', size:16 },
+				backgroundImage:'img/background/exclusive_paper.jpg',
+				cornerRadius:3,
+				borderColor:[0,0,0,.1]
 			})
 			events.once('keyboard.willShow', function(info) {
 				$('body > .app').css('-webkit-transform', 'translateY('+appOffset+'px)')

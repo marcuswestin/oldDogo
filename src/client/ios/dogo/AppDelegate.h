@@ -15,4 +15,5 @@
 - (CGRect) rectFromDict:(NSDictionary*) params;
 - (UIReturnKeyType) returnKeyTypeFromDict:(NSDictionary*) params;
 - (void) animateTextInput:(NSDictionary*) params;
+- (UIColor*) colorFromParam:(NSArray*)param;
 @end

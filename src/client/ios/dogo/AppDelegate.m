@@ -83,10 +83,6 @@
     textInput.font = [UIFont systemFontOfSize:17];
     
     textInput.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    textInput.layer.borderWidth = 1.0;
-    textInput.layer.borderColor = [[UIColor grayColor] CGColor];
-    textInput.layer.cornerRadius = 0.0;
-    textInput.backgroundColor = [UIColor whiteColor];
     textInput.clipsToBounds = YES;
     textInput.scrollEnabled = NO;
     textInput.keyboardType = UIKeyboardTypeDefault;
@@ -103,10 +99,34 @@
         [textInput setFont:[UIFont fontWithName:[font objectForKey:@"name"] size:[size floatValue]]];
     }
     
+    NSString* backgroundImage = [params objectForKey:@"backgroundImage"];
+    if (backgroundImage) {
+        textInput.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:backgroundImage]];
+    }
+    if ([params objectForKey:@"backgroundColor"]) {
+        textInput.backgroundColor = [self colorFromParam:[params objectForKey:@"backgroundColor"]];
+    }
+    if ([params objectForKey:@"borderColor"]) {
+        textInput.layer.borderColor = [[self colorFromParam:[params objectForKey:@"borderColor"]] CGColor];
+        textInput.layer.borderWidth = 1.0;
+    }
+    if ([params objectForKey:@"cornerRadius"]) {
+        NSNumber* cornerRadius = [params objectForKey:@"cornerRadius"];
+        [textInput.layer setCornerRadius:[cornerRadius floatValue]];
+    }
+    
     textInput.text = @"";
     [self sizeTextInput];
     [self.webView addSubview:textInput];
     [textInput becomeFirstResponder];
+}
+
+- (UIColor *)colorFromParam:(NSArray *)param {
+    NSNumber* red = [param objectAtIndex:0];
+    NSNumber* green = [param objectAtIndex:1];
+    NSNumber* blue = [param objectAtIndex:2];
+    NSNumber* alpha = [param objectAtIndex:3];
+    return [UIColor colorWithRed:[red floatValue] green:[green floatValue] blue:[blue floatValue] alpha:[alpha floatValue]];
 }
 
 - (void)hideTextInput {
