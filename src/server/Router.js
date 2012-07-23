@@ -280,7 +280,7 @@ module.exports = proto(null,
 				var path = req.path.replace('/blowtorch/fonts/', '')
 				fs.readFile('src/client/fonts/'+path, function(err, content) {
 					if (err) { return self.respond(req, res, err) }
-					res.writeHead(200, { 'Content-Type':'font/woff' })
+					res.writeHead(200, { 'Content-Type':'font/ttf' })
 					res.end(content)
 				})
 			})

@@ -58,5 +58,12 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>opensans-italic.ttf</string>
+		<string>opensans-light-italic.ttf</string>
+		<string>opensans-light.ttf</string>
+		<string>fonts/opensans.ttf</string>
+	</array>
 </dict>
 </plist>

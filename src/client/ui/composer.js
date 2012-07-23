@@ -45,7 +45,8 @@ var composer = module.exports = {
 			var appOffset = -213
 			bridge.command('textInput.show', {
 				at:pos,
-				returnKeyType:'Send'
+				returnKeyType:'Send',
+				font: { name:'Open Sans', size:16 }
 			})
 			events.once('keyboard.willShow', function(info) {
 				$('body > .app').css('-webkit-transform', 'translateY('+appOffset+'px)')

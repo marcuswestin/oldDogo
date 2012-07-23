@@ -97,6 +97,12 @@
         textInput.returnKeyType = returnKeyType;
     }
     
+    NSDictionary* font = [params objectForKey:@"font"];
+    if (font) {
+        NSNumber* size = [font objectForKey:@"size"];
+        [textInput setFont:[UIFont fontWithName:[font objectForKey:@"name"] size:[size floatValue]]];
+    }
+    
     textInput.text = @"";
     [self sizeTextInput];
     [self.webView addSubview:textInput];
