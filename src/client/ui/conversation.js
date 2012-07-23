@@ -27,7 +27,6 @@ module.exports = {
 
 		$ui.wrapper.on('scroll', checkScrollBounds)
 		$ui.messages.empty().prepend(gState.cache[convId()])
-		$ui.wrapper.scrollTop($ui.messages.height())
 		
 		checkScrollBounds()
 		refreshMessages()
@@ -55,17 +54,20 @@ function refreshMessages() {
 	}
 	var wasCurrentView = currentView
 	loading(true)
-	api.get('messages', params, function(err, res) {
+	api.get('messages', params, function refreshRenderMessages(err, res) {
 		loading(false)
 		if (wasCurrentView != currentView) { return }
 		if (err) { return error(err) }
+		var cachedMessages = gState.cache[convId()]
+		var lastCachedMessage = cachedMessages && cachedMessages[0]
+		var lastReceivedMessage = res.messages[0]
+		if (lastCachedMessage && lastReceivedMessage && lastCachedMessage.id == lastReceivedMessage.id) { return }
 		$ui.messages.empty().prepend(res.messages)
 		if (!res.messages.length) {
 			$ui.info.empty().append(div('ghostTown', 'Start the conversation - draw something!'))
 		}
-		setTimeout(function() {
-			gState.set(convId(), res.messages)
-		}, 0)
+		$ui.wrapper.scrollTop($ui.messages.height())
+		gState.set(convId(), res.messages)
 	})
 }
 
@@ -129,6 +131,7 @@ function renderContent(message) {
 }
 
 function addMessage(message) {
+	gState.cache[convId()].unshift(message)
 	$ui.wrapper.find('.ghostTown').remove()
 	var deltaFromBottom = Math.abs(($ui.wrapper.scrollTop() + $ui.wrapper.height()) - ($ui.messages.height() + 50))
 	$ui.messages.append(message)
@@ -138,14 +141,13 @@ function addMessage(message) {
 }
 
 events.on('push.message', function(message) {
-	if (!currentView.accountId || currentView.accountId != message.senderAccountId) { return }
+	if (!currentView || !currentView.accountId || currentView.accountId != message.senderAccountId) { return }
 	addMessage(message)
 })
 
 events.on('message.sending', function(message) {
 	$ui.info.empty()
 	addMessage(message)
-	gState.cache[convId()].unshift(message)
 })
 
 events.on('message.sent', function(message, toAccountId, toFacebookId) {
