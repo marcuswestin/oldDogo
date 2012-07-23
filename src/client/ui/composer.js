@@ -6,19 +6,19 @@ var currentAccountId
 var currentFacebookId
 var $currentViewUi
 var $ui
-var hidden = true
+var textHidden = true
 
 var composer = module.exports = {
 	selectDraw:selectDraw,
 	hide:function() {
 		if (!$ui) { return }
-		if (hidden) { return }
-		hidden = true
 		gScroller.$head.show()
 		$ui.surface.empty()
 		if ($ui.drawer) { $ui.drawer.remove() }
-		bridge.command('textInput.hide')
 		delete $ui
+		if (textHidden) { return }
+		textHidden = true
+		bridge.command('textInput.hide')
 	},
 	render: function($viewUi, accountId, facebookId) {
 		$ui = {}
@@ -42,7 +42,7 @@ var composer = module.exports = {
 		
 		function selectText(e) {
 			composer.hide()
-			hidden = false
+			textHidden = false
 			var y0 = viewport.height()
 			var y1 = 229
 			var pos = { x:0, y:y0, width:320, height:35 }
