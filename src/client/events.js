@@ -29,7 +29,7 @@ function on(name, handler) {
 		if (!_handlers[name]) { _handlers[name] = [] }
 		_handlers[name].push(handler)
 	}
-	return this
+	return handler
 }
 
 function once(name, handler) {

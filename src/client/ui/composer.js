@@ -47,6 +47,13 @@ var composer = module.exports = {
 			var y1 = 229
 			var pos = { x:0, y:y0, width:320, height:35 }
 			var appOffset = -213
+			var onReturnHandler = events.on('textInput.return', function(info) {
+				if (!$ui) { return }
+				bridge.command('textInput.set', { text:'' })
+				var body = trim(info.text)
+				if (!body) { return }
+				send({ body:body })
+			})
 			bridge.command('textInput.show', {
 				at:pos,
 				returnKeyType:'Send',
@@ -64,6 +71,7 @@ var composer = module.exports = {
 				})
 			})
 			events.once('keyboard.willHide', function(info) {
+				events.off('textInput.return', onReturnHandler)
 				$('body > .app').css('-webkit-transform', 'translateY(0px)')
 				pos.y = y0
 				bridge.command('textInput.animate', {
@@ -111,15 +119,6 @@ function sendImage(data, width, height) {
 	composer.hide()
 }
 
-var onReturnHandler
-events.on('textInput.return', onReturn=function(info) {
-	if (!$ui) { return }
-	bridge.command('textInput.set', { text:'' })
-	var body = trim(info.text)
-	if (!body) { return }
-	send({ body:body })
-})
-
 function send(params) {
 	var message = {
 		toAccountId:currentAccountId,
@@ -142,7 +141,6 @@ function send(params) {
 }
 
 events.on('view.change', function onViewRenderEvent() {
-	events.off('textInput.return', onReturnHandler)
 	composer.hide()
 })
 
