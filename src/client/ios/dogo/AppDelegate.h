@@ -16,4 +16,5 @@
 - (UIReturnKeyType) returnKeyTypeFromDict:(NSDictionary*) params;
 - (void) animateTextInput:(NSDictionary*) params;
 - (UIColor*) colorFromParam:(NSArray*)param;
+- (UIEdgeInsets) insetsFromParam:(NSArray*)param;
 @end

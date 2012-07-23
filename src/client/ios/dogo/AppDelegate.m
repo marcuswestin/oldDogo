@@ -114,11 +114,22 @@
         NSNumber* cornerRadius = [params objectForKey:@"cornerRadius"];
         [textInput.layer setCornerRadius:[cornerRadius floatValue]];
     }
+    if ([params objectForKey:@"contentInset"]) {
+        textInput.contentInset = [self insetsFromParam:[params objectForKey:@"contentInset"]];
+    }
     
     textInput.text = @"";
     [self sizeTextInput];
     [self.webView addSubview:textInput];
     [textInput becomeFirstResponder];
+}
+
+- (UIEdgeInsets)insetsFromParam:(NSArray *)param {
+    NSNumber* n1 = [param objectAtIndex:0];
+    NSNumber* n2 = [param objectAtIndex:1];
+    NSNumber* n3 = [param objectAtIndex:2];
+    NSNumber* n4 = [param objectAtIndex:3];
+    return UIEdgeInsetsMake([n1 floatValue], [n2 floatValue], [n3 floatValue], [n4 floatValue]);
 }
 
 - (UIColor *)colorFromParam:(NSArray *)param {

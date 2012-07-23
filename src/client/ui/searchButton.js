@@ -64,7 +64,8 @@ function renderSearchButton() {
 			
 			bridge.command('textInput.show', {
 				at:pos0,
-				returnKeyType:'Done'
+				returnKeyType:'Done',
+				contentInset: [5,5,5,5]
 			})
 			
 			function hideInput() {
