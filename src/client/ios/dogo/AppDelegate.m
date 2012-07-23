@@ -179,6 +179,7 @@
     [UIView animateWithDuration:[duration doubleValue] animations:^{
         textInput.frame = [self rectFromDict:[params objectForKey:@"to"]];
         [self sizeTextInput];
+//        CGRect webviewFrame = CGRectMake(0, -200, self.webView.frame.size.width, self.webView.frame.size.height);
     }];
      if ([params objectForKey:@"blur"]) {
          [textInput resignFirstResponder];

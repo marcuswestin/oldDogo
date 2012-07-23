@@ -27,6 +27,9 @@ run:
 run-prod:
 	node src/server/run.js --config=prod
 
+run-redis:
+	redis-server ./src/server/config/redis.conf
+
 client:
 	node scripts/build-client.js
 

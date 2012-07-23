@@ -23,7 +23,7 @@ Setup mysql users/schema
 Run dbs
 #######
 
-	redis-server
+	make run-redis
 	mysqld_safe
 
 Run dev server
