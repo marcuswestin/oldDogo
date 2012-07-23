@@ -114,8 +114,15 @@
     CGRect frame = textInput.frame;
     frame.size.height = textInput.contentSize.height;
     int dHeight = textInput.frame.size.height - frame.size.height;
-    frame.origin.y += dHeight;
-    textInput.frame = frame;
+    if (dHeight != 0) {
+        frame.origin.y += dHeight;
+        textInput.frame = frame;
+        NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
+                             [NSNumber numberWithInt:dHeight], @"heightChange",
+                             [NSNumber numberWithFloat:textInput.frame.size.height], @"height"
+                             , nil];
+        [self notify:@"textInput.changedHeight" info:info];
+    }
 }
 
 - (void)textViewDidChange:(UITextView *)textView {

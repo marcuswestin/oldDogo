@@ -42,12 +42,13 @@ var composer = module.exports = {
 			var y0 = viewport.height()
 			var y1 = 229
 			var pos = { x:0, y:y0, width:320, height:37 }
+			var appOffset = -213
 			bridge.command('textInput.show', {
 				at:pos,
 				returnKeyType:'Send'
 			})
 			events.once('keyboard.willShow', function(info) {
-				$('body > .app').css('-webkit-transform', 'translateY(-213px)')
+				$('body > .app').css('-webkit-transform', 'translateY('+appOffset+'px)')
 				pos.y = y1
 				bridge.command('textInput.animate', {
 					duration:info.keyboardAnimationDuration,
@@ -65,7 +66,10 @@ var composer = module.exports = {
 					bridge.command('textInput.hide')
 				}, info.keyboardAnimationDuration * 1000)
 			})
-			
+			events.on('textInput.changedHeight', function(info) {
+				appOffset += info.heightChange
+				$('body > .app').css('-webkit-transform', 'translateY('+appOffset+'px)')
+			})
 			$ui.surface.append(div('writer'))
 		}
 	}
