@@ -145,6 +145,7 @@ events.on('push.message', function(message) {
 events.on('message.sending', function(message) {
 	$ui.info.empty()
 	addMessage(message)
+	gState.cache[convId()].unshift(message)
 })
 
 events.on('message.sent', function(message, toAccountId, toFacebookId) {
