@@ -70,9 +70,26 @@
         [self animateTextInput:data];
     } else if ([command isEqualToString:@"textInput.set"]) {
         if (textInput) { textInput.text = [data objectForKey:@"text"]; }
+    } else if ([command isEqualToString:@"message.send"]) {
+        [self sendMessage:data];
     } else {
         NSLog(@"WARNING ObjC Got unknown command: %@ %@", command, data);
     }
+}
+
+
+- (void)sendMessage:(NSDictionary *)params {
+    NSDictionary* message = [params objectForKey:@"message"];
+    NSDictionary* headers = [params objectForKey:@"headers"];
+    UIBackgroundTaskIdentifier bgTaskId = UIBackgroundTaskInvalid;
+    bgTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        [[UIApplication sharedApplication] endBackgroundTask:bgTaskId];
+    }];
+    
+    NSString* url = [self.serverHost stringByAppendingString:@"/api/messages"];
+    [BTNet request:url method:@"POST" headers:headers params:message responseCallback:^(id error, NSDictionary *response) {
+        [[UIApplication sharedApplication] endBackgroundTask:bgTaskId];
+    }];
 }
 
 

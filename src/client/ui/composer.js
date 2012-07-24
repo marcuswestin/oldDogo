@@ -128,10 +128,14 @@ function send(params) {
 	
 	each(params, function(val, key) { message[key] = val })
 	
-	api.post('messages', message, function(err, res) {
-		if (err) { return error(err) }
-		events.fire('message.sent', res.message, res.toAccountId, res.toFacebookId)
-	})
+	if (message.base64Picture) {
+		bridge.command('message.send', { message:message, headers:api.getHeaders() })
+	} else {
+		api.post('messages', message, function(err, res) {
+			if (err) { return error(err) }
+			events.fire('message.sent', res.message, res.toAccountId, res.toFacebookId)
+		})
+	}
 	
 	events.fire('message.sending', message)
 }
