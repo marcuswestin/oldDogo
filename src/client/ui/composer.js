@@ -115,7 +115,7 @@ function selectDraw(img, message) {
 }
 
 function sendImage(data, width, height) {
-	send({ picWidth:width, picHeight:height, base64Picture:data })
+	send({ pictureWidth:width, pictureHeight:height, base64Picture:data })
 	composer.hide()
 }
 
@@ -127,16 +127,12 @@ function send(params) {
 	}
 	
 	each(params, function(val, key) { message[key] = val })
-
+	
 	api.post('messages', message, function(err, res) {
 		if (err) { return error(err) }
 		events.fire('message.sent', res.message, res.toAccountId, res.toFacebookId)
 	})
 	
-	// Server doesn't want to see pictureWidth for a while, because old clients were sending bad numbers. So it expects picWidth/picHeight.
-	// But the client still expects pictureWidht/Height on messages
-	message.pictureWidth = message.picWidth
-	message.pictureHeight = message.picHeight
 	events.fire('message.sending', message)
 }
 
