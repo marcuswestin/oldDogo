@@ -61,7 +61,7 @@ function render(_opts) {
 		// TODO this call is way overloaded
 		loadBackgroundImage({ mediaId:opts.img.mediaId, style:opts.img.style, width:opts.message.pictureWidth, height:opts.message.pictureHeight, pictureSecret:opts.message.pictureSecret, conversationId:opts.message.conversationId })
 	} else {
-		loadBackgroundImage({ backgroundPath:'background/exclusive_paper.jpg', width:640, height:960 })
+		loadBackgroundImage({ backgroundPath:'img/background/exclusive_paper.jpg', width:640, height:960 })
 	}
 	
 	p = paint([width, height])
@@ -82,7 +82,7 @@ function render(_opts) {
 		if (opts.mediaId) {
 			doDraw('/blowtorch/media/'+opts.mediaId+'.jpg', opts.width, opts.height)
 		} else if (opts.backgroundPath) {
-			doDraw('/blowtorch/img/'+opts.backgroundPath, opts.width, opts.height)
+			doDraw('/blowtorch/'+opts.backgroundPath, opts.width, opts.height)
 		} else if (opts.pictureSecret) {
 			// TODO Show loading indicator
 			var pictureUrl = pictures.url(opts.conversationId, opts.pictureSecret)
