@@ -89,7 +89,7 @@ var colorPicker = proto(picker,
 			var diameter = 40
 			var styles = {
 				width:diameter, height:diameter,
-				'border-radius':25, border:'2px solid #333'
+				'border-radius':'25px 0 25px 25px', border:'2px solid #333'
 			}
 			var content
 			if (typeof color == 'string') {
