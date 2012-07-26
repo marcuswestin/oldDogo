@@ -51,7 +51,6 @@ var collectPointsPen = create(basePen, {
 		if (!this.points) { return }
 		this.points.push(point)
 		this.up(this.ctx, point, this.points)
-		// console.log(JSON.stringify(this.points))
 		this.points = null
 		return this
 	}

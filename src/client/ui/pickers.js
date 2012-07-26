@@ -32,9 +32,7 @@ var picker = {
 			div('lists'),
 			div('current', this._renderItem(this.current, true, bind(this, this.toggle)))
 		))
-		// setTimeout(bind(this, function() {
-			this.renderLists()
-		// }), 10)
+		this.renderLists()
 		return this.$ui
 	},
 	_renderItem:function(item, isCurrent, onSelect) {
