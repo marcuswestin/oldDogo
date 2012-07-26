@@ -64,7 +64,9 @@ function startApp() {
 		if (err) { alert("Uh oh. It looks like you need to re-install Dogo. I'm sorry! :-/") }
 		
 		if (appInfo.config.mode == 'dev') {
-			window.onerror = function windowOnError(e) { alert('ERROR ' + e) }
+			if (tags.isTouch) {
+				window.onerror = function windowOnError(e) { alert('ERROR ' + e) }
+			}
 			pictures.bucket = 'dogo-dev-conv'
 		} else {
 			window.onerror = function windowOnError(e) { console.log("ERROR", e) }
