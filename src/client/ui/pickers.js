@@ -1,12 +1,10 @@
 var currentPicker
 var zIndex = 1
+var rgbToHsv = require('colors/rgbToHsv')
+var hsvToRgb = require('colors/hsvToRgb')
 
 var picker = {
-	current: [0,0],
-	getItem:function(index) {
-		if (!index) { index = this.current }
-		return this.items[index[0]][index[1]]
-	},
+	getCurrent:function() { return this.current },
 	isOpen:false,
 	toggle:function() {
 		var wasOpen = this.isOpen
@@ -20,7 +18,7 @@ var picker = {
 		this.$ui.css({ 'z-index':zIndex++ }).find('.list').each(function(i) {
 			$(this).find('.item').each(function(j) {
 				var $el = $(this)
-				var pos = wasOpen ? [0,0] : self.getPos(i, j, self.items[i].length - 1)
+				var pos = wasOpen ? [0,0] : self.getPos(i, j, self.itemLists[i].length - 1)
 				
 				// setTimeout(function() {
 					$el.css('-webkit-transform', 'translate('+Math.round(pos[0])+'px, '+Math.round(pos[1])+'px)')
@@ -39,24 +37,28 @@ var picker = {
 		// }), 10)
 		return this.$ui
 	},
-	_renderItem:function(index, isCurrent, onSelect) {
-		return div('item', this.renderItem(this.getItem(index), isCurrent, index), button(onSelect), style({
+	_renderItem:function(item, isCurrent, onSelect) {
+		var touchHandler = isCurrent ? button(curry(onSelect, item)) : this.touchHandler(onSelect, item)
+		return div('item', this.renderItem(isCurrent ? this.current : item, isCurrent), touchHandler, style({
 			'-webkit-transition':'-webkit-transform 0.20s',
 			position:'absolute'
 		}))
 	},
 	renderLists:function() {
-		var selectItem = bind(this, function(i, j) {
-			this.current = [i,j]
-			this.$ui.find('.current').empty().append(this._renderItem([i, j], true, curry(selectItem, i, j)))
+		var selectItem = bind(this, function(payload) {
+			this.current = payload
+			this.$ui.find('.current').empty().append(this._renderItem(payload, true, selectItem))
 			this.toggle()
 		})
 		
-		this.$ui.find('.lists').empty().append(div(map(this.items, this, function(list, i) {
-			return div('list', map(list, this, function(item, j) {
-				return this._renderItem([i, j], false, curry(selectItem, i, j))
+		this.$ui.find('.lists').empty().append(div(map(this.itemLists, this, function renderList(list, i) {
+			return div('list', map(list, this, function renderListItem(payload, j) {
+				return this._renderItem(payload, false, selectItem)
 			}))
 		})))
+	},
+	touchHandler:function(onSelect, item) {
+		return button(curry(onSelect, item))
 	},
 	delay:function(i,j) {
 		return i * 5 + j * 40
@@ -73,8 +75,9 @@ var colorLists = [
 var colorPicker = proto(picker,
 	function(){},
 	{
+		current: [0,0,0],
 		className:'colorPicker',
-		items:colorLists,
+		itemLists:colorLists,
 		
 		multiColors: {
 			'multi1':colorLists[2],
@@ -82,7 +85,7 @@ var colorPicker = proto(picker,
 			'random':[[255, 0, 0], [255, 125, 0], [125, 255, 125], [0, 125, 255], [0, 0, 255]]
 		},
 		
-		renderItem: function(color, isCurrent, index) {
+		renderItem: function(color, isCurrent) {
 			var alpha = isCurrent ? 1 : .95
 			var diameter = 40
 			var styles = {
@@ -93,22 +96,43 @@ var colorPicker = proto(picker,
 			if (typeof color == 'string') {
 				// TODO Render mutli-select pen
 			} else {
-				styles.background = this.getRgba(color, alpha)
+				styles.background = rgbaString(color, alpha)
 			}
 			return div('dot', style(styles), content)
 		},
 		
+		touchHandler: function(onSelect, item) {
+			var hsvBase
+			var rgb = item
+			var onDone = function() {
+				$(this).find('.dot').css({ 'background-color':rgbaString(item) }) // reset
+				onSelect(rgb)
+			}
+			return tags.draggable({
+				start:function(pos) {
+					hsvBase = getHsv(this)
+				},
+				move:function(pos) {
+					rgb = rgbFromPos(hsvBase, pos)
+					$(this).find('.dot').css({ 'background-color':rgbaString(rgb) })
+				},
+				end:onDone,
+				tap:onDone
+			})
+		},
+		
 		getColor: function(alpha) {
-			var color = this.getItem()
+			var color = this.getCurrent()
+			alpha = alpha || 0.8
 			if (typeof color == 'string') {
 				var colors = this.multiColors[color]
 				do {
 					var color = colors[Math.floor(Math.random() * colors.length)]
 				} while (color == this.lastMultiColor)
 				this.lastMultiColor = color
-				return this.getRgba(color, alpha)
+				return rgbaString(color, alpha)
 			} else {
-				return this.getRgba(color, alpha)
+				return rgbaString(color, alpha)
 			}
 		},
 		
@@ -117,14 +141,30 @@ var colorPicker = proto(picker,
 			var expand = 63
 			if (!num) { num = 1 }
 			return [Math.cos(j * quarterCircle/num)*expand*i, -Math.sin(j * quarterCircle/num)*expand*i - 50]
-		},
-		
-		getRgba: function(color, alpha) {
-			return 'rgba('+color.concat(alpha||0.8).join(',')+')'
 		}
 	}
 )
-
+function rgbFromPos(hsvBase, pos) {
+	var saturationRatio = 1 + (-pos.dx / 100)
+	var valueRatio = 1 + (pos.dy / 100)
+	var hsv = [hsvBase[0], hsvBase[1] * saturationRatio, hsvBase[2] * valueRatio]
+	return hsvToRgb(clipArray(hsv, 0, 1))
+}
+function getRgb(item) {
+	var rgbStr = $(item).find('.dot').css('background-color')
+	var parts = rgbStr.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(0\.\d+))?\)$/)
+	return [parseInt(parts[1]), parseInt(parts[2]), parseInt(parts[3])]
+}
+function getHsv(item) {
+	return rgbToHsv(getRgb(item))
+}
+function rgbaString(rgb, alpha) {
+	return 'rgba('+map(rgb, function(c) { return Math.round(c) }).concat(alpha||0.8).join(',')+')'
+}
+function clipArray(arr, min, max) {
+	function clip(val) { return Math.max(Math.min(val, max), min) }
+	return [clip(arr[0]), clip(arr[1]), clip(arr[2])]
+}
 
 var pens = require('./pens')
 var penPicker = proto(picker,
@@ -132,17 +172,18 @@ var penPicker = proto(picker,
 		this.opts = opts
 	},
 	{
+		current: pens.list[0],
 		className:'penPicker',
 		width:40, height:40,
-		items:[map(pens, function(pen, i) { return pen })],
-		renderItem:function(pen, isCurrent, index) {
+		itemLists:[pens.list],
+		renderItem:function(pen, isCurrent) {
 			var width = this.width
 			var height = this.height
 			var styles = {
 				width:width, height:height, overflow:'hidden', display:'inline-block', margin:'0 4px 0 0',
 				border:'2px solid #333', borderRadius:4
 			}
-			return img('pen', style(styles), { src:'/blowtorch/img/pens/'+(index[1]+1)+'.png' })
+			return img('pen', style(styles), { src:'/blowtorch/img/pens/'+(pen.name)+'.png' })
 		},
 		getPos:function(i, j, num) {
 			var w = this.width + 10

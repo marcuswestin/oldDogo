@@ -4,6 +4,7 @@ require('tags/button')
 require('tags/list')
 require('tags/style')
 require('tags/scroller')
+require('tags/util')
 
 require('./events')
 require('./state')

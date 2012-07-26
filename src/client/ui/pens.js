@@ -379,3 +379,7 @@ pens.silk = proto(basePen,
 		}
 	}
 )
+
+pens.list = map(Object.keys(pens), function(name) {
+	return { name:name, create:pens[name] }
+})

@@ -148,7 +148,7 @@ function render(_opts) {
 	}
 	
 	function createPen(pen) {
-		return pen({ colorPicker:state.colorPicker, paint:p, width:width, height:height })
+		return pen.create({ colorPicker:state.colorPicker, paint:p, width:width, height:height })
 	}
 	
 	function getPoint($e) {
@@ -164,7 +164,7 @@ function render(_opts) {
 	
 	function pencilDown(e) {
 		e.preventDefault()
-		var pen = state.penPicker.getItem()
+		var pen = state.penPicker.getCurrent()
 		state.pen = createPen(pen)
 		state.pen.handleDown(getPoint(e))
 	}
