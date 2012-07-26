@@ -16,7 +16,6 @@ var basePen = {
 		this.up(this.ctx, point)
 		return this
 	},
-	
 	distance: function(p1, p2) {
 		var dx = p1[0] - p2[0]
 		var dy = p1[1] - p2[1]
