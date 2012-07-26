@@ -35,19 +35,11 @@ module.exports = proto(null,
 			router.use(express.bodyParser())
 		},
 		_createRoutes: function() {
-			var rest = this.rest,
-				filter = this.filters,
-				misc = this.misc,
-				dev = this.dev,
+			var filter = this.filters,
+				rest = this.rest,
 				router = this._router
 			
-			if (this._opts.dev) {
-				router.get('/', function(req, res) { res.redirect('/dev-client.html') })
-			} else {
-				router.get('/', misc.ping)
-			}
-			
-			router.get('/api/ping', misc.ping)
+			router.get('/api/ping', function(req, res) { res.end('"Dogo!"') })
 			router.post('/api/sessions', rest.postSessions.bind(this))
 			router.post('/api/sessions/refresh', rest.refreshSession.bind(this))
 			// router.post('/api/conversations', filter.session.bind(this), rest.postConversation.bind(this))
@@ -60,6 +52,12 @@ module.exports = proto(null,
 			router.get('/api/image', filter.session.bind(this), rest.getPicture.bind(this))
 			router.get('/api/version/info', filter.session.bind(this), rest.getVersionInfo.bind(this))
 			router.get('/api/version/download/*', filter.session.bind(this), rest.downloadVersion.bind(this))
+			
+			if (this._opts.dev) {
+				var dev = this.dev
+				router.get('/', dev.pageHandler.call(this, 'homepage'))
+			}
+			
 			// router.get('/web/*', bind(this, function(req, res) {
 			// 	var file = path.join(__dirname, '..', req.url.replace(/\.\./g, '').replace(/\^\/web\//, ''))
 			// 	fs.readFile(file, bind(this, this.respondHtml, req, res))
@@ -172,11 +170,6 @@ module.exports = proto(null,
 				}))
 			}
 		},
-		misc: {
-			ping: function(req, res) {
-				res.end('"Dogo!"')
-			}
-		},
 		filters: {
 			session: function(req, res, next) {
 				this.sessionService.authenticateRequest(req, function(err, accountId) {
@@ -184,6 +177,14 @@ module.exports = proto(null,
 					if (!accountId) { return next('Unauthorized') }
 					req.session = { accountId:accountId }
 					next()
+				})
+			}
+		},
+		dev: {
+			pageHandler: function(name) {
+				var buildPage = require('../web/build-page')
+				return bind(this, function(req, res, next) {
+					buildPage(name, bind(this, this.respondHtml, req, res))
 				})
 			}
 		},
