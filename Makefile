@@ -10,7 +10,7 @@ setup-dev: setup-server
 	cd node_modules/stylus && npm install .
 
 setup-server: setup
-	bash scripts/npm-install-modules.sh
+	bash src/scripts/npm-install-modules.sh
 
 setup:
 	echo "node_modules" > ~/.__npm_installed__gitignore
@@ -31,7 +31,7 @@ run-redis:
 	redis-server ./src/server/config/redis.conf
 
 client:
-	node scripts/build-client.js
+	node src/scripts/build-client.js
 
 fly-build: client
 	xcodebuild -project src/client/ios/dogo.xcodeproj -sdk iphoneos GCC_PREPROCESSOR_DEFINITIONS="TESTFLIGHT" -configuration Release

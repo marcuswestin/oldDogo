@@ -1,14 +1,14 @@
-require('../../src/server/util/globals')
-var Database = require('../../src/server/Database')
-var PictureService = require('../../src/server/PictureService')
-var config = require('../../src/server/config/prod')
+require('../../server/util/globals')
+var Database = require('../../server/Database')
+var PictureService = require('../../server/PictureService')
+var config = require('../../server/config/prod')
 var request = require('request')
 var accessKeyId = 'AKIAJDUJ4DPW4DE7552Q'
 var secretAccessKey = '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'
 var s3 = require('aws2js').load('s3', accessKeyId, secretAccessKey)
 var region = 'us-west-1'
 var fs = require('fs')
-var pictures = require('../../src/data/pictures')
+var pictures = require('../../data/pictures')
 
 var database = new Database(config.db)
 var pics = new PictureService(database, config.s3)

@@ -1,6 +1,6 @@
-require('../src/server/util/globals')
+require('./server/util/globals')
 
-var SessionService = require('../src/server/SessionService')
+var SessionService = require('./src/server/SessionService')
 
 var accountId = process.argv[2]
 
