@@ -8,18 +8,19 @@ var express = require('express'),
 
 require('color')
 
+var _opts
+
 module.exports = proto(null,
 	function(accountService, messageService, sessionService, pictureService, opts) {
+		_opts = opts
 		this.accountService = accountService
 		this.sessionService = sessionService
 		this.messageService = messageService
 		this.pictureService = pictureService
-		this._opts = opts
 		this._router = express()
 		this._server = http.createServer(this._router)
-		this._configureRouter(opts || {})
-		if (this._opts.dev) {
-			isDev = true
+		this._configureRouter(_opts || {})
+		if (_opts.dev) {
 			this._setupDev(this._router, this._server)
 		}
 		this._createRoutes()
@@ -31,7 +32,7 @@ module.exports = proto(null,
 		},
 		_configureRouter:function() {
 			var router = this._router
-			// if (this._opts.log) { router.use(express.logger({ format: ':method :url' })) }
+			// if (_opts.log) { router.use(express.logger({ format: ':method :url' })) }
 			router.use(express.bodyParser())
 		},
 		_createRoutes: function() {
@@ -53,11 +54,6 @@ module.exports = proto(null,
 			router.get('/api/version/info', filter.session.bind(this), rest.getVersionInfo.bind(this))
 			router.get('/api/version/download/*', filter.session.bind(this), rest.downloadVersion.bind(this))
 			
-			if (this._opts.dev) {
-				var dev = this.dev
-				router.get('/', dev.pageHandler.call(this, 'homepage'))
-			}
-			
 			// router.get('/web/*', bind(this, function(req, res) {
 			// 	var file = path.join(__dirname, '..', req.url.replace(/\.\./g, '').replace(/\^\/web\//, ''))
 			// 	fs.readFile(file, bind(this, this.respondHtml, req, res))
@@ -68,14 +64,13 @@ module.exports = proto(null,
 			// 	res.end('hi!')
 			// })
 			// router.all('/facebook_canvas/*', function(req, res) {
-			// 	self.respond(req, res, null, '<div style="font-size:40px;">Hi Jon!</div>', 'text/html')
+			// 	respond(req, res, null, '<div style="font-size:40px;">Hi Jon!</div>', 'text/html')
 			// })
 			
-			var self = this
 
 			router.use(function onError(err, req, res, next){
 				console.log("ERROR".red, err)
-				self.respond(req, res, err)
+				respond(req, res, err)
 			})
 		},
 		redirect:function(path) {
@@ -103,24 +98,24 @@ module.exports = proto(null,
 		rest: {
 			postAuthentication: function(req, res, next) {
 				var params = this._getParams(req, 'phone_number')
-				this.sessionService.createAuthentication(params.phone_number, bind(this, this.respond, req, res))
+				this.sessionService.createAuthentication(params.phone_number, curry(respond, req, res))
 			},
 			postSessions: function(req, res) {
 				var params = this._getParams(req, 'facebookAccessToken')
 				this.sessionService.createSessionWithFacebookAccessToken(params.facebookAccessToken,
-					bind(this, this.respond, req, res))
+					curry(respond, req, res))
 			},
 			refreshSession: function(req, res) {
 				var params = this._getParams(req, 'authToken')
-				this.sessionService.refreshSessionWithAuthToken(params.authToken, bind(this, this.respond, req, res))
+				this.sessionService.refreshSessionWithAuthToken(params.authToken, curry(respond, req, res))
 			},
 			getConversations: function(req, res) {
 				var params = this._getParams(req)
-				this.messageService.listConversations(req.session.accountId, this.wrapRespond(req, res, 'conversations'))
+				this.messageService.listConversations(req.session.accountId, wrapRespond(req, res, 'conversations'))
 			},
 			getContacts: function(req, res) {
 				var params = this._getParams(req)
-				this.accountService.getContacts(req.session.accountId, this.wrapRespond(req, res, 'contacts'))
+				this.accountService.getContacts(req.session.accountId, wrapRespond(req, res, 'contacts'))
 			},
 			postMessage: function(req, res) {
 				var params = this._getParams(req, 'toFacebookId', 'toAccountId', 'body', 'base64Picture', 'pictureWidth', 'pictureHeight', 'picWidth', 'picHeight', 'devPush')
@@ -130,33 +125,33 @@ module.exports = proto(null,
 				this.messageService.sendMessage(req.session.accountId,
 					params.toFacebookId, params.toAccountId, params.body,
 					params.base64Picture, params.pictureWidth || params.picWidth, params.pictureHeight || params.picHeight, // backcompat with < july 24 clients
-					prodPush, bind(this, this.respond, req, res))
+					prodPush, curry(respond, req, res))
 			},
 			getConversationMessages: function(req, res) {
 				var params = this._getParams(req, 'withAccountId', 'withFacebookId', 'lastReadMessageId')
 				this.messageService.getMessages(req.session.accountId,
 					params.withAccountId, params.withFacebookId, params.lastReadMessageId,
-					this.wrapRespond(req, res, 'messages'))
+					wrapRespond(req, res, 'messages'))
 			},
 			postPushAuth: function(req, res) {
 				var params = this._getParams(req, 'pushToken', 'pushSystem')
 				this.accountService.setPushAuth(req.session.accountId, params.pushToken, params.pushSystem,
-					bind(this, this.respond, req, res))
+					curry(respond, req, res))
 			},
 			getAccountInfo: function(req, res) {
 				var params = this._getParams(req, 'accountId', 'facebookId')
-				this.accountService.getAccount(params.accountId, params.facebookId, this.wrapRespond(req, res, 'account'))
+				this.accountService.getAccount(params.accountId, params.facebookId, wrapRespond(req, res, 'account'))
 			},
 			getPicture: function(req, res) {
 				var params = this._getParams(req, 'conversationId', 'pictureId', 'pictureSecret')
-				this.pictureService.getPictureUrl(req.session.accountId, params.conversationId, params.pictureId, params.pictureSecret, bind(this, function(err, url) {
-					if (err) { return this.respond(req, res, err) }
+				this.pictureService.getPictureUrl(req.session.accountId, params.conversationId, params.pictureId, params.pictureSecret, function(err, url) {
+					if (err) { return respond(req, res, err) }
 					res.redirect(url)
-				}))
+				})
 			},
 			getVersionInfo: function(req, res) {
 				var url = null // 'http://marcus.local:9000/api/version/download/latest.tar'
-				this.respond(req, res, null, { url:url })
+				respond(req, res, null, { url:url })
 			},
 			downloadVersion: function(req, res) {
 				res.writeHead(204)
@@ -164,9 +159,9 @@ module.exports = proto(null,
 				return
 				console.log('download version', req.url)
 				fs.readFile('/build/dogo-ios-build.tar', bind(this, function(err, tar) {
-					if (err) { return this.respond(req, res, err) }
+					if (err) { return respond(req, res, err) }
 					console.log("send download response", tar.length)
-					this.respond(req, res, null, tar, 'application/x-tar')
+					respond(req, res, null, tar, 'application/x-tar')
 				}))
 			}
 		},
@@ -180,73 +175,21 @@ module.exports = proto(null,
 				})
 			}
 		},
-		dev: {
-			pageHandler: function(name) {
-				var buildPage = require('../web/build-page')
-				return bind(this, function(req, res, next) {
-					buildPage(name, bind(this, this.respondHtml, req, res))
-				})
-			}
-		},
-		wrapRespond:function(req, res, name) {
-			return bind(this, function(err, data) {
-				var response = {}
-				response[name] = data
-				this.respond(req, res, err, err ? null : response)
-			})
-		},
-		respondHtml:function(req, res, err, content) {
-			this.respond(req, res, err, !err && content.toString(), 'text/html')
-		},
-		respond:function(req, res, err, content, contentType) {
-			try {
-			var code = 200, headers = {}
-			if (err) {
-				if (err === 'Unauthorized') {
-					code = 401
-					content = 'Authorization Required'
-					headers['WWW-Authenticate'] = 'Basic'
-					console.warn("Unauthorized".red, req.url.pink)
-				} else {
-					var stackError = new Error()
-					code = 500
-					content = err.stack || err.message || (err.toString && err.toString()) || err
-					if (this._opts.log || this._opts.dev) {
-						var logBody = JSON.stringify(req.body)
-						if (logBody.length > 400) { logBody = logBody.substr(0, 400) + ' (......)' }
-						console.warn('error', content, req.url, logBody, stackError.stack)
-					}
-				}
-			} else {
-				if (req.url.match(/\.html$/)) {
-					contentType = 'text/html'
-				}
-			}
-			
-			if (!contentType) {
-				contentType = 'application/json'
-			}
-			
-			if (contentType == 'application/json') {
-				content = JSON.stringify(content)
-			}
-			
-			headers['Content-Type'] = contentType
-			// headers['Content-Length'] = content.length
-			
-			res.writeHead(code, headers)
-			res.end(content)
-			} catch(e) {
-				res.end("Error sending message")
-			}
-		},
 		_setupDev:function(app, server) {
-			var nib = require('nib'),
-				jsCompiler = require('require/server'),
-				stylus = require('stylus'),
-				time = require('std/time')
+			var nib = require('nib')
+			var jsCompiler = require('../js-compiler')
+			var stylus = require('stylus')
+			var time = require('std/time')
+			var buildPage = require('../web/build-page')
 			
-			var self = this
+			app.get('/', sendPage('homepage'))
+			app.get('/test', sendPage('test'))
+			
+			function sendPage(name) {
+				return function(req, res) {
+					buildPage(name, curry(respondHtml, req, res))
+				}
+			}
 			
 			app.get('/app.html', function(req, res) {
 				res.sendfile('src/client/dogo.html')
@@ -271,7 +214,7 @@ module.exports = proto(null,
 			app.get('/blowtorch/img/*', function(req, res) {
 				var path = req.path.replace('/blowtorch/img/', '')
 				fs.readFile('src/client/img/'+path, function(err, content) {
-					if (err) { return self.respond(req, res, err) }
+					if (err) { return respond(req, res, err) }
 					res.writeHead(200, { 'Content-Type':'image/png' })
 					res.end(content)
 				})
@@ -280,47 +223,28 @@ module.exports = proto(null,
 			app.get('/blowtorch/fonts/*', function(req, res) {
 				var path = req.path.replace('/blowtorch/fonts/', '')
 				fs.readFile('src/client/fonts/'+path, function(err, content) {
-					if (err) { return self.respond(req, res, err) }
+					if (err) { return respond(req, res, err) }
 					res.writeHead(200, { 'Content-Type':'font/ttf' })
 					res.end(content)
 				})
 			})
 			
 			app.get('/stylus/*', function(req, res) {
-				var filename = req.path.replace('/stylus/', '')
+				var filename = __dirname + '/../../' + req.path.replace('/stylus/', '')
 				fs.readFile(filename, function(err, content) {
-					if (err) { return respond(err) }
+					if (err) { return respond(req, res, err) }
 					stylus(content.toString())
 						.set('filename', filename)
 						.set('compress', false)
 						.use(nib())
 						.import('nib')
-						.render(respond)
+						.render(curry(respondCss, req, res))
 				})
-				
-				function respond(err, content) {
-					if (err) {
-						res.writeHead(500)
-						res.end((err.stack || err.message || err).toString())
-					} else {
-						res.writeHead(200, { 'Content-Type':'text/css' })
-						res.end(content)
-					}
-				}
 			})
 			
 			app.get('/require/*', function(req, res) {
 				jsCompiler.handleRequest(req, res)
 			})
-			
-			fs.readdirSync('src/client').forEach(function(name) {
-				var path = 'src/client/'+name,
-					stat = fs.statSync(path)
-				if (stat.isDirectory()) {
-					jsCompiler.addPath(name, path)
-				}
-			})
-			
 			
 			// Auto-reload dev client stuff
 			// return;
@@ -398,3 +322,61 @@ var walk = function(dir, done) {
 	})
 }
 
+function wrapRespond(req, res, name) {
+	return function(err, data) {
+		var response = {}
+		response[name] = data
+		respond(req, res, err, err ? null : response)
+	}
+}
+
+function respondHtml(req, res, err, content) {
+	respond(req, res, err, !err && content.toString(), 'text/html')
+}
+
+function respondCss(req, res, err, content) {
+	respond(req, res, err, !err && content.toString(), 'text/css')
+}
+
+function respond(req, res, err, content, contentType) {
+	try {
+	var code = 200, headers = {}
+	if (err) {
+		if (err === 'Unauthorized') {
+			code = 401
+			content = 'Authorization Required'
+			headers['WWW-Authenticate'] = 'Basic'
+			console.warn("Unauthorized".red, req.url.pink)
+		} else {
+			var stackError = new Error()
+			code = 500
+			content = err.stack || err.message || (err.toString && err.toString()) || err
+			if (_opts.log || _opts.dev) {
+				var logBody = JSON.stringify(req.body)
+				if (logBody.length > 400) { logBody = logBody.substr(0, 400) + ' (......)' }
+				console.warn('error', content, req.url, logBody, stackError.stack)
+			}
+		}
+	} else {
+		if (req.url.match(/\.html$/)) {
+			contentType = 'text/html'
+		}
+	}
+	
+	if (!contentType) {
+		contentType = 'application/json'
+	}
+	
+	if (contentType == 'application/json') {
+		content = JSON.stringify(content)
+	}
+	
+	headers['Content-Type'] = contentType
+	// headers['Content-Length'] = content.length
+	
+	res.writeHead(code, headers)
+	res.end(content)
+	} catch(e) {
+		res.end("Error sending message")
+	}
+}

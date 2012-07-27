@@ -21,5 +21,3 @@ logError = logErr = function(err, callback /* , args ... */) {
 		console.error("SHIT SHIT SHIT, logErr callback stack hanging!!!")
 	}
 }
-
-isDev = false
