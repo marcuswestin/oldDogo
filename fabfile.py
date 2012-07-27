@@ -7,31 +7,41 @@ env.use_ssh_config = True
 
 src_dir = "~/dogo-src"
 builds_dir = "~/dogo-builds"
+currents_dir = "~/dogo-current"
 
 isLocal = False
 
 go = lcd if isLocal else cd
 do = local if isLocal else run
 sudo_do = local if isLocal else sudo
-def cp(cpFrom, to):
-	local('cp %s %s' % (cpFrom, to)) if isLocal else put(cpFrom, to)
 
 def setup_dogo_web():
 	# Intentionally remote-only
 	sudo('apt-get install build-essential make nginx redis-server libssl-dev curl git-core libxml2-dev nodejs npm imagemagick') # ? mysql-client-core-5.5
 	put('~/flutterby-keys/dogo/secure/aws_dogo_github_id_rsa', '~/.ssh/id_rsa')
-	run('mkdir -p %s' % builds_dir)
 	run('chmod 600 ~/.ssh/id_rsa')
 
 def deploy_dogo_web(git_hash):
-	build_name = "dogo-web-%s-%s" % (int(time.time()), git_hash)
 	update_src_dir(git_hash)
-	do('mkdir -p %s' % builds_dir)
-	do('cp -RH %s %s/%s' % (src_dir, builds_dir, build_name))
-	do('ln -snf %s/%s %s/current' % (builds_dir, build_name, builds_dir))
+	build_path = _create_build(git_hash, "dogo-web")
+	install_path = _install_build(build_path, "dogo-web")
 	with settings(warn_only=True):
 		sudo_do('killall -q node')
-	sudo_do('nohup node %s/%s/src/server/run.js --config=prod' % (builds_dir, build_name))
+	sudo_do('nohup node %s/src/server/run.js --config=prod' % (install_path))
+
+def _create_build(git_hash, component_name):
+	build_info = do("cd %s && git log %s --format=%s | head -n 1" % (src_dir, git_hash, '%h-%ct'))
+	build_path = "%s/%s-%s-%s" % (builds_dir, component_name, int(time.time()), build_info)
+	do('mkdir -p %s' % builds_dir)
+	do('cp -RH %s %s' % (src_dir, build_path))
+	return build_path
+
+def _install_build(build_path, component_name):
+	install_path = "%s/%s" % (currents_dir, component_name)
+	do('mkdir -p %s' % currents_dir)
+	do('ln -snf %s %s' % (build_path, install_path))
+	return install_path
+	
 
 def deploy_nginx_conf(git_hash):
 	update_src_dir(git_hash)
@@ -41,9 +51,9 @@ def deploy_nginx_conf(git_hash):
 def update_src_dir(git_hash):
 	do('if [ ! -d %s ]; then git clone git@github.com:marcuswestin/dogo.git %s; fi' % (src_dir, src_dir))
 	with go(src_dir):
-		do('git pull origin master; git checkout %s; git submodule init; git submodule sync; git submodule update;' % git_hash)
+		do('git pull origin master')
+		do('git checkout %s' % git_hash)
 		do('make setup-server')
-	
 
 # NEXT Use cluster to run app
 # One app per cpu
