@@ -21,7 +21,7 @@
         
         BOOL devMode = [mode isEqualToString:@"dev"];
         
-        self.serverHost = devMode ? @"http://marcus.local:9000" : @"http://api.dogoapp.com";
+        self.serverHost = devMode ? @"http://marcus.local:9000" : @"https://dogoapp.com";
 
         facebook = [[Facebook alloc] initWithAppId:@"219049001532833" andDelegate:self];
         
