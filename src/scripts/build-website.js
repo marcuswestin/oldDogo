@@ -21,7 +21,7 @@ exec('rm -rf '+buildDir+' && mkdir -p '+buildDir+' && cp -r src/website/static '
 		var name = page.split('.')[0]
 		buildPage(name, { combine:true, minify:true }, function(err, html) {
 			if (err) { throw err }
-			fs.writeFileSync(buildDir+'/'+page, html)
+			fs.writeFileSync(buildDir+'/pages/'+page, html)
 			next()
 		})
 	})()
