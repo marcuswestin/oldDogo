@@ -7,7 +7,7 @@ var buildPage = require('../website/build-page')
 var dstDir = 'build/website'
 var buildDir = '/tmp/dogo-build-website'
 
-exec('rm -rf '+buildDir+' && mkdir -p '+buildDir+' && cp -r src/website/static '+buildDir, function() {
+exec('rm -rf '+buildDir+' && mkdir -p '+buildDir+'/pages && cp -r src/website/static '+buildDir, function() {
 	var pages = fs.readdirSync('src/website/pages')
 	;(function next() {
 		if (!pages.length) {
