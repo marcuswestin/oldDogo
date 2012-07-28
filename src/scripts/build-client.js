@@ -17,7 +17,7 @@ exec('rm -rf '+dir, function() {
 			}
 		})
 		
-		var styl = __dirname + '/../src/client/style/dogo.styl'
+		var styl = 'src/client/style/dogo.styl'
 		fs.readFile(styl, { filename:styl }, function(err, content) {
 			if (err) { return console.log(err) }
 			stylus(content.toString())
