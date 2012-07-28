@@ -77,6 +77,7 @@ module.exports = proto(null,
 			return function(req, res) { res.redirect(path) }
 		},
 		_getParams:function(req) {
+			console.log("Request:", req.url)
 			var argNames = slice(arguments, 1)
 			var params = {}
 			for (var i=0, argName; argName=argNames[i]; i++) {
@@ -339,6 +340,7 @@ function respondCss(req, res, err, content) {
 }
 
 function respond(req, res, err, content, contentType) {
+	console.log("Responding...", req.url)
 	try {
 	var code = 200, headers = {}
 	if (err) {
@@ -377,6 +379,8 @@ function respond(req, res, err, content, contentType) {
 	res.writeHead(code, headers)
 	res.end(content)
 	} catch(e) {
-		res.end("Error sending message")
+		try { res.end("Error sending message") }
+		catch(e) { console.log("COULD NOT RESPOND") }
 	}
+	console.log("Responded", req.url)
 }
