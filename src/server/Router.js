@@ -18,7 +18,9 @@ module.exports = proto(null,
 		this.messageService = messageService
 		this.pictureService = pictureService
 		this._router = express()
-		this._server = http.createServer(this._router)
+		this._server = http.createServer(function(req, res) {
+			console.log("HERE", req.url)
+		})
 		this._configureRouter(_opts || {})
 		if (_opts.dev) {
 			this._setupDev(this._router, this._server)
