@@ -54,7 +54,7 @@ module.exports = proto(null,
 			router.get('/api/version/info', filter.session.bind(this), rest.getVersionInfo.bind(this))
 			router.get('/api/version/download/*', filter.session.bind(this), rest.downloadVersion.bind(this))
 			
-			// router.get('/web/*', bind(this, function(req, res) {
+			// router.get('/website*', bind(this, function(req, res) {
 			// 	var file = path.join(__dirname, '..', req.url.replace(/\.\./g, '').replace(/\^\/web\//, ''))
 			// 	fs.readFile(file, bind(this, this.respondHtml, req, res))
 			// }))
@@ -178,10 +178,9 @@ module.exports = proto(null,
 		},
 		_setupDev:function(app, server) {
 			var nib = require('nib')
-			var jsCompiler = require('../js-compiler')
-			var stylus = require('stylus')
+			var combine = require('../combine')
 			var time = require('std/time')
-			var buildPage = require('../web/build-page')
+			var buildPage = require('../website/build-page')
 			
 			app.get('/', sendPage('homepage'))
 			app.get('/test', sendPage('test'))
@@ -229,22 +228,17 @@ module.exports = proto(null,
 					res.end(content)
 				})
 			})
+
+			app.get('/static/*', function(req, res) {
+				fs.readFile('src/website'+req.url, curry(respond, req, res))
+			})
 			
 			app.get('/stylus/*', function(req, res) {
-				var filename = __dirname + '/../../' + req.path.replace('/stylus/', '')
-				fs.readFile(filename, function(err, content) {
-					if (err) { return respond(req, res, err) }
-					stylus(content.toString())
-						.set('filename', filename)
-						.set('compress', false)
-						.use(nib())
-						.import('nib')
-						.render(curry(respondCss, req, res))
-				})
+				combine.compileStylusPath(req.path, curry(respondCss, req, res))
 			})
 			
 			app.get('/require/*', function(req, res) {
-				jsCompiler.handleRequest(req, res)
+				combine.handleRequireRequest(req, res)
 			})
 			
 			// Auto-reload dev client stuff

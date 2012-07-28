@@ -1,22 +1,12 @@
 var fs = require('fs'),
 	exec = require('child_process').exec,
-	jsCompiler = require('require/compiler'),
-	stylus = require('stylus'),
-	nib = require('nib'),
+	combine = require('../combine'),
 	path = require('path')
 
 var dir = '/build/dogo-ios-build'
 
 exec('rm -rf '+dir, function() {
 	exec('mkdir -p '+dir, function() {
-		fs.readdirSync('src/client').forEach(function(name) {
-			var path = 'src/client/'+name,
-				stat = fs.statSync(path)
-			if (stat.isDirectory()) {
-				jsCompiler.addPath(name, path)
-			}
-		})
-		
 		var styl = 'src/client/style/dogo.styl'
 		fs.readFile(styl, { filename:styl }, function(err, content) {
 			if (err) { return console.log(err) }
@@ -27,7 +17,7 @@ exec('rm -rf '+dir, function() {
 				.import('nib')
 				.render(function(err, css) {
 					var html = fs.readFileSync('src/client/dogo.html').toString()
-					var js = jsCompiler.compile('src/client/dogo.js', { minify:false })
+					var js = combine.compileJs('src/client/dogo.js', { minify:false })
 					
 					html = html.replace('<script src="/require/src/client/dogo"></script>',
 						'<script src="appJs.html"></script>')
