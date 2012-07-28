@@ -21,6 +21,11 @@ def setup_dogo_web():
 	put('~/flutterby-keys/dogo/secure/aws_dogo_github_id_rsa', '~/.ssh/id_rsa')
 	run('chmod 600 ~/.ssh/id_rsa')
 
+def deploy_dogo_website(git_hash):
+	update_src_dir(git_hash)
+	with go(src_dir):
+		do('make build-website')
+
 def deploy_dogo_api(git_hash):
 	update_src_dir(git_hash)
 	with go(src_dir):

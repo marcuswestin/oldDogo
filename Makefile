@@ -68,6 +68,9 @@ fly-all: fly-build
 clean:
 	rm -rf build
 
+build-website:
+	node src/scripts/build-website.js
+
 GIT_REV=`git rev-parse --verify HEAD`
 deploy-dogo-api:
 	echo "BUILDING AND DEPLOYING ${GIT_REV}"
