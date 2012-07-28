@@ -79,4 +79,7 @@ deploy-dogo-api:
 deploy-nginx-conf:
 	fab deploy_nginx_conf:${GIT_REV} -H dogo-web1
 
+deploy-dogo-website:
+	fab deploy_dogo_website:${GIT_REV} -H dogo-web1
+
 .PHONY: test
