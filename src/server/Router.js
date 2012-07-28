@@ -20,6 +20,7 @@ module.exports = proto(null,
 		this._router = express()
 		this._server = http.createServer(function(req, res) {
 			console.log("HERE", req.url)
+			res.end('pong')
 		})
 		this._configureRouter(_opts || {})
 		if (_opts.dev) {
