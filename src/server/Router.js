@@ -360,7 +360,14 @@ function respond(req, res, err, content, contentType) {
 	}
 	
 	if (!contentType) {
-		contentType = 'application/json'
+		console.log("HERE", req.url, req.url.match(/\.jpg$/))
+		if (req.url.match(/\.jpg$/)) {
+			contentType = 'image/jpg'
+		} else if (req.url.match(/\.png$/)) {
+			contentType = 'image/png'
+		} else {
+			contentType = 'application/json'
+		}
 	}
 	
 	if (contentType == 'application/json') {

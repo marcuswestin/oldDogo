@@ -6,18 +6,30 @@ html
 	height 100%;
 	min-height 100%;
 body
-	background-image -webkit-radial-gradient(140px 90px, circle cover, rgba(255, 240, 240, .3), rgba(255, 255, 255, .05) 400px);
+	background-image -webkit-radial-gradient(140px 90px, circle contain, rgba(255, 240, 240, .3), rgba(255, 255, 255, .05) 400px);
 	height 100%;
 	min-height 100%;
 
-#logo
-	absolute top 80px left 120px; font-size 85px; disable-select(); cursor default;
-	// font-family: 'Mrs Sheppards', cursive;
-	// font-family: 'Kaushan Script', cursive;
-	font-family 'Yellowtail', cursive;
-	text-shadow 2px 1px 1px rgba(255,255,255,.5);
-	color #282424;
+#content
+	absolute top 80px left 120px;
+	#logo
+		absolute top 0 left 0; font-size 85px; disable-select(); cursor default;
+		// font-family: 'Mrs Sheppards', cursive;
+		// font-family: 'Kaushan Script', cursive;
+		font-family 'Yellowtail', cursive;
+		text-shadow 1px 1px 1px rgba(255,255,255,.5);
+		color #282424;
+	#info
+		font-family 'Open Sans'; font-weight 300; font-size 30px; color #222; text-shadow 0 1px 0 rgba(250,250,250,.3);
+		absolute top 120px left 60px; disable-select(); cursor default; width 280px;
 
-#info
-	font-family 'Open Sans'; font-weight 300; font-size 30px; color #222; text-shadow 0 1px 1px #ddd;
-	absolute top 200px left 180px; disable-select(); cursor default;
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen and (device-width: 320px) and (max-device-width: 480px)
+	body
+		background-image none
+	#content
+		absolute top 0 left 0; width 320px; height 420px; background-image -webkit-radial-gradient(140px 90px, circle contain, rgba(255, 240, 240, .3), rgba(255, 255, 255, .05) 400px);
+		#logo
+			top 40px; left 20px;
+		#info
+			top 160px; left 30px;
