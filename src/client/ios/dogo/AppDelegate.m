@@ -173,8 +173,8 @@
         textInput.frame = frame;
         NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
                              [NSNumber numberWithInt:dHeight], @"heightChange",
-                             [NSNumber numberWithFloat:textInput.frame.size.height], @"height"
-                             , nil];
+                             [NSNumber numberWithFloat:textInput.frame.size.height], @"height",
+                             nil];
         [self notify:@"textInput.changedHeight" info:info];
     }
 }

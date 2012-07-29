@@ -26,7 +26,6 @@ database.select(this, "select COALESCE(p.meta_json, '{}') as metaJson, p.id as p
 		var r = res.pop()
 		var meta = JSON.parse(r.metaJson)
 		var url = pictures.url(r.conversationId, r.pictureSecret)
-		console.log("HERE", meta)
 		if (meta.sizes && meta.sizes[0]) {
 			console.log("Skipping", url)
 			return next()

@@ -188,11 +188,11 @@ function promptInvite(message, accountId, facebookId) {
 					// TODO events.on('facebook.dialogDidComplete', function() { ... })
 					// https://developers.facebook.com/docs/reference/dialogs/requests/
 					// https://developers.facebook.com/docs/mobile/ios/build/
-				
+					
 					if (gState.facebookSession()) {
 						bridge.command('facebook.setSession', gState.facebookSession())
 					}
-				
+					
 					var myAccount = gState.myAccount()
 					var name = myAccount.firstName || myAccount.name
 					if (message.body) {

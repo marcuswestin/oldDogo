@@ -371,7 +371,6 @@ function respond(req, res, err, content, contentType) {
 	}
 	
 	if (!contentType) {
-		console.log("HERE", req.url, req.url.match(/\.jpg$/))
 		if (req.url.match(/\.jpg$/)) {
 			contentType = 'image/jpg'
 		} else if (req.url.match(/\.png$/)) {
