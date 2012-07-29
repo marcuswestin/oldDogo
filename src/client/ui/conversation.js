@@ -200,13 +200,13 @@ function promptInvite(message, accountId, facebookId) {
 					} else {
 						var text = 'sent you a drawing. Reply in style with Dogo!'
 					}
-				
 					bridge.command('facebook.dialog', {
 						dialog: 'apprequests',
 						params: {
 							message: text,
-							to: account.facebookId.toString(),
-							data: JSON.stringify({ conversationId:message.conversationId })
+							to: account.facebookId.toString()
+							// title: name+' sent you a...',
+							// data: JSON.stringify({ conversationId:message.conversationId }),
 							// frictionless:'1'
 						}
 					})
