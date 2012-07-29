@@ -19,28 +19,30 @@ function showTextInput(data) {
 		.css({ width:at.width, height:at.height, left:at.x, top:at.y - topBarOffset })
 		.appendTo($('#viewport'))
 		.on('keypress', onKeyPress)
-		
+	
 	var keyboardAnimationDuration = 250
-	events.fire('keyboard.willShow', { keyboardAnimationDuration:keyboardAnimationDuration })
 	setTimeout(function() {
-		$input.focus()
-	}, keyboardAnimationDuration)
+		events.fire('keyboard.willShow', { keyboardAnimationDuration:keyboardAnimationDuration })
+		setTimeout(function() {
+			$input.focus()
+		}, keyboardAnimationDuration)
+	}, 0)
 	$input.on('blur', function($e) {
 		setTimeout(function() {
 			events.fire('keyboard.willHide', { keyboardAnimationDuration:keyboardAnimationDuration })
-		}, 100) // hack
+		}, 400)
 	})
 }
 
 function animateTextInput(data) {
 	var to = data.to
 	var duration = data.duration
-	$input.animate({ width:to.width, height:to.height, left:to.x, top:to.y - topBarOffset }, duration)
+	$input.css({ width:to.width, height:to.height, left:to.x, top:to.y - topBarOffset })
 }
 
 function hideTextInput() {
 	if (!$input) { return }
-	$input.remove()
+	$input.blur().remove()
 	delete $input
 }
 
