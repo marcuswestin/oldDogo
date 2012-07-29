@@ -30,6 +30,9 @@ run-prod:
 run-redis:
 	redis-server ./src/server/config/redis.conf
 
+run-mysql-dev:
+	mysqld_safe
+
 client:
 	node src/scripts/build-client.js
 
