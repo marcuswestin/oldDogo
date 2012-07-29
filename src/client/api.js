@@ -8,7 +8,9 @@ module.exports = {
 	post:post,
 	get:get,
 	getAuth:getAuth,
-	getHeaders:getHeaders
+	getHeaders:getHeaders,
+	setHeaders:setHeaders,
+	connect:connect
 }
 
 function post(path, params, callback) {
@@ -45,8 +47,13 @@ function send(method, path, params, callback) {
 	})
 }
 
+var baseHeaders = {}
+function setHeaders(headers) {
+	baseHeaders = headers
+}
+
 function getHeaders() {
-	return { 'Authorization':getAuth(), 'X-Dogo-Mode':appInfo.config.mode, 'X-Dogo-BundleVersion':appInfo.bundleVersion }
+	return $.extend({ 'Authorization':getAuth() }, baseHeaders)
 }
 
 function handleResponse(callback, err, res, xhr) {
@@ -55,4 +62,25 @@ function handleResponse(callback, err, res, xhr) {
 		if (process) { eval(process) }
 	} catch(e) {}
 	callback && callback(err, res)
+}
+
+function connect(opts, callback) {
+	var facebookAccessToken = opts.facebookSession && opts.facebookSession.accessToken
+	api.post('sessions', { facebookAccessToken:facebookAccessToken, facebookRequestId:opts.facebookRequestId }, function(err, res) {
+		if (err) { return callback(err) }
+		var contacts = res.contacts
+		var contactsByAccountId = gState.cache['contactsByAccountId'] || {}
+		var contactsByFacebookId = gState.cache['contactsByFacebookId'] || {}
+		each(contacts, function(contact) {
+			if (contact.accountId) {
+				contactsByAccountId[contact.accountId] = contact
+			}
+			contactsByFacebookId[contact.facebookId] = contact
+		})
+
+		gState.set('contactsByAccountId', contactsByAccountId)
+		gState.set('contactsByFacebookId', contactsByFacebookId)
+		gState.set('sessionInfo', { myAccount:res.account, authToken:res.authToken, facebookSession:opts.facebookSession })
+		callback(null)
+	})
 }

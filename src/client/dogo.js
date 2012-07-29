@@ -19,6 +19,7 @@ appInfo = {}
 
 events.on('app.start', function onAppStart(info) {
 	appInfo = info
+	api.setHeaders({ 'X-Dogo-Mode':appInfo.config.mode, 'X-Dogo-BundleVersion':appInfo.bundleVersion })
 	startApp()
 })
 

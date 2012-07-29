@@ -9,10 +9,11 @@ module.exports = {
 
 function createAndRenderScroller() {
 	gScroller = tags.scroller({ onViewChange:function onViewChange() { events.fire('view.change') }, duration:400 })
-	$(document.body).append(div('app', viewport.fit))
-	$('.app')
-		.append(gScroller.renderHead(gHeadHeight, scrollerRenderHeadContent))
-		.append(gScroller.renderBody(3, scrollerRenderBodyContent))
+	viewport.fit($('#viewport'))
+	$('#viewport').append(div('dogoApp',
+		gScroller.renderHead(gHeadHeight, scrollerRenderHeadContent),
+		gScroller.renderBody(3, scrollerRenderBodyContent)
+	))
 }
 
 function scrollerRenderHeadContent($head, view, viewBelow, fromView) {
@@ -49,32 +50,24 @@ events.on('searchButton.results', function(info) {
 
 function scrollerRenderBodyContent($body, view) {
 	console.log("scroller.scrollerRenderBodyContent", JSON.stringify(view))
-	if (view.conversation) {
-		conversation.render($body, view.conversation)
+	var convo = view.conversation
+	if (convo) {
+		$body.append(conversation.render({
+			accountId:convo.accountId,
+			facebookId:convo.facebookId,
+			messages:gState.cache[conversation.id(convo, 'messages')],
+			myAccountId:gState.myAccount().accountId
+		}))
+		conversation.refreshMessages()
 		buildContactsIndex()
 	} else if (gState.authToken()) {
 		home.render($body, view)
 		buildContactsIndex()
 	} else {
 		gScroller.hasConnectView = true
-		connect.render($body, function connectRender(res, facebookSession) {
-			var contacts = res.contacts
-			var contactsByAccountId = gState.cache['contactsByAccountId'] || {}
-			var contactsByFacebookId = gState.cache['contactsByFacebookId'] || {}
-			each(contacts, function(contact) {
-				if (contact.accountId) {
-					contactsByAccountId[contact.accountId] = contact
-				}
-				contactsByFacebookId[contact.facebookId] = contact
-			})
-			
-			gState.set('contactsByAccountId', contactsByAccountId)
-			gState.set('contactsByFacebookId', contactsByFacebookId)
-			gState.set('sessionInfo', { myAccount:res.account, authToken:res.authToken, facebookSession:facebookSession })
+		connect.render($body, function connectRender() {
 			gScroller.push({ title:'Dogo' })
-
 			bridge.command('push.register')
-			
 			buildContactsIndex()
 		})
 	}

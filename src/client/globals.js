@@ -28,9 +28,11 @@ style = tags.style
 transition = style.transition
 tags.expose()
 
+parseUrl = require('std/url')
+
 loading = function loading(isLoading) {
 	if (!loading.$ui) {
-		loading.$ui = $(div('loading-wrapper', div('icon'))).appendTo('.app')
+		loading.$ui = $(div('loading-wrapper', div('icon'))).appendTo('.dogoApp')
 	}
 	
 	if (isLoading) {
@@ -69,7 +71,7 @@ loadAccount = function loadAccount(accountId, facebookId, callback) {
 		var id = facebookId
 	}
 	
-	var cache = gState.cache[cacheKey]
+	var cache = gState.cache[cacheKey] || {}
 	var account = cache[id]
 	if (account) {
 		callback && callback(account)

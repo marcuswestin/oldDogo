@@ -59,7 +59,7 @@ function setupBrowserDebugMode() {
 	
 	$(function() {
 		bridge.eventHandler('app.start', { config: { mode:'dev' }, bundleVersion:'DevChrome' })
-		$('.app').css({ margin:'-165px auto' })
+		$('#viewport').css({ margin:'50px auto' })
 		$('body').css({ background:'#222' })
 	})
 	
@@ -107,7 +107,7 @@ function setupBrowserDebugMode() {
 
 	var $win = $(window)
 	
-	var $buttons = $(div())
+	var $buttons = $(div(style({ position:'absolute', top:0, left:0 })))
 	each([-180, -90, 0, 90, 180], function(deg) {
 		$buttons.append(div(style({ padding:10, color:'#fff' }), 'Rotate: ', deg, button(function() {
 			events.fire('device.rotated', { deg:deg })

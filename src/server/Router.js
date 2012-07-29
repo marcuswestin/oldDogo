@@ -53,6 +53,8 @@ module.exports = proto(null,
 			router.get('/api/image', filter.session.bind(this), rest.getPicture.bind(this))
 			router.get('/api/version/info', filter.session.bind(this), rest.getVersionInfo.bind(this))
 			router.get('/api/version/download/*', filter.session.bind(this), rest.downloadVersion.bind(this))
+			router.get('/api/facebook_canvas/conversation', rest.getFacebookConversation.bind(this))
+			router.post('/api/facebook_requests', filter.session.bind(this), rest.saveFacebookRequest.bind(this))
 			
 			// router.get('/website*', bind(this, function(req, res) {
 			// 	var file = path.join(__dirname, '..', req.url.replace(/\.\./g, '').replace(/\^\/web\//, ''))
@@ -102,8 +104,8 @@ module.exports = proto(null,
 				this.sessionService.createAuthentication(params.phone_number, curry(respond, req, res))
 			},
 			postSessions: function(req, res) {
-				var params = this._getParams(req, 'facebookAccessToken')
-				this.sessionService.createSessionWithFacebookAccessToken(params.facebookAccessToken,
+				var params = this._getParams(req, 'facebookAccessToken', 'facebookRequestId')
+				this.sessionService.createSession(params.facebookAccessToken, params.facebookRequestId,
 					curry(respond, req, res))
 			},
 			refreshSession: function(req, res) {
@@ -113,6 +115,14 @@ module.exports = proto(null,
 			getConversations: function(req, res) {
 				var params = this._getParams(req)
 				this.messageService.listConversations(req.session.accountId, wrapRespond(req, res, 'conversations'))
+			},
+			saveFacebookRequest: function(req, res) {
+				var params = this._getParams(req, 'facebookRequestId', 'toAccountId', 'conversationId')
+				this.messageService.saveFacebookRequest(req.session.accountId, params.facebookRequestId, params.toAccountId, params.conversationId, curry(respond, req, res))
+			},
+			getFacebookConversation: function(req, res) {
+				var params = this._getParams(req, 'facebookRequestId')
+				this.messageService.loadFacebookRequestId(params.facebookRequestId, curry(respond, req, res))
 			},
 			getContacts: function(req, res) {
 				var params = this._getParams(req)
@@ -183,6 +193,7 @@ module.exports = proto(null,
 			var buildPage = require('../website/build-page')
 			
 			app.get('/', sendPage('homepage'))
+			app.all(/^\/facebook_canvas*/, sendPage('facebook_canvas'))
 			app.get('/test', sendPage('test'))
 			
 			function sendPage(name) {
@@ -234,7 +245,7 @@ module.exports = proto(null,
 			})
 			
 			app.get('/stylus/*', function(req, res) {
-				combine.compileStylusPath(req.path, curry(respondCss, req, res))
+				combine.compileStylusPath(req.path, {}, curry(respondCss, req, res))
 			})
 			
 			app.get('/require/*', function(req, res) {

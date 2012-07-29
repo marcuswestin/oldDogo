@@ -17,7 +17,7 @@ function showTextInput(data) {
 	$input = $(input())
 		.css({ position:'absolute', border:0, margin:0, padding:0, zIndex:1 })
 		.css({ width:at.width, height:at.height, left:at.x, top:at.y - topBarOffset })
-		.appendTo($('.app'))
+		.appendTo($('#viewport'))
 		.on('keypress', onKeyPress)
 		
 	var keyboardAnimationDuration = 250

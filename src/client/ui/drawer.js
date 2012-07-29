@@ -1,7 +1,6 @@
 var pickers = require('./pickers')
 var pens = require('./pens')
 var paint = require('./paint')
-var parseUrl = require('std/url')
 var pictures = require('../../data/pictures')
 
 module.exports = {

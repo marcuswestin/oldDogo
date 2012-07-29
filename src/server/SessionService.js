@@ -4,22 +4,38 @@ var uuid = require('uuid'),
 	facebook = require('./util/facebook')
 
 module.exports = proto(null,
-	function(accountService) {
+	function(db, accountService) {
+		this.db = db
 		this.accountService = accountService
 		this._redis = redis.createClient()
 	}, {
-		createSessionWithFacebookAccessToken: function(fbAccessToken, callback) {
-			facebook.get('me', { access_token:fbAccessToken }, bind(this, function(err, res) {
-				if (err) { return logError(err, callback, 'createSessionWithFacebookAccessToken.facebook.get.me', fbAccessToken) }
-				this.accountService.lookupOrCreateByFacebookAccount(res, fbAccessToken, bind(this, function(err, account) {
-					if (err) { return logError(err, callback, 'createSessionWithFacebookAccessToken.lookupOrCreateByFacebookAccount', account) }
-					this.createSessionForAccountId(account.accountId, bind(this, function(err, authToken) {
-						if (err) { return logError(err, callback, 'createSessionWithFacebookAccessToken.createSessionForAccountId', account.accountId) }
-						this.accountService.getContacts(account.accountId, bind(this, function(err, contacts) {
-							if (err) { return logError(err, callback, 'createSessionWithFacebookAccessToken.getContacts') }
-							callback(null, { authToken:authToken, account:account, contacts:contacts })
-						}))
+		createSession: function(fbAccessToken, fbRequestId, callback) {
+			if (fbAccessToken) {
+				facebook.get('me', { access_token:fbAccessToken }, bind(this, function(err, fbAccount) {
+					if (err) { return logError(err, callback, '_handleFacebookAccount', fbAccessToken) }
+					this.accountService.lookupOrCreateByFacebookAccount(fbAccount, fbAccessToken, bind(this, function(err, account) {
+						if (err) { return logError(err, callback, 'createSession.lookupOrCreateByFacebookAccount', account) }
+						this.createSessionAndGetContacts(account.accountId, account, callback)
 					}))
+				}))
+			} else if (fbRequestId) {
+				this.db.selectOne(this,
+					'SELECT to_account_id FROM facebook_request WHERE facebook_request_id=? AND response_time IS NULL',
+					[fbRequestId], function(err, res) {
+						if (err) { return callback(err) }
+						this.createSessionAndGetContacts(res.to_account_id, null, callback)
+					}
+				)
+			} else {
+				callback('Missing access token or request id')
+			}
+		},
+		createSessionAndGetContacts: function(accountId, account, callback) {
+			this.createSessionForAccountId(accountId, bind(this, function(err, authToken) {
+				if (err) { return logError(err, callback, 'createSession.createSessionForAccountId', accountId) }
+				this.accountService.getContacts(accountId, bind(this, function(err, contacts) {
+					if (err) { return logError(err, callback, 'createSession.getContacts') }
+					callback(null, { authToken:authToken, account:account, contacts:contacts })
 				}))
 			}))
 		},

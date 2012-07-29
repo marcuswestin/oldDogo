@@ -1,3 +1,46 @@
+gradientLight = #D6DDE2
+gradientDark = #B0BAC2
+
+// http://www.colourlovers.com/palette/92095/Giant_Goldfish
+color1 = #71D1EA
+color2 = #AADBD8
+color3 = #E0E4C9
+color4 = #EF8805
+color5 = #F56B00
+
+// http://azuliadesigns.com/css-message-notification-bars/
+blueLight = #BDE5F8
+blueDark = #00529B
+greenLight = #DFF2BF
+greenDark = #4F8A10
+yellowLight = #FEEFB3
+yellowDark = #9F6000
+redLight = #FFBABA
+redDark = #D8000C
+
+textShadow = 0 1px 0 #888;
+buttonShadow = 0 1px 2px #444;
+
+@-webkit-keyframes rotate {
+	from {-webkit-transform: rotate(0deg);}
+	to {-webkit-transform: rotate(360deg);}
+}
+
+// Annoying, crazy font hacks - not sure what's going on but it's related to the ordering of fonts in plist.info
+light() { font-weight 400; }
+light-italic() { font-style italic; font-weight 100; }
+
+animate-rotation(duration)
+	-webkit-transition-property: -webkit-transform; -webkit-transition-duration: duration;
+	-webkit-animation-name: rotate;
+	-webkit-animation-duration: duration;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-timing-function: linear;
+
+icon(width, height, name, xOffset=0, yOffset=0)
+	width width+xOffset; height height+yOffset; background transparent xOffset yOffset no-repeat;
+	background-image url('/blowtorch/img/glyphish/'+name); background-size width height;
+
 box-shadow(offsetX=0, offsetY=1px, blur=2px, color=rgba(0,0,0,0.5), inout=null)
 	box-shadow inout color offsetX offsetY blur;
 	-webkit-box-shadow inout color offsetX offsetY blur;

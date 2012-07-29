@@ -1,0 +1,17 @@
+@import "../../client/style/macros"
+
+logo()
+	disable-select(); cursor default; font-family 'Yellowtail', cursive;
+	text-shadow 1px 1px 1px rgba(255,255,255,.5); color #282424;
+
+linen-background()
+	html
+		background #CD573E;
+		background-image url('/static/img/red-linen.jpg');
+		height 100%;
+		min-height 100%;
+	body
+		background-image -webkit-radial-gradient(140px 90px, circle contain, rgba(255, 240, 240, .3), rgba(255, 255, 255, .05) 400px);
+		height 100%;
+		min-height 100%;
+	

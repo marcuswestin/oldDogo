@@ -175,7 +175,10 @@ events.on('app.willEnterForeground', function() {
 	}
 })
 
-events.on('message.sent', function onMessageSentHome(message, toAccountId, toFacebookId) {
+events.on('message.sent', function onMessageSentHome(info) {
+	var message = info.message
+	var toAccountId = info.toAccountId
+	var toFacebookId = info.toFacebookId
 	if (!$ui.conversations.find('#'+bubbleId(toAccountId))[0]) {
 		$ui.conversations.prepend(messageFromSentMessage(message, toAccountId))
 	}

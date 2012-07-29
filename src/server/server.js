@@ -19,7 +19,7 @@ function run(config) {
 	var database = new Database(config.db),
 		accountService = new AccountService(database),
 		pushService = new PushService(database, devConfig.push, prodConfig.push),
-		sessionService = new SessionService(accountService),
+		sessionService = new SessionService(database, accountService),
 		pictureService = new PictureService(database, config.s3),
 		messageService = new MessageService(database, accountService, pushService, pictureService),
 		router = new Router(accountService, messageService, sessionService, pictureService, { log:config.log, dev:config.dev })

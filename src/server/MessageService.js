@@ -44,7 +44,7 @@ module.exports = proto(null,
 						this._createMessage(accountId, toAccountId, conversation.id, body, pictureId, bind(this, function(err, message) {
 							if (err) { return callback(err) }
 							this.pushService.sendMessagePush(message, accountId, toAccountId, prodPush)
-							callback(null, { message:message, toAccountId:toAccountId, toFacebookId:toFacebookAccountId })
+							callback(null, { message:message, toAccountId:toAccountId, toFacebookId:toFacebookAccountId, disableInvite:false })
 						}))
 					})
 					
@@ -69,6 +69,26 @@ module.exports = proto(null,
 					}))
 				}))
 			})
+		},
+		saveFacebookRequest: function(accountId, facebookRequestId, toAccountId, conversationId, callback) {
+			this.db.insert(this,
+				'INSERT INTO facebook_request SET created_time=?, facebook_request_id=?, from_account_id=?, to_account_id=?, conversation_id=?',
+				[this.db.time(), facebookRequestId, accountId, toAccountId, conversationId], function(err, res) {
+					if (err) { return callback(err) }
+					callback(null, 'OK')
+				})
+		},
+		loadFacebookRequestId: function(facebookRequestId, callback) {
+			this.db.selectOne(this,
+				this.sql.selectFacebookRequest+'WHERE facebook_request_id=?', [facebookRequestId], function(err, facebookRequest) {
+					if (err) { return callback(err) }
+					if (!facebookRequest) { return callback('Unknown facebook request') }
+					this._selectMessages(this.db, facebookRequest.conversationId, bind(this, function(err, messages) {
+						if (err) { return logErr(err, callback, 'loadFacebookRequestId._selectMessages', facebookRequest.conversationId) }
+						callback(null, { messages:messages, facebookRequest:facebookRequest })
+					}))
+					
+				})
 		},
 		_markLastReadMessage:function(accountId, conversationId, messages, lastReadMessageId) {
 			// Find most recent message sent not by me
@@ -255,8 +275,14 @@ module.exports = proto(null,
 			})
 			+ 'INNER JOIN conversation convo ON partic.conversation_id=convo.id\n'
 			+ 'LEFT OUTER JOIN message last_message ON convo.last_message_id=last_message.id\n'
-			+ 'LEFT OUTER JOIN message last_received ON partic.last_received_message_id=last_received.id\n'
+			+ 'LEFT OUTER JOIN message last_received ON partic.last_received_message_id=last_received.id\n',
 			// TODO remove last_message join
+			
+			selectFacebookRequest:sql.selectFrom('facebook_request', {
+				fromAccountId: 'from_account_id',
+				toAccountId: 'to_account_id',
+				conversationId: 'conversation_id'
+			})
 		}
 	}
 )

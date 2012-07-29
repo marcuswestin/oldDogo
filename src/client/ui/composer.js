@@ -4,7 +4,6 @@ var drawer = require('./drawer')
 
 var currentAccountId
 var currentFacebookId
-var $currentViewUi
 var $ui
 var textHidden = true
 
@@ -20,12 +19,15 @@ var composer = module.exports = {
 		textHidden = true
 		bridge.command('textInput.hide')
 	},
-	render: function($viewUi, accountId, facebookId) {
+	render: function(opts) {
+		opts = options(opts, {
+			accountId:null,
+			facebookId:null
+		})
 		$ui = {}
 
-		currentAccountId = accountId
-		currentFacebookId = facebookId
-		$currentViewUi = $viewUi
+		currentAccountId = opts.accountId
+		currentFacebookId = opts.facebookId
 		
 		return function($tag) {
 			$tag.append(
@@ -63,7 +65,7 @@ var composer = module.exports = {
 				borderColor:[0,0,0,.1]
 			})
 			events.once('keyboard.willShow', function(info) {
-				$('body > .app').css('-webkit-transform', 'translateY('+appOffset+'px)')
+				$('.dogoApp').css('-webkit-transform', 'translateY('+appOffset+'px)')
 				pos.y = y1
 				bridge.command('textInput.animate', {
 					duration:info.keyboardAnimationDuration,
@@ -72,7 +74,7 @@ var composer = module.exports = {
 			})
 			events.once('keyboard.willHide', function(info) {
 				events.off('textInput.return', onReturnHandler)
-				$('body > .app').css('-webkit-transform', 'translateY(0px)')
+				$('.dogoApp').css('-webkit-transform', 'translateY(0px)')
 				pos.y = y0
 				bridge.command('textInput.animate', {
 					duration:info.keyboardAnimationDuration,
@@ -84,7 +86,7 @@ var composer = module.exports = {
 			})
 			events.on('textInput.changedHeight', function(info) {
 				appOffset += info.heightChange
-				$('body > .app').css('-webkit-transform', 'translateY('+appOffset+'px)')
+				$('.dogoApp').css('-webkit-transform', 'translateY('+appOffset+'px)')
 			})
 			$ui.surface.append(div('writer'))
 		}
@@ -111,7 +113,7 @@ function onSelectPhoto($e) {
 function selectDraw(img, message) {
 	composer.hide()
 	gScroller.$head.hide()
-	$('body > .app').append($ui.drawer=drawer.render({ onSend:sendImage, onHide:composer.hide, img:img, message:message }))
+	$('.dogoApp').append($ui.drawer=drawer.render({ onSend:sendImage, onHide:composer.hide, img:img, message:message }))
 }
 
 function sendImage(data, width, height) {
@@ -133,7 +135,7 @@ function send(params) {
 	} else {
 		api.post('messages', message, function(err, res) {
 			if (err) { return error(err) }
-			events.fire('message.sent', res.message, res.toAccountId, res.toFacebookId)
+			events.fire('message.sent', { message:res.message, toAccountId:res.toAccountId, toFacebookId:res.toFacebookId, disableInvite:res.disableInvite })
 		})
 	}
 	
@@ -144,6 +146,6 @@ events.on('view.change', function onViewRenderEvent() {
 	composer.hide()
 })
 
-$('body').on('touchmove', '.conversation', function() {
+$('#viewport').on('touchmove', '.conversation', function() {
 	composer.hide()
 })

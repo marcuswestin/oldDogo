@@ -3,18 +3,18 @@ module.exports = {
 		$(body).append(div('connect',
 			div('button', 'Connect', button(function() {
 				var $el = $(this).text('Loading...').addClass('disabled')
-				bridge.command('facebook.connect', { permissions:['email'] }, function(err, data) {
-					if (err) {
+				bridge.command('facebook.connect', { permissions:['email'] }, function(err, facebookSession) {
+					if (err || !facebookSession) {
 						$el.text('Try again').removeClass('disabled')
-						return error(err)
+						return
 					}
-					api.post('sessions', { facebookAccessToken:data.accessToken }, function(err, res) {
+					api.connect({ facebookSession:facebookSession }, function(err) {
 						if (err) {
 							$el.text('Try again').removeClass('disabled')
-							return error(err)
+							return
 						}
 						$el.text('Connected!')
-						onConnected(res, data)
+						onConnected()
 					})
 				})
 			}))

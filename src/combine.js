@@ -8,7 +8,8 @@ var options = require('std/options')
 module.exports = {
 	handleRequireRequest:jsServer.handleRequest,
 	compileJs:jsCompiler.compile,
-	compileStylusPath:compileStylusPath
+	compileStylusPath:compileStylusPath,
+	compileStylus:compileStylus
 }
 
 fs.readdirSync(__dirname+'/client').forEach(function(name) {
@@ -21,20 +22,24 @@ fs.readdirSync(__dirname+'/client').forEach(function(name) {
 })
 
 function compileStylusPath(stylusPath, opts, callback) {
-	if (!callback) { callback = opts }
-	opts = options(opts, {
-		minify:false
-	})
-	
 	var filename = __dirname + stylusPath.replace('/stylus/src', '')
 	if (!filename.match(/\.styl$/)) { filename += '.styl' }
+	opts.filename = filename
 	fs.readFile(filename, function(err, content) {
 		if (err) { return callback(err) }
-		stylus(content.toString())
-			.set('filename', filename)
-			.set('compress', opts.minify)
-			.use(nib())
-			.import('nib')
-			.render(callback)
+		compileStylus(content, opts, callback)
 	})
+}
+
+function compileStylus(content, opts, callback) {
+	opts = options(opts, {
+		minify:false,
+		filename:null
+	})
+	stylus(content.toString())
+		.set('filename', opts.filename)
+		.set('compress', opts.minify)
+		.use(nib())
+		.import('nib')
+		.render(callback)
 }

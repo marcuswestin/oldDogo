@@ -5,35 +5,37 @@ var pictures = require('../../data/pictures')
 var currentView
 var $ui
 
-function convId() {
-	return 'conv-messages-'+(currentView.accountId ? 'dogo-'+currentView.accountId : 'fb-'+currentView.facebookId)
+var convId = function() {
+	return conversation.id(currentView, 'messages') // TODO remove
 }
 
-module.exports = {
-	render:function($body, view) {
-		currentView = view
-		$ui = {}
+var conversation = module.exports = {
+	id: function conversationId(convo, name) {
+		return 'conv-'+name+'-'+(convo.accountId ? 'dogo-'+convo.accountId : 'fb-'+convo.facebookId)
+	},
+	render:renderConversation,
+	refreshMessages:refreshMessages
+}
 
-		$body.append(
-			div('conversation',
-				$ui.info = $(div('info')),
-				$ui.wrapper=$(div('messagesWrapper', style({ height:viewport.height() - 45, overflowY:'scroll', overflowX:'hidden' }),
-					$ui.invite=$(div('invite')),
-					div('messages', $ui.messages = list({ items:[], onSelect:selectMessage, renderItem:renderMessage }))
-				)),
-				composer.render($ui, currentView.accountId, currentView.facebookId)
-			)
-		)
-
-		$ui.wrapper.on('scroll', checkScrollBounds)
-		$ui.messages.empty().prepend(gState.cache[convId()])
-		setTimeout(function() {
-			$ui.wrapper.scrollTop($ui.messages.height())
-		}, 100)
-		
-		checkScrollBounds()
-		refreshMessages()
-	}
+function renderConversation(opts) {
+	currentView = opts
+	$ui = {}
+	
+	return div('conversation',
+		$ui.info = $(div('info')),
+		$ui.wrapper=$(div('messagesWrapper', style({ height:viewport.height() - 45, overflowY:'scroll', overflowX:'hidden' }),
+			$ui.invite=$(div('invite')),
+			div('messages', $ui.messages = list({ items:opts.messages, onSelect:selectMessage, renderItem:renderMessage }))
+		)).on('scroll', checkScrollBounds),
+		composer.render({ accountId:opts.accountId, facebookId:opts.accountId }),
+		function() {
+			setTimeout(function() {
+				$ui.wrapper.scrollTop($ui.messages.height())
+			}, 100)
+			checkScrollBounds()
+			opts.refreshMessages && refreshMessages()
+		}
+	)
 }
 
 function selectMessage(message, _, $el) {
@@ -88,7 +90,7 @@ var checkScrollBounds = once(function checkScrollBounds() {
 })
 
 function renderMessage(message) {
-	var fromMe = (message.senderAccountId == gState.myAccount().accountId)
+	var fromMe = (message.senderAccountId == currentView.myAccountId)
 	var typeClass = message.body ? 'text' : 'picture'
 	checkScrollBounds()
 	return div(div('clear messageBubble ' + typeClass + (fromMe ? ' fromMe' : ''),
@@ -149,7 +151,10 @@ events.on('message.sending', function(message) {
 	addMessage(message)
 })
 
-events.on('message.sent', function(message, toAccountId, toFacebookId) {
+events.on('message.sent', function(info) {
+	var message = info.message
+	var toAccountId = info.toAccountId
+	var toFacebookId = info.toFacebookId
 	if (!currentView) { return }
 	if (!currentView.accountId && toFacebookId && toFacebookId == currentView.facebookId) {
 		// A first message was sent to this facebook id, and the server responds with the newly created account id as well as the facebook id
@@ -158,6 +163,7 @@ events.on('message.sent', function(message, toAccountId, toFacebookId) {
 	if (currentView.accountId != toAccountId) { return }
 	loadAccountId(toAccountId, function(account) {
 		if (account.memberSince) { return }
+		if (info.disableInvite) { return }
 		promptInvite(message, account.accountId, account.facebookId)
 	})
 })
@@ -172,10 +178,8 @@ events.on('app.willEnterForeground', function() {
 })
 
 function promptInvite(message, accountId, facebookId) {
-	return
 	composer.hide()
 	loadAccountId(accountId, function(account) {
-		
 		var $infoBar = $(div(transition('height', 500), div('dogo-info blue',
 			div('invite',
 				div('encouragement', 'Nice ', message.pictureId ? 'Picture' : 'Message', '!'),
@@ -194,7 +198,7 @@ function promptInvite(message, accountId, facebookId) {
 					if (message.body) {
 						var text = name+' says: "'+message.body+'". Reply in style with Dogo!'
 					} else {
-						var text = 'sent you a drawing! Reply in style with Dogo'
+						var text = 'sent you a drawing. Reply in style with Dogo!'
 					}
 				
 					bridge.command('facebook.dialog', {
@@ -205,6 +209,13 @@ function promptInvite(message, accountId, facebookId) {
 							data: JSON.stringify({ conversationId:message.conversationId })
 							// frictionless:'1'
 						}
+					})
+					events.once('facebook.dialogCompleteWithUrl', function(info) {
+						var url = parseUrl(info.url)
+						var facebookRequestId = url.getSearchParam('request')
+						api.post('facebook_requests', { facebookRequestId:facebookRequestId, toAccountId:accountId, conversationId:message.conversationId }, function(err, res) {
+							if (err) { return error(err) }
+						})
 					})
 				}))
 			)
