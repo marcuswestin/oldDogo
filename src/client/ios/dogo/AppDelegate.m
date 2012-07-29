@@ -310,7 +310,7 @@
  */
 - (void)dialogCompleteWithUrl:(NSURL *)url {
     NSMutableDictionary *info = [NSMutableDictionary dictionary];
-    if (url) { [info setObject:[url absoluteURL] forKey:@"url"]; }
+    if (url) { [info setObject:[url absoluteString] forKey:@"url"]; }
     [self notify:@"facebook.dialogCompleteWithUrl" info:info];
 }
 
@@ -319,7 +319,7 @@
  */
 - (void)dialogDidNotCompleteWithUrl:(NSURL *)url {
     NSMutableDictionary *info = [NSMutableDictionary dictionary];
-    if (url) { [info setObject:[url absoluteURL] forKey:@"url"]; }
+    if (url) { [info setObject:[url absoluteString] forKey:@"url"]; }
     [self notify:@"facebook.dialogDidNotCompleteWithUrl" info:info];
 }
 
