@@ -19,6 +19,12 @@ function setupBrowserDebugMode() {
 					callback(null, response.authResponse)
 				}, { scope:data.permissions.join(',') })
 				break
+			case 'facebook.dialog':
+				var params = data.params
+				FB.ui({ method:data.dialog, message:params.message, data:params.data, title:params.title, to:parseInt(params.to) }, function(res) {
+					events.fire('facebook.dialogCompleteWithUrl', { url:'fake_fbconnect://success?request='+res.request })
+				})
+				break
 			case 'app.restart':
 				location.reload()
 				break
