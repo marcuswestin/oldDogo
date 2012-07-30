@@ -106,6 +106,7 @@ var colorPicker = proto(picker,
 			var onDone = function() {
 				$(this).find('.dot').css({ 'background-color':rgbaString(item) }) // reset
 				onSelect(rgb)
+				rgb = item
 			}
 			return tags.draggable({
 				start:function(pos) {
