@@ -165,7 +165,7 @@ function bubbleId(withAccountId) { return 'conversation-bubble-'+withAccountId }
 
 events.on('push.message', function(pushMessage) {
 	if ($ui) {
-		$ui.conversations.append(messageFromPush(pushMessage))
+		$ui.conversations.prepend(messageFromPush(pushMessage))
 	}
 })
 
