@@ -1,10 +1,11 @@
-var express = require('express'),
+var express = require('express')
 var SessionService = require('./SessionService')
 var fs = require('fs')
 var path = require('path')
 var curry = require('std/curry')
 var slice = require('std/slice')
 var http = require('http')
+var semver = require('semver')
 
 require('color')
 
@@ -89,13 +90,18 @@ module.exports = proto(null,
 				}
 			}
 			
+			var bundleVersion = req.headers['x-dogo-bundleversion']
+			req.meta = {
+				accountId: req.session && req.session.accountId,
+				bundleVersion: bundleVersion
+			}
+			
 			var logParams = JSON.stringify(params)
 			if (logParams.length > 250) { logParams = logParams.substr(0, 250) + ' (......)' }
 			
-			var bundleVersion = req.headers['X-Dogo-BundleVersion']
 			var d = new Date()
 			var time = d.getFullYear()+'/'+d.getMonth()+'/'+d.getDate()+'-'+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()
-			console.log(time, req.method, req.url, req.session && req.session.accountId, bundleVersion, logParams)
+			console.log(time, req.method, req.url, req.meta, logParams)
 			return params
 		},
 		rest: {
@@ -140,8 +146,12 @@ module.exports = proto(null,
 			},
 			getConversationMessages: function(req, res) {
 				var params = this._getParams(req, 'withAccountId', 'withFacebookId', 'lastReadMessageId')
+				
+				var reverseOrder = !semver.valid(req.meta.bundleVersion)
+				
 				this.messageService.getMessages(req.session.accountId,
 					params.withAccountId, params.withFacebookId, params.lastReadMessageId,
+					reverseOrder,
 					wrapRespond(req, res, 'messages'))
 			},
 			postPushAuth: function(req, res) {
