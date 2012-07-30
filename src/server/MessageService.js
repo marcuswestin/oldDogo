@@ -189,28 +189,12 @@ module.exports = proto(null,
 				[conn.time(), accountId, convoId, body, pictureId], callback)
 		},
 		_selectMessage: function(conn, messageId, callback) {
-			conn.selectOne(this, this.sql.selectMessage+' WHERE message.id=?', [messageId], function(err, message) {
-				// BACKCOMPAT, REMOVE
-				if (!err && message.pictureId) {
-					message.payloadId = message.pictureId
-					message.payloadType = 'picture'
-				}
-				callback(err, message)
-			})
+			conn.selectOne(this, this.sql.selectMessage+' WHERE message.id=?', [messageId], callback)
 		},
 		_selectMessages: function(conn, convoId, reverseOrder, callback) {
 			conn.select(this, this.sql.selectMessage+' WHERE conversation_id=? ORDER BY id DESC LIMIT 50', [convoId], function(err, messages) {
 				if (!reverseOrder) {
 					messages.reverse()
-				}
-				// BACKCOMPAT, REMOVE
-				if (!err) {
-					each(messages, function(message) {
-						if (message.pictureId) {
-							message.payloadId = message.pictureId
-							message.payloadType = 'picture'
-						}
-					})
 				}
 				callback(err, messages)
 			})

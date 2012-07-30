@@ -53,9 +53,6 @@ module.exports = proto(null,
 						notification.payload.pictureWidth = message.pictureWidth
 						notification.payload.pictureHeight = message.pictureHeight
 						notification.alert = fromAccountInfo.firstName + ' sent you a drawing' // NOTE Clients depend on "\w+ sent you a drawing"
-						// BACKCOMPAT
-						notification.payload.payloadId = message.pictureId
-						notification.payload.payloadType = 'picture'
 					} else {
 						notification.alert = fromAccountInfo.firstName + ' says: "'+message.body+'"'
 					}
