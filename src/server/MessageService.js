@@ -199,8 +199,10 @@ module.exports = proto(null,
 			})
 		},
 		_selectMessages: function(conn, convoId, reverseOrder, callback) {
-			var order = reverseOrder ? 'DESC' : 'ASC'
-			conn.select(this, this.sql.selectMessage+' WHERE conversation_id=? ORDER BY id '+order+' LIMIT 50', [convoId], function(err, messages) {
+			conn.select(this, this.sql.selectMessage+' WHERE conversation_id=? ORDER BY id DESC LIMIT 50', [convoId], function(err, messages) {
+				if (!reverseOrder) {
+					messages.reverse()
+				}
 				// BACKCOMPAT, REMOVE
 				if (!err) {
 					each(messages, function(message) {
