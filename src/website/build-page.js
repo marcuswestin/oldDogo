@@ -34,7 +34,11 @@ module.exports = function buildPage(name, opts, callback) {
 		if (script) {
 			var filePath = script[1]+'.js'
 			var compiledJs = combine.compileJs(filePath, { minify:opts.minify })
+			
+			var BACKREFERENCE_WORKAROUND = '____________backreference_workaround________'
+			compiledJs = compiledJs.replace('\$\&', BACKREFERENCE_WORKAROUND)
 			html = html.replace(script[0], '<script>\n'+compiledJs+'\n</script>')
+			html = html.replace(BACKREFERENCE_WORKAROUND, '\$\&')
 		}
 		var stylusMatch = html.match(/<link[^\n]*href="([^"]+)\.styl"[^\n]*\/?>/i)
 		if (stylusMatch) {
