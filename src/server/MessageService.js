@@ -44,7 +44,7 @@ module.exports = proto(null,
 						this._createMessage(accountId, toAccountId, conversation.id, body, pictureId, bind(this, function(err, message) {
 							if (err) { return callback(err) }
 							this.pushService.sendMessagePush(message, accountId, toAccountId, prodPush)
-							callback(null, { message:message, toAccountId:toAccountId, toFacebookId:toFacebookAccountId, disableInvite:false })
+							callback(null, { message:message, toAccountId:toAccountId, toFacebookId:toFacebookAccountId, disableInvite:true })
 						}))
 					})
 					
