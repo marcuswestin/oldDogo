@@ -61,3 +61,6 @@
 [submodule "node_modules/imagemagick"]
 	path = node_modules/imagemagick
 	url = git://github.com/rsms/node-imagemagick.git
+[submodule "node_modules/semver"]
+	path = node_modules/semver
+	url = git://github.com/isaacs/node-semver.git

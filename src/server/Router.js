@@ -1,10 +1,10 @@
 var express = require('express'),
-	SessionService = require('./SessionService'),
-	fs = require('fs'),
-	path = require('path'),
-	curry = require('std/curry'),
-	slice = require('std/slice'),
-	http = require('http')
+var SessionService = require('./SessionService')
+var fs = require('fs')
+var path = require('path')
+var curry = require('std/curry')
+var slice = require('std/slice')
+var http = require('http')
 
 require('color')
 
