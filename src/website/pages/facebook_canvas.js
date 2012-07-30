@@ -3,22 +3,53 @@ var conversation = require('../../client/ui/conversation')
 
 
 ;(function() {
+	
+	api.setHeaders({ 'x-dogo-client':'0.91.0-facebook_canvas' })
+	
 	var requestIds = parseUrl(location).getSearchParam('request_ids')
+	viewport.fit($('#viewport'))
+	setTimeout(function() {
+		window.scrollTo(0, 1)
+	})
 	if (requestIds) {
 		var facebookRequestId = requestIds.split(',').pop()
 		api.connect({ facebookRequestId:facebookRequestId }, function(err, res) {
 			if (err) { return error(err) }
 			api.get('facebook_canvas/conversation', { facebookRequestId:facebookRequestId }, function(err, res) {
 				if (err) { return error(err) }
-				viewport.fit($('#viewport'))
 				$('#viewport').append(
-					div('dogoApp', style({ 'overflow-y':'scroll', '-webkit-overflow-scrolling':'touch' }),
+					div('dogoApp',
 						conversation.render({
 							messages:res.messages,
-							myAccountId:res.facebookRequest.toAccountId
+							myAccountId:res.facebookRequest.toAccountId,
+							height:viewport.height()
 						})
-					)
+					),
+					$(input('replyInput', style({ position:'absolute', bottom:0, left:0, display:'block', height:30, margin:'0 auto' }), { placeholder:'Reply' })).on('keypress', onKeyPress),
+					div('button', 'Send', style({ width:40, position:'absolute', bottom:3, right:3, fontWeight:'bold' }), button(sendMessage))
 				)
+				viewport.react(function() {
+					$('.replyInput').width(viewport.width() - 81)
+				})
+				
+				function onKeyPress($e) {
+					if ($e.keyCode != 13) { return }
+					sendMessage()
+				}
+				
+				function sendMessage() {
+					var body = $('.replyInput').val()
+					$('.replyInput').val('')
+					var message = {
+						toAccountId:res.facebookRequest.fromAccountId,
+						senderAccountId:res.facebookRequest.toAccountId,
+						body:body
+					}
+					conversation.addMessage(message)
+					api.post('messages', message, function(err, res) {
+						if (err) { return error(err) }
+					})
+				}
 			})
 		})
 	}

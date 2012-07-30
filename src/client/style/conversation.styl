@@ -54,3 +54,13 @@ faceDim = 25px
 				margin 0 2px; padding 4px 10px 6px;
 	.close.button
 		position absolute; z-index 1; font-size 14px; padding 11px 7px;
+
+buttonRadius = 4px;
+.button
+	padding 3px 8px 5px; border-radius buttonRadius; background linear-gradient(top, color5, #E44212); border 1px solid #fff;
+	color #fff; text-align center; display inline-block; cursor pointer; box-shadow buttonShadow;
+.button.active
+	background linear-gradient(bottom, darken(color4, 10%), color5); border-color #eee; color #eee;
+	box-shadow none;
+
+
