@@ -29,18 +29,14 @@ var composer = module.exports = {
 		currentAccountId = opts.accountId
 		currentFacebookId = opts.facebookId
 		
-		return function($tag) {
-			$tag.append(
-				div('composer',
-					$ui.surface = $(div('surface')),
-					div('tools',
-						div('button tool', div('icon write'), button(selectText)),
-						div('button tool', div('icon photo'), button(onSelectPhoto)),
-						div('button tool', div('icon draw'), button(onSelectDraw))
-					)
-				)
+		return div('composer',
+			$ui.surface = $(div('surface')),
+			div('tools',
+				div('button tool', div('icon write'), button(selectText)),
+				div('button tool', div('icon photo'), button(onSelectPhoto)),
+				div('button tool', div('icon draw'), button(onSelectDraw))
 			)
-		}
+		)
 		
 		function selectText(e) {
 			composer.hide()

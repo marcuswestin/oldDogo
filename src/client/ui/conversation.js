@@ -23,11 +23,10 @@ function renderConversation(opts) {
 	
 	return div('conversation',
 		$ui.info = $(div('info')),
-		$ui.wrapper=$(div('messagesWrapper', style({ height:viewport.height() - 45, overflowY:'scroll', overflowX:'hidden' }),
+		$ui.wrapper=$(div('messagesWrapper', style({ height:opts.height, overflowY:'scroll', overflowX:'hidden' }),
 			$ui.invite=$(div('invite')),
 			div('messages', $ui.messages = list({ items:opts.messages, onSelect:selectMessage, renderItem:renderMessage }))
 		)).on('scroll', checkScrollBounds),
-		composer.render({ accountId:opts.accountId, facebookId:opts.accountId }),
 		function() {
 			setTimeout(function() {
 				$ui.wrapper.scrollTop($ui.messages.height())

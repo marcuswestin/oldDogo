@@ -10,7 +10,8 @@ var conversation = require('../../client/ui/conversation')
 			if (err) { return error(err) }
 			api.get('facebook_canvas/conversation', { facebookRequestId:facebookRequestId }, function(err, res) {
 				if (err) { return error(err) }
-				viewport.fit($('#viewport')).append(
+				viewport.fit($('#viewport'))
+				$('#viewport').append(
 					div('dogoApp', style({ 'overflow-y':'scroll', '-webkit-overflow-scrolling':'touch' }),
 						conversation.render({
 							messages:res.messages,

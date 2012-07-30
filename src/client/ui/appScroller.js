@@ -2,6 +2,7 @@ var searchButton = require('./searchButton')
 var home = require('./home')
 var connect = require('./connect')
 var conversation = require('./conversation')
+var composer = require('./composer')
 
 module.exports = {
 	createAndRender:createAndRenderScroller
@@ -52,12 +53,16 @@ function scrollerRenderBodyContent($body, view) {
 	console.log("scroller.scrollerRenderBodyContent", JSON.stringify(view))
 	var convo = view.conversation
 	if (convo) {
-		$body.append(conversation.render({
-			accountId:convo.accountId,
-			facebookId:convo.facebookId,
-			messages:gState.cache[conversation.id(convo, 'messages')],
-			myAccountId:gState.myAccount().accountId
-		}))
+		$body.append(
+			conversation.render({
+				accountId:convo.accountId,
+				facebookId:convo.facebookId,
+				messages:gState.cache[conversation.id(convo, 'messages')],
+				myAccountId:gState.myAccount().accountId,
+				height:viewport.height() - gScroller.$head.height()
+			}),
+			composer.render({ accountId:convo.accountId, facebookId:convo.facebookId })
+		)
 		conversation.refreshMessages()
 		buildContactsIndex()
 	} else if (gState.authToken()) {
