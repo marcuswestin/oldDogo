@@ -24,6 +24,10 @@ setup:
 run:
 	node src/server/run.js --config=dev
 
+run-all:
+	make run-redis &
+	make run-mysql-dev &
+
 run-prod:
 	node src/server/run.js --config=prod
 
