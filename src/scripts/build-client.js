@@ -10,7 +10,7 @@ exec('rm -rf '+dir, function() {
 		var styl = 'src/client/style/dogo.styl'
 		fs.readFile(styl, { filename:styl }, function(err, content) {
 			if (err) { return console.log(err) }
-			combine.compileStylus(content.toString(), { filename:styl, minify:false }, function(err, css) {
+			combine.compileStylus(content.toString(), { filename:styl, minify:true }, function(err, css) {
 				var html = fs.readFileSync('src/client/dogo.html').toString()
 				var js = combine.compileJs('src/client/dogo.js', { minify:false })
 				
