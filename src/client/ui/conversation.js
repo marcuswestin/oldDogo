@@ -181,7 +181,7 @@ function promptInvite(message, accountId, facebookId) {
 	loadAccountId(accountId, function(account) {
 		var $infoBar = $(div(transition('height', 500), div('dogo-info blue',
 			div('invite',
-				div('encouragement', 'Nice ', message.pictureId ? 'Picture' : 'Message', '!'),
+				div('encouragement', 'Very Expressive!'),
 				div('personal', account.name.split(' ')[0], " doesn't have Dogo yet."),
 				div('button', 'Send on Facebook', button(function() {
 					// TODO events.on('facebook.dialogDidComplete', function() { ... })
