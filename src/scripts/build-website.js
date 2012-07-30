@@ -19,7 +19,7 @@ exec('rm -rf '+buildDir+' && mkdir -p '+buildDir+'/pages && cp -r src/website/st
 		var page = pages.pop()
 		if (!page.match(/\.html$/)) { return next() }
 		var name = page.split('.')[0]
-		buildPage(name, { combine:true, minify:true }, function(err, html) {
+		buildPage(name, { combine:true, minify:false }, function(err, html) {
 			if (err) { throw err }
 			fs.writeFileSync(buildDir+'/pages/'+page, html)
 			next()
