@@ -50,6 +50,7 @@ module.exports = proto(null,
 					notification.sound = "vibrate.wav"
 					if (message.pictureId) {
 						notification.payload.pictureId = message.pictureId
+						notification.payload.pictureSecret = message.pictureSecret
 						notification.payload.pictureWidth = message.pictureWidth
 						notification.payload.pictureHeight = message.pictureHeight
 						notification.alert = fromAccountInfo.firstName + ' sent you a drawing' // NOTE Clients depend on "\w+ sent you a drawing"
