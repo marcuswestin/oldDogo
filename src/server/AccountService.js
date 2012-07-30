@@ -9,13 +9,14 @@ module.exports = proto(null,
 		lookupOrCreateByFacebookAccount:function(fbAccount, fbAccessToken, callback) {
 			this._selectAccountByFacebookId(this.db, fbAccount.id, function(err, account) {
 				if (err) { return callback(err) }
-				if (account && account.memberSince) { return callback(null, account) }
 				
 				facebook.get('me/friends', { access_token:fbAccessToken }, bind(this, function(err, res) {
 					if (err) { return callback(err) }
 					var fbFriends = res.data
 					if (res.error || !fbFriends) {
 						callback(res.error || 'Facebook connect failed')
+					} else if (account && account.memberSince) {
+						this._insertFbContacts(this.db, fbAccount, fbFriends, callback)
 					} else if (account) {
 						this._claimAccount(fbAccount, fbFriends, callback)
 					} else {
@@ -67,7 +68,13 @@ module.exports = proto(null,
 			var accountId = null
 			if (err) { return logErr(err, callback, '_insertFbContacts', accountId) }
 			var next = bind(this, function(err) {
-				if (err) { return callback(err) }
+				if (err) {
+					if (err.message.match(/Duplicate entry/)) {
+						// ignore
+					} else {
+						return callback(err)
+					}
+				}
 				if (!fbFriends.length) { return finish() }
 				var friend = fbFriends.shift()
 				this._insertFacebookContact(tx, accountId, friend.id, friend.name, next)
