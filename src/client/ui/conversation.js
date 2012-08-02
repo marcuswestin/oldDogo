@@ -1,6 +1,7 @@
 var composer = require('./composer')
 var once = require('std/once')
 var pictures = require('../../data/pictures')
+var linkify = require('lib/linkify')
 
 var currentView
 var $ui
@@ -121,7 +122,7 @@ function clipPicSize(message) {
 
 function renderContent(message) {
 	if (message.body) {
-		return div('textContent', message.body)
+		return div('textContent', $(linkify('<span>'+message.body+'</span>')))
 	} else if (message.pictureId) {
 		var pictureUrl = pictures.urlFromMessage(message, pictures.pixels.thumb)
 		return div('pictureContent', picSize(message), { pictureUrl:pictureUrl })
