@@ -1,0 +1,16 @@
+intended 0.92.0
+- significant performance improvements!
+- new logo and splashscreen
+- design page: /identity
+
+0.91.0
+- all messages over https
+- store facebook request ids in DB
+- new color palette
+- ability to modify exact color by dragging on color picker
+- website up at https://dogoapp.com
+- get messages and respond with https://dogoapp.com/facebook_canvas
+- improved text input styles
+- better conversation caching
+- lots of little things
+- target app store submission: Aug 15!
