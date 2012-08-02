@@ -204,6 +204,7 @@ module.exports = proto(null,
 			
 			app.get('/', sendPage('homepage'))
 			app.all(/^\/facebook_canvas*/, sendPage('facebook_canvas'))
+			app.get('/identity', sendPage('identity'))
 			app.get('/test', sendPage('test'))
 			
 			function sendPage(name) {

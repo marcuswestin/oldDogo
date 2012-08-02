@@ -31,10 +31,6 @@ tags.expose()
 parseUrl = require('std/url')
 
 loading = function loading(isLoading) {
-	if (!loading.$ui) {
-		loading.$ui = $(div('loading-wrapper', div('icon'))).appendTo('.dogoApp')
-	}
-	
 	if (isLoading) {
 		loading.count += 1
 		if (loading.count > 1) { return }
@@ -50,7 +46,12 @@ loading = function loading(isLoading) {
 	}
 }
 loading.count = 0
-loading.pos = function(y) { loading.$ui.css({ '-webkit-transform':'translateY('+(y-5)+'px)' })}
+loading.pos = function(y) {
+	if (!loading.$ui) {
+		loading.$ui = $(div('loading-wrapper', div('icon'))).appendTo('.dogoApp')
+	}
+	loading.$ui.css({ '-webkit-transform':'translateY('+(y-2)+'px)' })
+}
 
 getId = function getId(d) { return d.id }
 
