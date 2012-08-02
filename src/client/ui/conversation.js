@@ -122,7 +122,7 @@ function clipPicSize(message) {
 
 function renderContent(message) {
 	if (message.body) {
-		return div('textContent', $(linkify('<span>'+message.body+'</span>')))
+		return div('textContent', linkify(message.body))
 	} else if (message.pictureId) {
 		var pictureUrl = pictures.urlFromMessage(message, pictures.pixels.thumb)
 		return div('pictureContent', picSize(message), { pictureUrl:pictureUrl })

@@ -3,6 +3,7 @@ intended 0.92.0
 - new logo and splashscreen
 - design page: /identity
 - pleasant background while loading images in the drawer
+- links are clickable
 
 0.91.0
 - all messages over https

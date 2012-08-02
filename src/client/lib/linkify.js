@@ -147,23 +147,27 @@ module.exports = (function(){
 
 			// Push preceding non-link text onto the array.
 			if ( idx_prev != idx ) {
-				parts.push([ txt.slice( idx_prev, idx ) ]);
+				parts.push({ text:txt.slice( idx_prev, idx ) });
 				idx_prev = idx_last;
 			}
 
 			// Push massaged link onto the array
-			parts.push([ link, href ]);
+			parts.push({ link:link, href:href });
 		};
 
 		// Push remaining non-link text onto the array.
-		parts.push([ txt.substr( idx_prev ) ]);
+		parts.push({ text:txt.substr( idx_prev ) });
 
 		// Process the array items.
 		for ( i = 0; i < parts.length; i++ ) {
-			html += options.callback.apply( window, parts[i] );
+			if (parts[i].href) {
+				parts[i] = $('<a href="' + parts[i].href + '" target="_blank">' + parts[i].link + '<\/a>')
+			} else {
+				parts[i] = parts[i].text
+			}
 		}
 
 		// In case of catastrophic failure, return the original text;
-		return html || txt;
+		return parts;
 	};
 })();
