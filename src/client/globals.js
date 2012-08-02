@@ -5,6 +5,17 @@ require('tags/list')
 require('tags/style')
 require('tags/scroller')
 require('tags/util')
+require('tags/viewport')
+
+div = tags.createTag('div')
+input = tags.createTag('input')
+img = tags.createTag('img')
+canvas = tags.createTag('canvas')
+viewport = tags.viewport
+button = tags.button
+list = tags.list
+style = tags.style
+transition = style.transition
 
 require('./events')
 require('./state')
@@ -17,16 +28,10 @@ api = require('./api')
 bridge = require('./bridge')
 face = require('ui/face')
 bind = require('std/bind')
-viewport = require('tags/viewport')
 each = require('std/each')
 slice = require('std/slice')
 curry = require('std/curry')
 paint = require('./ui/paint')
-button = tags.button
-list = tags.list
-style = tags.style
-transition = style.transition
-tags.expose()
 
 parseUrl = require('std/url')
 
