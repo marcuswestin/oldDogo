@@ -67,6 +67,9 @@ function startApp() {
 		if (appInfo.config.mode == 'dev') {
 			if (tags.isTouch) {
 				window.onerror = function windowOnError(e) { alert('ERROR ' + e) }
+				console.log = function bridgeConsoleLog() {
+					bridge.command('console.log', JSON.stringify(slice(arguments)))
+				}
 			}
 			pictures.bucket = 'dogo-dev-conv'
 		} else {
@@ -82,10 +85,6 @@ function startApp() {
 
 if (!tags.isTouch) {
 	browserModeSetup.setup()
-} else {
-	console.log = function bridgeConsoleLog() {
-		bridge.command('console.log', JSON.stringify(slice(arguments)))
-	}
 }
 
 bridge.init()
