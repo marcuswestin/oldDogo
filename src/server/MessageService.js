@@ -56,7 +56,7 @@ module.exports = proto(null,
 				}))
 			})
 		},
-		getMessages: function(accountId, withAccountId, withFacebookId, lastReadMessageId, reverseOrder, callback) {
+		getMessages: function(accountId, withAccountId, withFacebookId, reverseOrder, callback) {
 			this._withContactAccountId(accountId, withAccountId, withFacebookId, function(err, withAccountId) {
 				if (err) { return callback(err) }
 				this.getConversation(accountId, withAccountId, bind(this, function(err, conversation) {
@@ -65,7 +65,7 @@ module.exports = proto(null,
 					this._selectMessages(this.db, conversation.id, reverseOrder, bind(this, function(err, messages) {
 						if (err) { return logErr(err, callback, 'getMessages._selectMessages', conversation.id) }
 						callback(null, messages)
-						this._markLastReadMessage(accountId, conversation.id, messages, lastReadMessageId)
+						this._markLastReadMessage(accountId, conversation.id, messages)
 					}))
 				}))
 			})
@@ -90,21 +90,12 @@ module.exports = proto(null,
 					
 				})
 		},
-		_markLastReadMessage:function(accountId, conversationId, messages, lastReadMessageId) {
-			// Find most recent message sent not by me
-			for (var i=0; i<messages.length; i++) {
-				var message = messages[i]
-				if (lastReadMessageId && message.id < lastReadMessageId) {
-					// We've already seen this message before - no need to continue
-					return
-				}
-				if (message.senderAccountId != accountId) {
-					this._updateLastReadMessage(this.db, accountId, conversationId, message.id, function(err) {
-						if (err) { return logErr(err, function() {}, 'getMessages._updateLastReadMessage') }
-					})
-					return // We can stop after we find the first message
-				} 
-			}
+		_markLastReadMessage:function(accountId, conversationId, messages) {
+			var lastMessage = messages[messages.length - 1]
+			if (!lastMessage) { return }
+			this._updateLastReadMessage(this.db, accountId, conversationId, lastMessage.id, function(err) {
+				if (err) { return logErr(err, function() {}, 'getMessages._updateLastReadMessage') }
+			})
 		},
 		_withContactAccountId: function(accountId, contactAccountId, contactFacebookId, callback) {
 			if (contactAccountId) {

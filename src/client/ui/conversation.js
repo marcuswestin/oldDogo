@@ -51,8 +51,7 @@ function refreshMessages() {
 	if (!currentView) { return }
 	var params = {
 		withAccountId:currentView.accountId,
-		withFacebookId:currentView.facebookId,
-		lastReadMessageId:currentView.lastReadMessageId
+		withFacebookId:currentView.facebookId
 	}
 	var wasCurrentView = currentView
 	loading(true)
