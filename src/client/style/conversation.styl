@@ -1,5 +1,7 @@
 @import "./macros"
 
+offWhite = #EBEAE7
+
 faceDim = 25px
 .face
 	width faceDim; height faceDim; background-size faceDim faceDim;
@@ -29,7 +31,7 @@ faceDim = 25px
 	.face
 		float left; border-radius 18px; margin 1px 0 0 -31px; width 25px; height 25px; border 1px solid #fff;
 .messageBubble.picture
-	background #EBEAE7
+	background offWhite
 .messageBubble.text
 	background url('/blowtorch/img/paper/exclusive_paper-bg.jpg'); background-size 320px 100px;
 .messageBubble.fromMe
@@ -38,8 +40,10 @@ faceDim = 25px
 		float right; margin 1px -31px 0 0;
 
 .draw-composer
-	line-height 0; z-index 1;
+	line-height 0; z-index 1; background offWhite;
 	position absolute; bottom 0;
+	.loading
+		relative top 150px; font-size 30px;
 	.controls-pos
 		position absolute; bottom 0; z-index 1;
 	.controls

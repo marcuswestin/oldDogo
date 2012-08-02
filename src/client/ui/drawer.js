@@ -39,6 +39,7 @@ function render(_opts) {
 	var controlsTrans = function(name) { return style({ '-webkit-transition':name+' '+controlsDuration/1000+'s' })}
 	
 	$ui = $(div('draw-composer',
+		div('loading', 'Loading...'),
 		div('close button', 'X', controlsTrans('-webkit-transform'), style({ bottom:height - 30, left:3 }), button(function() { opts.onHide() })),
 		div('controls-pos', controlsTrans('-webkit-transform'),
 			div('controls-rot', controlsTrans('-webkit-transform'),
@@ -142,6 +143,7 @@ function render(_opts) {
 					.restore()
 			})
 			console.log('doDraw: draw done')
+			$ui.find('.loading').remove()
 		}
 		drawImg.src = url
 	}
