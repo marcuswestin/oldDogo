@@ -1,5 +1,4 @@
 var fs = require('fs')
-var path = require('path')
 var each = require('std/each')
 var options = require('std/options')
 var combine = require('../combine')
@@ -18,8 +17,8 @@ module.exports = function buildPage(name, opts, callback) {
 	var bottom = templateFile('bottom')
 	var page = pageFile(name)
 	var params = {
-		STYLE_NAME: 'src/website/'+(path.existsSync(pagePath(name, 'styl')) ? 'pages/'+name : basePath),
-		SCRIPT_NAME: 'src/website/'+(path.existsSync(pagePath(name, 'js')) ? 'pages/'+name : basePath)
+		STYLE_NAME: 'src/website/'+(fs.existsSync(pagePath(name, 'styl')) ? 'pages/'+name : basePath),
+		SCRIPT_NAME: 'src/website/'+(fs.existsSync(pagePath(name, 'js')) ? 'pages/'+name : basePath)
 	}
 	each(params, function(val, KEY) {
 		var regexp = new RegExp('\\{\\{ '+KEY+' \\}\\}', 'g')
