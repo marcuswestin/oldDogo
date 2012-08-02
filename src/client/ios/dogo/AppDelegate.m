@@ -273,10 +273,11 @@
  * should overwrite the old access token with the new one in this method.
  * See extendAccessToken for more details.
  */
-- (void)fbDidExtendToken:(NSString *)accessToken expiresAt:(NSDate *)expiresAt {
+- (void)fbDidExtendToken:(NSString *)accessToken expiresAt:(NSDate *)expiresAtDate {
+    NSNumber* expiresAt = [NSNumber numberWithInt:[expiresAtDate timeIntervalSince1970]];
     [self notify:@"facebook.fbDidExtendToken" info:[NSDictionary dictionaryWithObjectsAndKeys:
                                                     accessToken, @"accessToken",
-                                                    [expiresAt timeIntervalSince1970], @"expiresAt",
+                                                    expiresAt, @"expiresAt",
                                                     nil]];
 }
 
