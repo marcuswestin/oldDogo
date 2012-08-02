@@ -59,10 +59,10 @@ function refreshMessages() {
 		loading(false)
 		if (wasCurrentView != currentView) { return }
 		if (err) { return error(err) }
-		var cachedMessages = gState.cache[convId()]
-		var lastCachedMessage = cachedMessages && cachedMessages[0]
-		var lastReceivedMessage = res.messages[0]
-		if (lastCachedMessage && lastReceivedMessage && lastCachedMessage.id == lastReceivedMessage.id) { return }
+		// var cachedMessages = gState.cache[convId()]
+		// var lastCachedMessage = cachedMessages && cachedMessages[0]
+		// var lastReceivedMessage = res.messages[0]
+		// if (lastCachedMessage && lastReceivedMessage && lastCachedMessage.id == lastReceivedMessage.id) { return }
 		$ui.messages.empty().append(res.messages)
 		if (!res.messages.length) {
 			$ui.info.empty().append(div('ghostTown', 'Start the conversation - draw something!'))
