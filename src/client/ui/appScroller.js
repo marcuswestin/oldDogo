@@ -80,6 +80,8 @@ function scrollerRenderBodyContent($body, view) {
 }
 
 function buildContactsIndex() {
+	if (buildContactsIndex.built) { return }
+	buildContactsIndex.built = true
 	var facebookIdToNames = {}
 	each(gState.cache['contactsByFacebookId'], function(contact, facebookId) {
 		var names = contact.name.split(' ')
