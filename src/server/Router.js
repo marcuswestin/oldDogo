@@ -147,11 +147,8 @@ module.exports = proto(null,
 			getConversationMessages: function(req, res) {
 				var params = this._getParams(req, 'withAccountId', 'withFacebookId')
 				
-				var reverseOrder = !semver.valid(req.meta.client)
-				
 				this.messageService.getMessages(req.session.accountId,
 					params.withAccountId, params.withFacebookId,
-					reverseOrder,
 					wrapRespond(req, res, 'messages'))
 			},
 			postPushAuth: function(req, res) {

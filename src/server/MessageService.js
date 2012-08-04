@@ -56,13 +56,13 @@ module.exports = proto(null,
 				}))
 			})
 		},
-		getMessages: function(accountId, withAccountId, withFacebookId, reverseOrder, callback) {
+		getMessages: function(accountId, withAccountId, withFacebookId, callback) {
 			this._withContactAccountId(accountId, withAccountId, withFacebookId, function(err, withAccountId) {
 				if (err) { return callback(err) }
 				this.getConversation(accountId, withAccountId, bind(this, function(err, conversation) {
 					if (err) { return logErr(err, callback, 'getMessages.getConversation', accountId, withAccountId) }
 					if (!conversation) { return callback(null, []) }
-					this._selectMessages(this.db, conversation.id, reverseOrder, bind(this, function(err, messages) {
+					this._selectMessages(this.db, conversation.id, bind(this, function(err, messages) {
 						if (err) { return logErr(err, callback, 'getMessages._selectMessages', conversation.id) }
 						callback(null, messages)
 						this._markLastReadMessage(accountId, conversation.id, messages)
@@ -182,11 +182,9 @@ module.exports = proto(null,
 		_selectMessage: function(conn, messageId, callback) {
 			conn.selectOne(this, this.sql.selectMessage+' WHERE message.id=?', [messageId], callback)
 		},
-		_selectMessages: function(conn, convoId, reverseOrder, callback) {
+		_selectMessages: function(conn, convoId, callback) {
 			conn.select(this, this.sql.selectMessage+' WHERE conversation_id=? ORDER BY id DESC LIMIT 50', [convoId], function(err, messages) {
-				if (!reverseOrder) {
-					messages.reverse()
-				}
+				messages.reverse()
 				callback(err, messages)
 			})
 		},
