@@ -27,7 +27,7 @@ function renderConversation(opts) {
 		$ui.info = $(div('info')),
 		$ui.wrapper=$(div('messagesWrapper', style({ height:opts.height, 'overflow-y':'scroll', '-webkit-overflow-scrolling':'touch', overflowX:'hidden' }),
 			$ui.invite=$(div('invite')),
-			div('messages', $ui.messages = list({ items:opts.messages, onSelect:selectMessage, renderItem:renderMessage }))
+			div('messages', $ui.messages = list({ items:opts.messages, onSelect:selectMessage, renderItem:renderMessage, getItemId:messageId }))
 		)).on('scroll', checkScrollBounds),
 		function() {
 			setTimeout(function() {
@@ -37,6 +37,10 @@ function renderConversation(opts) {
 			opts.refreshMessages && refreshMessages()
 		}
 	)
+}
+
+function messageId(message) {
+	return 'message-'+message.id
 }
 
 function selectMessage(message, _, $el) {
@@ -63,7 +67,7 @@ function refreshMessages() {
 		// var lastCachedMessage = cachedMessages && cachedMessages[0]
 		// var lastReceivedMessage = res.messages[0]
 		// if (lastCachedMessage && lastReceivedMessage && lastCachedMessage.id == lastReceivedMessage.id) { return }
-		$ui.messages.empty().append(res.messages)
+		$ui.messages.append(res.messages)
 		if (!res.messages.length) {
 			$ui.info.empty().append(div('ghostTown', 'Start the conversation - draw something!'))
 		}

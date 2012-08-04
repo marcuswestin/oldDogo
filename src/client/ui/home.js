@@ -36,13 +36,15 @@ module.exports = {
 		$body.append(div('home',
 			$ui.info = $(div('info')),
 			div('conversations',
-				$ui.conversations = list({ items:[], onSelect:selectMessage, getItemId:function(conv) { return conv.conversationId }, renderItem:renderBubble })
+				$ui.conversations = list({ items:[], onSelect:selectConversation, getItemId:conversationId, renderItem:renderBubble })
 			)
 		))
 		
 		reloadConversations()
 	}
 }
+
+function conversationId(conv) { return conv.conversationId }
 
 // function renderFaces() {
 // 	setTimeout(function() {
@@ -146,7 +148,7 @@ function reloadConversations() {
 	})
 }
 
-function selectMessage(message) {
+function selectConversation(message) {
 	var accountId = message.accountId
 	var account = accountKnown(accountId) && loadAccountId(accountId)
 	var title = (account ? account.name : 'Friend')
