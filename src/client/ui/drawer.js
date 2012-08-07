@@ -48,6 +48,7 @@ function render(_opts) {
 						state.colorPicker = pickers.color(),
 						state.penPicker = pickers.pen({ background:background, colorPicker:state.colorPicker }),
 						div('right',
+							div('button undo', 'Undo', button(undoDraw)),
 							div('button clear', 'Clear', button(clearFg)),
 							div('button tool send', 'Send', button(sendImage))
 						)
@@ -76,6 +77,10 @@ function render(_opts) {
 	
 	function clearFg() {
 		p.clearDrawn()
+	}
+	
+	function undoDraw() {
+		p.popLayer()
 	}
 	
 	function loadBackgroundImage(opts) {
@@ -165,6 +170,7 @@ function render(_opts) {
 	
 	function pencilDown(e) {
 		e.preventDefault()
+		p.pushLayer()
 		var pen = state.penPicker.getCurrent()
 		state.pen = createPen(pen)
 		state.pen.handleDown(getPoint(e))
