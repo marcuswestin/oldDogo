@@ -4,12 +4,12 @@ var face = module.exports = {
 		return div('face', showRibbon && account.memberSince && div('member-ribbon'),
 			lazyLoad
 				? [{ facebookId:account.facebookId }, style({ backgroundColor:'#fff' })]
-				: style({ background:face.background(account.facebookId) })
+				: style(face.backgroundStyle(account.facebookId))
 		)
 	},
 	
-	background:function(facebookId) {
-		return 'url("http://graph.facebook.com/'+facebookId+'/picture") rgba(255, 255, 255, .4)'
+	backgroundStyle:function(facebookId) {
+		return { backgroundImage:'url("http://graph.facebook.com/'+facebookId+'/picture")', backgroundColor:'rgba(255, 255, 255, .4)' }
 	},
 	
 	loadAccount: function(accountId, showRibbon) {
@@ -18,7 +18,7 @@ var face = module.exports = {
 				if (showRibbon && account.memberSince) {
 					$tag.append(div('member-ribbon'))
 				}
-				$tag.css('background', face.background(account.facebookId))
+				$tag.css(face.backgroundStyle(account.facebookId))
 			})
 		})
 	},
@@ -29,7 +29,7 @@ var face = module.exports = {
 				if (showRibbon && account.memberSince) {
 					$tag.append(div('member-ribbon'))
 				}
-				$tag.css('background', face.background(account.facebookId))
+				$tag.css(face.backgroundStyle(account.facebookId))
 			})
 		})
 	}
