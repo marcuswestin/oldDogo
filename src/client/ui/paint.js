@@ -98,7 +98,7 @@
 			this.drawImage(snap, this.bg)
 			this.drawImage(snap, this.fg)
 			var buf = this.buf.children
-			for (var i=0; i<buf; i++) {
+			for (var i=0; i<buf.length; i++) {
 				this.drawImage(snap, buf[i])
 			}
 			this.drawImage(snap, this.filter)
