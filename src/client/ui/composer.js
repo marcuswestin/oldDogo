@@ -40,9 +40,11 @@ var composer = module.exports = {
 		)
 		
 		function selectText(e) {
-			$('.composer .tools').append(div('closeTextInput', button(function() {
-				bridge.command('textInput.hide')
-			})))
+			$('.composer .tools').append(
+				div('closeTextInput', div('icon'), button(function() {
+					bridge.command('textInput.hide')
+				}))
+			)	
 			composer.hide()
 			textHidden = false
 			var y0 = viewport.height()
