@@ -40,8 +40,9 @@ function renderConversation(opts) {
 }
 
 function messageId(message) {
-	return 'message-'+message.id
+	return 'message-'+(message.id || (messageId.unique++))
 }
+messageId.unique = 1
 
 function selectMessage(message, _, $el) {
 	if (message.pictureId || message.base64Picture) {
@@ -136,7 +137,6 @@ function renderContent(message) {
 }
 
 function onNewMessage(message) {
-	gState.cache[convId()].unshift(message)
 	$ui.wrapper.find('.ghostTown').remove()
 	addMessage(message)
 }
@@ -151,6 +151,7 @@ function addMessage(message) {
 
 events.on('push.message', function(message) {
 	if (!currentView || !currentView.accountId || currentView.accountId != message.senderAccountId) { return }
+	gState.cache[convId()].unshift(message)
 	onNewMessage(message)
 })
 
@@ -160,7 +161,6 @@ events.on('message.sending', function(message) {
 })
 
 events.on('message.sent', function(info) {
-	var message = info.message
 	var toAccountId = info.toAccountId
 	var toFacebookId = info.toFacebookId
 	if (!currentView) { return }
@@ -169,6 +169,8 @@ events.on('message.sent', function(info) {
 		currentView.accountId = toAccountId
 	}
 	if (currentView.accountId != toAccountId) { return }
+	var message = info.message
+	gState.cache[convId()].unshift(message)
 	loadAccountId(toAccountId, function(account) {
 		if (account.memberSince) { return }
 		if (info.disableInvite) { return }
