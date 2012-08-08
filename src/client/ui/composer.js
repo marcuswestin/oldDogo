@@ -39,11 +39,14 @@ var composer = module.exports = {
 		)
 		
 		function selectText(e) {
+			$('.composer .tools').append(div('closeTextInput', button(function() {
+				bridge.command('textInput.hide')
+			})))
 			composer.hide()
 			textHidden = false
 			var y0 = viewport.height()
 			var y1 = 229
-			var pos = { x:0, y:y0, width:320, height:35 }
+			var pos = { x:0, y:y0, width:284, height:35 }
 			var appOffset = -213
 			var onReturnHandler = events.on('textInput.return', function(info) {
 				if (!$ui) { return }
@@ -69,6 +72,7 @@ var composer = module.exports = {
 				})
 			})
 			events.once('keyboard.willHide', function(info) {
+				$('.composer .tools .closeTextInput').remove()
 				events.off('textInput.return', onReturnHandler)
 				$('.dogoApp').css('-webkit-transform', 'translateY(0px)')
 				pos.y = y0
