@@ -46,6 +46,7 @@
 		2CD1A089153FB85D008949F2 /* FBDialog.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2CD1A07C153FB85D008949F2 /* FBDialog.bundle */; };
 		2CD1A08A153FB85D008949F2 /* libfacebook_ios_sdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD1A082153FB85D008949F2 /* libfacebook_ios_sdk.a */; };
 		2CFE18D91580A48100188E06 /* BTIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFE18D81580A48100188E06 /* BTIndex.m */; };
+		2CFF879515D2B6FB00F73150 /* UIDeviceHardware.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFF879415D2B6FB00F73150 /* UIDeviceHardware.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -125,6 +126,8 @@
 		2CD1A088153FB85D008949F2 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
 		2CFE18D71580A48100188E06 /* BTIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTIndex.h; sourceTree = "<group>"; };
 		2CFE18D81580A48100188E06 /* BTIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTIndex.m; sourceTree = "<group>"; };
+		2CFF879315D2B6FB00F73150 /* UIDeviceHardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDeviceHardware.h; sourceTree = "<group>"; };
+		2CFF879415D2B6FB00F73150 /* UIDeviceHardware.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDeviceHardware.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -256,6 +259,8 @@
 			children = (
 				2CD1A03C153FB6B1008949F2 /* AppDelegate.h */,
 				2CD1A03D153FB6B1008949F2 /* AppDelegate.m */,
+				2CFF879315D2B6FB00F73150 /* UIDeviceHardware.h */,
+				2CFF879415D2B6FB00F73150 /* UIDeviceHardware.m */,
 				2C5C1C611566200800035E03 /* dogo-ios-build */,
 				2CD1A079153FB85D008949F2 /* facebook-ios-sdk */,
 				2CD1A048153FB7B6008949F2 /* blowtorch-ios-sdk */,
@@ -444,6 +449,7 @@
 				2C720C7615684C3100AC9BF4 /* Reachability.m in Sources */,
 				2C4EF9EF1573196800EE57C8 /* BTViewController.m in Sources */,
 				2CFE18D91580A48100188E06 /* BTIndex.m in Sources */,
+				2CFF879515D2B6FB00F73150 /* UIDeviceHardware.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

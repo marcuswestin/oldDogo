@@ -1,5 +1,6 @@
 #import "AppDelegate.h"
 #import <QuartzCore/QuartzCore.h>
+#import "UIDeviceHardware.h"
 
 @implementation AppDelegate
 
@@ -16,8 +17,16 @@
         mode = @"appstore";  
 #endif
         
+        NSDictionary* device = [NSDictionary dictionaryWithObjectsAndKeys:
+                                [[UIDevice currentDevice] systemVersion], @"systemVersion",
+                                [UIDevice currentDevice].model, @"model",
+                                [UIDevice currentDevice].name, @"name",
+                                [UIDeviceHardware platformString], @"platform",
+                                nil];
+        
         [self.config setValue:mode forKey:@"mode"];
         [self.config setValue:[self getCurrentVersion] forKey:@"currentVersion"];
+        [self.config setValue:device forKey:@"device"];
         
         BOOL devMode = [mode isEqualToString:@"dev"];
         
