@@ -36,7 +36,13 @@ module.exports = {
 		$body.append(div('home',
 			$ui.info = $(div('info')),
 			div('conversations',
-				$ui.conversations = list({ items:[], onSelect:selectConversation, getItemId:conversationId, renderItem:renderBubble })
+				$ui.conversations = list({
+					items:[],
+					onSelect:selectConversation,
+					getItemId:conversationId,
+					renderItem:renderBubble,
+					reAddItems:true
+				})
 			)
 		))
 		

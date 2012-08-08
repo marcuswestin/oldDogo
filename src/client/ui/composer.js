@@ -18,6 +18,7 @@ var composer = module.exports = {
 		if (textHidden) { return }
 		textHidden = true
 		bridge.command('textInput.hide')
+		$('.dogoApp').css('-webkit-transform', 'translateY(0px)')
 	},
 	render: function(opts) {
 		opts = options(opts, {
