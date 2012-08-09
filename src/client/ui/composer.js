@@ -125,22 +125,20 @@ function sendImage(data, width, height) {
 }
 
 function send(params) {
-	var message = {
+	var message = eventEmitter({
 		toAccountId:currentAccountId,
 		toFacebookId:currentFacebookId,
-		senderAccountId:gState.myAccount().accountId
-	}
+		senderAccountId:gState.myAccount().accountId,
+		localId:unique()
+	})
 	
 	each(params, function(val, key) { message[key] = val })
 	
-	if (message.base64Picture) {
-		bridge.command('message.send', { message:message, headers:api.getHeaders() })
-	} else {
-		api.post('messages', message, function(err, res) {
-			if (err) { return error(err) }
-			events.fire('message.sent', { message:res.message, toAccountId:res.toAccountId, toFacebookId:res.toFacebookId, disableInvite:res.disableInvite })
-		})
-	}
+	bridge.command('net.request', { method:"POST", headers:api.getHeaders(), path:api.getPath('messages'), params:message }, function(err, res) {
+		if (err) { return error(err) }
+		events.fire('message.sent', res)
+		message.fire('sent', res)
+	})
 	
 	events.fire('message.sending', message)
 }

@@ -89,23 +89,37 @@
         if (textInput) { textInput.text = [data objectForKey:@"text"]; }
     } else if ([command isEqualToString:@"message.send"]) {
         [self sendMessage:data];
+    } else if ([command isEqualToString:@"net.request"]) {
+        [self netRequest:data responseCallback:responseCallback];
     } else {
         NSLog(@"WARNING ObjC Got unknown command: %@ %@", command, data);
     }
 }
 
 
-- (void)sendMessage:(NSDictionary *)params {
-    NSDictionary* message = [params objectForKey:@"message"];
+- (void) netRequest:(NSDictionary *)params responseCallback:(ResponseCallback)responseCallback {
+    NSDictionary* postParams = [params objectForKey:@"params"];
     NSDictionary* headers = [params objectForKey:@"headers"];
+    NSString* method = [params objectForKey:@"method"];
+    NSString* url = [self.serverHost stringByAppendingString:[params objectForKey:@"path"]];
+    
     UIBackgroundTaskIdentifier bgTaskId = UIBackgroundTaskInvalid;
     bgTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
         [[UIApplication sharedApplication] endBackgroundTask:bgTaskId];
     }];
     
-    NSString* url = [self.serverHost stringByAppendingString:@"/api/messages"];
-    [BTNet request:url method:@"POST" headers:headers params:message responseCallback:^(id error, NSDictionary *response) {
+    [BTNet request:url method:method headers:headers params:postParams responseCallback:^(NSError* error, NSDictionary *response) {
         [[UIApplication sharedApplication] endBackgroundTask:bgTaskId];
+        if (error) {
+            responseCallback(error.domain, nil);
+        } else {
+            NSData* responseData = [response objectForKey:@"responseData"];
+            NSDictionary* jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:nil];
+            responseCallback(nil, jsonData);
+        }
+        if (responseCallback) {
+            responseCallback(nil, nil);
+        }
     }];
 }
 

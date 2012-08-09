@@ -40,9 +40,8 @@ function renderConversation(opts) {
 }
 
 function messageId(message) {
-	return 'message-'+(message.id || (messageId.unique++))
+	return 'message-'+(message.id || message.localId)
 }
-messageId.unique = 1
 
 function selectMessage(message, _, $el) {
 	if (message.pictureId || message.base64Picture) {
@@ -158,6 +157,9 @@ events.on('push.message', function(message) {
 events.on('message.sending', function(message) {
 	$ui.info.empty()
 	onNewMessage(message)
+	message.on('sent', function(response) {
+		$('#'+messageId(message)).attr('id', messageId(response.message))
+	})
 })
 
 events.on('message.sent', function(info) {

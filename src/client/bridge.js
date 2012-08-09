@@ -1,5 +1,4 @@
-var uniqueId = 0,
-	callbacks = {},
+var callbacks = {},
 	bridgeReadyQueue = []
 
 var bridge = module.exports = {
@@ -12,7 +11,7 @@ var bridge = module.exports = {
 		var message = { command:command, data:data || {} }
 		
 		if (responseHandler) {
-			message.responseId = 'r' + (uniqueId++)
+			message.responseId = unique()
 			callbacks[message.responseId] = responseHandler
 		}
 

@@ -98,3 +98,27 @@ loadAccount = function loadAccount(accountId, facebookId, callback) {
 
 gHeadHeight = 45
 gKeyboardHeight = 216
+
+eventEmitter = function(params) {
+	var result = create(eventEmitter.proto, params)
+	Object.defineProperty(result, '_listeners', { value:{}, writable:false, enumerable:false, configurable:false })
+	return result
+}
+eventEmitter.proto = {
+	on: function on(signal, callback) {
+		if (!this._listeners[signal]) {
+			this._listeners[signal] = []
+		}
+		this._listeners[signal].push(callback)
+	},
+	fire: function fire(signal, args) {
+		each(this._listeners[signal], this, function(callback) {
+			callback.call(this, args)
+		})
+	}
+}
+
+unique = function() {
+	return 'u'+(unique.current++)
+}
+unique.current = 1

@@ -10,7 +10,8 @@ module.exports = {
 	getAuth:getAuth,
 	getHeaders:getHeaders,
 	setHeaders:setHeaders,
-	connect:connect
+	connect:connect,
+	getPath:getPath
 }
 
 function post(path, params, callback) {
@@ -26,12 +27,16 @@ function getAuth() {
 	return authToken ? 'Basic '+base64.encode(authToken) : null
 }
 
+function getPath(path) {
+	return '/api/'+path
+}
+
 function send(method, path, params, callback) {
 	if (!callback && typeof params == 'function') {
 		callback = params
 		delete params
 	}
-	var url = '/api/'+path
+	var url = getPath(path)
 	var headers = getHeaders()
 	if (method == 'post' && params) {
 		params = JSON.stringify(params)
