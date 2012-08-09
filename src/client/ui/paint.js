@@ -77,7 +77,7 @@
 		/* Drawing conveniences
 		 **********************/
 		line:ctxFunction(function(ctx, p1, p2) {
-			if (p1[0] - p2[0] == 0 && p1[1] - p1[1] == 0) { return }
+			if (p1[0] - p2[0] == 0 && p1[1] - p2[1] == 0) { return }
 			this.moveTo(ctx, p1).lineTo(ctx, p2)
 		}),
 		dot:ctxFunction(function(ctx, p, r) { this.arc(ctx, p, r, [0, Math.PI*2], true) }),
