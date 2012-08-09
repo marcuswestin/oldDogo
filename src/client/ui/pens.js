@@ -5,15 +5,15 @@ var basePen = {
 		return this.colorPicker.getColor(alpha)
 	},
 	handleDown:function(point) {
-		this.down(this.ctx, point)
+		this.down(point)
 		return this
 	},
 	handleMove:function(point) {
-		this.move(this.ctx, point)
+		this.move(point)
 		return this
 	},
 	handleUp:function(point) {
-		this.up(this.ctx, point)
+		this.up(point)
 		return this
 	},
 	distance: function(p1, p2) {
@@ -37,19 +37,19 @@ var basePen = {
 var collectPointsPen = create(basePen, {
 	handleDown:function(point) {
 		this.points = [point]
-		this.down(this.ctx, point, this.points)
+		this.down(point, this.points)
 		return this
 	},
 	handleMove:function(point) {
 		if (!this.points) { return }
 		this.points.push(point)
-		this.move(this.ctx, point, this.points)
+		this.move(point, this.points)
 		return this
 	},
 	handleUp:function(point) {
 		if (!this.points) { return }
 		this.points.push(point)
-		this.up(this.ctx, point, this.points)
+		this.up(point, this.points)
 		this.points = null
 		return this
 	}
@@ -64,18 +64,18 @@ pens.fill = proto(basePen, initPen, {
 	u:1/2,
 	dt:0.08,
 	rate:10,
-	down:function(ctx, point) {
+	down:function(point) {
 		this.nextPoint = point
 		this.thickness = 3
-		// ctx.style(this.rgba(.05)) // - watercolor
-		ctx.style(this.rgba(1)).lineWidth(this.thickness).globalCompositeOperation('source-over')
+		// this.ctx.style(this.rgba(.05)) // - watercolor
+		this.ctx.style(this.rgba(1)).lineWidth(this.thickness).globalCompositeOperation('source-over')
 		this.interval = setInterval(bind(this, this.onInterval), this.rate)
 	},
-	move:function(ctx, point) {
+	move:function(point) {
 		if (!this.interval) { return }
 		this.nextPoint = point
 	},
-	up:function(ctx, point) {
+	up:function(point) {
 		clearInterval(this.interval)
 		this.interval = null
 		this.drawing = false
@@ -105,7 +105,7 @@ pens.fill = proto(basePen, initPen, {
 		// tStep is the amount of "time" to travel per draw-loop in this iteration
 		var tStep = distance ? (this.dt / distance) : 1
 		
-		// var pixel = ctx.createImageData(onePixel)
+		// var pixel = this.ctx.createImageData(onePixel)
 		
 		for (var i=0; i<=distance; i++) {
 			var point = bez(p0, p1, p2, this.u + i*tStep)
@@ -159,65 +159,65 @@ pens.fill = proto(basePen, initPen, {
 // })
 
 pens.mark = proto(collectPointsPen, initPen, {
-	down: function(ctx, point, points) {
-		ctx.lineWidth(8).strokeStyle(this.rgba(.05)).globalCompositeOperation('darker').moveTo(point)
+	down: function(point, points) {
+		this.ctx.lineWidth(8).strokeStyle(this.rgba(.05)).globalCompositeOperation('darker').moveTo(point)
 	},
-	move: function(ctx, point, points) {
+	move: function(point, points) {
 		if (points.length == 2) {
-			ctx.beginPath()
+			this.ctx.beginPath()
 		} else if (points.length > 2) {
 			var pN2 = points[points.length - 3]
 			var pN1 = points[points.length - 2]
 			var interp = [(pN2[0] + pN1[0])/2, (pN2[1] + pN1[1])/2]
-			ctx.quadraticCurveTo(pN2, interp).stroke()
+			this.ctx.quadraticCurveTo(pN2, interp).stroke()
 		}
 	},
-	up: function(ctx, point, points) {
+	up: function(point, points) {
 		if (points && points.length > 1) {
 			// curve through the last two points
 			var pN0 = points[points.length - 1]
 			var pN1 = points[points.length - 2]
-			ctx.quadraticCurveTo(pN0, pN1)
+			this.ctx.quadraticCurveTo(pN0, pN1)
 		}
 	}
 })
 
 pens.zebra = proto(collectPointsPen, initPen, {
-	down: function(ctx, point, points) {
-		ctx.moveTo(point).lineWidth(10).globalCompositeOperation('source-over')
+	down: function(point, points) {
+		this.ctx.moveTo(point).lineWidth(10).globalCompositeOperation('source-over')
 	},
-	move: function(ctx, point, points) {
-		ctx.beginPath()
+	move: function(point, points) {
+		this.ctx.beginPath()
 		// var dw = 10
-		// ctx.lineWidth += Math.round((Math.random() * dw) - (dw/2 + .3))
-		// if (ctx.lineWidth < 1) ctx.lineWidth = 1
-		// if (ctx.lineWidth > 50) ctx.lineWidth = 50
-		ctx.strokeStyle(this.rgba(.8))
+		// this.ctx.lineWidth += Math.round((Math.random() * dw) - (dw/2 + .3))
+		// if (this.ctx.lineWidth < 1) ctx.lineWidth = 1
+		// if (this.ctx.lineWidth > 50) ctx.lineWidth = 50
+		this.ctx.strokeStyle(this.rgba(.8))
 		if (points.length > 2) {
 			var pN2 = points[points.length - 3]
 			var pN1 = points[points.length - 2]
 			var interp = [(pN2[0] + pN1[0])/2, (pN2[1] + pN1[1])/2]
-			ctx.lineWidth(Math.floor(this.distance(pN1, pN2))).quadraticCurveTo(pN2, interp).stroke()
+			this.ctx.lineWidth(Math.floor(this.distance(pN1, pN2))).quadraticCurveTo(pN2, interp).stroke()
 		}
 	},
-	up: function(ctx, point, points) {
+	up: function(point, points) {
 		if (points && points.length > 1) {
 			var pN0 = points[points.length - 1]
 			var pN1 = points[points.length - 2]
-			ctx.quadraticCurveTo(pN0, pN1)
+			this.ctx.quadraticCurveTo(pN0, pN1)
 		}
 	}
 })
 
 pens.dots = proto(basePen, initPen, {
-	down:function(ctx, point) {
+	down:function(point) {
 		this.last = point
 		this.i = 0
-		ctx.globalCompositeOperation('source-over').lineWidth(1)
+		this.ctx.globalCompositeOperation('source-over').lineWidth(1)
 	},
-	move:function(ctx, point) {
+	move:function(point) {
 		if (!this.last) { return }
-		ctx.beginPath().style(this.rgba(.9)).dot(point, Math.round(this.distance(this.last, point) / 2.5)).fill()
+		this.ctx.beginPath().style(this.rgba(.9)).dot(point, Math.round(this.distance(this.last, point) / 2.5)).fill()
 		this.last = point
 	},
 	up:function() {
@@ -226,11 +226,11 @@ pens.dots = proto(basePen, initPen, {
 })
 
 pens.pearl = proto(basePen, initPen, {
-	down:function(ctx, point) {
+	down:function(point) {
 		this.last = point
-		ctx.globalCompositeOperation('source-over').lineWidth(1)
+		this.ctx.globalCompositeOperation('source-over').lineWidth(1)
 	},
-	move:function(ctx, point) {
+	move:function(point) {
 		if (!this.last) { return }
 		
 		var from = point
@@ -242,15 +242,15 @@ pens.pearl = proto(basePen, initPen, {
 		var stepX = dx / num
 		var stepY = dy / num
 		
-		ctx.fillStyle(this.rgba())
+		this.ctx.fillStyle(this.rgba())
 		
 		for (var i=0; i<=num; i++) {
-			ctx.beginPath().dot([from[0] + stepX * i, from[1] + stepY*i], i / 2).fill()
+			this.ctx.beginPath().dot([from[0] + stepX * i, from[1] + stepY*i], i / 2).fill()
 		}
 		
 		this.last = point
 	},
-	up:function(ctx, point) {
+	up:function(point) {
 		this.last = null
 	}
 })
@@ -310,9 +310,9 @@ pens.silk = proto(basePen,
 		painters: null,
 		interval: null,
 		
-		down:function(ctx, point) { this.strokeStart(point[0], point[1]) },
-		move:function(ctx, point) { this.stroke(point[0], point[1]) },
-		up:function(ctx, point) { this.strokeEnd() },
+		down:function(point) { this.strokeStart(point[0], point[1]) },
+		move:function(point) { this.stroke(point[0], point[1]) },
+		up:function(point) { this.strokeEnd() },
 		
 		init: function( SCREEN_WIDTH, SCREEN_HEIGHT ) {
 			var ctx = this.ctx
