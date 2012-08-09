@@ -87,8 +87,6 @@
         [self animateTextInput:data];
     } else if ([command isEqualToString:@"textInput.set"]) {
         if (textInput) { textInput.text = [data objectForKey:@"text"]; }
-    } else if ([command isEqualToString:@"message.send"]) {
-        [self sendMessage:data];
     } else if ([command isEqualToString:@"net.request"]) {
         [self netRequest:data responseCallback:responseCallback];
     } else {

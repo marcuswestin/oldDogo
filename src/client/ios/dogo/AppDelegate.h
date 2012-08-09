@@ -17,7 +17,6 @@
 - (void) animateTextInput:(NSDictionary*) params;
 - (UIColor*) colorFromParam:(NSArray*)param;
 - (UIEdgeInsets) insetsFromParam:(NSArray*)param;
-- (void) sendMessage:(NSDictionary*)params;
 - (void) netRequest:(NSDictionary*)params responseCallback:(ResponseCallback)responseCallback;
 
 @end
