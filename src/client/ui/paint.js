@@ -56,6 +56,7 @@
 			ctx.quadraticCurveTo(p1[0], p1[1], p2[0], p2[1])
 		}),
 		lineWidth:ctxFunction(function(ctx, lineWidth) { ctx.lineWidth = lineWidth }),
+		lineCap:ctxFunction(function(ctx, lineCapStyle) { ctx.lineCap = lineCapStyle }),
 		save:ctxFunction(function(ctx) { ctx.save() }),
 		restore:ctxFunction(function(ctx) { ctx.restore() }),
 		drawImage:ctxFunction(function(ctx, img, p, d) {
@@ -108,8 +109,8 @@
 		
 		/* Buffer/Undo
 		 *************/
-		pushLayer: function() {
-			this.addCanvas(this.buf)
+		pushLayer: function(ctxOrCanvas) {
+			this.addCanvas(this.buf, ctxOrCanvas && (ctxOrCanvas.canvas || ctxOrCanvas))
 			return this
 		},
 		popLayer: function() {
@@ -126,6 +127,11 @@
 		flattenAll: function() {
 			while (this.buf.firstChild) { this.flattenLayer() }
 			return this
+		},
+		createLayer:function() {
+			var ctx = this.create('canvas').getContext('2d')
+			this.scale(ctx, [this.ratio, this.ratio])
+			return ctx
 		},
 		
 		/* Utils
@@ -152,9 +158,8 @@
 			el.style.position = relative ? 'relative' : 'absolute'
 			return el
 		},
-		addCanvas:function(el) {
-			var ctx = el.appendChild(this.create('canvas')).getContext('2d')
-			this.scale(ctx, [this.ratio, this.ratio])
+		addCanvas:function(el, canvas) {
+			var ctx = el.appendChild(canvas || this.createLayer().canvas).getContext('2d')
 			return ctx
 		},
 		toTag:function() {

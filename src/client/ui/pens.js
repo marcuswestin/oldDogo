@@ -1,3 +1,5 @@
+var splines = require('./pens/splines')
+
 var pens = module.exports
 
 var basePen = {
@@ -31,6 +33,12 @@ var basePen = {
 	},
 	add: function(p1, p2) {
 		return [p1[0] + p2[0], p1[1] + p2[1]]
+	},
+	dot:function(p,t) {
+		this.paint.beginPath().dot(p, t).fill()
+	},
+	line:function(p1,p2,thickness) {
+		this.paint.beginPath().lineWidth(thickness || 1).line(p1,p2).stroke()
 	}
 }
 
@@ -60,7 +68,46 @@ var initPen = function(opts) {
 	this.paint = opts.paint
 }
 
-pens.fill = proto(basePen, initPen, {
+pens.fill = proto(collectPointsPen, initPen, {
+	
+	down:function(point) {
+		this.paint.lineCap('round').style(this.rgba(1))
+		this.dot(point, 2)
+	},
+	
+	move:function(point, points) {
+		this.line(points[points.length-2], points[points.length-1], 4)
+	},
+	
+	up:function(point, points) {
+		if (points.length < 2) { return } // we should have at least a down and an up
+		var layer = this.paint.createLayer()
+		this.paint.lineCap(layer, 'round').style(layer, this.rgba(.85)).lineWidth(layer, 3).globalCompositeOperation(layer, 'source-over')
+		this.paint.popLayer().pushLayer(layer)
+		if (points.length == 2) {
+			// one down, one up. Just a dot
+			this.paint.dot(layer, point, 3).fill()
+		} else if (points.length == 3) {
+			// one down, one move, one up. A line
+			this.paint.line(layer, points[0], points[2]).stroke().fill()
+		} else {
+			// lots of points. Draw a smooth curve. iPhone 4S has much higher resolution than older phones. 
+			var everyNthPoint = appInfo.config.device.platform == 'iPhone 4S' ? 3 : 2
+			// the pruning could be made much more intelligent
+			var prunedPoints = points.length < 6 ? points : filter(points, function(point, i) {
+				return i % everyNthPoint == 0
+			})
+			prunedPoints.push(point) // always include the last point
+			splines.drawSpline(layer, flatten(prunedPoints), 0.5)
+		}
+	}
+	
+})
+
+
+
+
+var fillPen = proto(basePen, initPen, {
 	u:1/2,
 	dt:0.08,
 	rate:10,
@@ -128,9 +175,6 @@ pens.fill = proto(basePen, initPen, {
 			p0 = res.p0_delta
 			f = res.f_delta
 		}
-	},
-	dot:function(p,t) {
-		this.ctx.beginPath().dot(p, t).fill()
 	}
 })
 

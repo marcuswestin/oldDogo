@@ -31,6 +31,8 @@ bind = require('std/bind')
 each = require('std/each')
 slice = require('std/slice')
 curry = require('std/curry')
+filter = require('std/filter')
+flatten = require('std/flatten')
 paint = require('./ui/paint')
 
 parseUrl = require('std/url')
