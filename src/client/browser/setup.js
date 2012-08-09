@@ -64,7 +64,13 @@ function setupBrowserDebugMode() {
 	var _getState = function() { try { return JSON.parse(localStorage['dogo-browser-state']) } catch(e) { return {} } }
 	
 	$(function() {
-		bridge.eventHandler('app.start', { config: { mode:'dev' }, client:'0.91.0-browser' })
+		var config = {
+			mode:'dev',
+			device: {
+				platform:'Chrome'
+			}
+		}
+		bridge.eventHandler('app.start', { config:config, client:'0.91.0-browser' })
 		$('#viewport').css({ margin:'50px auto' })
 		$('body').css({ background:'#222' })
 	})
