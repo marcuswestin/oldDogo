@@ -1,26 +1,26 @@
 intended 0.94.0
-- larger & more beautiful pen and color pickers
-- smoother keyboard animation transition
+- Larger & more beautiful pen and color pickers
+- Smoother keyboard animation transition
 
 0.93.0
-- undo in drawer
-- add close button to text view
+- Undo in drawer
+- Add close button to text view
 
 0.92.0
-- significant performance improvements!
-- new logo and splashscreen
-- design page: /identity
-- pleasant background while loading images in the drawer
-- links are clickable
+- Significant performance improvements!
+- New logo and splashscreen
+- Design page: /identity
+- Pleasant background while loading images in the drawer
+- Links are clickable
 
 0.91.0
-- all messages over https
-- store facebook request ids in DB
-- new color palette
-- ability to modify exact color by dragging on color picker
-- website up at https://dogoapp.com
-- get messages and respond with https://dogoapp.com/facebook_canvas
-- improved text input styles
-- better conversation caching
-- lots of little things
-- target app store submission: Aug 15!
+- All messages over https
+- Store facebook request ids in DB
+- New color palette
+- Ability to modify exact color by dragging on color picker
+- Website up at https://dogoapp.com
+- Get messages and respond with https://dogoapp.com/facebook_canvas
+- Improved text input styles
+- Better conversation caching
+- Lots of little things
+- Target app store submission: Aug 15!
