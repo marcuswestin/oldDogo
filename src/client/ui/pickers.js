@@ -20,6 +20,9 @@ var picker = {
 				var $el = $(this)
 				var pos = wasOpen ? [0,0] : self.getPos(i, j, self.itemLists[i].length - 1)
 				
+				if (wasOpen) { self.onClose(i,j,$el) }
+				else { self.onOpen(i,j,$el) }
+				
 				// setTimeout(function() {
 					$el.css('-webkit-transform', 'translate('+Math.round(pos[0])+'px, '+Math.round(pos[1])+'px)')
 				// }, self.delay(i,j))
@@ -27,6 +30,8 @@ var picker = {
 		})
 		this.isOpen = !this.isOpen
 	},
+	onClose:function(i,j){},
+	onOpen:function(i,j){},
 	renderTag: function($tag) {
 		this.$ui=$(div('picker '+this.className,
 			div('lists'),
@@ -65,8 +70,8 @@ var picker = {
 
 var colorLists = [
 	//['multi1', 'multi2', 'random'],
-	[[0,0,0]],
-	[[0,0,0], [90,90,90], [255,250,250]],
+	[[15,10,10]],
+	[[15,10,10], [100,90,90], [255,245,245]],
 	[[210,0,0],[210,210,0],[100,210,50],[0,0,210],[125,10,210]],
 	[[212,69,3],[236,169,31], [79,124,128], [145,161,112], [184,143,170], [171,128,88], [70,130,180]]
 ]
@@ -74,7 +79,7 @@ var colorLists = [
 var colorPicker = proto(picker,
 	function(){},
 	{
-		current: [0,0,0],
+		current: colorLists[0][0],
 		className:'colorPicker',
 		itemLists:colorLists,
 		
@@ -86,10 +91,10 @@ var colorPicker = proto(picker,
 		
 		renderItem: function(color, isCurrent) {
 			var alpha = isCurrent ? 1 : .95
-			var diameter = 40
+			var diameter = 50
 			var styles = {
 				width:diameter, height:diameter,
-				'border-radius':'25px 0 25px 25px', border:'2px solid #333'
+				'border-radius':35, border:'2px solid #333'
 			}
 			var content
 			if (typeof color == 'string') {
@@ -138,9 +143,11 @@ var colorPicker = proto(picker,
 		
 		getPos: function(i, j, num) {
 			var quarterCircle = Math.PI / 2
-			var expand = 63
+			var expand = 73
 			if (!num) { num = 1 }
-			return [Math.cos(j * quarterCircle/num)*expand*i, -Math.sin(j * quarterCircle/num)*expand*i - 50]
+			var x = Math.cos(j * quarterCircle/num)*expand*i
+			var y = -(Math.sin(j * quarterCircle/num)*expand*i + 60)
+			return [x, y]
 		}
 	}
 )
@@ -174,21 +181,29 @@ var penPicker = proto(picker,
 	{
 		current: pens.list[0],
 		className:'penPicker',
-		width:40, height:40,
-		itemLists:[pens.list],
+		closeSize:[48,48],
+		openSize:[85,85],
+		itemLists:[pens.list.slice(0,3), pens.list.slice(3, 6)],
 		renderItem:function(pen, isCurrent) {
-			var width = this.width
-			var height = this.height
 			var styles = {
-				width:width, height:height, overflow:'hidden', display:'inline-block', margin:'0 4px 0 0',
-				border:'2px solid #333', borderRadius:4
+				width:this.closeSize[0], height:this.closeSize[1], overflow:'hidden', display:'inline-block', margin:'0 4px 0 0',
+				'-webkit-transition-property': 'width, height',
+				'-webkit-transition-duration': '0.20s',
+				// '-webkit-transition-timing-function': 'linear',
+				border:'2px solid #433', borderRadius:4
 			}
 			return img('pen', style(styles), { src:'/blowtorch/img/pens/'+(pen.name)+'.png' })
 		},
 		getPos:function(i, j, num) {
-			var w = this.width + 10
-			var h = this.height + 10
-			return [j * w - w, -h]
+			var w = this.openSize[0] + 10
+			var h = this.openSize[1] + 10
+			return [j * w - 37, -h * (i + 1)]
+		},
+		onOpen:function(i,j,$el) {
+			$el.find('.pen').css({ width:this.openSize[0], height:this.openSize[1] })
+		},
+		onClose:function(i,j,$el) {
+			$el.find('.pen').css({ width:this.closeSize[0], height:this.closeSize[1] })
 		}
 	}
 )
