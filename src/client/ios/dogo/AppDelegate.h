@@ -9,6 +9,7 @@
 + (AppDelegate*) instance;
 
 @property (atomic, strong) UITextView* textInput;
+@property (atomic,strong) NSDictionary* textInputParams;
 - (void) showTextInput:(NSDictionary*) params;
 - (void) hideTextInput;
 - (void) sizeTextInput;
@@ -18,5 +19,6 @@
 - (UIColor*) colorFromParam:(NSArray*)param;
 - (UIEdgeInsets) insetsFromParam:(NSArray*)param;
 - (void) netRequest:(NSDictionary*)params responseCallback:(ResponseCallback)responseCallback;
+- (void) shiftWebviewWithKeyboard:(NSNotification*)notification;
 
 @end

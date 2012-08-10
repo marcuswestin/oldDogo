@@ -4,7 +4,7 @@
 
 @implementation AppDelegate
 
-@synthesize facebook, facebookCallback, textInput;
+@synthesize facebook, facebookCallback, textInput, textInputParams;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
@@ -43,6 +43,34 @@
     } else {
         return NO;
     }
+}
+
+- (void)keyboardWillShow:(NSNotification *)notification {
+    [super keyboardWillShow:notification];
+    if ([textInputParams objectForKey:@"shiftWebview"]) {
+        [self shiftWebviewWithKeyboard:notification];
+    }
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification {
+    [super keyboardWillHide:notification];
+    if ([textInputParams objectForKey:@"shiftWebview"]) {
+        [self shiftWebviewWithKeyboard:notification];
+    }
+}
+
+- (void)shiftWebviewWithKeyboard:(NSNotification *)notification {
+    NSDictionary* userInfo = [notification userInfo];
+    NSTimeInterval animationDuration;
+    CGRect begin;
+    CGRect end;
+    [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] getValue:&animationDuration];
+    [[userInfo objectForKey:UIKeyboardFrameBeginUserInfoKey] getValue:&begin];
+    [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] getValue:&end];
+    [UIView animateWithDuration:animationDuration animations:^{
+        CGRect frame = self.webView.frame;
+        self.webView.frame = CGRectMake(frame.origin.x, frame.origin.y-(begin.origin.y-end.origin.y), frame.size.width, frame.size.height);
+    }];
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
@@ -125,6 +153,7 @@
 - (void)showTextInput:(NSDictionary *)params {
     if (textInput) { [self hideTextInput]; }
     textInput = [[UITextView alloc] initWithFrame:[self rectFromDict:[params objectForKey:@"at"]]];
+    textInputParams = params;
     
     textInput.font = [UIFont systemFontOfSize:17];
     

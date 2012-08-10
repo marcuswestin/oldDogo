@@ -6,6 +6,7 @@ var currentAccountId
 var currentFacebookId
 var $ui
 var textHidden = true
+var inputHeight = 39
 
 var composer = module.exports = {
 	selectDraw:selectDraw,
@@ -18,7 +19,6 @@ var composer = module.exports = {
 		if (textHidden) { return }
 		textHidden = true
 		bridge.command('textInput.hide')
-		$('.dogoApp').css('-webkit-transform', 'translateY(0px)')
 	},
 	render: function(opts) {
 		opts = options(opts, {
@@ -47,10 +47,8 @@ var composer = module.exports = {
 			)	
 			composer.hide()
 			textHidden = false
-			var y0 = viewport.height()
-			var y1 = 229
-			var pos = { x:0, y:y0, width:284, height:35 }
-			var appOffset = -213
+			var y0 = viewport.height() - inputHeight
+			var pos = { x:0, y:y0, width:284, height:inputHeight }
 			var onReturnHandler = events.on('textInput.return', function(info) {
 				if (!$ui) { return }
 				bridge.command('textInput.set', { text:'' })
@@ -64,32 +62,24 @@ var composer = module.exports = {
 				font: { name:'Open Sans', size:16 },
 				backgroundImage:'img/background/exclusive_paper.jpg',
 				cornerRadius:3,
-				borderColor:[0,0,0,.1]
-			})
-			events.once('keyboard.willShow', function(info) {
-				$('.dogoApp').css('-webkit-transform', 'translateY('+appOffset+'px)')
-				pos.y = y1
-				bridge.command('textInput.animate', {
-					duration:info.keyboardAnimationDuration,
-					to:pos
-				})
+				borderColor:[0,0,0,.1],
+				shiftWebview:true
 			})
 			events.once('keyboard.willHide', function(info) {
 				$('.composer .tools .closeTextInput').remove()
+				$('.messagesWrapper .messages').css({ marginBottom:0 })
 				events.off('textInput.return', onReturnHandler)
-				$('.dogoApp').css('-webkit-transform', 'translateY(0px)')
-				pos.y = y0
-				bridge.command('textInput.animate', {
-					duration:info.keyboardAnimationDuration,
-					to:pos
-				})
-				setTimeout(function() {
-					bridge.command('textInput.hide')
-				}, info.keyboardAnimationDuration * 1000)
+				events.off('textInput.changedHeight', onChangeHeightHandler)
 			})
-			events.on('textInput.changedHeight', function(info) {
-				appOffset += info.heightChange
-				$('.dogoApp').css('-webkit-transform', 'translateY('+appOffset+'px)')
+			var onChangeHeightHandler = events.on('textInput.changedHeight', function adjustHeight(info) {
+				var $wrapper = $('.messagesWrapper')
+				var isAtBottom = ($wrapper[0].scrollHeight == $wrapper.scrollTop() + $wrapper.height())
+				$('.messagesWrapper .messages').css({ marginBottom:info.height - inputHeight })
+				if (isAtBottom) {
+					$wrapper.scrollTop(9999999)
+				} else {
+					$wrapper.scrollTop($wrapper.scrollTop() - info.heightChange)
+				}
 			})
 			$ui.surface.append(div('writer'))
 		}
