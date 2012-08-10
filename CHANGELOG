@@ -1,8 +1,12 @@
-intended 0.93.0
+intended 0.94.0
+- larger & more beautiful pen and color pickers
+- smoother keyboard animation transition
+
+0.93.0
 - undo in drawer
 - add close button to text view
 
-intended 0.92.0
+0.92.0
 - significant performance improvements!
 - new logo and splashscreen
 - design page: /identity
