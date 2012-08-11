@@ -21,6 +21,7 @@ exec('rm -rf '+buildDir+' && mkdir -p '+buildDir+'/pages && cp -r src/website/st
 		var name = page.split('.')[0]
 		buildPage(name, { combine:true, minify:true }, function(err, html) {
 			if (err) { throw err }
+			html = html.replace(/\/blowtorch\/fonts\//g, '/static/fonts/')
 			fs.writeFileSync(buildDir+'/pages/'+page, html)
 			next()
 		})
