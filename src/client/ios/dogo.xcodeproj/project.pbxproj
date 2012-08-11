@@ -28,6 +28,8 @@
 		2C720C7515684C3100AC9BF4 /* MKNetworkOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C6B15684C3100AC9BF4 /* MKNetworkOperation.m */; };
 		2C720C7615684C3100AC9BF4 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C6E15684C3100AC9BF4 /* Reachability.m */; };
 		2CAE30591556262500742518 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CAE30581556262500742518 /* AudioToolbox.framework */; };
+		2CB2247915D700CC0027825B /* WebViewJavascriptBridge-template.js in Resources */ = {isa = PBXBuildFile; fileRef = 2CB2247615D700CC0027825B /* WebViewJavascriptBridge-template.js */; };
+		2CB2247A15D700CC0027825B /* WebViewJavascriptBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2247815D700CC0027825B /* WebViewJavascriptBridge.m */; };
 		2CCAFE691569EC1C002766A1 /* vibrate.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2CCAFE681569EC1C002766A1 /* vibrate.wav */; };
 		2CD13242156783CA002386F3 /* DebugUIWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD13241156783CA002386F3 /* DebugUIWebView.m */; };
 		2CD132781567B639002386F3 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD132771567B639002386F3 /* CFNetwork.framework */; };
@@ -42,7 +44,6 @@
 		2CD1A074153FB7B6008949F2 /* BTAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1A060153FB7B6008949F2 /* BTAppDelegate.m */; };
 		2CD1A075153FB7B6008949F2 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1A063153FB7B6008949F2 /* JSONKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CD1A076153FB7B6008949F2 /* NSFileManager+Tar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1A066153FB7B6008949F2 /* NSFileManager+Tar.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		2CD1A077153FB7B6008949F2 /* WebViewJavascriptBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1A069153FB7B6008949F2 /* WebViewJavascriptBridge.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CD1A089153FB85D008949F2 /* FBDialog.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2CD1A07C153FB85D008949F2 /* FBDialog.bundle */; };
 		2CD1A08A153FB85D008949F2 /* libfacebook_ios_sdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD1A082153FB85D008949F2 /* libfacebook_ios_sdk.a */; };
 		2CFE18D91580A48100188E06 /* BTIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFE18D81580A48100188E06 /* BTIndex.m */; };
@@ -83,6 +84,9 @@
 		2C720C6D15684C3100AC9BF4 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		2C720C6E15684C3100AC9BF4 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		2CAE30581556262500742518 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		2CB2247615D700CC0027825B /* WebViewJavascriptBridge-template.js */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WebViewJavascriptBridge-template.js"; sourceTree = "<group>"; };
+		2CB2247715D700CC0027825B /* WebViewJavascriptBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewJavascriptBridge.h; sourceTree = "<group>"; };
+		2CB2247815D700CC0027825B /* WebViewJavascriptBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewJavascriptBridge.m; sourceTree = "<group>"; };
 		2CCAFE681569EC1C002766A1 /* vibrate.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = vibrate.wav; sourceTree = "<group>"; };
 		2CD13240156783CA002386F3 /* DebugUIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIWebView.h; sourceTree = "<group>"; };
 		2CD13241156783CA002386F3 /* DebugUIWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIWebView.m; sourceTree = "<group>"; };
@@ -107,8 +111,6 @@
 		2CD1A063153FB7B6008949F2 /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
 		2CD1A065153FB7B6008949F2 /* NSFileManager+Tar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSFileManager+Tar.h"; sourceTree = "<group>"; };
 		2CD1A066153FB7B6008949F2 /* NSFileManager+Tar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFileManager+Tar.m"; sourceTree = "<group>"; };
-		2CD1A068153FB7B6008949F2 /* WebViewJavascriptBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewJavascriptBridge.h; sourceTree = "<group>"; };
-		2CD1A069153FB7B6008949F2 /* WebViewJavascriptBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewJavascriptBridge.m; sourceTree = "<group>"; };
 		2CD1A07A153FB85D008949F2 /* Facebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Facebook.h; sourceTree = "<group>"; };
 		2CD1A07B153FB85D008949F2 /* FBConnect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBConnect.h; sourceTree = "<group>"; };
 		2CD1A07C153FB85D008949F2 /* FBDialog.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = FBDialog.bundle; sourceTree = "<group>"; };
@@ -214,6 +216,16 @@
 			path = ..;
 			sourceTree = "<group>";
 		};
+		2CB2247515D700CC0027825B /* WebViewJavascriptBridge */ = {
+			isa = PBXGroup;
+			children = (
+				2CB2247615D700CC0027825B /* WebViewJavascriptBridge-template.js */,
+				2CB2247715D700CC0027825B /* WebViewJavascriptBridge.h */,
+				2CB2247815D700CC0027825B /* WebViewJavascriptBridge.m */,
+			);
+			path = WebViewJavascriptBridge;
+			sourceTree = "<group>";
+		};
 		2CCAFE671569EC1C002766A1 /* sounds */ = {
 			isa = PBXGroup;
 			children = (
@@ -300,8 +312,8 @@
 				2CFE18D81580A48100188E06 /* BTIndex.m */,
 				2CD1A061153FB7B6008949F2 /* JSONKit */,
 				2CD1A064153FB7B6008949F2 /* Light-Untar */,
-				2CD1A067153FB7B6008949F2 /* WebViewJavascriptBridge */,
 				2C720C5B15684C3100AC9BF4 /* MKNetworkKit */,
+				2CB2247515D700CC0027825B /* WebViewJavascriptBridge */,
 			);
 			name = "blowtorch-ios-sdk";
 			path = "../../../../dependencies/blowtorch/sdk/blowtorch-ios-sdk";
@@ -323,15 +335,6 @@
 				2CD1A066153FB7B6008949F2 /* NSFileManager+Tar.m */,
 			);
 			path = "Light-Untar";
-			sourceTree = "<group>";
-		};
-		2CD1A067153FB7B6008949F2 /* WebViewJavascriptBridge */ = {
-			isa = PBXGroup;
-			children = (
-				2CD1A068153FB7B6008949F2 /* WebViewJavascriptBridge.h */,
-				2CD1A069153FB7B6008949F2 /* WebViewJavascriptBridge.m */,
-			);
-			path = WebViewJavascriptBridge;
 			sourceTree = "<group>";
 		};
 		2CD1A079153FB85D008949F2 /* facebook-ios-sdk */ = {
@@ -420,6 +423,7 @@
 				2C45C54E15C77A2600FE147C /* logo.png in Resources */,
 				2C45C54F15C77A2600FE147C /* logo@2x.png in Resources */,
 				2C45C55115CACBD300FE147C /* img in Resources */,
+				2CB2247915D700CC0027825B /* WebViewJavascriptBridge-template.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -436,7 +440,6 @@
 				2CD1A074153FB7B6008949F2 /* BTAppDelegate.m in Sources */,
 				2CD1A075153FB7B6008949F2 /* JSONKit.m in Sources */,
 				2CD1A076153FB7B6008949F2 /* NSFileManager+Tar.m in Sources */,
-				2CD1A077153FB7B6008949F2 /* WebViewJavascriptBridge.m in Sources */,
 				2C09E4A11550D10B0089ECD5 /* BTState.m in Sources */,
 				2CD13242156783CA002386F3 /* DebugUIWebView.m in Sources */,
 				2C720C6F15684C3100AC9BF4 /* NSData+Base64.m in Sources */,
@@ -450,6 +453,7 @@
 				2C4EF9EF1573196800EE57C8 /* BTViewController.m in Sources */,
 				2CFE18D91580A48100188E06 /* BTIndex.m in Sources */,
 				2CFF879515D2B6FB00F73150 /* UIDeviceHardware.m in Sources */,
+				2CB2247A15D700CC0027825B /* WebViewJavascriptBridge.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
