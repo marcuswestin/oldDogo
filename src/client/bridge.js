@@ -26,19 +26,17 @@ var bridge = module.exports = {
 
 function init() {
 	function onWebViewJavascriptBridgeReady() {
-		WebViewJavascriptBridge.setMessageHandler(function(message) {
-			setTimeout(function doHandleBridgeMessage() {
-				try { message = JSON.parse(message) }
-				catch(e) { console.log("Bad JSON", message) }
-				if (message.event) {
-					bridge.eventHandler(message.event, message.info)
-				} else {
-					var responseId = message.responseId,
-						callback = callbacks[responseId]
-					delete callbacks[responseId]
-					typeof callback == 'function' && callback(message.error, message.data)
-				}
-			})
+		WebViewJavascriptBridge.setMessageHandler(function doHandleBridgeMessage(message) {
+			try { message = JSON.parse(message) }
+			catch(e) { console.log("Bad JSON", message) }
+			if (message.event) {
+				bridge.eventHandler(message.event, message.info)
+			} else {
+				var responseId = message.responseId,
+					callback = callbacks[responseId]
+				delete callbacks[responseId]
+				typeof callback == 'function' && callback(message.error, message.data)
+			}
 		})
 
 		for (var i=0, message; message=bridgeReadyQueue[i]; i++) {
