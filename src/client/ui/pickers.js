@@ -69,8 +69,7 @@ var picker = {
 }
 
 var colorLists = [
-	//['multi1', 'multi2', 'random'],
-	[[15,10,10]],
+	['multi-color1'],
 	[[15,10,10], [100,90,90], [255,245,245]],
 	[[210,0,0],[210,210,0],[100,210,50],[0,0,210],[125,10,210]],
 	[[212,69,3],[236,169,31], [79,124,128], [145,161,112], [184,143,170], [171,128,88], [70,130,180]]
@@ -84,9 +83,7 @@ var colorPicker = proto(picker,
 		itemLists:colorLists,
 		
 		multiColors: {
-			'multi1':colorLists[2],
-			'multi2':colorLists[3],
-			'random':[[255, 0, 0], [255, 125, 0], [125, 255, 125], [0, 125, 255], [0, 0, 255]]
+			'multi-color1':colorLists[3]
 		},
 		
 		renderItem: function(color, isCurrent) {
@@ -94,11 +91,12 @@ var colorPicker = proto(picker,
 			var diameter = 50
 			var styles = {
 				width:diameter, height:diameter,
-				'border-radius':35, border:'2px solid #333'
+				'border-radius':35
 			}
 			var content
 			if (typeof color == 'string') {
-				// TODO Render mutli-select pen
+				styles.backgroundImage = 'url("/blowtorch/img/colors/'+color+'.png")'
+				styles.backgroundSize = diameter+'px '+diameter+'px'
 			} else {
 				styles.background = rgbaString(color, alpha)
 			}
@@ -106,6 +104,9 @@ var colorPicker = proto(picker,
 		},
 		
 		touchHandler: function(onSelect, item) {
+			if (typeof item == 'string') {
+				return button(curry(onSelect, item))
+			}
 			var hsvBase
 			var rgb = item
 			var onDone = function() {
