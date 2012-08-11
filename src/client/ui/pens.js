@@ -68,7 +68,7 @@ var initPen = function(opts) {
 	this.paint = opts.paint
 }
 
-pens.fill = proto(collectPointsPen, initPen, {
+var fillIn = proto(collectPointsPen, initPen, {
 	
 	down:function(point) {
 		this.paint.lineCap('round').style(this.rgba(1))
@@ -104,10 +104,7 @@ pens.fill = proto(collectPointsPen, initPen, {
 	
 })
 
-
-
-
-var fillPen = proto(basePen, initPen, {
+var fillSmooth = proto(basePen, initPen, {
 	u:1/2,
 	dt:0.08,
 	rate:10,
@@ -177,6 +174,8 @@ var fillPen = proto(basePen, initPen, {
 		}
 	}
 })
+
+pens.fill = fillSmooth
 
 // pens.line = proto(collectPointsPen, initPen, {
 // 	down: function(ctx, point, points) {
