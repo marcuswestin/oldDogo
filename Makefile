@@ -40,11 +40,14 @@ run-mysql-dev:
 client:
 	node src/scripts/build-client.js
 
-fly-build: client
+fly-build: check-git-dirty client
 	rm -rf src/client/ios/build
 	xcodebuild -project src/client/ios/dogo.xcodeproj -sdk iphoneos GCC_PREPROCESSOR_DEFINITIONS="TESTFLIGHT" -configuration Release
 	# xcodebuild -project src/client/ios/dogo.xcodeproj -sdk iphonesimulator5.1 GCC_PREPROCESSOR_DEFINITIONS="TESTFLIGHT" -configuration Release
 	/usr/bin/xcrun -sdk iphoneos PackageApplication src/client/ios/build/Release-iphoneos/dogo.app -o ~/Desktop/dogo.ipa
+
+check-git-dirty:
+	if ! git diff-index --quiet HEAD --; then echo "DIRTY GIT REPO TREE"; exit -1; fi
 
 fly-dev: fly-build
 	curl http://testflightapp.com/api/builds.json \
