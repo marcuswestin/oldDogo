@@ -40,9 +40,8 @@ run-mysql-dev:
 client:
 	node src/scripts/build-client.js
 
-fly-build: check-git-dirty client
+fly-build: client
 	rm -rf src/client/ios/build
-	bash src/scripts/bump-ios-version.sh
 	xcodebuild -project src/client/ios/dogo.xcodeproj -sdk iphoneos GCC_PREPROCESSOR_DEFINITIONS="TESTFLIGHT" -configuration Release
 	# xcodebuild -project src/client/ios/dogo.xcodeproj -sdk iphonesimulator5.1 GCC_PREPROCESSOR_DEFINITIONS="TESTFLIGHT" -configuration Release
 	/usr/bin/xcrun -sdk iphoneos PackageApplication src/client/ios/build/Release-iphoneos/dogo.app -o ~/Desktop/dogo.ipa
@@ -59,7 +58,7 @@ fly-dev: fly-build
 	-F notify=True \
 	-F distribution_lists='dev'
 
-fly-alpha: fly-build
+fly-alpha: bump-ios-patch fly-build
 	echo "Enter alpha release notes:\n"; read commitMessage; echo "\nOK! Uploading..."; curl http://testflightapp.com/api/builds.json \
 	-F file=@/Users/marcus/Desktop/dogo.ipa \
 	-F api_token='fa8a4a8d04599e74e456e4968117ad25_NDE5NDk0MjAxMi0wNC0yOSAyMzoxNTo0MC4zMzk0Njk' \
@@ -68,7 +67,7 @@ fly-alpha: fly-build
 	-F notify=True \
 	-F distribution_lists='alpha'
 
-fly-all: fly-build
+fly-all: bump-ios-minor fly-build
 	echo "Enter release notes:\n"; read commitMessage; echo "\nOK! Uploading..."; curl http://testflightapp.com/api/builds.json \
 	-F file=@/Users/marcus/Desktop/dogo.ipa \
 	-F api_token='fa8a4a8d04599e74e456e4968117ad25_NDE5NDk0MjAxMi0wNC0yOSAyMzoxNTo0MC4zMzk0Njk' \
@@ -76,6 +75,12 @@ fly-all: fly-build
 	-F notes="$$commitMessage" \
 	-F notify=True \
 	-F distribution_lists='dogo'
+
+bump-ios-patch: check-git-dirty
+	bash src/scripts/bump-ios-version.sh patch
+
+bump-ios-minor: check-git-dirty
+	bash src/scripts/bump-ios-version.sh minor
 
 clean:
 	rm -rf build
