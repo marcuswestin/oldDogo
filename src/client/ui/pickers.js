@@ -189,7 +189,7 @@ var penPicker = proto(picker,
 			var styles = {
 				width:this.closeSize[0], height:this.closeSize[1], overflow:'hidden', display:'inline-block', margin:'0 4px 0 0',
 				'-webkit-transition-property': 'width, height',
-				'-webkit-transition-duration': '0.20s',
+				'-webkit-transition-duration': '0.10s',
 				// '-webkit-transition-timing-function': 'linear',
 				border:'2px solid #433', borderRadius:4
 			}
