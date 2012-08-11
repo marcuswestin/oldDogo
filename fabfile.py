@@ -28,8 +28,6 @@ def deploy_dogo_website(git_hash):
 
 def deploy_dogo_api(git_hash):
 	update_src_dir(git_hash)
-	with go(src_dir):
-		do('make setup-server')
 	# build_info = do("cd %s && git log %s --format=%s | head -n 1" % (src_dir, git_hash, '%h-%ct'))
 	with settings(warn_only=True):
 		sudo_do('killall -q node')
@@ -47,6 +45,7 @@ def update_src_dir(git_hash):
 	with go(src_dir):
 		do('git pull origin master')
 		do('git checkout %s' % git_hash)
+		do('make setup-server')
 
 def note_deploy(component, git_hash):
 	build_info = do("cd %s && git log %s --format=%s | head -n 1" % (src_dir, git_hash, '%cD:%h'))
