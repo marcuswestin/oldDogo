@@ -83,7 +83,7 @@ var colorPicker = proto(picker,
 		itemLists:colorLists,
 		
 		multiColors: {
-			'multi-color1':colorLists[3]
+			'multi-color1':colorLists[2]
 		},
 		
 		renderItem: function(color, isCurrent) {
