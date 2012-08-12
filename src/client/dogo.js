@@ -55,8 +55,15 @@ events.on('push.notification', function onPushNotification(info) {
 			// backcompat
 		}
 	}
-	events.fire('push.message', data)
-	bridge.command('device.vibrate')
+	if (info.didBringAppIntoForeground) {
+		loadAccountId(data.senderAccountId, function(account) {
+			var conversation = { accountId:account.accountId }
+			gScroller.push({ title:account.name, conversation:conversation }, { animate:false })
+		})
+	} else {
+		events.fire('push.message', data)
+		bridge.command('device.vibrate')
+	}
 })
 
 bridge.eventHandler = function bridgeEventHandler(name, info) { events.fire(name, info) }
