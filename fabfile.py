@@ -25,6 +25,7 @@ def deploy_dogo_website(git_hash):
 	update_src_dir(git_hash)
 	with go(src_dir):
 		do('make build-website')
+	note_deploy('dogo-website')
 
 def deploy_dogo_api(git_hash):
 	update_src_dir(git_hash)
