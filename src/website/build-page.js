@@ -2,6 +2,7 @@ var fs = require('fs')
 var each = require('std/each')
 var options = require('std/options')
 var combine = require('../combine')
+var marked = require('marked')
 
 var basePath = 'template/base'
 
@@ -57,11 +58,24 @@ module.exports = function buildPage(name, opts, callback) {
 }
 
 function pageFile(name, ext) {
-	return fs.readFileSync(pagePath(name, ext)).toString()
+	var filePath = pagePath(name, ext)
+	var content = fs.readFileSync(filePath).toString()
+	if (filePath.match(/\.md$/)) {
+		content = marked(content)
+	}
+	return content
 }
 
 function pagePath(name, ext) {
-	return __dirname+'/pages/'+name+'.'+(ext || 'html')
+	var base = __dirname+'/pages/'+name+'.'
+	if (!ext) {
+		if (existsSync(base+'md')) {
+			ext = 'md'
+		} else {
+			ext = 'html'
+		}
+	}
+	return base+ext
 }
 
 function templateFile(name) {

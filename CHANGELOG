@@ -1,7 +1,8 @@
 intended 0.95
 - Open Dogo to the right conversation when tapping a push notification
-- Better error notifications. Not more "Oops! error"
+- Better error notifications: No more "Oops! error"
 - Design: simpler icons; views are always "bouncy" when scrolling
+- Legal: dogoapp.com/terms and dogoapp.com/privacy pages up
 
 0.94
 - Larger & more beautiful pen and color pickers

@@ -201,6 +201,8 @@ module.exports = proto(null,
 			
 			app.get('/', sendPage('homepage'))
 			app.all(/^\/facebook_canvas*/, sendPage('facebook_canvas'))
+			app.get('/terms', sendPage('terms'))
+			app.get('/privacy', sendPage('privacy'))
 			app.get('/identity', sendPage('identity'))
 			app.get('/test', sendPage('test'))
 			
