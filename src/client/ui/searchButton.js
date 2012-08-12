@@ -6,7 +6,7 @@ module.exports = {
 
 function renderSearchButton() {
 	return $search = $(div('search-control',
-		div('button search', div('icon'), button(function() {
+		div('search', div('icon'), button(function() {
 			var margin = 4
 			var width = viewport.width() - margin*2
 			var height = 37

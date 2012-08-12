@@ -26,15 +26,10 @@ function scrollerRenderHeadContent(view, opts) {
 			div('button', 'X', button(function() { gState.clear(); bridge.command('app.restart') })),
 			div('button', 'U', button(function() { gState.checkNewVersion() }))
 		),
-		showBackButton && renderBackButton(opts.viewBelow.title || 'Home'),
+		showBackButton && div('icon back', button(function() { gScroller.pop() })),
 		div('title', view.title || 'Dogo'),
 		showSearch && searchButton.render()
 	)
-	function renderBackButton(title) {
-		return div('button back', title, button(function() {
-			gScroller.pop()
-		}))
-	}
 }
 
 events.on('searchButton.results', function(info) {
