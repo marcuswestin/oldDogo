@@ -87,7 +87,7 @@ function conversationId(conv) { return conv.conversationId }
 
 function renderBubble(message) {
 	$ui.info.find('.ghostTown').remove()
-	return div('clear messageBubble text', { id:bubbleId(message.accountId) }, function($bubble) {
+	return div('clear messageBubble text', { id:bubbleId(message.accountId) }, function renderBubbleContent($bubble) {
 		if (!accountKnown(message.accountId)) {
 			$bubble.append(div('loading', 'Loading...'))
 		}
@@ -144,7 +144,7 @@ function messageFromSentMessage(message, accountId) {
 
 function reloadConversations() {
 	loading(true)
-	api.get('conversations', function(err, res) {
+	api.get('conversations', function getConversations(err, res) {
 		loading(false)
 		if (err) { return error(err) }
 		var messages = map(res.conversations, messageFromConvo)
