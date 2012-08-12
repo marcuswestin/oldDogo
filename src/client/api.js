@@ -83,7 +83,7 @@ function handleResponse(jqXhr, url, callback, err, res) {
 		var process = jqXhr.getResponseHeader('X-Dogo-Process')
 		if (process) { eval(process) }
 	} catch(e) {}
-	console.log("api.handleResponse", url)
+	console.log("api.handleResponse", url, err ? 'ERROR' : 'OK')
 	callback && callback(err, res)
 }
 
