@@ -36,14 +36,14 @@ module.exports = proto(null,
 			console.log("Created apns connection", prodOpts.gateway+':'+prodOpts.port)
 		}
 	}, {
-		sendMessagePush:function(message, fromAcccountId, toAccountId, prodPush) {
+		sendMessagePush:function(message, fromAccountId, toAccountId, prodPush) {
 			this.db.selectOne(this, this.sql.selectPushInfo+'WHERE id=?', [toAccountId], function(err, data) {
 				if (err) { return }
 				if (!data.pushToken) { return console.log('Bah No push token for', toAccountId) }
 				if (data.pushSystem != 'ios') { return console.error('WARNING Unknown push system', data.pushSystem) }
 				
-				this.db.selectOne(this, this.sql.selectAccountFirstName+'WHERE id=?', [fromAcccountId], function(err, fromAccountInfo) {
-					if (err) { return console.log("ERROR this.sql.selectAccountFirstName", fromAcccountId) }
+				this.db.selectOne(this, this.sql.selectAccountFirstName+'WHERE id=?', [fromAccountId], function(err, fromAccountInfo) {
+					if (err) { return console.log("ERROR this.sql.selectAccountFirstName", fromAccountId) }
 					var notification = new apns.Notification()
 					notification.payload = { id:message.id, senderAccountId:message.senderAccountId, conversationId:message.conversationId }
 					notification.badge = 1
