@@ -76,6 +76,7 @@ events.on('push.notification', function onPushNotification(info) {
 			var conversation = { accountId:account.accountId }
 			var view = { title:account.name, conversation:conversation }
 			gScroller.set({ view:view, index:1, render:true, animate:false })
+			events.fire('push.message', data)
 		})
 	} else {
 		events.fire('push.message', data)

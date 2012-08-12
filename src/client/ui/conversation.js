@@ -39,9 +39,7 @@ function renderConversation(opts) {
 	)
 }
 
-function messageId(message) {
-	return 'message-'+(message.id || message.localId)
-}
+function messageId(message) { return 'message-'+(message.id || message.localId) }
 
 function selectMessage(message, _, $el) {
 	if (message.pictureId || message.base64Picture) {

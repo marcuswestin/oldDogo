@@ -11,10 +11,10 @@ var inputHeight = 39
 var composer = module.exports = {
 	selectDraw:selectDraw,
 	hide:function() {
+		drawer.remove()
 		if (!$ui) { return }
 		gScroller.$head.show()
 		$ui.surface.empty()
-		if ($ui.drawer) { $ui.drawer.remove() }
 		delete $ui
 		if (textHidden) { return }
 		textHidden = true
@@ -106,7 +106,7 @@ function onSelectPhoto($e) {
 function selectDraw(img, message) {
 	composer.hide()
 	gScroller.$head.hide()
-	$('.dogoApp').append($ui.drawer=drawer.render({ onSend:sendImage, onHide:composer.hide, img:img, message:message }))
+	$('.dogoApp').append(drawer.render({ onSend:sendImage, onHide:composer.hide, img:img, message:message }))
 }
 
 function sendImage(data, width, height) {

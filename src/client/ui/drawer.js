@@ -4,7 +4,8 @@ var paint = require('./paint')
 var pictures = require('../../data/pictures')
 
 module.exports = {
-	render:render
+	render:render,
+	remove:remove
 }
 
 var state = {
@@ -26,6 +27,12 @@ var controlsDuration = 350
 
 var p
 var $paint
+
+function remove() {
+	if (!$ui) { return }
+	$ui.remove()
+	$ui = null
+}
 
 function render(_opts) {
 	
