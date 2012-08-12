@@ -58,7 +58,8 @@ events.on('push.notification', function onPushNotification(info) {
 	if (info.didBringAppIntoForeground) {
 		loadAccountId(data.senderAccountId, function(account) {
 			var conversation = { accountId:account.accountId }
-			gScroller.push({ title:account.name, conversation:conversation }, { animate:false })
+			var view = { title:account.name, conversation:conversation }
+			gScroller.set({ view:view, index:1, render:true, animate:false })
 		})
 	} else {
 		events.fire('push.message', data)
