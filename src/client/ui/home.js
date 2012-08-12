@@ -47,38 +47,6 @@ module.exports = {
 
 function conversationId(conv) { return 'home-convo-'+conv.conversationId }
 
-// function renderFaces() {
-// 	setTimeout(function() {
-// 		var $friends = $body.find('.friends')
-// 		var $scrollView = $(document).find('.scroller-view')
-// 		var headHeight = 53
-// 		var sectionTitleHeight = 42
-// 		var viewHeight = viewport.height() - sectionTitleHeight
-// 		$scrollView.on('scroll', function() {
-// 			var showRows = Math.floor((viewHeight - $friends.position().top) / headHeight) + 2
-// 			var $faces = $friends.find('.face')
-// 			while (showingFaces < faceColumns * showRows) {
-// 				showingFaces++
-// 				if (!$faces[showingFaces]) { return }
-// 				$faces[showingFaces].style.background = face.background($faces[showingFaces].getAttribute('facebookId'))
-// 			}
-// 		})
-// 	})
-// 
-// 	var faceColumns = 6
-// 	var showingFaces = faceColumns * 2
-// 	var hackI = 0
-// 	
-// 	return [
-// 		div(style({ height:4 }))
-// 		section('friends', 'Some of Your Friends',
-// 			list({ items:someFriends, onSelect:selectContact, renderItem:function(contact) {
-// 				return div('contact', face.facebook(contact, true, hackI++ > showingFaces))
-// 			}})
-// 		)
-// 	]
-// }
-
 function renderBubble(message) {
 	$ui.info.find('.ghostTown').remove()
 	return div('clear messageBubble text', { id:bubbleId(message.accountId) }, function renderBubbleContent($bubble) {
