@@ -127,5 +127,5 @@ unique = function() {
 unique.current = 1
 
 link = function(title, path) {
-	return a('link', title, { href:('//'+appInfo.config.serverHost + path), target:'_blank' })
+	return a('link', title, { href:(appInfo.config.serverUrl + path), target:'_blank' })
 }
