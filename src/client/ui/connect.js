@@ -17,7 +17,10 @@ module.exports = {
 						onConnected()
 					})
 				})
-			}))
+			})),
+			div('notice',
+				'When you connect, you agree to our ', link('Privacy Policy', '/privacy'), ' & ', link('Terms of Service', '/terms')
+			)
 		)
 	},
 	slideOut: function() {

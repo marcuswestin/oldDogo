@@ -24,14 +24,14 @@
                                 [UIDeviceHardware platformString], @"platform",
                                 nil];
         
+        BOOL devMode = [mode isEqualToString:@"dev"];
+        self.serverHost = devMode ? @"http://marcus.local:9000" : @"https://dogoapp.com";
+
         [self.config setValue:mode forKey:@"mode"];
         [self.config setValue:[self getCurrentVersion] forKey:@"currentVersion"];
         [self.config setValue:device forKey:@"device"];
+        [self.config setValue:self.serverHost forKey:@"serverHost"];
         
-        BOOL devMode = [mode isEqualToString:@"dev"];
-        
-        self.serverHost = devMode ? @"http://marcus.local:9000" : @"https://dogoapp.com";
-
         facebook = [[Facebook alloc] initWithAppId:@"219049001532833" andDelegate:self];
         
         [[self.webView scrollView] setBounces:NO];

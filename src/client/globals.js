@@ -8,6 +8,7 @@ require('tags/util')
 require('tags/viewport')
 
 div = tags.createTag('div')
+a = tags.createTag('a')
 input = tags.createTag('input')
 img = tags.createTag('img')
 canvas = tags.createTag('canvas')
@@ -124,3 +125,7 @@ unique = function() {
 	return 'u'+(unique.current++)
 }
 unique.current = 1
+
+link = function(title, path) {
+	return a('link', title, { href:('//'+appInfo.config.serverHost + path), target:'_blank' })
+}
