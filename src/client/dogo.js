@@ -3,14 +3,30 @@ require('./globals')
 var time = require('std/time')
 var pictures = require('../data/pictures')
 
-button.onError = error = function error(err, $tag) {
-	var message = "Oops! "+JSON.stringify(err)
-	if ($tag) {
-		$tag.empty().append(div('error', message))
-	} else {
-		alert(message)
+error = function error(err) {
+	var message = api.error(err)
+	if (!error.$tag) {
+		error.$tag = $(div('errorNotice',
+			div('content red',
+				div('close icon', button(function() { error.hide() })),
+				div('message')
+			)
+		)).appendTo('.scroller-body').css({
+			position:'absolute', top:0, left:0,
+			'-webkit-transform': 'translateY(-150px)'
+		})
+	}
+	setTimeout(function() {
+		error.$tag.css({
+			'-webkit-transition': '-webkit-transform .6s',
+			'-webkit-transform':'translateY(0)'
+		}).find('.message').text(message)
+	})
+	error.hide = function() {
+		error.$tag.css({ '-webkit-transform':'translateY(-150px)' })
 	}
 }
+error.hide = function() {}
 
 var connect = require('./ui/connect')
 var appScroller = require('./ui/appScroller')

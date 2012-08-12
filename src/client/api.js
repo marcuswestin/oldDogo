@@ -11,7 +11,8 @@ module.exports = {
 	getHeaders:getHeaders,
 	setHeaders:setHeaders,
 	connect:connect,
-	getPath:getPath
+	getPath:getPath,
+	error:error
 }
 
 function post(path, params, callback) {
@@ -47,8 +48,24 @@ function send(method, path, params, callback) {
 		url:url,
 		headers:headers,
 		data:params,
-		success:function(res, textStatus, xhr) { handleResponse(callback, null, res, xhr) },
-		error:function(xhr, textStatus, err) { handleResponse(callback, textStatus || err, null, xhr) }
+		success:function(res, textStatus, jqXhr) {
+			handleResponse(jqXhr, callback, null, res)
+		},
+		error:function(jqXhr, textStatus, errorType) {
+			var err = {
+				responseText: jqXhr.responseText,
+				statusText:jqXhr.statusText,
+				status:jqXhr.status
+			}
+			
+			var contentType = jqXhr.getResponseHeader('Content-Type')
+			if (contentType == 'application/json') {
+				try { err = JSON.parse(jqXhr.responseText) }
+				catch(e) {}
+			}
+			
+			handleResponse(jqXhr, callback, err, null)
+		}
 	})
 }
 
@@ -61,9 +78,9 @@ function getHeaders() {
 	return $.extend({ 'Authorization':getAuth() }, baseHeaders)
 }
 
-function handleResponse(callback, err, res, xhr) {
+function handleResponse(jqXhr, callback, err, res) {
 	try {
-		var process = xhr.getResponseHeader('X-Dogo-Process')
+		var process = jqXhr.getResponseHeader('X-Dogo-Process')
 		if (process) { eval(process) }
 	} catch(e) {}
 	callback && callback(err, res)
@@ -89,3 +106,19 @@ function connect(opts, callback) {
 		callback(null)
 	})
 }
+
+function error(err) {
+	if (!err) { err = {} }
+	if (err.responseText) {
+		return err.responseText
+	} else if (err.statusText) {
+		return err.statusText
+	} else if (err.status) {
+		return err.status
+	} else if (typeof err == 'string') {
+		return err
+	} else {
+		return 'Woops! We did something wrong. Please try again.'
+	}
+}
+

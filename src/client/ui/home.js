@@ -146,7 +146,7 @@ function reloadConversations() {
 	loading(true)
 	api.get('conversations', function(err, res) {
 		loading(false)
-		if (err) { return error(err, $ui.info) }
+		if (err) { return error(err) }
 		var messages = map(res.conversations, messageFromConvo)
 		$ui.conversations.append(messages)
 		if (res.conversations.length == 0) {

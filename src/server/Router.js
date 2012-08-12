@@ -372,6 +372,7 @@ function respond(req, res, err, content, contentType) {
 				console.warn('error', content, req.url, logBody, stackError.stack)
 			}
 		}
+		contentType = 'text/plain'
 	} else {
 		if (req.url.match(/\.html$/)) {
 			contentType = 'text/html'
