@@ -16,11 +16,9 @@ function createAndRenderScroller() {
 }
 
 function scrollerRenderHeadContent(view, opts) {
-	var viewBelow = opts.viewBelow
 	var stackIsAboveHome = (gScroller.stack.length > 1)
-	var stackIsAboveConnect = (gScroller.stack.length > 0)
 	var stackIsAtHome = (gScroller.stack.length == 1)
-	var showBackButton = viewBelow && stackIsAboveHome
+	var showBackButton = (opts.viewBelow && stackIsAboveHome)
 	var showSearch = stackIsAtHome
 	return div('head',
 		(appInfo.config.mode == 'dev') && div('devBar',
@@ -28,7 +26,7 @@ function scrollerRenderHeadContent(view, opts) {
 			div('button', 'X', button(function() { gState.clear(); bridge.command('app.restart') })),
 			div('button', 'U', button(function() { gState.checkNewVersion() }))
 		),
-		showBackButton && renderBackButton(viewBelow.title || 'Home'),
+		showBackButton && renderBackButton(opts.viewBelow.title || 'Home'),
 		div('title', view.title || 'Dogo'),
 		showSearch && searchButton.render()
 	)
