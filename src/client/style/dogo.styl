@@ -58,12 +58,12 @@ logo()
 		logo(); padding 0 4px;
 		font-size 30px; text-align center; padding 1px 0 0 0;
 	.back.icon
-		absolute top 9px left 7px; icon(28px, 28px, 'xtras-white/36-circle-west.png');
+		absolute top left; icon(28px, 28px, 'xtras-white/36-circle-west.png', 8px, 8px);
 	.search-control
 		.search, .search.active
-			absolute top 4px right 4px; padding 8px 4px;
+			absolute top right;
 			.icon
-				icon(32px, 21px, 'white/112-group.png');
+				icon(32px, 21px, 'white/112-group.png', 12px, 8px);
 		.input
 			inputWidth = 300px;
 			width inputWidth; height 30px;
@@ -169,7 +169,7 @@ logo()
 	absolute top 0 right 5px; width 31px; height 31px; border-radius 0 0 4px 4px; border 1px solid rgba(blueDark, .7);
 	background rgba(blueDark, .5); z-index 1; transition -webkit-transform 0.5s;
 	.icon
-		absolute top 2px left 3px; icon(26px, 26px, 'white/171-sun.png', 0, 0); animate-rotation(1.5s)
+		absolute top 2px left 3px; icon(26px, 26px, 'white/171-sun.png'); animate-rotation(1.5s)
 
 .loading
 	text-align center; logo();
