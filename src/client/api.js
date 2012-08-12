@@ -49,7 +49,7 @@ function send(method, path, params, callback) {
 		headers:headers,
 		data:params,
 		success:function(res, textStatus, jqXhr) {
-			handleResponse(jqXhr, callback, null, res)
+			handleResponse(jqXhr, url, callback, null, res)
 		},
 		error:function(jqXhr, textStatus, errorType) {
 			var err = {
@@ -64,7 +64,7 @@ function send(method, path, params, callback) {
 				catch(e) {}
 			}
 			
-			handleResponse(jqXhr, callback, err, null)
+			handleResponse(jqXhr, url, callback, err, null)
 		}
 	})
 }
@@ -78,11 +78,12 @@ function getHeaders() {
 	return $.extend({ 'Authorization':getAuth() }, baseHeaders)
 }
 
-function handleResponse(jqXhr, callback, err, res) {
+function handleResponse(jqXhr, url, callback, err, res) {
 	try {
 		var process = jqXhr.getResponseHeader('X-Dogo-Process')
 		if (process) { eval(process) }
 	} catch(e) {}
+	console.log("api.handleResponse", url)
 	callback && callback(err, res)
 }
 
