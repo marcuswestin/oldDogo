@@ -1,6 +1,5 @@
 var searchButton = require('./searchButton')
 var home = require('./home')
-var connect = require('./connect')
 var conversation = require('./conversation')
 var composer = require('./composer')
 
@@ -10,17 +9,16 @@ module.exports = {
 
 function createAndRenderScroller() {
 	gScroller = tags.scroller({ onViewChange:function onViewChange() { events.fire('view.change') }, duration:400 })
-	viewport.fit($('#viewport'))
-	$('#viewport').append(div('dogoApp',
+	$('#viewport').prepend(div('dogoApp',
 		gScroller.renderHead(gHeadHeight, scrollerRenderHeadContent),
 		gScroller.renderBody(3, scrollerRenderBodyContent)
 	))
 }
 
 function scrollerRenderHeadContent($head, view, viewBelow, fromView) {
-	var stackIsAboveHome = (gScroller.stack.length > (gScroller.hasConnectView ? 2 : 1))
-	var stackIsAboveConnect = (gScroller.stack.length > (gScroller.hasConnectView ? 1 : 0))
-	var stackIsAtHome = gState.authToken() && (gScroller.stack.length == (gScroller.hasConnectView ? 2 : 1)) // hack - hasConnectView is not set yet
+	var stackIsAboveHome = (gScroller.stack.length > 1)
+	var stackIsAboveConnect = (gScroller.stack.length > 0)
+	var stackIsAtHome = (gScroller.stack.length == 1)
 	var showBackButton = viewBelow && stackIsAboveHome
 	var showSearch = stackIsAtHome
 	$head.append(div('head',
@@ -64,28 +62,8 @@ function scrollerRenderBodyContent($body, view) {
 			composer.render({ accountId:convo.accountId, facebookId:convo.facebookId })
 		)
 		conversation.refreshMessages()
-		buildContactsIndex()
-	} else if (gState.authToken()) {
-		home.render($body, view)
-		buildContactsIndex()
 	} else {
-		gScroller.hasConnectView = true
-		connect.render($body, function connectRender() {
-			gScroller.push({ title:'Dogo' })
-			bridge.command('push.register')
-			buildContactsIndex()
-		})
+		home.render($body, view)
 	}
 	console.log("scroller.scrollerRenderBodyContent done")
-}
-
-function buildContactsIndex() {
-	if (buildContactsIndex.built) { return }
-	buildContactsIndex.built = true
-	var facebookIdToNames = {}
-	each(gState.cache['contactsByFacebookId'], function(contact, facebookId) {
-		var names = contact.name.split(' ')
-		facebookIdToNames[facebookId] = names
-	})
-	bridge.command('index.build', { name:'facebookIdByName', payloadToStrings:facebookIdToNames })
 }

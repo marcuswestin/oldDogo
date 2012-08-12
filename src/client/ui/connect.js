@@ -1,6 +1,6 @@
 module.exports = {
-	render: function(body, onConnected) {
-		$(body).append(div('connect',
+	render: function(onConnected) {
+		return div('connectView',
 			div('button', 'Connect', button(function() {
 				var $el = $(this).text('Loading...').addClass('disabled')
 				bridge.command('facebook.connect', { permissions:['email'] }, function(err, facebookSession) {
@@ -18,6 +18,15 @@ module.exports = {
 					})
 				})
 			}))
-		))
+		)
+	},
+	slideOut: function() {
+		$('.connectView').css({
+			'-webkit-transition': '-webkit-transform .4s ease-in-out',
+			'-webkit-transform': 'translateY('+(-viewport.height())+'px)'
+		})
+		setTimeout(function() {
+			$('.connectView').remove()
+		}, 1000)
 	}
 }

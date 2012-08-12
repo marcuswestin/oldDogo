@@ -12,6 +12,7 @@ button.onError = error = function error(err, $tag) {
 	}
 }
 
+var connect = require('./ui/connect')
 var appScroller = require('./ui/appScroller')
 var browserModeSetup = require('./browser/setup')
 
@@ -77,10 +78,35 @@ function startApp() {
 			pictures.bucket = 'dogo-prod-conv'
 		}
 		
-		appScroller.createAndRender()
+		viewport.fit($('#viewport'))
+		
+		if (gState.authToken()) {
+			buildContactsIndex()
+			appScroller.createAndRender()
+		} else {
+			$('#viewport').append(
+				connect.render(function connectRender() {
+					appScroller.createAndRender()
+					connect.slideOut()
+					bridge.command('push.register')
+					buildContactsIndex()
+				})
+			)
+		}
 		
 		bridge.command('app.show')
 	})
+}
+
+function buildContactsIndex() {
+	if (buildContactsIndex.built) { return }
+	buildContactsIndex.built = true
+	var facebookIdToNames = {}
+	each(gState.cache['contactsByFacebookId'], function(contact, facebookId) {
+		var names = contact.name.split(' ')
+		facebookIdToNames[facebookId] = names
+	})
+	bridge.command('index.build', { name:'facebookIdByName', payloadToStrings:facebookIdToNames })
 }
 
 if (!tags.isTouch) {
