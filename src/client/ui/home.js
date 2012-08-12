@@ -36,7 +36,12 @@ module.exports = {
 		return div('home',
 			$ui.info = $(div('info')),
 			div('conversations',
-				$ui.conversations = list({ onSelect:selectConversation, getItemId:conversationId, renderItem:renderBubble, reAddItems:true })
+				$ui.conversations = list({
+					onSelect:selectConversation,
+					getItemId:function conversationId(conv) { return 'home-convo-'+conv.conversationId },
+					renderItem:renderBubble,
+					reAddItems:true
+				})
 			),
 			function() {
 				reloadConversations()
@@ -44,8 +49,6 @@ module.exports = {
 		)
 	}
 }
-
-function conversationId(conv) { return 'home-convo-'+conv.conversationId }
 
 function renderBubble(message) {
 	$ui.info.find('.ghostTown').remove()

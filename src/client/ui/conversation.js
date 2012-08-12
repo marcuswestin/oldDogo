@@ -27,7 +27,12 @@ function renderConversation(opts) {
 		$ui.info = $(div('info')),
 		$ui.wrapper=$(div('messagesWrapper', style({ height:opts.height, 'overflow-y':'scroll', '-webkit-overflow-scrolling':'touch', overflowX:'hidden' }),
 			$ui.invite=$(div('invite')),
-			div('messages', $ui.messages = list({ items:opts.messages, onSelect:selectMessage, renderItem:renderMessage, getItemId:messageId }))
+			div('messages', $ui.messages = list({
+				items:opts.messages,
+				onSelect:selectMessage,
+				renderItem:renderMessage,
+				getItemId:function messageId(message) { return 'message-'+(message.id || message.localId) }
+			}))
 		)).on('scroll', checkScrollBounds),
 		function() {
 			setTimeout(function() {
@@ -39,7 +44,7 @@ function renderConversation(opts) {
 	)
 }
 
-function messageId(message) { return 'message-'+(message.id || message.localId) }
+
 
 function selectMessage(message, _, $el) {
 	if (message.pictureId || message.base64Picture) {
@@ -156,7 +161,9 @@ events.on('message.sending', function(message) {
 	$ui.info.empty()
 	onNewMessage(message)
 	message.on('sent', function(response) {
-		$('#'+messageId(message)).attr('id', messageId(response.message))
+		var oldId = $ui.messages.getItemId(message)
+		var newId = $ui.messages.getItemId(response.message)
+		$('#'+oldId).attr('id', newId)
 	})
 })
 
