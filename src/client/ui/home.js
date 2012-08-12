@@ -3,7 +3,7 @@ var conversation = require('./conversation')
 var $ui
 
 module.exports = {
-	render:function($body) {
+	render:function() {
 		var section = function(className, headerLabel, content) {
 			return div('section clear',
 				headerLabel && div('header',
@@ -33,7 +33,7 @@ module.exports = {
 			}
 		}
 		
-		$body.append(div('home',
+		return div('home',
 			$ui.info = $(div('info')),
 			div('conversations',
 				$ui.conversations = list({
@@ -43,10 +43,11 @@ module.exports = {
 					renderItem:renderBubble,
 					reAddItems:true
 				})
-			)
-		))
-		
-		reloadConversations()
+			),
+			function() {
+				reloadConversations()
+			}
+		)
 	}
 }
 
@@ -165,7 +166,7 @@ function selectConversation(message) {
 
 function selectContact(contact) {
 	var conversation = { accountId:contact.accountId, facebookId:contact.facebookId }
-	gScroller.push({ conversation:conversation, title: contact.name })
+	gScroller.push({ title:contact.name, conversation:conversation })
 	$ui.conversations.find('#'+bubbleId(contact.accountId)).removeClass('hasUnread')
 }
 

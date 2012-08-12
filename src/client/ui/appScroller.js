@@ -15,13 +15,14 @@ function createAndRenderScroller() {
 	))
 }
 
-function scrollerRenderHeadContent($head, view, viewBelow, fromView) {
+function scrollerRenderHeadContent(view, opts) {
+	var viewBelow = opts.viewBelow
 	var stackIsAboveHome = (gScroller.stack.length > 1)
 	var stackIsAboveConnect = (gScroller.stack.length > 0)
 	var stackIsAtHome = (gScroller.stack.length == 1)
 	var showBackButton = viewBelow && stackIsAboveHome
 	var showSearch = stackIsAtHome
-	$head.append(div('head',
+	return div('head',
 		(appInfo.config.mode == 'dev') && div('devBar',
 			div('button', 'R', button(function() { bridge.command('app.restart') })),
 			div('button', 'X', button(function() { gState.clear(); bridge.command('app.restart') })),
@@ -30,7 +31,7 @@ function scrollerRenderHeadContent($head, view, viewBelow, fromView) {
 		showBackButton && renderBackButton(viewBelow.title || 'Home'),
 		div('title', view.title || 'Dogo'),
 		showSearch && searchButton.render()
-	))
+	)
 	function renderBackButton(title) {
 		return div('button back', title, button(function() {
 			gScroller.pop()
@@ -47,23 +48,25 @@ events.on('searchButton.results', function(info) {
 })
 
 
-function scrollerRenderBodyContent($body, view) {
+function scrollerRenderBodyContent(view, opts) {
 	console.log("scroller.scrollerRenderBodyContent", JSON.stringify(view))
 	var convo = view.conversation
 	if (convo) {
-		$body.append(
-			conversation.render({
-				accountId:convo.accountId,
-				facebookId:convo.facebookId,
-				messages:gState.cache[conversation.id(convo, 'messages')],
-				myAccountId:gState.myAccount().accountId,
-				height:viewport.height() - gScroller.$head.height()
-			}),
-			composer.render({ accountId:convo.accountId, facebookId:convo.facebookId })
-		)
-		conversation.refreshMessages()
+		return [
+				conversation.render({
+					accountId:convo.accountId,
+					facebookId:convo.facebookId,
+					messages:gState.cache[conversation.id(convo, 'messages')],
+					myAccountId:gState.myAccount().accountId,
+					height:viewport.height() - gScroller.$head.height()
+				}),
+				composer.render({ accountId:convo.accountId, facebookId:convo.facebookId }),
+				function() {
+					conversation.refreshMessages()
+				}
+		]
 	} else {
-		home.render($body, view)
+		return home.render(view)
 	}
 	console.log("scroller.scrollerRenderBodyContent done")
 }
