@@ -17,9 +17,7 @@ function createAndRenderScroller() {
 
 function scrollerRenderHeadContent(view, opts) {
 	var stackIsAboveHome = (gScroller.stack.length > 1)
-	var stackIsAtHome = (gScroller.stack.length == 1)
 	var showBackButton = (opts.viewBelow && stackIsAboveHome)
-	var showSearch = stackIsAtHome
 	return div('head',
 		(appInfo.config.mode == 'dev') && div('devBar',
 			div('button', 'R', button(function() { bridge.command('app.restart') })),
@@ -28,7 +26,7 @@ function scrollerRenderHeadContent(view, opts) {
 		),
 		showBackButton && div('icon back', button(function() { gScroller.pop() })),
 		div('title', view.title || 'Dogo'),
-		showSearch && searchButton.render()
+		searchButton.render()
 	)
 }
 
