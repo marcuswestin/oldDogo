@@ -136,7 +136,3 @@ function send(params) {
 events.on('view.change', function onViewRenderEvent() {
 	composer.hide()
 })
-
-$('#viewport').on('touchmove', '.conversation', function() {
-	composer.hide()
-})
