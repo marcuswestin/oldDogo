@@ -40,10 +40,6 @@ events.on('app.start', function onAppStart(info) {
 	startApp()
 })
 
-events.on('push.registerFailed', function(info) {
-	alert("Uh oh. Push registration failed")
-})
-
 events.on('push.registered', function onPushRegistered(info) {
 	gState.set('pushToken', info.deviceToken)
 	api.post('push_auth', { pushToken:info.deviceToken, pushSystem:'ios' })
@@ -113,7 +109,6 @@ function startApp() {
 				connect.render(function connectRender() {
 					appScroller.createAndRender()
 					connect.slideOut()
-					bridge.command('push.register')
 					buildContactsIndex()
 				})
 			)

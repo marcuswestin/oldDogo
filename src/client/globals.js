@@ -127,5 +127,9 @@ unique = function() {
 unique.current = 1
 
 link = function(title, path) {
-	return a('link', title, { href:(appInfo.config.serverUrl + path), target:'_blank' })
+	if (typeof path == 'function') {
+		return div('link', title, button(path))
+	} else {
+		return a('link', title, { href:(appInfo.config.serverUrl + path), target:'_blank' })
+	}
 }

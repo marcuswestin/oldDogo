@@ -57,7 +57,8 @@ function renderSearchButton() {
 					var contact = gState.cache['contactsByFacebookId'][facebookId]
 					var title = (contact.name || 'Friend')
 					var conversation = { facebookId:facebookId }
-					gScroller.push({ title:title, conversation:conversation })
+					var view = { title:title, conversation:conversation }
+					gScroller.set({ view:view, index:1, render:true })
 				}
 			})
 			events.on('textInput.return', hideInput)
