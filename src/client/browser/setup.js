@@ -72,8 +72,12 @@ function setupBrowserDebugMode() {
 			serverHost:location.host
 		}
 		bridge.eventHandler('app.start', { config:config, client:'0.91.0-browser' })
-		$('#viewport').css({ margin:'50px auto' })
-		$('body').css({ background:'#222' })
+		$('#viewport').css({ margin:'145px auto' })
+		$('body').css({ background:'#222' }).prepend(
+			div(style({ position:'absolute', top:0, left:0, width:'100%' }),
+				img({ src:'/static/img/iphone4.png' }, style({ margin:'10px auto', display:'block' }))
+			)
+		)
 	})
 	
 	$(document.body).append(div({ id:'fb-root' }))
