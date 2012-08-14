@@ -16,6 +16,7 @@ function createAndRenderScroller() {
 }
 
 function scrollerRenderHeadContent(view, opts) {
+	var isHome = (gScroller.stack.length == 1)
 	var stackIsAboveHome = (gScroller.stack.length > 1)
 	var showBackButton = (opts.viewBelow && stackIsAboveHome)
 	return div('head',
@@ -25,7 +26,7 @@ function scrollerRenderHeadContent(view, opts) {
 			div('button', 'U', button(function() { gState.checkNewVersion() }))
 		),
 		showBackButton && div('icon back', button(function() { gScroller.pop() })),
-		div('title', view.title || 'Dogo'),
+		div('title' + (isHome ? ' logo' : ''), view.title || 'Dogo'),
 		searchButton.render()
 	)
 }

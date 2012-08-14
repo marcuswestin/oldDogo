@@ -5,7 +5,9 @@ module.exports = {
 			scroller.renderBody(2, function(view, info) {
 				switch (info.index) {
 					case 0: return [
-						div('button connect', 'Connect', button(function() {
+						div('logo', 'Dogo', style({ fontSize:110 })),
+						div('slogan', 'A messaging app', br(), 'to express yourself'),
+						div('button connect', 'Connect to Dogo', button(function() {
 							var $el = $(this).text('Loading...').addClass('disabled')
 							bridge.command('facebook.connect', { permissions:['email'] }, function(err, facebookSession) {
 								if (err || !facebookSession) {

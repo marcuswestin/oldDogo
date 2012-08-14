@@ -8,6 +8,7 @@ require('tags/util')
 require('tags/viewport')
 
 div = tags.createTag('div')
+br = tags.createTag('br')
 a = tags.createTag('a')
 input = tags.createTag('input')
 img = tags.createTag('img')

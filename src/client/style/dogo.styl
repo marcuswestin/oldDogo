@@ -31,32 +31,42 @@ body
 	// background linear-gradient(top, color2, #fff);
 	// background url('/blowtorch/img/background/planks-vertical.jpg');
 	// background url('/blowtorch/img/background/grass-vertical.jpg');
-	background url('/blowtorch/img/background/bark-vertical.png');
+	// background url('/blowtorch/img/background/bark-vertical.png');
 	// background url('/blowtorch/img/background/orange-linen.png');
-	background-size 100% 100%;
+	// background-size 100% 100%;
+	background color4;
+	// background -webkit-radial-gradient(center, ellipse cover, #ed962d 0%,#f56b00 100%)
+	background -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f56b00), color-stop(100%,#ed962d));
 	height 100%; overflow hidden;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none; /* Disable selection/Copy of UIWebView */
 	-webkit-transition -webkit-transform .3s;
 
 .scroller-head
-	z-index 1; box-shadow 0 2px 3px #222;
+	z-index 1; box-shadow 0 1px 2px rgba(0, 0, 0, .7);
 .scroller-head.flat
 	box-shadow none;
 
 logo()
 	disable-select(); cursor default; font-family 'Yellowtail', cursive;
-	text-shadow 0 1px 0 rgba(255,255,255,.25); color #282424;
-
+	text-shadow 0 -1px 0 rgba(50,0,0,.5); color #fff;
+.logo
+	logo()
+.slogan
+	font-size 25px; color #fff; text-shadow 0 -1px 0 rgba(100,50,50,.2);
 	
+
 .head
 	height 100%; width 100%; overflow hidden;
 	border-radius 5px 5px 0 0;
-	background url('/blowtorch/img/background/red-linen.jpg'); background-size 327px 327px;
+	background -webkit-gradient(linear, left top, left bottom, color-stop(0%,#7db9e8), color-stop(49%,#2989d8), color-stop(50%,#0e7cd6), color-stop(100%,#1e5799));
+	// background url('/blowtorch/img/background/red-linen.jpg'); background-size 327px 327px;
 	borderTop 1px solid #E3E9ED;
 	.title
-		logo(); padding 0 4px;
-		font-size 30px; text-align center; padding 1px 0 0 0;
+		padding 0 4px; color #fff;
+		font-size 21px; text-align center; padding 7px 0 0 0;
+	.title.logo
+		font-size 30px; padding-top 1px; text-shadow 0 1px 0 rgba(50,0,0,.3); 
 	.back.icon
 		absolute top left; icon(28px, 28px, 'xtras-white/36-circle-west.png', 8px, 8px);
 	.search-control
@@ -68,7 +78,6 @@ logo()
 			inputWidth = 300px;
 			width inputWidth; height 30px;
 			absolute top 4px right; background #fff;
-			box-shadow buttonShadow;
 			border 2px solid color3; border-radius 3px;
 			-webkit-transform translateX(inputWidth + 30px)
 			-webkit-transition -webkit-transform .4s;
@@ -76,25 +85,33 @@ logo()
 		.input
 			-webkit-transform translateX(3px)
 	.devBar
+		display none;
 		absolute top right 50px;
 		.button
 			margin 4px 2px 0;
 	
-	
-.connectView, .invite
+
+.invite
 	text-align center; width 100%;
 	.button
-		font-size 22px; text-shadow textShadow; margin 0 auto; padding 6px 8px 8px;
+		font-size 22px; text-shadow rgba(0,0,0,.3); margin 0 auto; padding 6px 8px 8px;
 	.button.active
 		text-shadow none;
+
+.connectView
+	text-align center; width 100%;
+	background -webkit-radial-gradient(center, ellipse cover, #ed962d 0%,#f56b00 100%)
+	z-index 2;
+	.slogan
+		margin-bottom 40px
+	.button.connect
+		font-size 22px; text-shadow rgba(0,0,0,.3); margin 0 auto; padding 8px 8px 10px;
+		margin 0 auto 25px; width 200px; 
 	.notice
-		width 280px; margin 0 auto; color #fee;
+		width 280px; margin 20px auto; color #fee;
 		.link
 			color rgba(0, 65, 204, 0.75);
-.connectView
-	background color4; z-index 2;
-	.button.connect
-		margin 180px auto 25px; width 120px; 
+	
 .invite .button
 	width 210px;
 
@@ -118,7 +135,7 @@ logo()
 		.header
 			height 40px; background color4; color #fff; // gradient(color4, color5); 
 			.label
-				padding 9px; text-shadow textShadow;
+				padding 9px;
 	.conversations
 		min-height 254px;
 		.messageBubble
