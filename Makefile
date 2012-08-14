@@ -59,7 +59,7 @@ fly-dev: fly-build
 	-F notify=True \
 	-F distribution_lists='dev'
 
-fly-alpha: bump-ios-patch fly-build
+fly-alpha: fly-build bump-ios-patch
 	echo "Enter alpha release notes:\n"; read commitMessage; echo "\nOK! Uploading..."; curl http://testflightapp.com/api/builds.json \
 	-F file=@/Users/marcus/Desktop/dogo.ipa \
 	-F api_token='fa8a4a8d04599e74e456e4968117ad25_NDE5NDk0MjAxMi0wNC0yOSAyMzoxNTo0MC4zMzk0Njk' \
@@ -68,7 +68,7 @@ fly-alpha: bump-ios-patch fly-build
 	-F notify=True \
 	-F distribution_lists='alpha'
 
-fly-all: bump-ios-minor fly-build
+fly-all: fly-build bump-ios-minor
 	echo "Enter release notes:\n"; read commitMessage; echo "\nOK! Uploading..."; curl http://testflightapp.com/api/builds.json \
 	-F file=@/Users/marcus/Desktop/dogo.ipa \
 	-F api_token='fa8a4a8d04599e74e456e4968117ad25_NDE5NDk0MjAxMi0wNC0yOSAyMzoxNTo0MC4zMzk0Njk' \
