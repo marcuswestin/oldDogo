@@ -59,7 +59,7 @@ loading.pos = function(y) {
 	if (!loading.$ui) {
 		loading.$ui = $(div('loading-wrapper', div('icon'))).appendTo('.dogoApp')
 	}
-	loading.$ui.css({ '-webkit-transform':'translateY('+(y-2)+'px)' })
+	// loading.$ui.css({ '-webkit-transform':'translateY('+(y-2)+'px)' })
 }
 
 getId = function getId(d) { return d.id }
