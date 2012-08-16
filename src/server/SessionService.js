@@ -13,6 +13,7 @@ module.exports = proto(null,
 			if (fbAccessToken) {
 				facebook.get('me', { access_token:fbAccessToken }, bind(this, function(err, fbAccount) {
 					if (err) { return logError(err, callback, '_handleFacebookAccount', fbAccessToken) }
+					if (!fbAccount) { return logError('Facebook did not return information for user', callback, { fbAccessToken:fbAccessToken, fbRequestId:fbRequestId }) }
 					this.accountService.lookupOrCreateByFacebookAccount(fbAccount, fbAccessToken, bind(this, function(err, account) {
 						if (err) { return logError(err, callback, 'createSession.lookupOrCreateByFacebookAccount', account) }
 						this.createSessionAndGetContacts(account.accountId, account, callback)
