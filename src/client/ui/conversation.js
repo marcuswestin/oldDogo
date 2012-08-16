@@ -23,16 +23,18 @@ function renderConversation(opts) {
 	currentView = opts
 	$ui = {}
 	
+	var messages = opts.messages || []
 	return div('conversation',
-		$ui.info = $(div('info')),
 		$ui.wrapper=$(div('messagesWrapper', style({ height:opts.height, 'overflow-y':'scroll', '-webkit-overflow-scrolling':'touch', overflowX:'hidden' }),
+			$ui.info = $(div('info')),
 			$ui.invite=$(div('invite')),
 			div('messages', $ui.messages = list({
-				items:opts.messages,
+				items:messages,
 				onSelect:selectMessage,
 				renderItem:renderMessage,
 				getItemId:function messageId(message) { return 'message-'+(message.id || message.localId) }
-			}))
+			})),
+			(messages.length == 0 && div('loading', 'Loading...'))
 		)).on('scroll', checkScrollBounds),
 		function() {
 			setTimeout(function() {
@@ -64,6 +66,7 @@ function refreshMessages() {
 	loading(true)
 	api.get('messages', params, function refreshRenderMessages(err, res) {
 		loading(false)
+		$('.conversation .loading').remove()
 		if (wasCurrentView != currentView) { return }
 		if (err) { return error(err) }
 		// var cachedMessages = gState.cache[convId()]
@@ -72,7 +75,7 @@ function refreshMessages() {
 		// if (lastCachedMessage && lastReceivedMessage && lastCachedMessage.id == lastReceivedMessage.id) { return }
 		$ui.messages.append(res.messages)
 		if (!res.messages.length) {
-			$ui.info.empty().append(div('ghostTown', 'Start the conversation - draw something!'))
+			$ui.info.empty().append(div('ghostTown', 'Start the conversation!'))
 		}
 		$ui.wrapper.scrollTop($ui.messages.height())
 		gState.set(convId(), res.messages)

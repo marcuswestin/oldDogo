@@ -17,30 +17,18 @@ module.exports = {
 		
 		$ui = {}
 		
-		var someFriends = []
-		for (var id in gState.cache['contactsByFacebookId']) {
-			if (someFriends.length >= 24) { break }
-			var contact = gState.cache['contactsByFacebookId'][id]
-			if (contact.memberSince) {
-				someFriends.push(contact)
-			}
-		}
-		for (var id in gState.cache['contactsByFacebookId']) {
-			if (someFriends.length >= 24) { break }
-			var contact = gState.cache['contactsByFacebookId'][id]
-			if (!contact.memberSince) {
-				someFriends.push(contact)
-			}
-		}
+		var conversations = gState.cache['home-conversations'] || []
 		
 		return div('home',
-			$ui.info = $(div('info')),
 			div('conversations',
+				$ui.info = $(div('info', 
+					conversations.length == 0 && div('loading', 'Loading...')
+				)),
 				$ui.conversations = list({
+					items:conversations,
 					onSelect:selectConversation,
 					getItemId:function conversationId(conv) { return 'home-convo-'+conv.conversationId },
-					renderItem:renderBubble,
-					reAddItems:true
+					renderItem:renderBubble
 				})
 			),
 			function() {
@@ -51,7 +39,7 @@ module.exports = {
 }
 
 function renderBubble(message) {
-	$ui.info.find('.ghostTown').remove()
+	$ui.info.empty()
 	return div('clear messageBubble text', { id:bubbleId(message.accountId) }, function renderBubbleContent($bubble) {
 		if (!accountKnown(message.accountId)) {
 			$bubble.append(div('loading', 'Loading...'))
@@ -113,6 +101,7 @@ function reloadConversations() {
 		loading(false)
 		if (err) { return error(err) }
 		var messages = map(res.conversations, messageFromConvo)
+		gState.set('home-conversations', messages)
 		$ui.conversations.append(messages)
 		if (res.conversations.length == 0) {
 			$ui.info.empty().append(div('ghostTown', "Send a message to a friend", div('icon arrow')))
@@ -139,7 +128,8 @@ function bubbleId(withAccountId) { return 'conversation-bubble-'+withAccountId }
 
 events.on('push.message', function(pushMessage) {
 	if ($ui) {
-		$ui.conversations.prepend(messageFromPush(pushMessage))
+		var message = messageFromPush(pushMessage)
+		$ui.conversations.find('#'+$ui.conversations.getItemId(message)).remove().prepend(message)
 	}
 })
 

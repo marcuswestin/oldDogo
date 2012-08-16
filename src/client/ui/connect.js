@@ -2,10 +2,10 @@ module.exports = {
 	render: function(onConnected) {
 		var scroller = tags.scroller({ duration:400, alwaysBounce:false })
 		return div('connectView',
+			div('logo', 'Dogo', style({ fontSize:110 })),
 			scroller.renderBody(2, function(view, info) {
 				switch (info.index) {
 					case 0: return [
-						div('logo', 'Dogo', style({ fontSize:110 })),
 						div('slogan', 'A messaging app', br(), 'to express yourself'),
 						div('button connect', 'Connect to Dogo', button(function() {
 							var $el = $(this).text('Loading...').addClass('disabled')
@@ -29,19 +29,18 @@ module.exports = {
 						)
 					]
 					case 1: return [
-						div('title', 'Dogo is great with notifications!',
-							div('button', 'Enable Notifications', button(function() {
-								bridge.command('push.register', function(err) {
-									onConnected()
-								})
-							})),
-							link('no thanks', function() {
-								setTimeout(function() {
-									if (!confirm("Without notifications your friends' messages won't arrive right away o_O")) { return }
-									onConnected()
-								})
+						div('slogan', 'Nice! Dogo is great', br(), 'with notifications:'),
+						div('button', 'Enable Notifications', button(function() {
+							bridge.command('push.register', function(err) {
+								onConnected()
 							})
-						)
+						})),
+						link('no thanks', function() {
+							setTimeout(function() {
+								if (!confirm("Without notifications your friends' messages won't arrive right away o_O")) { return }
+								onConnected()
+							})
+						})
 					]
 				}
 			})
