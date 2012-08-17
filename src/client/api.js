@@ -11,6 +11,7 @@ module.exports = {
 	getHeaders:getHeaders,
 	setHeaders:setHeaders,
 	connect:connect,
+	refresh:refresh,
 	getPath:getPath,
 	error:error
 }
@@ -89,23 +90,30 @@ function handleResponse(jqXhr, url, callback, err, res) {
 
 function connect(opts, callback) {
 	var facebookAccessToken = opts.facebookSession && opts.facebookSession.accessToken
-	api.post('sessions', { facebookAccessToken:facebookAccessToken, facebookRequestId:opts.facebookRequestId }, function(err, res) {
-		if (err) { return callback(err) }
-		var contacts = res.contacts
-		var contactsByAccountId = gState.cache['contactsByAccountId'] || {}
-		var contactsByFacebookId = gState.cache['contactsByFacebookId'] || {}
-		each(contacts, function(contact) {
-			if (contact.accountId) {
-				contactsByAccountId[contact.accountId] = contact
-			}
-			contactsByFacebookId[contact.facebookId] = contact
-		})
+	var params = { facebookAccessToken:facebookAccessToken, facebookRequestId:opts.facebookRequestId }
+	api.post('sessions', params, curry(handleSession, opts.facebookSession, callback))
+}
 
-		gState.set('contactsByAccountId', contactsByAccountId)
-		gState.set('contactsByFacebookId', contactsByFacebookId)
-		gState.set('sessionInfo', { myAccount:res.account, authToken:res.authToken, facebookSession:opts.facebookSession })
-		callback(null)
+function refresh(authToken, callback) {
+	api.get('session', { authToken:authToken }, curry(handleSession, null, callback))
+}
+
+function handleSession(facebookSession, callback, err, res) {
+	if (err) { return callback(err) }
+	var contacts = res.contacts
+	var contactsByAccountId = gState.cache['contactsByAccountId'] || {}
+	var contactsByFacebookId = gState.cache['contactsByFacebookId'] || {}
+	each(contacts, function(contact) {
+		if (contact.accountId) {
+			contactsByAccountId[contact.accountId] = contact
+		}
+		contactsByFacebookId[contact.facebookId] = contact
 	})
+
+	gState.set('contactsByAccountId', contactsByAccountId)
+	gState.set('contactsByFacebookId', contactsByFacebookId)
+	gState.set('sessionInfo', { myAccount:res.account, authToken:res.authToken, facebookSession:facebookSession })
+	callback(null)
 }
 
 function error(err) {

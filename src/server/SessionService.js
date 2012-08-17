@@ -34,36 +34,37 @@ module.exports = proto(null,
 		createSessionAndGetContacts: function(accountId, account, callback) {
 			this.createSessionForAccountId(accountId, bind(this, function(err, authToken) {
 				if (err) { return logError(err, callback, 'createSession.createSessionForAccountId', accountId) }
-				this.accountService.getContacts(accountId, bind(this, function(err, contacts) {
-					if (err) { return logError(err, callback, 'createSession.getContacts') }
-					callback(null, { authToken:authToken, account:account, contacts:contacts })
+				this._finishCreateSession(authToken, accountId, account, callback)
+			}))
+		},
+		getSession: function(authToken, callback) {
+			this._authenticateSession(authToken, bind(this, function(err, accountId) {
+				if (err) { return callback(err) }
+				this.accountService.getAccount(accountId, null, bind(this, function(err, account) {
+					if (err) { return callback(err) }
+					this._finishCreateSession(authToken, accountId, account, callback)
 				}))
 			}))
 		},
+		_finishCreateSession: function(authToken, accountId, account, callback) {
+			this.accountService.getContacts(accountId, bind(this, function(err, contacts) {
+				if (err) { return logError(err, callback, 'createSession.getContacts') }
+				callback(null, { authToken:authToken, account:account, contacts:contacts })
+			}))
+		},
 		createSessionForAccountId: function(accountId, callback) {
-			var sessionToken = uuid.v4(),
+			var authToken = uuid.v4(),
 				expiration = 1 * time.day
 			
-			this.setex('sess:'+sessionToken, expiration, accountId, function(err) {
+			this.setex('sess:'+authToken, expiration, accountId, function(err) {
 				if (err) { return callback(err) }
-				var authToken = accountId+':'+sessionToken
 				callback(null, authToken)
 			})
 		},
-		refreshSessionWithAuthToken: function(authToken, callback) {
-			var parts = authToken.split(':')
-			this._authenticateSession(parts[1], parts[0], bind(this, function(err, accountId) {
+		_authenticateSession: function(authToken, callback) {
+			this.get('sess:'+authToken, function(err, accountId) {
 				if (err) { return callback(err) }
-				this.accountService.getAccount(accountId, null, function(err, account) {
-					if (err) { return callback(err) }
-					callback(null, { authToken:authToken, account:account })
-				})
-			}))
-		},
-		_authenticateSession: function(sessionToken, sessionAccountId, callback) {
-			this.get('sess:'+sessionToken, function(err, accountId) {
-				if (err) { return callback(err) }
-				if (!accountId || (accountId != sessionAccountId)) { return callback('Unauthorized') }
+				if (!accountId) { return callback('Unauthorized') }
 				callback(null, accountId)
 			})
 		},
@@ -78,18 +79,22 @@ module.exports = proto(null,
 					return callback('Bad auth')
 				}
 				
-				var scheme = parts[0],
-					credentials = new Buffer(parts[1], 'base64').toString().split(':'),
-					sessionAccountId = credentials[0],
-					sessionToken = credentials[1]
+				var scheme = parts[0]
+				if (scheme != 'Basic') {
+					return callback('Unknown auth scheme - expected "Basic"')
+				}
+				
+				var authToken = new Buffer(parts[1], 'base64').toString()
+				if (authToken.indexOf(':') > 0) {
+					// backcompat with old session tokens that had <account id>:<auth token>
+					authToken = authToken.split(':')[1]
+				}
 			} catch(e) {
 				console.warn(e)
 				return callback('Error parsing auth: '+ authorization)
 			}
 
-			if (scheme != 'Basic') { return next('Unknown auth scheme - expected "Basic"') }
-			
-			this._authenticateSession(sessionToken, sessionAccountId, callback)
+			this._authenticateSession(authToken, callback)
 		},
 		setex:function(key, exp, val, cb) {
 			var stackTrace = new Error(),

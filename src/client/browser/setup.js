@@ -92,6 +92,7 @@ function setupBrowserDebugMode() {
 
 	// Load the SDK Asynchronously
 	setTimeout(function(){
+		if (isPhantom) { return }
 		var d = document
 		var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
 		if (d.getElementById(id)) {return;}

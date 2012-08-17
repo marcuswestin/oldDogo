@@ -1,5 +1,6 @@
 module.exports = {
 	render: function(onConnected) {
+		
 		var scroller = tags.scroller({ duration:400, alwaysBounce:false })
 		return div('connectView',
 			div('logo', 'Dogo', style({ fontSize:110 })),

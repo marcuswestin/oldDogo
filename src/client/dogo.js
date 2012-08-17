@@ -87,7 +87,9 @@ function startApp() {
 		if (err) { alert("Uh oh. It looks like you need to re-install Dogo. I'm sorry! :-/") }
 		
 		if (appInfo.config.mode == 'dev') {
-			if (tags.isTouch) {
+			if (isPhantom) {
+				// do nothing
+			} else if (tags.isTouch) {
 				window.onerror = function windowOnError(e) { alert('ERROR ' + e) }
 				console.log = function bridgeConsoleLog() {
 					bridge.command('console.log', JSON.stringify(slice(arguments)))
@@ -101,20 +103,26 @@ function startApp() {
 		
 		viewport.fit($('#viewport'))
 		
-		if (gState.authToken()) {
-			buildContactsIndex()
-			appScroller.createAndRender()
+		if (isPhantom) {
+			api.refresh('fa48a930-5e94-4f18-b180-998728a5fe85', onConnected)
+		} else if (gState.authToken()) {
+			onConnected()
 		} else {
 			$('#viewport').append(
-				connect.render(function connectRender() {
-					appScroller.createAndRender()
+				connect.render(function() {
+					onConnected()
 					connect.slideOut()
-					buildContactsIndex()
 				})
 			)
 		}
 		
+		function onConnected() {
+			appScroller.createAndRender()
+			buildContactsIndex()
+		}
+		
 		bridge.command('app.show')
+		if (isPhantom) { prompt("Ready") }
 	})
 }
 
@@ -129,7 +137,11 @@ function buildContactsIndex() {
 	bridge.command('index.build', { name:'facebookIdByName', payloadToStrings:facebookIdToNames })
 }
 
-if (!tags.isTouch) {
+isPhantom = navigator.userAgent.match(/PhantomJS/)
+if (isPhantom) {
+	delete localStorage['dogo-browser-state']
+}
+if (isPhantom || !tags.isTouch) {
 	browserModeSetup.setup()
 }
 

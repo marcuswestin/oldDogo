@@ -43,8 +43,7 @@ module.exports = proto(null,
 			
 			router.get('/api/ping', function(req, res) { res.end('"Dogo!"') })
 			router.post('/api/sessions', rest.postSessions.bind(this))
-			router.post('/api/sessions/refresh', rest.refreshSession.bind(this))
-			// router.post('/api/conversations', filter.session.bind(this), rest.postConversation.bind(this))
+			router.get('/api/session', rest.getSession.bind(this))
 			router.get('/api/conversations', filter.session.bind(this), rest.getConversations.bind(this))
 			router.get('/api/contacts', filter.session.bind(this), rest.getContacts.bind(this))
 			router.post('/api/messages', filter.session.bind(this), rest.postMessage.bind(this))
@@ -114,9 +113,9 @@ module.exports = proto(null,
 				this.sessionService.createSession(params.facebookAccessToken, params.facebookRequestId,
 					curry(respond, req, res))
 			},
-			refreshSession: function(req, res) {
+			getSession: function(req, res) {
 				var params = this._getParams(req, 'authToken')
-				this.sessionService.refreshSessionWithAuthToken(params.authToken, curry(respond, req, res))
+				this.sessionService.getSession(params.authToken, curry(respond, req, res))
 			},
 			getConversations: function(req, res) {
 				var params = this._getParams(req)
