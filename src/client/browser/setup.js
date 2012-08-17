@@ -71,7 +71,7 @@ function setupBrowserDebugMode() {
 			device: {
 				platform:'Chrome'
 			},
-			serverHost:location.host
+			serverUrl:location.host
 		}
 		bridge.eventHandler('app.start', { config:config, client:'0.91.0-browser' })
 		$('#viewport').css({ margin:'145px auto' })
