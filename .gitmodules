@@ -67,3 +67,6 @@
 [submodule "node_modules/marked"]
 	path = node_modules/marked
 	url = git://github.com/chjj/marked.git
+[submodule "node_modules/phantom"]
+	path = node_modules/phantom
+	url = git@github.com:marcuswestin/phantomjs-node.git

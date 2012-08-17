@@ -5,9 +5,9 @@ setup-dev: setup-server
 	cd node_modules/require && npm install --production .
 	cd dependencies/blowtorch && make setup
 	cd dependencies/facebook-ios-sdk && scripts/build_facebook_ios_sdk_static_lib.sh
-	cd node_modules/watch && npm install .
-	cd node_modules/socket.io && npm install .
-	cd node_modules/stylus && npm install .
+	cd node_modules/socket.io && npm install . --production
+	cd node_modules/stylus && npm install . --production
+	cd node_modules/phantom && npm install . --production
 
 setup-server: setup
 	bash src/scripts/npm-install-modules.sh
