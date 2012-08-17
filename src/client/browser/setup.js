@@ -61,7 +61,9 @@ function setupBrowserDebugMode() {
 	
 	var indices = {}
 	
-	var _getState = function() { try { return JSON.parse(localStorage['dogo-browser-state']) } catch(e) { return {} } }
+	var _getState = function() {
+		try { return JSON.parse(localStorage['dogo-browser-state']) } catch(e) { return {} }
+	}
 	
 	$(function() {
 		var config = {
