@@ -79,7 +79,6 @@ module.exports = proto(null,
 			return function(req, res) { res.redirect(path) }
 		},
 		_getParams:function(req) {
-			console.log("Request:", req.url)
 			var argNames = slice(arguments, 1)
 			var params = {}
 			for (var i=0, argName; argName=argNames[i]; i++) {
