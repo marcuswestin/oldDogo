@@ -1,5 +1,6 @@
-test: init-test-db
+test:
 	./node_modules/mocha/bin/mocha --bail --reporter list
+	phantomjs test/phantom/run-phantom-test.js
 
 reset-db:
 	mysql -u dogo_rw --password=dogo -e 'DROP DATABASE IF EXISTS dogo; CREATE DATABASE dogo;'
