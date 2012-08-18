@@ -7,6 +7,8 @@ var base64 = require('std/base64')
 module.exports = {
 	post:post,
 	get:get,
+	send:send,
+	sendRequest:sendRequest,
 	getAuth:getAuth,
 	getHeaders:getHeaders,
 	setHeaders:setHeaders,
@@ -44,13 +46,23 @@ function send(method, path, params, callback) {
 		params = JSON.stringify(params)
 		headers['Content-Type'] = 'application/json'
 	}
-	return $.ajax({
+	return sendRequest({
 		type:method,
 		url:url,
 		headers:headers,
-		data:params,
+		params:params,
+		callback:callback
+	})
+}
+
+function sendRequest(opts) {
+	return $.ajax({
+		type:opts.method,
+		url:opts.url,
+		headers:opts.headers,
+		data:opts.params,
 		success:function(res, textStatus, jqXhr) {
-			handleResponse(jqXhr, url, callback, null, res)
+			handleResponse(jqXhr, opts.url, opts.callback, null, res)
 		},
 		error:function(jqXhr, textStatus, errorType) {
 			var err = {
@@ -65,7 +77,7 @@ function send(method, path, params, callback) {
 				catch(e) {}
 			}
 			
-			handleResponse(jqXhr, url, callback, err, null)
+			handleResponse(jqXhr, opts.url, opts.callback, err, null)
 		}
 	})
 }

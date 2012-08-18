@@ -163,7 +163,7 @@ events.on('push.message', function(message) {
 events.on('message.sending', function(message) {
 	$ui.info.empty()
 	onNewMessage(message)
-	message.on('sent', function(response) {
+	message.events.on('sent', function(response) {
 		var oldId = $ui.messages.getItemId(message)
 		var newId = $ui.messages.getItemId(response.message)
 		$('#'+oldId).attr('id', newId)

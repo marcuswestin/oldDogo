@@ -104,19 +104,19 @@ gHeadHeight = 45
 gKeyboardHeight = 216
 
 eventEmitter = function(params) {
-	var result = create(eventEmitter.proto, params)
-	Object.defineProperty(result, '_listeners', { value:{}, writable:false, enumerable:false, configurable:false })
-	return result
+	var events = create(eventEmitter.proto, { listeners:{} })
+	Object.defineProperty(params, 'events', { value:events, writable:false, enumerable:false, configurable:false })
+	return params
 }
 eventEmitter.proto = {
 	on: function on(signal, callback) {
-		if (!this._listeners[signal]) {
-			this._listeners[signal] = []
+		if (!this.listeners[signal]) {
+			this.listeners[signal] = []
 		}
-		this._listeners[signal].push(callback)
+		this.listeners[signal].push(callback)
 	},
 	fire: function fire(signal, args) {
-		each(this._listeners[signal], this, function(callback) {
+		each(this.listeners[signal], this, function(callback) {
 			callback.call(this, args)
 		})
 	}

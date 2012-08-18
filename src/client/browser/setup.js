@@ -56,6 +56,9 @@ function setupBrowserDebugMode() {
 			case 'textInput.hide':
 				textInput.hide()
 				break
+			case 'net.request':
+				api.sendRequest({ url:data.path, params:data.params, method:data.method, headers:data.headers, callback:callback })
+				break
 		}
 	}
 	
