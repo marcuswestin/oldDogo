@@ -6,10 +6,6 @@ var linkify = require('lib/linkify')
 var currentView
 var $ui
 
-var convId = function() {
-	return conversation.id(currentView, 'messages') // TODO remove
-}
-
 var conversation = module.exports = {
 	id: function conversationId(convo, name) {
 		return 'conv-'+name+'-'+(convo.accountId ? 'dogo-'+convo.accountId : 'fb-'+convo.facebookId)
@@ -78,7 +74,7 @@ function refreshMessages() {
 			$ui.info.empty().append(div('ghostTown', 'Start the conversation!'))
 		}
 		$ui.wrapper.scrollTop($ui.messages.height())
-		gState.set(convId(), res.messages)
+		gState.set(conversation.id(currentView, 'messages'), res.messages)
 	})
 }
 
@@ -154,9 +150,15 @@ function addMessage(message) {
 	}
 }
 
+function cacheMessage(message) {
+	var cache = gState.cache[conversation.id(currentView, 'messages')]
+	if (!cache) { return }
+	cache.unshift(message)
+}
+
 events.on('push.message', function(message) {
 	if (!currentView || !currentView.accountId || currentView.accountId != message.senderAccountId) { return }
-	gState.cache[convId()].unshift(message)
+	cacheMessage(message)
 	onNewMessage(message)
 })
 
@@ -180,7 +182,7 @@ events.on('message.sent', function(info) {
 	}
 	if (currentView.accountId != toAccountId) { return }
 	var message = info.message
-	gState.cache[convId()].unshift(message)
+	cacheMessage(message)
 	loadAccountId(toAccountId, function(account) {
 		if (account.memberSince) { return }
 		if (info.disableInvite) { return }

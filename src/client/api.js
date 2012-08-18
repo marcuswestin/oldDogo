@@ -47,7 +47,7 @@ function send(method, path, params, callback) {
 		headers['Content-Type'] = 'application/json'
 	}
 	return sendRequest({
-		type:method,
+		method:method,
 		url:url,
 		headers:headers,
 		params:params,
