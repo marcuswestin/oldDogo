@@ -16,8 +16,8 @@ Setup
 Setup mysql users/schema
 ########################
 
-	make init-db
-	make init-test-db
+	make reset-db
+	make reset-test-db
 
 Run dbs
 #######

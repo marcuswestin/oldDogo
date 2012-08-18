@@ -1,11 +1,11 @@
 test: init-test-db
 	./node_modules/mocha/bin/mocha --bail --reporter list
 
-init-db:
+reset-db:
 	mysql -u dogo_rw --password=dogo -e 'DROP DATABASE IF EXISTS dogo; CREATE DATABASE dogo;'
 	cat db/schema.sql | mysql -u dogo_rw --password=dogo dogo
 
-init-test-db:
+reset-test-db:
 	mysql -u dogo_tester --password=test -e 'DROP DATABASE IF EXISTS dogo_test; CREATE DATABASE dogo_test;'
 	cat db/schema.sql | mysql -u dogo_tester --password=test dogo_test
 
