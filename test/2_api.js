@@ -33,7 +33,11 @@ var api = {
 			var body = ''
 			var qs = params
 		}
-		var headers = { 'Content-Type':'application/json', 'Content-Length':body.length }
+		var headers = {}
+		if (body) {
+			headers['Content-Type'] = 'application/json'
+			headers['Content-Length'] = body.length
+		}
 		request[method]({ url:url, headers:headers, body:body, qs:qs }, function(err, res) {
 			if (err) { return callback(err) }
 			if (res.statusCode != 200) { return callback(new Error('Non-200 status code: '+res.statusCode+'. '+url)) }
