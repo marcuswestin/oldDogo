@@ -1,13 +1,13 @@
 var u = require('./1_utils'),
 	is = u.is,
 	check = u.check,
-	Router = require('../src/server/Router'),
+	makeRouter = require('../src/server/makeRouter'),
 	request = require('request'),
 	url = require('url'),
 	qs = require('querystring')
 
-var port = 9090,
-	router = new Router(u.accountService, u.messageService, u.sessionService, u.pictureService, { log:false, dev:true })
+var port = 9090
+var router = makeRouter(u.accountService, u.messageService, u.sessionService, u.pictureService, { log:false, dev:true })
 
 var api = {
 	post: function(path, params, callback) { api.send('post', path, params, callback) },

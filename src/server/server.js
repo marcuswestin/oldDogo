@@ -10,8 +10,9 @@ function run(config) {
 		SessionService = require('./SessionService'),
 		PictureService = require('./PictureService'),
 		MessageService = require('./MessageService'),
-		PushService = require('./PushService'),
-		Router = require('./Router')
+		PushService = require('./PushService')
+	
+	var makeRouter = require('./makeRouter')
 
 	var devConfig = require('./config/dev'),
 		prodConfig = require('./config/prod')
@@ -21,8 +22,9 @@ function run(config) {
 		pushService = new PushService(database, devConfig.push, prodConfig.push),
 		sessionService = new SessionService(database, accountService),
 		pictureService = new PictureService(database, config.s3),
-		messageService = new MessageService(database, accountService, pushService, pictureService),
-		router = new Router(accountService, messageService, sessionService, pictureService, { log:config.log, dev:config.dev })
+		messageService = new MessageService(database, accountService, pushService, pictureService)
+
+	var router = makeRouter(accountService, messageService, sessionService, pictureService, { log:config.log, dev:config.dev })
 
 	config.db.password = config.db.password.replace(/[^\*]/g, '*')
 	config.push.keyData = '******'
