@@ -10,6 +10,8 @@ Setup
 	unset TMPDIR
 	mysql_install_db --verbose --user=`whoami` --basedir="$(brew --prefix mysql)" --datadir=/usr/local/var/mysql --tmpdir=/tmp
 	mysql.server start
+	# PhantomJS for testing
+	brew install phantomjs
 	
 	make setup-dev
 

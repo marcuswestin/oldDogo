@@ -44,9 +44,9 @@ var api = {
 	}
 }
 
-before(u.setupDatabase)
+before(u.resetDatabase)
 
-describe('API', function() {
+describe('API Server', function() {
 	it('should start', function(done) {
 		router.listen(port)
 		done()

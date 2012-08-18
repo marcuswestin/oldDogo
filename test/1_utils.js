@@ -13,8 +13,7 @@ var exec = require('child_process').exec,
 	time = require('std/time')
 
 var u = module.exports = {
-	setupDatabase:setupDatabase,
-	clearTables:clearTables,
+	resetDatabase:resetDatabase,
 	checkConnectionLeaks:checkConnectionLeaks
 }
 
@@ -69,34 +68,11 @@ describe('A test', function() {
 	})
 })
 
-function setupDatabase(done) {
-	var setupSql = path.join(__dirname, '../db/schema.sql')
-	exec('cat '+setupSql+' | mysql -u dogo_tester --password=test', function(err, stdout, stderr) {
+function resetDatabase(done) {
+	exec('make reset-test-db', function(err, stdout, stderr) {
 		check(err)
 		is(!stderr)
 		done()
-	})
-}
-
-function clearTables(done) {
-	db.query(this, 'SHOW TABLES', [], function(err, res) {
-		is(!err)
-		var tables = map(res, function(row) {
-			return row['Tables_in_dogo_test'] // awkward
-		})
-
-		var count = tables.length,
-			rootPhone = PhoneNumber.normalize(u.rootPhone)
-		each(tables, function(table) {
-			db.query(this, 'TRUNCATE TABLE '+ table, [], function(err) {
-				is(!err)
-				if (--count) { return  }
-				db.query(this, 'INSERT INTO phone_address SET name=?', [rootPhone.getName()], function(err) {
-					is(!err)
-					done()
-				})
-			})
-		})
 	})
 }
 
