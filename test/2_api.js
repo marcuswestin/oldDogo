@@ -63,6 +63,7 @@ describe('API Server', function() {
 describe('Facebook connect', function() {
 	it('should allow creating an FB app access token', function(done) {
 		if (u.fbAppAccessToken) { return done() }
+		this.timeout(0)
 		// https://developers.facebook.com/docs/authentication/applications/
 		var params = { client_id:u.fbAppId, client_secret:u.fbAppSecret, grant_type:'client_credentials' }
 		request.post({ url:'https://graph.facebook.com/oauth/access_token', qs:params }, function(err, res) {
@@ -75,7 +76,7 @@ describe('Facebook connect', function() {
 	
 	it('should allow creating a test FB user', function(done) {
 		if (true) { return done() }
-		this.timeout(10000)
+		this.timeout(0)
 		var params = { installed:true, name:'John Cowp', local:'en_US', permissions:'read_stream', method:'post', access_token:u.fbAppAccessToken }
 		request.post({ url:'https://graph.facebook.com/'+u.fbAppId+'/accounts/test-users', qs:params }, function(err, res) {
 			check(err)
@@ -87,6 +88,7 @@ describe('Facebook connect', function() {
 
 	it('should let you list the current test FB users', function(done) {
 		if (u.fbTestUsers) { return done() }
+		this.timeout(0)
 		var params = { access_token:u.fbAppAccessToken }
 		request.get({ url:'https://graph.facebook.com/'+u.fbAppId+'/accounts/test-users', qs:params }, function(err, res) {
 			check(err)
@@ -99,7 +101,7 @@ describe('Facebook connect', function() {
 	
 	it('should let you create a session', function(done) {
 		var fbUser = u.fbTestUsers[0]
-		this.timeout(5000)
+		this.timeout(0)
 		api.post('sessions', { facebookAccessToken:fbUser.access_token }, function(err, res) {
 			check(err)
 			is(res.authToken)
