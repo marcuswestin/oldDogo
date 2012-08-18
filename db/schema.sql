@@ -1,14 +1,4 @@
--- CREATE USER dogo_tester@localhost IDENTIFIED BY 'test';
--- GRANT ALL ON dogo_test.* TO dogo_tester@localhost;
--- DROP DATABASE IF EXISTS dogo_test;
--- CREATE DATABASE dogo_test;
--- USE dogo_test;
-
 set foreign_key_checks = 0;
-
-DROP DATABASE IF EXISTS dogo;
-CREATE DATABASE dogo;
-USE dogo;
 
 CREATE TABLE picture (
 	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,

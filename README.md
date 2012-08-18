@@ -16,9 +16,8 @@ Setup
 Setup mysql users/schema
 ########################
 
-	cat db/setup-users.sql | mysql -u root
-	# cat db/schema.sql | mysql -u dogo_tester --password=test
-	cat db/schema.sql | mysql -u dogo_rw --password=dogo
+	make init-db
+	make init-test-db
 
 Run dbs
 #######
