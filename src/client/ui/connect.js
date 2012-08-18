@@ -9,15 +9,19 @@ module.exports = {
 					case 0: return [
 						div('slogan', 'A messaging app', br(), 'to express yourself'),
 						div('button connect', 'Connect to Dogo', button(function() {
-							var $el = $(this).text('Loading...').addClass('disabled')
+							var $el = $(this).text('Loading...')
+							var connecting = false
 							bridge.command('facebook.connect', { permissions:['email'] }, function(err, facebookSession) {
 								if (err || !facebookSession) {
-									$el.text('Try again').removeClass('disabled')
+									$el.text('Try again')
 									return
 								}
+								if (connecting) { return }
+								connecting = true
 								api.connect({ facebookSession:facebookSession }, function(err) {
+									connecting = false
 									if (err) {
-										$el.text('Try again').removeClass('disabled')
+										$el.text('Try again')
 										return
 									}
 									$el.text('Connected!')
