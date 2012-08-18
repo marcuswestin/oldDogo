@@ -54,7 +54,7 @@ try {
 	if (fbTestUsersData && (new Date().getTime() - fbTestUsersData.time < 1.5 * time.hours)) {
 		u.fbTestUsers = fbTestUsersData.users
 	}
-} catch(e) { console.log("Error opening") }
+} catch(e) { console.log("Error opening".magenta, fbTestDataFile) }
 
 u.setFbTestUsers = function(fbTestUsers) {
 	var fbTestUsersData = { time:new Date().getTime(), users:fbTestUsers }
