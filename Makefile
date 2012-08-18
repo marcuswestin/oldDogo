@@ -16,6 +16,7 @@ setup-dev: setup-server
 	cd node_modules/socket.io && npm install . --production
 	cd node_modules/stylus && npm install . --production
 	cd node_modules/phantom && npm install . --production
+	cd node_modules/mocha && npm install --production .
 
 setup-server: setup
 	bash src/scripts/npm-install-modules.sh
