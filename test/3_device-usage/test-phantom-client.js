@@ -44,7 +44,6 @@ page.open(url, function (status) {
 				function waitFor(selector, callback) {
 					var test = function() {
 						var $res = $(selector)
-						console.log("HERE", $res.length)
 						if ($res.length) { callback($res) }
 						else { setTimeout(test, 50) }
 					}
@@ -65,12 +64,14 @@ page.open(url, function (status) {
 				 *******/
 				waitFor('.home .conversations', function($conversations) {
 					is($conversations.length)
-					var $event = jQuery.Event("touchstart");
-					$event.originalEvent = { touches: [{ fakePhantomTouchEvent:true }] }
-					$($conversations.find('.list-item')[0]).trigger($event).trigger('touchend')
-					waitFor('.conversation', function($conversation) {
-						onDone()
-					})
+					setTimeout(function() {
+						var $event = jQuery.Event("touchstart");
+						$event.originalEvent = { touches: [{ fakePhantomTouchEvent:true }] }
+						$($conversations.find('.list-item')[0]).trigger($event).trigger('touchend')
+						waitFor('.conversation', function($conversation) {
+							onDone()
+						})
+					}, 100)
 				})
 			})
 		})

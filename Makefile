@@ -1,11 +1,12 @@
-test:
-	./node_modules/mocha/bin/mocha --bail --reporter list
-	phantomjs test/phantom/run-phantom-test.js
+test: test-setup test-usage
 
-test-all:
+test-setup:
 	make reset-test-db;
-	make test;
-	make test;
+	./node_modules/mocha/bin/mocha --reporter list --bail test/1_test-utils.js test/2_account-setup/test-api.js
+
+test-usage:
+	./node_modules/mocha/bin/mocha --reporter list --bail test/3_device-usage/test-api.js
+	phantomjs test/3_device-usage/test-phantom-client.js
 
 reset-db:
 	mysql -u dogo_rw --password=dogo -e 'DROP DATABASE IF EXISTS dogo; CREATE DATABASE dogo;'
@@ -14,7 +15,7 @@ reset-db:
 reset-test-db:
 	mysql -u dogo_tester --password=test -e 'DROP DATABASE IF EXISTS dogo_test; CREATE DATABASE dogo_test;'
 	cat db/schema.sql | mysql -u dogo_tester --password=test dogo_test
-	rm test/.fbTestDataCache.json
+	if [ -f test/.fbTestDataCache.json ]; then mv test/.fbTestDataCache.json test/.fbTestDataCache.json.bak; fi
 
 setup-dev: setup-server
 	cd node_modules/require && npm install --production .

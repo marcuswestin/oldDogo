@@ -4,6 +4,7 @@ node_modules
 xcuserdata
 build
 test/.fbTestDataCache.json
+test/.fbTestDataCache.json.bak
 *.pyc
 dump.rdb
 phantom-screen.png
