@@ -12,7 +12,7 @@ require('color')
 module.exports = function makeRouter(accountService, messageService, sessionService, pictureService, opts) {
 	
 	var app = express()
-	app.use(express.bodyParser({ strict:false }))
+	app.use(express.bodyParser())
 	var server = http.createServer(app)
 	
 	respond.log = (opts.log || opts.dev)
