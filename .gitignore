@@ -3,6 +3,6 @@ node_modules
 .DS_Store
 xcuserdata
 build
-.fbTestUsers.json
+test/.fbTestDataCache.json
 *.pyc
 dump.rdb

@@ -60,16 +60,31 @@ describe('API Server', function() {
 	})
 })
 
-describe('Facebook connect', function() {
+describe('Setup with Facebook Connect', function() {
+	var fbCacheFile = __dirname+'/.fbTestDataCache.json'
+	if (fs.existsSync(fbCacheFile)) {
+		u.fbTestData = JSON.parse(fs.readFileSync(fbCacheFile).toString())
+		api.authToken = u.fbTestData.dogoAuthToken
+		console.log("Loaded fb test data from disc", u.fbTestData)
+		return
+	}
+	
+	u.fbTestData = {}
+	
+	after(function() {
+		api.authToken = u.fbTestData.dogoAuthToken
+		console.log("Writing fb test data to disc", u.fbTestData)
+		fs.writeFileSync(fbCacheFile, JSON.stringify(u.fbTestData))
+	})
+	
 	it('should allow creating an FB app access token', function(done) {
-		if (u.fbAppAccessToken) { return done() }
 		this.timeout(0)
 		// https://developers.facebook.com/docs/authentication/applications/
 		var params = { client_id:u.fbAppId, client_secret:u.fbAppSecret, grant_type:'client_credentials' }
 		request.post({ url:'https://graph.facebook.com/oauth/access_token', qs:params }, function(err, res) {
 			check(err)
-			appAccessToken = qs.parse(res.body).access_token
-			is(appAccessToken)
+			u.fbTestData.accessToken = qs.parse(res.body).access_token
+			is(u.fbTestData.accessToken)
 			done()
 		})
 	})
@@ -77,7 +92,7 @@ describe('Facebook connect', function() {
 	it('should allow creating a test FB user', function(done) {
 		if (true) { return done() }
 		this.timeout(0)
-		var params = { installed:true, name:'John Cowp', local:'en_US', permissions:'read_stream', method:'post', access_token:u.fbAppAccessToken }
+		var params = { installed:true, name:'John Cowp', local:'en_US', permissions:'read_stream', method:'post', access_token:u.fbTestData.accessToken }
 		request.post({ url:'https://graph.facebook.com/'+u.fbAppId+'/accounts/test-users', qs:params }, function(err, res) {
 			check(err)
 			var user = JSON.parse(res.body)
@@ -87,27 +102,26 @@ describe('Facebook connect', function() {
 	})
 
 	it('should let you list the current test FB users', function(done) {
-		if (u.fbTestUsers) { return done() }
+		if (u.fbTestData.users) { return done() }
 		this.timeout(0)
-		var params = { access_token:u.fbAppAccessToken }
+		var params = { access_token:u.fbTestData.accessToken }
 		request.get({ url:'https://graph.facebook.com/'+u.fbAppId+'/accounts/test-users', qs:params }, function(err, res) {
 			check(err)
-			var fbTestUsers = JSON.parse(res.body).data
-			is(fbTestUsers.length)
-			u.setFbTestUsers(fbTestUsers)
+			u.fbTestData.users = JSON.parse(res.body).data
+			is(u.fbTestData.users.length)
 			done()
 		})
 	})
 	
 	it('should let you create a session', function(done) {
-		var fbUser = u.fbTestUsers[0]
+		var fbUser = u.fbTestData.users[0]
 		this.timeout(0)
 		api.post('sessions', { facebookAccessToken:fbUser.access_token }, function(err, res) {
 			check(err)
 			is(res.authToken)
 			is(res.account)
 			is(res.account.facebookId, fbUser.id)
-			api.authToken = res.authToken
+			u.fbTestData.dogoAuthToken = res.authToken
 			done()
 		})
 	})
@@ -122,7 +136,7 @@ describe('Sessions', function() {
 		})
 	})
 	it('should let you send a message', function(done) {
-		var fbFriend = u.fbTestUsers[1]
+		var fbFriend = u.fbTestData.users[1]
 		api.post('messages', { toFacebookId:fbFriend.id, body:'Hi' }, function(err, res) {
 			check(err)
 			is(res.message.id)
@@ -148,7 +162,7 @@ describe('Conversations', function() {
 			var convoCount = res.conversations.length
 			var firstConvo = res.conversations[0]
 			is(firstConvo)
-			var newFbFriend = u.fbTestUsers[2]
+			var newFbFriend = u.fbTestData.users[2]
 			api.post('messages', { toFacebookId:newFbFriend.id, body:'Ho' }, function(err, res) {
 				var message = res.message
 				api.get('conversations', function(err, res) {

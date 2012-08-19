@@ -26,8 +26,7 @@ u.sessionService = new SessionService(u.database, u.accountService)
 u.fbAppId = '219049001532833'
 u.fbAppSecret = '8916710dbc540f3d439f4f6a67a3b5e7'
 u.fbAppAccessToken = '219049001532833|OyfUJ1FBjvZ3lVNjOMM3SFqm6CE'
-u.fbTestUsers = null
-var fbTestDataFile = __dirname+'/.fbTestUsers.json'
+u.fbTestData = null
 
 u.pushService.testCount = 0
 u.pushService.sendMessagePush = function() {
@@ -45,38 +44,23 @@ u.is = function(a, b) {
 	}
 }
 
-var check = u.check,
-	is = u.is,
-	db = u.database
-try {
-	var fbTestUsersData = JSON.parse(fs.readFileSync(fbTestDataFile).toString())
-	if (fbTestUsersData && (new Date().getTime() - fbTestUsersData.time < 1.5 * time.hours)) {
-		u.fbTestUsers = fbTestUsersData.users
-	}
-} catch(e) { console.log("Error opening".magenta, fbTestDataFile) }
-
-u.setFbTestUsers = function(fbTestUsers) {
-	var fbTestUsersData = { time:new Date().getTime(), users:fbTestUsers }
-	fs.writeFileSync(fbTestDataFile, JSON.stringify(fbTestUsersData))
-	u.fbTestUsers = fbTestUsers
-}
-
 describe('A test', function() {
 	it('should run', function(done) {
-		is(!!proto)
+		u.is(!!proto)
 		done()
 	})
 })
 
 function resetDatabase(done) {
 	exec('make reset-test-db', function(err, stdout, stderr) {
-		check(err)
-		is(!stderr)
+		u.check(err)
+		u.is(!stderr)
 		done()
 	})
 }
 
 function checkConnectionLeaks(done) {
+	var db = u.database
 	assert.equal(db._queue.length, 0, 'There are still queries in the queue')
 	assert.equal(db._pool.length, db._poolSize, (db._poolSize - db._pool.length) + ' connection(s) leaked!!')
 	done()
