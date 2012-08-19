@@ -13,7 +13,6 @@ var exec = require('child_process').exec,
 	time = require('std/time')
 
 var u = module.exports = {
-	resetDatabase:resetDatabase,
 	checkConnectionLeaks:checkConnectionLeaks
 }
 
@@ -51,13 +50,36 @@ describe('A test', function() {
 	})
 })
 
-function resetDatabase(done) {
-	exec('make reset-test-db', function(err, stdout, stderr) {
-		u.check(err)
-		u.is(!stderr)
-		done()
-	})
-}
+// function resetDogoData(done) {
+// 	var db = u.database
+// 	db.query(this, 'SHOW TABLES', [], function(err, res) {
+// 		u.check(err)
+// 		var tables = map(res, function(row) {
+// 			return row['Tables_in_dogo_test']
+// 		})
+// 		;(function next() {
+// 			if (!tables || !tables.length) {
+// 				return done()
+// 			}
+// 			var table = tables.pop()
+// 			if (!table || table == 'facebook_contact') {
+// 				return next() // Keep facebook contacts in system to avoid facebook connecting again
+// 			}
+// 			db.query(this, 'set foreign_key_checks = 0; TRUNCATE TABLE '+ table + '; set foreign_key_checks = 1;', [], function(err) {
+// 				u.check(err)
+// 				next()
+// 			})
+// 		}())
+// 	})
+// }
+    
+// function resetDatabase(done) {
+// 	exec('make reset-test-db', function(err, stdout, stderr) {
+// 		u.check(err)
+// 		u.is(!stderr)
+// 		done()
+// 	})
+// }
 
 function checkConnectionLeaks(done) {
 	var db = u.database

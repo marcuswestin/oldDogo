@@ -48,8 +48,6 @@ var api = {
 	}
 }
 
-before(u.resetDatabase)
-
 describe('API Server', function() {
 	it('should start', function(done) {
 		router.listen(port)
@@ -65,17 +63,11 @@ describe('Setup with Facebook Connect', function() {
 	if (fs.existsSync(fbCacheFile)) {
 		u.fbTestData = JSON.parse(fs.readFileSync(fbCacheFile).toString())
 		api.authToken = u.fbTestData.dogoAuthToken
-		console.log("Loaded fb test data from disc", u.fbTestData)
+		console.log("Loaded fb test data from disc")
 		return
 	}
 	
 	u.fbTestData = {}
-	
-	after(function() {
-		api.authToken = u.fbTestData.dogoAuthToken
-		console.log("Writing fb test data to disc", u.fbTestData)
-		fs.writeFileSync(fbCacheFile, JSON.stringify(u.fbTestData))
-	})
 	
 	it('should allow creating an FB app access token', function(done) {
 		this.timeout(0)
@@ -122,26 +114,48 @@ describe('Setup with Facebook Connect', function() {
 			is(res.account)
 			is(res.account.facebookId, fbUser.id)
 			u.fbTestData.dogoAuthToken = res.authToken
+			
+			api.authToken = u.fbTestData.dogoAuthToken
+			console.log("Writing fb test data to disc", fbCacheFile)
+			fs.writeFileSync(fbCacheFile, JSON.stringify(u.fbTestData))
+			
 			done()
 		})
 	})
-})
-
-describe('Sessions', function() {
-	it('should let you access conversations', function(done) {
-		api.get('conversations', function(err, res) {
-			check(err)
-			is(!res.conversations.length)
-			done()
+	
+	describe('First session', function() {
+		it('should have 0 conversations', function(done) {
+			api.get('conversations', function(err, res) {
+				check(err)
+				is(!res.conversations.length)
+				done()
+			})
 		})
-	})
-	it('should let you send a message', function(done) {
-		var fbFriend = u.fbTestData.users[1]
-		api.post('messages', { toFacebookId:fbFriend.id, body:'Hi' }, function(err, res) {
-			check(err)
-			is(res.message.id)
-			is(res.message.body, 'Hi')
-			done()
+		it('should let you send a first message', function(done) {
+			var fbFriend = u.fbTestData.users[1]
+			api.post('messages', { toFacebookId:fbFriend.id, body:'Hi' }, function(err, res) {
+				check(err)
+				is(res.message.id)
+				is(res.message.body, 'Hi')
+				done()
+			})
+		})
+		it('should then have one conversation, and sending a message to another friend should create a second conversation', function(done) {
+			api.get('conversations', function(err, res) {
+				var convoCount = res.conversations.length
+				var firstConvo = res.conversations[0]
+				is(firstConvo)
+				is(res.conversations.length, 1)
+				var newFbFriend = u.fbTestData.users[2]
+				api.post('messages', { toFacebookId:newFbFriend.id, body:'Ho' }, function(err, res) {
+					var message = res.message
+					api.get('conversations', function(err, res) {
+						is(res.conversations.length, convoCount + 1)
+						is(firstConvo.id, res.conversations[1].id) // the new conversation should now appear first, and the old conversation second
+						done()
+					})
+				})
+			})
 		})
 	})
 })
@@ -157,22 +171,6 @@ sendMessage = function(body, callback) {
 }
 
 describe('Conversations', function() {
-	it('should be created when a new message is sent to a facebook id', function(done) {
-		api.get('conversations', function(err, res) {
-			var convoCount = res.conversations.length
-			var firstConvo = res.conversations[0]
-			is(firstConvo)
-			var newFbFriend = u.fbTestData.users[2]
-			api.post('messages', { toFacebookId:newFbFriend.id, body:'Ho' }, function(err, res) {
-				var message = res.message
-				api.get('conversations', function(err, res) {
-					is(res.conversations.length, convoCount + 1)
-					is(firstConvo.id, res.conversations[1].id) // the new conversation should now appear first
-					done()
-				})
-			})
-		})
-	})
 	it('should be possible to get messages by account id', function(done) {
 		api.get('conversations', function(err, res) {
 			api.get('messages', { withAccountId:res.conversations[0].withAccountId }, function(err, res) {
