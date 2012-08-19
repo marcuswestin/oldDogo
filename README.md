@@ -12,6 +12,8 @@ Setup
 	mysql.server start
 	# PhantomJS for testing
 	brew install phantomjs
+	# Fabric for deploying to prod
+	sudo easy_install fabric
 	
 	make setup-dev
 
@@ -46,6 +48,3 @@ Get to Prod
 
 	ssh dogo-web1
 	mysql -h dogo-db1.cqka8vcdrksp.us-east-1.rds.amazonaws.com -u dogo_rw -p dogo
-	# Fabric
-	sudo easy_install fabric
-	
