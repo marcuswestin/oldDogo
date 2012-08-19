@@ -122,7 +122,11 @@ function startApp() {
 		}
 		
 		bridge.command('app.show')
-		if (isPhantom) { prompt("Ready") }
+		if (isPhantom) {
+			var readyEvent = document.createEvent('Events')
+			readyEvent.initEvent('PhantomStartTest')
+			document.dispatchEvent(readyEvent)
+		}
 	})
 }
 

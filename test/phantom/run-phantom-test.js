@@ -8,29 +8,50 @@ if (system.args.length === 1) {
 }
 
 var page = require('webpage').create();
-page.onError = function(msg, trace) {
-	console.error("Phantom error:", msg, trace)
-	trace.forEach(function(item) {
-		console.log('  ', item.file, ':', item.line);
-	})
-}
-page.onConsoleMessage = function (msg) {
-	console.log('console.log', JSON.stringify(msg))
-}
 
 var url = 'http://marcus.local:9000/app.html'
 page.open(url, function (status) {
 	page.includeJs('http://marcus.local:9000/require/src/client/dogo', function() {
 		console.log("OPenened url", url)
-		phantom.exit();
-	})
-});
-
-page.onPrompt = function() {
-	setTimeout(function() {
 		page.evaluate(function() {
-			$('#connectButton').click()
+			document.addEventListener('PhantomStartTest', function() {
+				function waitFor(selector, callback) {
+					console.log("WAITFOR", window, typeof window.$)
+					var test = function() {
+						var $res = $(selector)
+						console.log("Test", selector, $res.length)
+						if ($res.length) { callback($res) }
+						else { setTimeout(test, 50) }
+					}
+					test()
+				}
+				
+				waitFor('.home', function() {
+					prompt("DONE")
+				})
+			})
 		})
 	})
-	return "Cool"
+})
+
+var red = '\033[31m'
+var green = '\033[32m'
+var reset = '\033[0m'
+var gray = '\033[1;30m'
+page.onError = function(msg, trace) {
+	console.error(red, "Phantom error:", msg, trace)
+	trace.forEach(function(item) {
+		console.log('  ', item.file, ':', item.line);
+	})
+	console.log(reset)
+	phantom.exit()
+}
+
+page.onConsoleMessage = function (msg) {
+	console.log(gray, 'console.log', JSON.stringify(msg), reset)
+}
+
+page.onPrompt = function() {
+	console.log(green, "\nAll phantom tests passed", reset)
+	phantom.exit()
 }
