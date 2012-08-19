@@ -191,7 +191,7 @@ module.exports = proto(null,
 		_selectParticipations: function(conn, accountId, callback) {
 			conn.select(this, this.sql.selectParticipation
 				+ 'WHERE partic.account_id=?\n'
-				+ 'ORDER BY last_received.sent_time DESC, convo.created_time DESC', [accountId], callback)
+				+ 'ORDER BY last_received.sent_time DESC, convo.created_time DESC, convo.id DESC', [accountId], callback)
 		},
 		_selectConversation: function(conn, account1Id, account2Id, callback) {
 			conn.selectOne(this, this.sql.selectConvo+'WHERE account_1_id=? AND account_2_id=?', [account1Id, account2Id], callback)
