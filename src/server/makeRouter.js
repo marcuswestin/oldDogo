@@ -197,10 +197,13 @@ function getParams(req) {
 	var logParams = JSON.stringify(params)
 	if (logParams.length > 250) { logParams = logParams.substr(0, 250) + ' (......)' }
 	
-	var d = new Date()
-	var time = d.getFullYear()+'/'+d.getMonth()+'/'+d.getDate()+'-'+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()
-	console.log(time, req.method, req.url, req.meta, logParams)
+	console.log(getTime(), req.method, req.url, req.meta, logParams)
 	return params
+}
+
+function getTime() {
+	var d = new Date()
+	return d.getFullYear()+'/'+d.getMonth()+'/'+d.getDate()+'-'+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()
 }
 
 
@@ -221,7 +224,6 @@ function respondCss(req, res, err, content) {
 }
 
 function respond(req, res, err, content, contentType) {
-	console.log("Responding...", req.method, req.url)
 	try {
 	var code = 200, headers = {}
 	if (err) {
@@ -271,5 +273,5 @@ function respond(req, res, err, content, contentType) {
 		try { res.end("Error sending message") }
 		catch(e) { console.log("COULD NOT RESPOND") }
 	}
-	console.log("Responded", req.url)
+	console.log(getTime(), 'Responded', req.method, req.url, req.meta)
 }
