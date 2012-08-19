@@ -24,7 +24,7 @@ var connectionBase = {
 	updateOne:function(ctx, query, args, callback) {
 		this.query(ctx, query, args, function(err, info) {
 			if (err) { console.error('updateOne error', query, args, err) }
-			if (!err && info.affectedRows > 1) { err = "Updated more rows than expected" }
+			if (!err && info.affectedRows > 1) { err = "Updated more rows than expected ("+info.affectedRows+")" }
 			callback.call(this, err, null)
 		})
 	},
