@@ -9,6 +9,7 @@ reset-db:
 reset-test-db:
 	mysql -u dogo_tester --password=test -e 'DROP DATABASE IF EXISTS dogo_test; CREATE DATABASE dogo_test;'
 	cat db/schema.sql | mysql -u dogo_tester --password=test dogo_test
+	rm test/.fbTestDataCache.json
 
 setup-dev: setup-server
 	cd node_modules/require && npm install --production .
