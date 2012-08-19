@@ -9,19 +9,13 @@ module.exports = proto(null,
 		this.pushService = pushService
 		this.pictureService = pictureService
 	}, {
-		listConversations: function(accountId, callback) {
+		getConversations: function(accountId, callback) {
 			this._selectParticipations(this.db, accountId, function(err, conversations) {
 				if (err) { return callback(err) }
 				for (var i=0, convo; convo=conversations[i]; i++) {
-					var acc1 = convo.account1Id,
-						acc2 = convo.account2Id
+					var acc1 = convo.account1Id
+					var acc2 = convo.account2Id
 					convo.withAccountId = (acc1 == accountId ? acc2 : acc1)
-					
-					// BACKCOMPAT REMOVE
-					if (convo.lastReceivedPictureId) {
-						convo.lastReceivedPayloadId = convo.lastReceivedPictureId
-						convo.lastReceivedPayloadType = 'picture'
-					}
 				}
 				callback(null, conversations)
 			})

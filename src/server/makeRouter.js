@@ -53,7 +53,7 @@ function setupRoutes(app, accountService, messageService, sessionService, pictur
 	})
 	app.get('/api/conversations', filter.session, function getConversations(req, res) {
 		var params = getParams(req)
-		messageService.listConversations(req.session.accountId, wrapRespond(req, res, 'conversations'))
+		messageService.getConversations(req.session.accountId, wrapRespond(req, res, 'conversations'))
 	})
 	app.get('/api/contacts', filter.session, function getContacts(req, res) {
 		var params = getParams(req)
