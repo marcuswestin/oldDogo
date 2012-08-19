@@ -45,7 +45,7 @@ module.exports = proto(null,
 				this.db.selectOne(this, this.sql.selectAccountFirstName+'WHERE id=?', [fromAccountId], function(err, fromAccountInfo) {
 					if (err) { return console.log("ERROR this.sql.selectAccountFirstName", fromAccountId) }
 					var notification = new apns.Notification()
-					notification.payload = { id:message.id, senderAccountId:message.senderAccountId, conversationId:message.conversationId }
+					notification.payload = { id:message.id, senderAccountId:message.senderAccountId, conversationId:message.conversationId, toDogoId:toAccountId }
 					notification.badge = 1
 					notification.sound = "vibrate.wav"
 					if (message.pictureId) {

@@ -56,6 +56,11 @@ events.on('app.willEnterForeground', function onAppWillEnterForeground() {
 events.on('push.notification', function onPushNotification(info) {
 	var data = info.data
 	var alert = data.aps && data.aps.alert
+	if (data.toDogoId != gState.myAccount().accountId) {
+		// This can happen if a single device has been used to register multiple dogo accounts
+		return
+	}
+	
 	if (alert) {
 		var match
 		if (match=alert.match(/^\w+ says: "(.*)"/i)) {
