@@ -68,6 +68,7 @@ CREATE TABLE conversation_participation (
 	FOREIGN KEY (account_id) REFERENCES account(id),
 	FOREIGN KEY (last_received_message_id) REFERENCES message(id),
 	FOREIGN KEY (last_read_message_id) REFERENCES message(id),
+	UNIQUE KEY index_account_conversation (account_id, conversation_id),
 	PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
