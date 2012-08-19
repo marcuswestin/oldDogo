@@ -62,8 +62,6 @@ function setupBrowserDebugMode() {
 		}
 	}
 	
-	var indices = {}
-	
 	var _getState = function() {
 		try { return JSON.parse(localStorage['dogo-browser-state']) } catch(e) { return {} }
 	}
@@ -85,6 +83,26 @@ function setupBrowserDebugMode() {
 		)
 	})
 	
+	if (!isPhantom) {
+		// Load the FB SDK Asynchronously
+		setTimeout(loadFbSdk, 400)
+	}
+	
+	// Fake the viewport width and height to be an iPhone
+	viewport.height = function() { return 480 }
+	viewport.width = function() { return 320 }
+	
+	// Create buttnos for rotating the ui
+	var $buttons = $(div(style({ position:'absolute', top:0, left:0 })))
+	each([-180, -90, 0, 90, 180], function(deg) {
+		$buttons.append(div(style({ padding:10, color:'#fff' }), 'Rotate: ', deg, button(function() {
+			events.fire('device.rotated', { deg:deg })
+		})))
+	})
+	$('body').append($buttons)
+}
+
+function loadFbSdk() {
 	$(document.body).append(div({ id:'fb-root' }))
 	window.fbAsyncInit = function() {
 		FB.init({
@@ -94,48 +112,11 @@ function setupBrowserDebugMode() {
 			xfbml      : false  // parse XFBML
 		})
 	};
-
-	// Load the SDK Asynchronously
-	setTimeout(function(){
-		if (isPhantom) { return }
-		var d = document
-		var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-		if (d.getElementById(id)) {return;}
-		js = d.createElement('script'); js.id = id; js.async = true;
-		js.src = "//connect.facebook.net/en_US/all.js";
-		ref.parentNode.insertBefore(js, ref);
-	}, 400);
-
-	viewport.height = function() { return 480 }
-	viewport.width = function() { return 320 }
 	
-	module.exports = {
-		fit:fit,
-		getSize:getSize,
-		width:width,
-		height:height
-	}
-
-	function fit() {
-		var el = this
-		var resize = function() {
-			$(el).height(height()).width(width())
-		}
-		$win.resize(resize)
-		resize()
-	}
-
-	function height() { return $win.height() }
-	function width() { return $win.width() }
-	function getSize() { return { width:width(), height:height() } }
-
-	var $win = $(window)
-	
-	var $buttons = $(div(style({ position:'absolute', top:0, left:0 })))
-	each([-180, -90, 0, 90, 180], function(deg) {
-		$buttons.append(div(style({ padding:10, color:'#fff' }), 'Rotate: ', deg, button(function() {
-			events.fire('device.rotated', { deg:deg })
-		})))
-	})
-	$('body').append($buttons)
+	var d = document
+	var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+	if (d.getElementById(id)) {return;}
+	js = d.createElement('script'); js.id = id; js.async = true;
+	js.src = "//connect.facebook.net/en_US/all.js";
+	ref.parentNode.insertBefore(js, ref);
 }
