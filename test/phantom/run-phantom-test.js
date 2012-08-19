@@ -9,31 +9,6 @@ if (system.args.length === 1) {
 
 var page = require('webpage').create();
 
-var url = 'http://marcus.local:9000/app.html'
-page.open(url, function (status) {
-	page.includeJs('http://marcus.local:9000/require/src/client/dogo', function() {
-		console.log("OPenened url", url)
-		page.evaluate(function() {
-			document.addEventListener('PhantomStartTest', function() {
-				function waitFor(selector, callback) {
-					console.log("WAITFOR", window, typeof window.$)
-					var test = function() {
-						var $res = $(selector)
-						console.log("Test", selector, $res.length)
-						if ($res.length) { callback($res) }
-						else { setTimeout(test, 50) }
-					}
-					test()
-				}
-				
-				waitFor('.home', function() {
-					prompt("DONE")
-				})
-			})
-		})
-	})
-})
-
 var red = '\033[31m'
 var green = '\033[32m'
 var reset = '\033[0m'
@@ -53,5 +28,50 @@ page.onConsoleMessage = function (msg) {
 
 page.onPrompt = function() {
 	console.log(green, "\nAll phantom tests passed", reset)
+	page.render('screen.png');
 	phantom.exit()
 }
+
+var url = 'http://marcus.local:9000/app.html'
+page.open(url, function (status) {
+	page.includeJs('http://marcus.local:9000/require/src/client/dogo', function() {
+		console.log("OPenened url", url)
+		page.evaluate(function() {
+			document.addEventListener('PhantomStartTest', function() {
+				/* TEST UTILS
+				 ************/
+				function waitFor(selector, callback) {
+					var test = function() {
+						var $res = $(selector)
+						console.log("HERE", $res.length)
+						if ($res.length) { callback($res) }
+						else { setTimeout(test, 50) }
+					}
+					test()
+				}
+				function onDone() {
+					prompt("DONE")
+				}
+				function is(a, b) {
+					if (arguments.length == 1) {
+						if (!a) { throw new Error('is check failed') }
+					} else {
+						if (a != b) { throw new Error('is check failed: ' + a + ' != ' + b) }
+					}
+				}
+				
+				/* TESTS
+				 *******/
+				waitFor('.home .conversations', function($conversations) {
+					is($conversations.length)
+					var $event = jQuery.Event("touchstart");
+					$event.originalEvent = { touches: [{ fakePhantomTouchEvent:true }] }
+					$($conversations.find('.list-item')[0]).trigger($event).trigger('touchend')
+					waitFor('.conversation', function($conversation) {
+						onDone()
+					})
+				})
+			})
+		})
+	})
+})
