@@ -28,6 +28,7 @@ module.exports = {
 					items:conversations,
 					onSelect:selectConversation,
 					getItemId:function conversationId(conv) { return 'home-convo-'+conv.conversationId },
+					reAddItems:true,
 					renderItem:renderBubble
 				})
 			),
@@ -54,7 +55,9 @@ function renderBubble(message) {
 					: (message.pictureId ? div('youStarted', 'sent you a picture') : message.body)
 				)
 			)
-			if (message.hasUnread) { $bubble.addClass('hasUnread') }
+			if (message.hasUnread) {
+				$bubble.addClass('hasUnread')
+			}
 		})
 	})
 }
@@ -115,35 +118,37 @@ function selectConversation(message) {
 	var title = (account ? account.name : 'Friend')
 	var conversation = { accountId:accountId }
 	gScroller.push({ title:title, conversation:conversation })
-	$ui.conversations.find('#'+bubbleId(accountId)).removeClass('hasUnread')
+	markRead(accountId)
 }
 
 function selectContact(contact) {
 	var conversation = { accountId:contact.accountId, facebookId:contact.facebookId }
 	gScroller.push({ title:contact.name, conversation:conversation })
-	$ui.conversations.find('#'+bubbleId(contact.accountId)).removeClass('hasUnread')
+	markRead(contact.accountId)
 }
 
 function bubbleId(withAccountId) { return 'conversation-bubble-'+withAccountId }
 
+function markRead(accountId) {
+	$ui.conversations.find('#'+bubbleId(accountId)).removeClass('hasUnread')
+}
+
 events.on('push.message', function(pushMessage) {
-	if ($ui) {
-		var message = messageFromPush(pushMessage)
-		$ui.conversations.find('#'+$ui.conversations.getItemId(message)).remove().prepend(message)
-	}
+	if (!$ui) { return }
+	$ui.conversations.prepend(messageFromPush(pushMessage))
 })
 
 events.on('app.willEnterForeground', function() {
-	if ($ui) {
-		reloadConversations()
-	}
+	if (!$ui) { return }
+	reloadConversations()
 })
 
 events.on('message.sent', function onMessageSentHome(info) {
 	var message = info.message
 	var toAccountId = info.toAccountId
-	var toFacebookId = info.toFacebookId
-	if (!$ui.conversations.find('#'+bubbleId(toAccountId))[0]) {
-		$ui.conversations.prepend(messageFromSentMessage(message, toAccountId))
-	}
+	$ui.conversations.prepend(messageFromSentMessage(message, toAccountId))
+})
+
+events.on('conversation.rendered', function(info) {
+	markRead(info.accountId)
 })
