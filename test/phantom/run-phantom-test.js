@@ -1,4 +1,5 @@
 var system = require('system');
+
 if (system.args.length === 1) {
 	console.log('Try to pass some args when invoking this script!');
 } else {
@@ -28,7 +29,7 @@ page.onConsoleMessage = function (msg) {
 
 page.onPrompt = function() {
 	console.log(green, "\nAll phantom tests passed", reset)
-	page.render('screen.png');
+	page.render('phantom-screen.png');
 	phantom.exit()
 }
 

@@ -6,3 +6,4 @@ build
 test/.fbTestDataCache.json
 *.pyc
 dump.rdb
+phantom-screen.png
