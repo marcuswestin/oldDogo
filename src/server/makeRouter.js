@@ -12,7 +12,7 @@ require('color')
 module.exports = function makeRouter(accountService, messageService, sessionService, pictureService, opts) {
 	
 	var app = express()
-	app.use(express.bodyParser())
+	app.use(express.bodyParser({ limit:'8mb' }))
 	var server = http.createServer(app)
 	
 	respond.log = (opts.log || opts.dev)
