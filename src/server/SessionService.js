@@ -24,6 +24,7 @@ module.exports = proto(null,
 					'SELECT to_account_id FROM facebook_request WHERE facebook_request_id=? AND response_time IS NULL',
 					[fbRequestId], function(err, res) {
 						if (err) { return callback(err) }
+						if (!res) { return callback("This facebook request has already been responded to. Download Dogo to continue!") }
 						this.createSessionAndGetContacts(res.to_account_id, null, callback)
 					}
 				)
