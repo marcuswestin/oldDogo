@@ -77,7 +77,7 @@ module.exports = proto(null,
 				this.sql.selectFacebookRequest+'WHERE facebook_request_id=?', [facebookRequestId], function(err, facebookRequest) {
 					if (err) { return callback(err) }
 					if (!facebookRequest) { return callback('Unknown facebook request') }
-					this._selectMessages(this.db, facebookRequest.conversationId, false, bind(this, function(err, messages) {
+					this._selectMessages(this.db, facebookRequest.conversationId, bind(this, function(err, messages) {
 						if (err) { return logErr(err, callback, 'loadFacebookRequestId._selectMessages', facebookRequest.conversationId) }
 						callback(null, { messages:messages, facebookRequest:facebookRequest })
 					}))
