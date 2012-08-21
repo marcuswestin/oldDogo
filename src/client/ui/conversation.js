@@ -244,7 +244,7 @@ function promptInvite(message, accountId, facebookId) {
 			)
 		)))
 		var messageBubbles = $ui.messages.find('.messageBubble')
-		$infoBar.css({ height:0, overflowY:'hidden' }).append(messageBubbles[messageBubbles.length - 1])
+		$infoBar.css({ height:0, overflowY:'hidden' }).appendTo(messageBubbles[messageBubbles.length - 1].parentNode)
 		setTimeout(function() {
 			$infoBar.css({ height:$infoBar.find('.dogo-info').height() + 30 })
 		}, 500)
