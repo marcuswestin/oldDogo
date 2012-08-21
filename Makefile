@@ -23,7 +23,7 @@ setup-dev: setup-server
 	cd dependencies/facebook-ios-sdk && scripts/build_facebook_ios_sdk_static_lib.sh
 	cd node_modules/socket.io && npm install . --production
 	cd node_modules/stylus && npm install . --production
-	cd node_modules/phantom && npm install . --production
+	#cd node_modules/phantom && npm install . --production
 	cd node_modules/mocha && npm install --production .
 
 setup-server: setup
