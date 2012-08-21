@@ -1,10 +1,16 @@
 require('../../client/globals')
 var conversation = require('../../client/ui/conversation')
+var pictures = require('../../data/pictures')
 
+error = function(err) {
+	var message = api.error(err)
+	alert(message)
+}
 
 ;(function() {
 	
 	api.setHeaders({ 'x-dogo-client':'0.91.0-facebook_canvas' })
+	pictures.bucket = 'dogo-dev-conv'
 	
 	var requestIds = parseUrl(location).getSearchParam('request_ids')
 	viewport.fit($('#viewport'))
