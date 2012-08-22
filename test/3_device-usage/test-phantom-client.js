@@ -33,9 +33,9 @@ page.onPrompt = function() {
 	phantom.exit()
 }
 
-var url = 'http://marcus.local:9000/app.html'
+var url = 'http://localhost:9000/app.html'
 page.open(url, function (status) {
-	page.includeJs('http://marcus.local:9000/require/src/client/dogo', function() {
+	page.includeJs('http://localhost:9000/require/src/client/dogo', function() {
 		console.log("OPenened url", url)
 		page.evaluate(function() {
 			document.addEventListener('PhantomStartTest', function() {

@@ -25,7 +25,7 @@
                                 nil];
         
         BOOL devMode = [mode isEqualToString:@"dev"];
-        self.serverHost = devMode ? @"http://marcus.local:9000" : @"https://dogoapp.com";
+        self.serverHost = devMode ? @"http://localhost:9000" : @"https://dogoapp.com";
 
         [self.config setValue:mode forKey:@"mode"];
         [self.config setValue:[self getCurrentVersion] forKey:@"currentVersion"];
