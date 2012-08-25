@@ -20,7 +20,8 @@ function renderConversation(opts) {
 	$ui = {}
 	
 	var messages = opts.messages || []
-	return div('conversation',
+	return div('conversation', function($el) {
+		setTimeout(function() { $el.append(
 		$ui.wrapper=$(div('messagesWrapper', style({ height:opts.height, 'overflow-y':'scroll', '-webkit-overflow-scrolling':'touch', overflowX:'hidden' }),
 			$ui.info = $(div('info')),
 			$ui.invite=$(div('invite')),
@@ -40,7 +41,8 @@ function renderConversation(opts) {
 			checkScrollBounds()
 			opts.refreshMessages && refreshMessages()
 		}
-	)
+		) }, 75)
+	})
 }
 
 

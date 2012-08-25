@@ -8,7 +8,7 @@ module.exports = {
 }
 
 function createAndRenderScroller() {
-	gScroller = tags.scroller({ onViewChange:function onViewChange() { events.fire('view.change') }, duration:400 })
+	gScroller = tags.scroller({ onViewChange:function onViewChange() { events.fire('view.change') }, duration:300 })
 	$('#viewport').prepend(div('dogoApp',
 		gScroller.renderHead(gHeadHeight, scrollerRenderHeadContent),
 		gScroller.renderBody(3, scrollerRenderBodyContent)
@@ -41,10 +41,10 @@ function scrollerRenderBodyContent(view, opts) {
 			facebookId:convo.facebookId,
 			messages:gState.cache[conversation.id(convo, 'messages')],
 			myAccountId:gState.myAccount().accountId,
-			height:viewport.height() - gScroller.$head.height()
+			height:viewport.height() - gScroller.$head.height(),
+			refreshMessages:true
 		}),
-		composer.render({ accountId:convo.accountId, facebookId:convo.facebookId }),
-		function() { conversation.refreshMessages() }
+		composer.render({ accountId:convo.accountId, facebookId:convo.facebookId })
 	]
 }
 
