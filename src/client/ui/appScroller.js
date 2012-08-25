@@ -31,34 +31,24 @@ function scrollerRenderHeadContent(view, opts) {
 	)
 }
 
-events.on('searchButton.results', function(info) {
-	if (info.showing) {
-		$('.scroller-head').addClass('flat')
-	} else {
-		$('.scroller-head').removeClass('flat')
-	}
-})
-
-
 function scrollerRenderBodyContent(view, opts) {
 	console.log("scroller.scrollerRenderBodyContent", JSON.stringify(view))
 	var convo = view.conversation
-	if (convo) {
-		return [
-				conversation.render({
-					accountId:convo.accountId,
-					facebookId:convo.facebookId,
-					messages:gState.cache[conversation.id(convo, 'messages')],
-					myAccountId:gState.myAccount().accountId,
-					height:viewport.height() - gScroller.$head.height()
-				}),
-				composer.render({ accountId:convo.accountId, facebookId:convo.facebookId }),
-				function() {
-					conversation.refreshMessages()
-				}
-		]
-	} else {
-		return home.render(view)
-	}
-	console.log("scroller.scrollerRenderBodyContent done")
+	if (!convo) { return home.render(view) }
+	return [
+		conversation.render({
+			accountId:convo.accountId,
+			facebookId:convo.facebookId,
+			messages:gState.cache[conversation.id(convo, 'messages')],
+			myAccountId:gState.myAccount().accountId,
+			height:viewport.height() - gScroller.$head.height()
+		}),
+		composer.render({ accountId:convo.accountId, facebookId:convo.facebookId }),
+		function() { conversation.refreshMessages() }
+	]
 }
+
+events.on('searchButton.results', function(info) {
+	if (info.showing) { $('.scroller-head').addClass('flat') }
+	else { $('.scroller-head').removeClass('flat') }
+})
