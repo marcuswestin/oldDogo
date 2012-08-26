@@ -38,6 +38,12 @@ events.on('app.start', function onAppStart(info) {
 	appInfo = info
 	api.setHeaders({ 'x-dogo-mode':appInfo.config.mode, 'x-dogo-client':appInfo.client })
 	startApp()
+	
+	if (appInfo.config.mode == 'dev') {
+		$('body').on('touchstart', '.logo', function() {
+			bridge.command('app.restart')
+		})
+	}
 })
 
 events.on('push.registered', function onPushRegistered(info) {
