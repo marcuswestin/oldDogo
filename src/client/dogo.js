@@ -72,6 +72,8 @@ events.on('push.notification', function onPushNotification(info) {
 			// backcompat
 		}
 	}
+	
+	data.wasPushed = true
 	if (info.didBringAppIntoForeground) {
 		loadAccountId(data.senderAccountId, function(account) {
 			var conversation = { accountId:account.accountId }

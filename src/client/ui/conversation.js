@@ -146,11 +146,22 @@ function onNewMessage(message) {
 }
 
 function addMessage(message) {
-	var deltaFromBottom = Math.abs(($ui.wrapper.scrollTop() + $ui.wrapper.height()) - ($ui.messages.height() + 50))
-	$ui.messages.append(message)
-	if (deltaFromBottom < 100) {
-		$ui.wrapper.scrollTop($ui.messages.height())
+	if ((message.isSending || message.wasPushed) && isNearBottom()) {
+		var height = $ui.messages.height()
+		setTimeout(function() {
+			var dHeight = $ui.messages.height() - height
+			$ui.wrapper.animate({
+				scrollTop: $ui.wrapper.scrollTop() + dHeight,
+				duration: 200
+			})
+		}, 50)
 	}
+	$ui.messages.append(message)
+}
+
+function isNearBottom() {
+	var deltaFromBottom = Math.abs(($ui.wrapper.scrollTop() + $ui.wrapper.height()) - ($ui.messages.height() + 50))
+	return deltaFromBottom < 100
 }
 
 function cacheMessage(message) {
