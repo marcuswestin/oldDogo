@@ -94,11 +94,16 @@ function setupBrowserDebugMode() {
 	
 	// Create buttnos for rotating the ui
 	var $buttons = $(div(style({ position:'absolute', top:0, left:0 })))
+	var padded = style({ padding:10, color:'#fff' })
 	each([-180, -90, 0, 90, 180], function(deg) {
-		$buttons.append(div(style({ padding:10, color:'#fff' }), 'Rotate: ', deg, button(function() {
+		$buttons.append(div(padded, 'Rotate: ', deg, button(function() {
 			events.fire('device.rotated', { deg:deg })
 		})))
 	})
+	$buttons.append(div(padded, 'Clear state', button(function() {
+		gState.clear()
+		bridge.command('app.restart')
+	})))
 	$('body').append($buttons)
 }
 
