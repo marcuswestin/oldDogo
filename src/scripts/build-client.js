@@ -3,7 +3,7 @@ var fs = require('fs'),
 	combine = require('../combine'),
 	path = require('path')
 
-var dir = '/build/dogo-ios-build'
+var dir = __dirname+'/../../build/dogo-ios-build'
 
 exec('rm -rf '+dir, function() {
 	exec('mkdir -p '+dir, function() {

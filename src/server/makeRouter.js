@@ -100,7 +100,7 @@ function setupRoutes(app, accountService, messageService, sessionService, pictur
 		res.end()
 		return
 		console.log('download version', req.url)
-		fs.readFile('/build/dogo-ios-build.tar', bind(this, function(err, tar) {
+		fs.readFile(__dirname+'/../../build/dogo-ios-build.tar', bind(this, function(err, tar) {
 			if (err) { return respond(req, res, err) }
 			console.log("send download response", tar.length)
 			respond(req, res, null, tar, 'application/x-tar')

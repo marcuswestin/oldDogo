@@ -15,9 +15,6 @@
 		2C45C55115CACBD300FE147C /* img in Resources */ = {isa = PBXBuildFile; fileRef = 2C45C55015CACBD300FE147C /* img */; };
 		2C4EF9EF1573196800EE57C8 /* BTViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C4EF9EE1573196800EE57C8 /* BTViewController.m */; };
 		2C5AEAEB15A5F49E00E8BF14 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 2C5AEAEA15A5F49E00E8BF14 /* fonts */; };
-		2C5C1C651566200800035E03 /* app.html in Resources */ = {isa = PBXBuildFile; fileRef = 2C5C1C621566200800035E03 /* app.html */; };
-		2C5C1C661566200800035E03 /* appCss.css in Resources */ = {isa = PBXBuildFile; fileRef = 2C5C1C631566200800035E03 /* appCss.css */; };
-		2C5C1C671566200800035E03 /* appJs.html in Resources */ = {isa = PBXBuildFile; fileRef = 2C5C1C641566200800035E03 /* appJs.html */; };
 		2C720C191567C6E900AC9BF4 /* BTNet.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C161567C59100AC9BF4 /* BTNet.m */; };
 		2C720C6F15684C3100AC9BF4 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C5E15684C3100AC9BF4 /* NSData+Base64.m */; };
 		2C720C7015684C3100AC9BF4 /* NSDate+RFC1123.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C6015684C3100AC9BF4 /* NSDate+RFC1123.m */; };
@@ -46,6 +43,9 @@
 		2CD1A076153FB7B6008949F2 /* NSFileManager+Tar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1A066153FB7B6008949F2 /* NSFileManager+Tar.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CD1A089153FB85D008949F2 /* FBDialog.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2CD1A07C153FB85D008949F2 /* FBDialog.bundle */; };
 		2CD1A08A153FB85D008949F2 /* libfacebook_ios_sdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD1A082153FB85D008949F2 /* libfacebook_ios_sdk.a */; };
+		2CF1C8AE15E9AFE700F4916D /* app.html in Resources */ = {isa = PBXBuildFile; fileRef = 2CF1C8AB15E9AFE700F4916D /* app.html */; };
+		2CF1C8AF15E9AFE700F4916D /* appCss.css in Resources */ = {isa = PBXBuildFile; fileRef = 2CF1C8AC15E9AFE700F4916D /* appCss.css */; };
+		2CF1C8B015E9AFE700F4916D /* appJs.html in Resources */ = {isa = PBXBuildFile; fileRef = 2CF1C8AD15E9AFE700F4916D /* appJs.html */; };
 		2CFE18D91580A48100188E06 /* BTIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFE18D81580A48100188E06 /* BTIndex.m */; };
 		2CFF879515D2B6FB00F73150 /* UIDeviceHardware.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFF879415D2B6FB00F73150 /* UIDeviceHardware.m */; };
 /* End PBXBuildFile section */
@@ -61,9 +61,6 @@
 		2C4EF9ED1573196800EE57C8 /* BTViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTViewController.h; sourceTree = "<group>"; };
 		2C4EF9EE1573196800EE57C8 /* BTViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTViewController.m; sourceTree = "<group>"; };
 		2C5AEAEA15A5F49E00E8BF14 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../fonts; sourceTree = "<group>"; };
-		2C5C1C621566200800035E03 /* app.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = app.html; sourceTree = "<group>"; };
-		2C5C1C631566200800035E03 /* appCss.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = appCss.css; sourceTree = "<group>"; };
-		2C5C1C641566200800035E03 /* appJs.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = appJs.html; sourceTree = "<group>"; };
 		2C720C151567C59100AC9BF4 /* BTNet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BTNet.h; sourceTree = "<group>"; };
 		2C720C161567C59100AC9BF4 /* BTNet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BTNet.m; sourceTree = "<group>"; };
 		2C720C5D15684C3100AC9BF4 /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
@@ -84,7 +81,7 @@
 		2C720C6D15684C3100AC9BF4 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		2C720C6E15684C3100AC9BF4 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		2CAE30581556262500742518 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		2CB2247615D700CC0027825B /* WebViewJavascriptBridge-template.js */ = {isa = PBXFileReference; lastKnownFileType = file; path = "WebViewJavascriptBridge-template.js"; sourceTree = "<group>"; };
+		2CB2247615D700CC0027825B /* WebViewJavascriptBridge-template.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "WebViewJavascriptBridge-template.js"; sourceTree = "<group>"; };
 		2CB2247715D700CC0027825B /* WebViewJavascriptBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewJavascriptBridge.h; sourceTree = "<group>"; };
 		2CB2247815D700CC0027825B /* WebViewJavascriptBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewJavascriptBridge.m; sourceTree = "<group>"; };
 		2CCAFE681569EC1C002766A1 /* vibrate.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = vibrate.wav; sourceTree = "<group>"; };
@@ -126,6 +123,9 @@
 		2CD1A086153FB85D008949F2 /* SBJsonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonBase.h; sourceTree = "<group>"; };
 		2CD1A087153FB85D008949F2 /* SBJsonParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonParser.h; sourceTree = "<group>"; };
 		2CD1A088153FB85D008949F2 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
+		2CF1C8AB15E9AFE700F4916D /* app.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = app.html; path = "../../Users/marcus/code/dogo/build/dogo-ios-build/app.html"; sourceTree = "<group>"; };
+		2CF1C8AC15E9AFE700F4916D /* appCss.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; name = appCss.css; path = "../../Users/marcus/code/dogo/build/dogo-ios-build/appCss.css"; sourceTree = "<group>"; };
+		2CF1C8AD15E9AFE700F4916D /* appJs.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = appJs.html; path = "../../Users/marcus/code/dogo/build/dogo-ios-build/appJs.html"; sourceTree = "<group>"; };
 		2CFE18D71580A48100188E06 /* BTIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTIndex.h; sourceTree = "<group>"; };
 		2CFE18D81580A48100188E06 /* BTIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTIndex.m; sourceTree = "<group>"; };
 		2CFF879315D2B6FB00F73150 /* UIDeviceHardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDeviceHardware.h; sourceTree = "<group>"; };
@@ -154,9 +154,9 @@
 		2C5C1C611566200800035E03 /* dogo-ios-build */ = {
 			isa = PBXGroup;
 			children = (
-				2C5C1C621566200800035E03 /* app.html */,
-				2C5C1C631566200800035E03 /* appCss.css */,
-				2C5C1C641566200800035E03 /* appJs.html */,
+				2CF1C8AB15E9AFE700F4916D /* app.html */,
+				2CF1C8AC15E9AFE700F4916D /* appCss.css */,
+				2CF1C8AD15E9AFE700F4916D /* appJs.html */,
 			);
 			name = "dogo-ios-build";
 			path = "../../../../../../../../build/dogo-ios-build";
@@ -413,9 +413,6 @@
 			files = (
 				2CD1A038153FB6B0008949F2 /* InfoPlist.strings in Resources */,
 				2CD1A089153FB85D008949F2 /* FBDialog.bundle in Resources */,
-				2C5C1C651566200800035E03 /* app.html in Resources */,
-				2C5C1C661566200800035E03 /* appCss.css in Resources */,
-				2C5C1C671566200800035E03 /* appJs.html in Resources */,
 				2CCAFE691569EC1C002766A1 /* vibrate.wav in Resources */,
 				2C5AEAEB15A5F49E00E8BF14 /* fonts in Resources */,
 				2C45C54C15C77A2600FE147C /* Default.png in Resources */,
@@ -424,6 +421,9 @@
 				2C45C54F15C77A2600FE147C /* logo@2x.png in Resources */,
 				2C45C55115CACBD300FE147C /* img in Resources */,
 				2CB2247915D700CC0027825B /* WebViewJavascriptBridge-template.js in Resources */,
+				2CF1C8AE15E9AFE700F4916D /* app.html in Resources */,
+				2CF1C8AF15E9AFE700F4916D /* appCss.css in Resources */,
+				2CF1C8B015E9AFE700F4916D /* appJs.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
