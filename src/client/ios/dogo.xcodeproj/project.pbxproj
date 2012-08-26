@@ -50,6 +50,16 @@
 		2CFF879515D2B6FB00F73150 /* UIDeviceHardware.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFF879415D2B6FB00F73150 /* UIDeviceHardware.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		2CF1C8BD15E9BABA00F4916D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2CD1A020153FB6B0008949F2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2CF1C8B915E9BAA600F4916D;
+			remoteInfo = "dogo-ios-build";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		2C09E49F1550D10B0089ECD5 /* BTState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTState.h; sourceTree = "<group>"; };
 		2C09E4A01550D10B0089ECD5 /* BTState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTState.m; sourceTree = "<group>"; };
@@ -362,6 +372,23 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXLegacyTarget section */
+		2CF1C8B915E9BAA600F4916D /* dogo-ios-build */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = client;
+			buildConfigurationList = 2CF1C8BA15E9BAA600F4916D /* Build configuration list for PBXLegacyTarget "dogo-ios-build" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = ../../..;
+			dependencies = (
+			);
+			name = "dogo-ios-build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "dogo-ios-build";
+		};
+/* End PBXLegacyTarget section */
+
 /* Begin PBXNativeTarget section */
 		2CD1A028153FB6B0008949F2 /* dogo */ = {
 			isa = PBXNativeTarget;
@@ -374,6 +401,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				2CF1C8BE15E9BABA00F4916D /* PBXTargetDependency */,
 			);
 			name = dogo;
 			productName = dogo;
@@ -402,6 +430,7 @@
 			projectRoot = "";
 			targets = (
 				2CD1A028153FB6B0008949F2 /* dogo */,
+				2CF1C8B915E9BAA600F4916D /* dogo-ios-build */,
 			);
 		};
 /* End PBXProject section */
@@ -458,6 +487,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2CF1C8BE15E9BABA00F4916D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2CF1C8B915E9BAA600F4916D /* dogo-ios-build */;
+			targetProxy = 2CF1C8BD15E9BABA00F4916D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		2CD1A036153FB6B0008949F2 /* InfoPlist.strings */ = {
@@ -557,6 +594,45 @@
 			};
 			name = Release;
 		};
+		2CF1C8BB15E9BAA600F4916D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		2CF1C8BC15E9BAA600F4916D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -577,6 +653,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		2CF1C8BA15E9BAA600F4916D /* Build configuration list for PBXLegacyTarget "dogo-ios-build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2CF1C8BB15E9BAA600F4916D /* Debug */,
+				2CF1C8BC15E9BAA600F4916D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
