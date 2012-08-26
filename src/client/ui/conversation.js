@@ -152,7 +152,7 @@ function addMessage(message) {
 			var dHeight = $ui.messages.height() - height
 			$ui.wrapper.animate({
 				scrollTop: $ui.wrapper.scrollTop() + dHeight,
-				duration: 200
+				duration: 50
 			})
 		}, 50)
 	}
