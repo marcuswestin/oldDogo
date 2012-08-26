@@ -40,7 +40,7 @@ events.on('app.start', function onAppStart(info) {
 	startApp()
 	
 	if (appInfo.config.mode == 'dev') {
-		$('body').on('touchstart', '.logo', function() {
+		$('body').on('touchstart', '.head .title', function() {
 			bridge.command('app.restart')
 		})
 	}
