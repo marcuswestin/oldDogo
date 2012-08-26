@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2C09E4A11550D10B0089ECD5 /* BTState.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C09E4A01550D10B0089ECD5 /* BTState.m */; };
+		2C25DD2C15E9E1380005D147 /* hostname.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2C25DD2B15E9E1380005D147 /* hostname.txt */; };
 		2C45C54C15C77A2600FE147C /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C45C54815C77A2600FE147C /* Default.png */; };
 		2C45C54D15C77A2600FE147C /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C45C54915C77A2600FE147C /* Default@2x.png */; };
 		2C45C54E15C77A2600FE147C /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C45C54A15C77A2600FE147C /* logo.png */; };
@@ -63,6 +64,7 @@
 /* Begin PBXFileReference section */
 		2C09E49F1550D10B0089ECD5 /* BTState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTState.h; sourceTree = "<group>"; };
 		2C09E4A01550D10B0089ECD5 /* BTState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTState.m; sourceTree = "<group>"; };
+		2C25DD2B15E9E1380005D147 /* hostname.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = hostname.txt; path = "../../Users/marcus/code/dogo/build/dogo-ios-build/hostname.txt"; sourceTree = "<group>"; };
 		2C45C54815C77A2600FE147C /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		2C45C54915C77A2600FE147C /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		2C45C54A15C77A2600FE147C /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
@@ -167,6 +169,7 @@
 				2CF1C8AB15E9AFE700F4916D /* app.html */,
 				2CF1C8AC15E9AFE700F4916D /* appCss.css */,
 				2CF1C8AD15E9AFE700F4916D /* appJs.html */,
+				2C25DD2B15E9E1380005D147 /* hostname.txt */,
 			);
 			name = "dogo-ios-build";
 			path = "../../../../../../../../build/dogo-ios-build";
@@ -453,6 +456,7 @@
 				2CF1C8AE15E9AFE700F4916D /* app.html in Resources */,
 				2CF1C8AF15E9AFE700F4916D /* appCss.css in Resources */,
 				2CF1C8B015E9AFE700F4916D /* appJs.html in Resources */,
+				2C25DD2C15E9E1380005D147 /* hostname.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -661,6 +665,7 @@
 				2CF1C8BC15E9BAA600F4916D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

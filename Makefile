@@ -83,6 +83,7 @@ setup-source:
 ############
 dogo-ios-client:
 	${NODE} src/scripts/build-client.js
+	hostname > build/dogo-ios-build/hostname.txt
 
 fly-build: dogo-ios-client
 	rm -rf src/client/ios/build
