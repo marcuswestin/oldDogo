@@ -19,7 +19,7 @@
         host = @"https://dogoapp.com";
 #else
         mode = @"dev";
-        NSString* hostnameFile = [[NSBundle mainBundle] pathForResource:@"hostname" ofType:@"txt"];
+        NSString* hostnameFile = [[NSBundle mainBundle] pathForResource:@"dev-hostname" ofType:@"txt"];
         host = [NSString stringWithContentsOfFile:hostnameFile encoding:NSUTF8StringEncoding error:nil];
         host = [host stringByReplacingOccurrencesOfString:@"\n" withString:@""];
         host = [@"http://" stringByAppendingString:host];
