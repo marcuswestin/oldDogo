@@ -375,7 +375,7 @@
 /* Begin PBXLegacyTarget section */
 		2CF1C8B915E9BAA600F4916D /* dogo-ios-build */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = client;
+			buildArgumentsString = "dogo-ios-client";
 			buildConfigurationList = 2CF1C8BA15E9BAA600F4916D /* Build configuration list for PBXLegacyTarget "dogo-ios-build" */;
 			buildPhases = (
 			);

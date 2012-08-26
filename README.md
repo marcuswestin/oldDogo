@@ -1,48 +1,18 @@
-Setup
-#####
-
-	# Brew
-	/usr/bin/ruby -e "$(/usr/bin/curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)"
-	# Redis
-	brew install redis
-	# Mysql
-	brew install mysql
-	unset TMPDIR
-	mysql_install_db --verbose --user=`whoami` --basedir="$(brew --prefix mysql)" --datadir=/usr/local/var/mysql --tmpdir=/tmp
-	mysql.server start
-	# PhantomJS for testing
-	brew install phantomjs
-	# Fabric for deploying to prod
-	sudo easy_install fabric
-	
-	make setup-dev
-
-Setup mysql users/schema
-########################
-
-	make reset-db
-	make reset-test-db
-
-Run dbs
+# Setup
 #######
+To get started for the first time:
 
-	make run-redis
-	mysqld_safe
+	make setup
 
-Run dev server
-##############
+# Run server locally
+####################
+Then, to run the dev server locally:
 
 	make run
-	# go to localhost:9000/app.html
+	# Now go to localhost:9000/app.html
 
-Build ios client
-################
-
-	make client
-	# install client in xcode
-
-Get to Prod
-###########
+# Get to Prod
+#############
 
 	ssh dogo-web1
 	mysql -h dogo-db1.cqka8vcdrksp.us-east-1.rds.amazonaws.com -u dogo_rw -p dogo
