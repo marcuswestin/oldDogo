@@ -6,9 +6,16 @@ test-setup:
 	make reset-test-db;
 	./node_modules/mocha/bin/mocha --reporter list --bail test/1_test-utils.js test/2_account-setup/test-api.js
 
-test-usage:
+test-usage: /usr/local/bin/phantomjs
 	./node_modules/mocha/bin/mocha --reporter list --bail test/3_device-usage/test-api.js
-	phantomjs test/3_device-usage/test-phantom-client.js
+	/usr/local/bin/phantomjs test/3_device-usage/test-phantom-client.js
+
+/usr/local/bin/phantomjs:
+	echo "\n\n*** Installing phantomjs to /usr/local/bin/phantomjs\n****************************************************\n\n"
+	rm -rf /tmp/phantomjs-1.6.1-macosx-static*
+	curl http://phantomjs.googlecode.com/files/phantomjs-1.6.1-macosx-static.zip > /tmp/phantomjs-1.6.1-macosx-static.zip
+	cd /tmp && unzip /tmp/phantomjs-1.6.1-macosx-static.zip
+	cp /tmp/phantomjs-1.6.1-macosx-static/bin/phantomjs /usr/local/bin/
 
 reset-db:
 	mysql -u dogo_rw --password=dogo -e 'DROP DATABASE IF EXISTS dogo; CREATE DATABASE dogo;'
