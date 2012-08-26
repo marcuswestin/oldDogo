@@ -9,7 +9,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
 
-        NSString* mode = @"dev";
+        NSString* mode = @"testflight";
 #ifdef TESTFLIGHT
         mode = @"testflight";
 #endif
