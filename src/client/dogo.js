@@ -55,10 +55,6 @@ events.on('app.didBecomeActive', function onAppDidBecomeActive() {
 	bridge.command('app.setIconBadgeNumber', { number:0 })
 })
 
-events.on('app.willEnterForeground', function onAppWillEnterForeground() {
-	bridge.command('textInput.hide')
-})
-
 events.on('push.notification', function onPushNotification(info) {
 	var data = info.data
 	var alert = data.aps && data.aps.alert
