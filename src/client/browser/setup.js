@@ -66,6 +66,10 @@ function setupBrowserDebugMode() {
 		try { return JSON.parse(localStorage['dogo-browser-state']) } catch(e) { return {} }
 	}
 	
+	// Fake the viewport width and height to be an iPhone
+	viewport.height = function() { return 460 }
+	viewport.width = function() { return 320 }
+	
 	$(function() {
 		var config = {
 			mode:'dev',
@@ -75,10 +79,10 @@ function setupBrowserDebugMode() {
 			serverUrl:location.host
 		}
 		bridge.eventHandler('app.start', { config:config, client:'0.91.0-browser' })
-		$('#viewport').css({ margin:'145px auto', background:'url(/blowtorch/img/status-bar.png)' })
-		$('.dogoApp').css({ marginTop:20 })
+		$('#viewport').css({ margin:'0 auto', position:'relative', top:185, height:viewport.height() })
 		$('body').css({ background:'#222' }).prepend(
 			div(style({ position:'absolute', top:0, left:0, width:'100%' }),
+				img({ src:'/static/img/status-bar.png' }, style({ width:320, display:'block', margin:'0 auto', position:'relative', top:164 })),
 				img({ src:'/static/img/iphone4.png' }, style({ margin:'10px auto', display:'block' }))
 			)
 		)
@@ -89,9 +93,6 @@ function setupBrowserDebugMode() {
 		setTimeout(loadFbSdk, 400)
 	}
 	
-	// Fake the viewport width and height to be an iPhone
-	viewport.height = function() { return 460 }
-	viewport.width = function() { return 320 }
 	
 	// Create buttnos for rotating the ui
 	var $buttons = $(div(style({ position:'absolute', top:0, left:0 })))

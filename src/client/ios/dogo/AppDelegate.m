@@ -123,7 +123,10 @@
     } else if ([command isEqualToString:@"textInput.animate"]) {
         [self animateTextInput:data];
     } else if ([command isEqualToString:@"textInput.set"]) {
-        if (textInput) { textInput.text = [data objectForKey:@"text"]; }
+        if (textInput) {
+            textInput.text = [data objectForKey:@"text"];
+            [self sizeTextInput];
+        }
     } else if ([command isEqualToString:@"net.request"]) {
         [self netRequest:data responseCallback:responseCallback];
     } else {
