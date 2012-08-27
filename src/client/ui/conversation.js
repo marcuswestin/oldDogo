@@ -18,6 +18,8 @@ var conversation = module.exports = {
 function renderConversation(opts) {
 	currentView = opts
 	$ui = {}
+
+	lastMessageWasFromMe = null
 	
 	var messages = opts.messages || []
 	return div('conversation', function($el) {
@@ -98,14 +100,22 @@ var checkScrollBounds = once(function checkScrollBounds() {
 	}
 })
 
+var lastMessageWasFromMe = null;
+
 function renderMessage(message) {
 	var fromMe = (message.senderAccountId == currentView.myAccountId)
 	var typeClass = message.body ? 'text' : 'picture'
 	checkScrollBounds()
-	return div(div('clear messageBubble ' + typeClass + (fromMe ? ' fromMe' : ''),
-		face.loadAccount(message.senderAccountId),
-		renderContent(message)
-	))
+
+	var renderFace = (lastMessageWasFromMe && !fromMe) || (!lastMessageWasFromMe && fromMe) || lastMessageWasFromMe === null;
+	lastMessageWasFromMe = fromMe;
+
+	return div(
+		div('clear messageBubble ' + typeClass + (fromMe ? ' fromMe' : ''),
+			renderFace && face.loadAccount(message.senderAccountId),
+			renderContent(message)
+		)
+	)
 }
 
 function picSize(message) {
