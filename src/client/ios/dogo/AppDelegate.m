@@ -10,21 +10,23 @@
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
 
         NSString* mode;
-        NSString* host;
+        mode = @"testflight";
+        NSString* host = @"https://dogoapp.com";
 #ifdef TESTFLIGHT
         mode = @"testflight";
-        host = @"https://dogoapp.com";
-#elifdef APPSTORE
-        mode = @"appstore";
-        host = @"https://dogoapp.com";
-#else
-        mode = @"dev";
-        NSString* hostnameFile = [[NSBundle mainBundle] pathForResource:@"dev-hostname" ofType:@"txt"];
-        host = [NSString stringWithContentsOfFile:hostnameFile encoding:NSUTF8StringEncoding error:nil];
-        host = [host stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-        host = [@"http://" stringByAppendingString:host];
-        host = [host stringByAppendingString:@":9000"];
 #endif
+#ifdef APPSTORE
+        mode = @"appstore";
+#endif
+
+        if (!mode) {
+            mode = @"dev";
+            NSString* hostnameFile = [[NSBundle mainBundle] pathForResource:@"dev-hostname" ofType:@"txt"];
+            host = [NSString stringWithContentsOfFile:hostnameFile encoding:NSUTF8StringEncoding error:nil];
+            host = [host stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+            host = [@"http://" stringByAppendingString:host];
+            host = [host stringByAppendingString:@":9000"];
+        }
         
         NSDictionary* device = [NSDictionary dictionaryWithObjectsAndKeys:
                                 [[UIDevice currentDevice] systemVersion], @"systemVersion",
