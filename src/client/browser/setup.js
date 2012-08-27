@@ -75,7 +75,8 @@ function setupBrowserDebugMode() {
 			serverUrl:location.host
 		}
 		bridge.eventHandler('app.start', { config:config, client:'0.91.0-browser' })
-		$('#viewport').css({ margin:'145px auto' })
+		$('#viewport').css({ margin:'145px auto', background:'url(/blowtorch/img/status-bar.png)' })
+		$('.dogoApp').css({ marginTop:20 })
 		$('body').css({ background:'#222' }).prepend(
 			div(style({ position:'absolute', top:0, left:0, width:'100%' }),
 				img({ src:'/static/img/iphone4.png' }, style({ margin:'10px auto', display:'block' }))
@@ -89,7 +90,7 @@ function setupBrowserDebugMode() {
 	}
 	
 	// Fake the viewport width and height to be an iPhone
-	viewport.height = function() { return 480 }
+	viewport.height = function() { return 460 }
 	viewport.width = function() { return 320 }
 	
 	// Create buttnos for rotating the ui
