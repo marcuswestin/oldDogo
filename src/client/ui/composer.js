@@ -70,6 +70,7 @@ var composer = module.exports = {
 				$('.messagesWrapper .messages').css({ marginBottom:0 })
 				events.off('textInput.return', onReturnHandler)
 				events.off('textInput.changedHeight', onChangeHeightHandler)
+				bridge.command('textInput.hide')
 			})
 			var onChangeHeightHandler = events.on('textInput.changedHeight', function adjustHeight(info) {
 				var $wrapper = $('.messagesWrapper')

@@ -13,6 +13,7 @@ function setTextInput(data) {
 }
 
 function showTextInput(data) {
+	hideTextInput()
 	var at = data.at
 	$input = $(input())
 		.css({ position:'absolute', border:0, margin:0, padding:0, zIndex:1 })
