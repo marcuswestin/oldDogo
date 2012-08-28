@@ -43,6 +43,8 @@
         [self.config setValue:device forKey:@"device"];
         [self.config setValue:self.serverHost forKey:@"serverUrl"];
         
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque];
+        
         facebook = [[Facebook alloc] initWithAppId:@"219049001532833" andDelegate:self];
         
         [[self.webView scrollView] setBounces:NO];
