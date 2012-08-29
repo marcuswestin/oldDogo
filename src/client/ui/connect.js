@@ -56,9 +56,7 @@ module.exports = {
 			'-webkit-transition': '-webkit-transform .4s ease-in-out',
 			'-webkit-transform': 'translateY('+(-viewport.height())+'px)'
 		})
-		setTimeout(function() {
-			$('.connectView').remove()
-		}, 1000)
+		// Warning: Actually removing the conenct view after the transition has completed causes an error where the screen becomes unresponsive. ¿Que?
 	}
 }
 
