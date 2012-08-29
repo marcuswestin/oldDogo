@@ -32,7 +32,7 @@ function renderConversation(opts) {
 				onSelect:selectMessage,
 				renderItem:renderMessage,
 				getItemId:function messageId(message) { return 'message-'+(message.id || message.localId) }
-			})),
+			}), div('clear')),
 			(messages.length == 0 && div('loading', 'Loading...'))
 		)).on('scroll', checkScrollBounds),
 		function() {

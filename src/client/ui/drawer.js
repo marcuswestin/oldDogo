@@ -47,7 +47,9 @@ function render(_opts) {
 	
 	$ui = $(div('draw-composer',
 		div('loading', 'Loading...'),
-		div('close button', 'X', controlsTrans('-webkit-transform'), style({ bottom:height - 30, left:3 }), button(function() { opts.onHide() })),
+		div('close button', div('icon'), controlsTrans('-webkit-transform'), style({ bottom:height - 30, left:3 }), button(function() {
+			opts.onHide()
+		})),
 		div('controls-pos', controlsTrans('-webkit-transform'),
 			div('controls-rot', controlsTrans('-webkit-transform'),
 				div('controls', controlsTrans('width'), style({ width:width }),

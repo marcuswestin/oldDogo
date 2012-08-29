@@ -3,11 +3,11 @@ module.exports = {
 		
 		var scroller = tags.scroller({ duration:400, alwaysBounce:false })
 		return div('connectView',
-			div('logo', 'Dogo', style({ fontSize:110 })),
+			div('logo', 'dogo'),
 			scroller.renderBody(2, function(view, info) {
 				switch (info.index) {
 					case 0: return [
-						div('slogan', 'A messaging app', br(), 'to express yourself'),
+						div('slogan', 'express yourself'),
 						div('button connect', 'Connect to Dogo', button(function() {
 							var $el = $(this).text('Loading...')
 							var connecting = false

@@ -13,12 +13,18 @@ faceDim = 25px
 		font-style italic; font-size 20px; margin 150px 10px;
 	.messages
 		padding 0 0 44px 0;
+	.messageBubble.fromMe
+		float right;
+	.list-item
+		clear both;
 	.messageBubble
+		display inline-block;
 		.textContent
-			padding 4px 6px; light();
+			padding 6px 8px 6px;
 		.picture, .pictureContent
 			border-radius 2px;
-			
+		.textContent
+			light();
 	.dogo-info
 		width 100%; margin 8px 0; padding 4px 0 10px 0; border-width 1px 0; border-style solid;
 		.encouragement
@@ -31,13 +37,14 @@ faceDim = 25px
 		margin-top 100px; text-shadow none; color #fff; font-style italic;
 
 .messageBubble
-	margin 8px 8px 0 36px; min-height 50px; border-radius 3px; word-wrap break-word; box-shadow 0 1px 2px rgba(0,0,0,.5);
+	margin 8px 8px 0 36px; border-radius 5px; word-wrap break-word; box-shadow 0 2px 0 #BFC79F;
 	.face
-		float left; border-radius 18px; margin 1px 0 0 -31px; width faceDim; height faceDim; border 1px solid #fff;
+		float left; border-radius 8px; margin 0 0 0 -32px; width faceDim; height faceDim; border 1px solid #fff;
 .messageBubble.picture
 	background offWhite
 .messageBubble.text
-	background url('/blowtorch/img/paper/exclusive-paper-bg.jpg'); background-size 320px 100px;
+	background #fff;
+	// background url('/blowtorch/img/paper/exclusive-paper-bg.jpg'); background-size 320px 100px;
 .messageBubble.fromMe
 	margin 8px 36px 0 8px;
 	.face
@@ -52,7 +59,8 @@ faceDim = 25px
 		position absolute; bottom 0; z-index 1;
 	.controls
 		line-height 20px; padding 2px 0; box-shadow 0 -2px 3px #222; width 100%; height 33px;
-		background url('/blowtorch/img/background/red-linen.jpg'); background-size 327px 327px;
+		// background url('/blowtorch/img/background/red-linen.jpg'); background-size 327px 327px;
+		background #FC9545;
 		.picker
 			position absolute;
 		.colorPicker
@@ -64,15 +72,17 @@ faceDim = 25px
 			.button
 				margin 0 2px; padding 4px 10px 6px;
 	.close.button
-		position absolute; z-index 1; font-size 14px; padding 11px 7px;
+		absolute top 4px; z-index 1; font-size 14px; padding 5px 7px 25px;
+		.icon
+			icon(20px, 20px, 'xtras-white/37-circle-x.png');
 
 buttonRadius = 4px;
 .button
-	padding 3px 8px 5px; border-radius buttonRadius; background linear-gradient(top, color5, #E44212); border 1px solid #fff;
-	color #fff; text-align center; display inline-block;
+	padding 3px 8px 5px; border-radius buttonRadius; background #1A84BB;
+	color #fff; text-align center; display inline-block; font-weight 100;
+	box-shadow 0 3px 0 #143075; 
 .button.active
-	background linear-gradient(bottom, darken(color4, 10%), color5); border-color #eee; color #eee;
-	box-shadow none;
+	box-shadow 0 0 0 #143075; -webkit-transform translateY(3px);
 .dom-buttom
 	cursor pointer;
 
