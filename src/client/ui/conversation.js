@@ -156,7 +156,7 @@ function onNewMessage(message) {
 }
 
 function addMessage(message) {
-	if ((message.isSending || message.wasPushed) && isNearBottom()) {
+	if ((message.isSending || message.wasPushed) && !gIsTouching) {
 		var height = $ui.messages.height()
 		setTimeout(function() {
 			var dHeight = $ui.messages.height() - height
@@ -273,3 +273,10 @@ function promptInvite(message, accountId, facebookId) {
 		}, 500)
 	})
 }
+
+gIsTouching = false
+$(function() {
+	$(document)
+		.on('touchstart', function() { gIsTouching = true })
+		.on('touchend', function() { gIsTouching = false })
+})
