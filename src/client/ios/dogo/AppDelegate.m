@@ -337,7 +337,9 @@
  * Called when the user dismissed the dialog without logging in.
  */
 - (void)fbDidNotLogin:(BOOL)cancelled {
-    [self notify:@"facebook.fbDidNotLogin" info:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:cancelled] forKey:@"cancelled"]];
+    NSDictionary* info = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:cancelled] forKey:@"cancelled"];
+    self.facebookCallback(info, nil);
+    [self notify:@"facebook.fbDidNotLogin" info:info];
 }
 
 /**
