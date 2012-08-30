@@ -19,6 +19,8 @@ module.exports = {
 		
 		var conversations = gState.cache['home-conversations'] || []
 		
+		// setTimeout(function() { selectConversation(conversations[0]) })
+		
 		return div('home',
 			div('conversations',
 				$ui.info = $(div('info', 

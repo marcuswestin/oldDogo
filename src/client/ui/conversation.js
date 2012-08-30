@@ -161,6 +161,8 @@ function onNewMessage(message) {
 	addMessage(message)
 }
 
+// setTimeout(function() { addMessage({ wasPushed:true, body:'R u?' }) }, 1000)
+
 function addMessage(message) {
 	if ((message.isSending || message.wasPushed) && !gIsTouching) {
 		var height = $ui.messages.height()
