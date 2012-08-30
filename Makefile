@@ -8,7 +8,7 @@ run: run-databases
 	${NODE} src/server/run.js --config=dev
 
 # Run all tests
-test: test-setup test-usage
+test: test-setup test-usage test-misc
 
 # Create a new iOS build and deliver it to all developers via testflight
 fly-dev: fly-build
@@ -48,6 +48,9 @@ test-setup:
 test-usage: ${PHANTOMJS}
 	./node_modules/mocha/bin/mocha --reporter list --bail test/3_device-usage/test-api.js
 	${PHANTOMJS} test/3_device-usage/test-phantom-client.js
+
+test-misc:
+	./node_modules/mocha/bin/mocha --reporter list --bail test/test-questions.js
 
 # Setup
 #######

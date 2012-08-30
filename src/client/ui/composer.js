@@ -10,6 +10,7 @@ var inputHeight = 39
 
 var composer = module.exports = {
 	selectDraw:selectDraw,
+	sendMessage:sendMessage,
 	hide:function() {
 		drawer.remove()
 		if (!$ui) { return }
@@ -54,7 +55,7 @@ var composer = module.exports = {
 				bridge.command('textInput.set', { text:'' })
 				var body = trim(info.text)
 				if (!body) { return }
-				send({ body:body })
+				sendMessage({ body:body })
 			})
 			bridge.command('textInput.show', {
 				at:pos,
@@ -111,11 +112,11 @@ function selectDraw(img, message) {
 }
 
 function sendImage(data, width, height) {
-	send({ pictureWidth:width, pictureHeight:height, base64Picture:data })
+	sendMessage({ pictureWidth:width, pictureHeight:height, base64Picture:data })
 	composer.hide()
 }
 
-function send(params) {
+function sendMessage(params) {
 	var message = eventEmitter({
 		toAccountId:currentAccountId,
 		toFacebookId:currentFacebookId,

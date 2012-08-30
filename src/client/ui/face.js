@@ -32,6 +32,10 @@ var face = module.exports = {
 				$tag.css(face.backgroundStyle(account.facebookId))
 			})
 		})
+	},
+	
+	mine:function() {
+		return face.loadAccount(gState.myAccount().accountId)
 	}
 
 }

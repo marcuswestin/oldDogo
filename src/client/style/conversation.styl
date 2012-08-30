@@ -1,4 +1,5 @@
 @import "./macros"
+@import "./questions"
 
 offWhite = #EBEAE7
 
@@ -7,6 +8,9 @@ faceDim = 25px
 	width faceDim; height faceDim; background-size faceDim faceDim;
 	.member-ribbon
 		width 16px; height 16px; background url("/blowtorch/img/badge.png"); float right; margin 32px 0 0;
+
+small-face()
+	float left; border-radius 16px; margin 0 0 0 -32px; width faceDim; height faceDim; border 1px solid #fff;
 
 .conversation
 	.ghostTown
@@ -35,11 +39,15 @@ faceDim = 25px
 			margin-top 4px;
 	.loading
 		margin-top 100px; text-shadow none; color #fff; font-style italic;
+	.face
+		small-face()
+
+
 
 .messageBubble
 	margin 8px 8px 0 36px; border-radius 5px; word-wrap break-word; box-shadow 0 2px 0 #BFC79F;
 	.face
-		float left; border-radius 16px; margin 0 0 0 -32px; width faceDim; height faceDim; border 1px solid #fff;
+		small-face()
 .messageBubble.picture
 	background offWhite
 .messageBubble.text

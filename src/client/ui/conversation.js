@@ -2,6 +2,7 @@ var composer = require('./composer')
 var once = require('std/once')
 var pictures = require('../../data/pictures')
 var linkify = require('lib/linkify')
+var questions = require('./questions')
 
 var currentView
 var $ui
@@ -110,12 +111,17 @@ function renderMessage(message) {
 	var renderFace = (lastMessageWasFromMe && !fromMe) || (!lastMessageWasFromMe && fromMe) || lastMessageWasFromMe === null;
 	lastMessageWasFromMe = fromMe;
 
-	return div(
+	return [div(
 		div('clear messageBubble ' + typeClass + (fromMe ? ' fromMe' : ''),
 			renderFace && face.loadAccount(message.senderAccountId),
 			renderContent(message)
 		)
-	)
+	),
+		message.wasPushed && !message.questionAnswered && questions.hasYesNoQuestion(message.body) && questions.renderYesNoResponder(function(answer) {
+			message.questionAnswered = true
+			composer.sendMessage({ body:(answer ? 'Yes' : 'No') })
+		})
+	]
 }
 
 function picSize(message) {
