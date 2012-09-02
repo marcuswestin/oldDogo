@@ -31,5 +31,5 @@ function renderYesNoResponder(handleResponse) {
 			div('button yes', 'Yes', button(curry(respond, true))),
 			div('button no', 'No', button(curry(respond, false)))
 		]
-	}), div('clear'))
+	}))
 }

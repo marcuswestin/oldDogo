@@ -33,7 +33,7 @@ function renderConversation(opts) {
 				onSelect:selectMessage,
 				renderItem:renderMessage,
 				getItemId:function messageId(message) { return 'message-'+(message.id || message.localId) }
-			}), div('clear')),
+			})),
 			(messages.length == 0 && div('loading', 'Loading...'))
 		)).on('scroll', checkScrollBounds),
 		function() {
@@ -112,15 +112,15 @@ function renderMessage(message) {
 	lastMessageWasFromMe = fromMe;
 
 	return [div(
-		div('clear messageBubble ' + typeClass + (fromMe ? ' fromMe' : ''),
+		div('messageBubble ' + typeClass + (fromMe ? ' fromMe' : ''),
 			renderFace && face.loadAccount(message.senderAccountId),
 			renderContent(message)
-		)
-	),
+		)),
 		message.wasPushed && !message.questionAnswered && questions.hasYesNoQuestion(message.body) && questions.renderYesNoResponder(function(answer) {
 			message.questionAnswered = true
 			composer.sendMessage({ body:(answer ? 'Yes' : 'No') })
-		})
+		}),
+		div('clear')
 	]
 }
 
