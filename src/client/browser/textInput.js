@@ -21,7 +21,11 @@ function showTextInput(data) {
 		.appendTo($('#viewport'))
 		.on('keypress', onKeyPress)
 	
-	var keyboardAnimationDuration = 250
+	if (data.backgroundColor) {
+		$input.css({ backgroundColor:'rgba('+data.backgroundColor.join(',')+')' })
+	}
+	
+	var keyboardAnimationDuration = 50 //250
 	setTimeout(function() {
 		events.fire('keyboard.willShow', { keyboardAnimationDuration:keyboardAnimationDuration })
 		setTimeout(function() {
@@ -29,9 +33,7 @@ function showTextInput(data) {
 		}, keyboardAnimationDuration)
 	}, 0)
 	$input.on('blur', function($e) {
-		setTimeout(function() {
-			events.fire('keyboard.willHide', { keyboardAnimationDuration:keyboardAnimationDuration })
-		}, 400)
+		events.fire('keyboard.willHide', { keyboardAnimationDuration:keyboardAnimationDuration })
 	})
 }
 
