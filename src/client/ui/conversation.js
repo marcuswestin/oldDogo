@@ -161,7 +161,7 @@ function onNewMessage(message) {
 	addMessage(message)
 }
 
-// setTimeout(function() { addMessage({ wasPushed:true, body:'R u?' }) }, 1000)
+// setTimeout(function() { addMessage({ wasPushed:true, body:'R u?' }) }, 1000) // AUTOS
 
 function addMessage(message) {
 	if ((message.isSending || message.wasPushed) && !gIsTouching) {

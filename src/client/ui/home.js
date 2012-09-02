@@ -19,7 +19,7 @@ module.exports = {
 		
 		var conversations = gState.cache['home-conversations'] || []
 		
-		// setTimeout(function() { selectConversation(conversations[0]) })
+		// setTimeout(function() { selectConversation(conversations[0]) }) // AUTOS
 		
 		return div('home',
 			div('conversations',
