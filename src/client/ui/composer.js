@@ -57,16 +57,16 @@ var composer = module.exports = {
 				if (!body) { return }
 				sendMessage({ body:body })
 			})
+			var $bubble = $(div(style({ borderRadius:5, position:'absolute', left:pos.x, top:pos.y, width:pos.width, height:pos.height, background:'#fff' }))).appendTo('#viewport')
 			bridge.command('textInput.show', {
 				at:pos,
 				returnKeyType:'Send',
 				font: { name:'Open Sans', size:16 },
-				backgroundImage:'img/background/exclusive_paper.jpg',
-				cornerRadius:3,
-				borderColor:[0,0,0,.1],
+				backgroundColor:[0,0,0,0],
 				shiftWebview:true
 			})
 			events.once('keyboard.willHide', function(info) {
+				$bubble.remove()
 				$('.composer .tools .closeTextInput').remove()
 				$('.messagesWrapper .messages').css({ marginBottom:0 })
 				events.off('textInput.return', onReturnHandler)
@@ -74,6 +74,7 @@ var composer = module.exports = {
 				bridge.command('textInput.hide')
 			})
 			var onChangeHeightHandler = events.on('textInput.changedHeight', function adjustHeight(info) {
+				$bubble.css({ height:info.height, top:parseInt($bubble.css('top'))-info.heightChange })
 				var $wrapper = $('.messagesWrapper')
 				var isAtBottom = ($wrapper[0].scrollHeight == $wrapper.scrollTop() + $wrapper.height())
 				$('.messagesWrapper .messages').css({ marginBottom:info.height - inputHeight })
