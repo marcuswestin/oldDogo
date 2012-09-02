@@ -102,18 +102,23 @@ var checkScrollBounds = once(function checkScrollBounds() {
 })
 
 var lastMessageWasFromMe = null;
-
 function renderMessage(message) {
-	var fromMe = (message.senderAccountId == currentView.myAccountId)
-	var typeClass = message.body ? 'text' : 'picture'
+	var isVeryFirstMessage = (lastMessageWasFromMe === null)
+	var messageIsFromMe = (message.senderAccountId == currentView.myAccountId)
+	var isFirstMessageInGroup = (lastMessageWasFromMe != messageIsFromMe || isVeryFirstMessage)
+	var shouldRenderFace = true || isFirstMessageInGroup
+	var classes = [
+		message.body ? 'text' : 'picture',
+		messageIsFromMe ? 'fromMe' : '',
+		isFirstMessageInGroup && !isVeryFirstMessage ? 'newGroup' : ''
+	]
+	
 	checkScrollBounds()
-
-	var renderFace = (lastMessageWasFromMe && !fromMe) || (!lastMessageWasFromMe && fromMe) || lastMessageWasFromMe === null;
-	lastMessageWasFromMe = fromMe;
-
+	lastMessageWasFromMe = messageIsFromMe
+	
 	return [div(
-		div('messageBubble ' + typeClass + (fromMe ? ' fromMe' : ''),
-			renderFace && face.loadAccount(message.senderAccountId),
+		div('messageBubble '+classes.join(' '),
+			shouldRenderFace && face.loadAccount(message.senderAccountId),
 			renderContent(message)
 		)),
 		message.wasPushed && !message.questionAnswered && questions.hasYesNoQuestion(message.body) && questions.renderYesNoResponder(function(answer) {

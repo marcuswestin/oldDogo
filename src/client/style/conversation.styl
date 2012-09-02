@@ -18,17 +18,23 @@ small-face()
 	.messages
 		padding 0 0 44px 0;
 	.messageBubble.fromMe
+		margin-right 36px;
+		.face
+			float right; margin 1px -31px 0 0;
+	.messageBubble.fromMe
 		float right;
+	.messageBubble
+		margin 5px 0 0 36px;
+	.messageBubble.newGroup
+		margin-top 10px;
 	.list-item
 		clear both;
 	.messageBubble
 		display inline-block;
 		.textContent
-			padding 6px 8px 6px;
+			light(); padding 6px 8px 6px; max-width 200px;
 		.picture, .pictureContent
 			border-radius 2px;
-		.textContent
-			light();
 	.dogo-info
 		width 100%; margin 8px 0; padding 4px 0 10px 0; border-width 1px 0; border-style solid;
 		.encouragement
@@ -45,18 +51,14 @@ small-face()
 
 
 .messageBubble
-	margin 8px 8px 0 36px; border-radius 5px; word-wrap break-word; box-shadow 0 2px 0 #BFC79F;
+	border-radius 5px; word-wrap break-word; box-shadow 0 2px 0 #BFC79F;
 	.face
-		small-face()
+		float left; small-face()
 .messageBubble.picture
-	background offWhite
+	background #fff;
 .messageBubble.text
 	background #fff;
 	// background url('/blowtorch/img/paper/exclusive-paper-bg.jpg'); background-size 320px 100px;
-.messageBubble.fromMe
-	margin 8px 36px 0 8px;
-	.face
-		float right; margin 1px -31px 0 0;
 
 .draw-composer
 	line-height 0; z-index 1; background offWhite;
