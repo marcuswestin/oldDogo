@@ -80,7 +80,7 @@ var composer = module.exports = {
 				if (isAtBottom) {
 					$wrapper.scrollTop(9999999)
 				} else {
-					$wrapper.scrollTop($wrapper.scrollTop() - info.heightChange)
+					$wrapper.scrollTop($wrapper.scrollTop() + info.heightChange)
 				}
 			})
 			$ui.surface.append(div('writer'))

@@ -241,9 +241,9 @@
 - (void)sizeTextInput {
     CGRect frame = textInput.frame;
     frame.size.height = textInput.contentSize.height;
-    int dHeight = textInput.frame.size.height - frame.size.height;
+    int dHeight = frame.size.height - textInput.frame.size.height;
     if (dHeight != 0) {
-        frame.origin.y += dHeight;
+        frame.origin.y -= dHeight;
         textInput.frame = frame;
         NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
                              [NSNumber numberWithInt:dHeight], @"heightChange",

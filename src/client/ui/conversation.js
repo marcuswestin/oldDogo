@@ -165,11 +165,11 @@ function onNewMessage(message) {
 
 function addMessage(message) {
 	if ((message.isSending || message.wasPushed) && !gIsTouching) {
-		var height = $ui.messages.height()
+		var heightBefore = $ui.messages.height()
 		setTimeout(function() {
-			var dHeight = $ui.messages.height() - height
+			var dHeight = heightBefore - $ui.messages.height()
 			$ui.wrapper.animate({
-				scrollTop: $ui.wrapper.scrollTop() + dHeight,
+				scrollTop: $ui.wrapper.scrollTop() - dHeight,
 				duration: 50
 			})
 		}, 50)
