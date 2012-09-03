@@ -169,7 +169,7 @@ function onNewMessage(message) {
 // setTimeout(function() { addMessage({ wasPushed:true, body:'R u?' }) }, 1000) // AUTOS
 
 function addMessage(message) {
-	if ((message.isSending || message.wasPushed) && !gIsTouching) {
+	if (message.isSending || (message.wasPushed && !gIsTouching)) {
 		var heightBefore = $ui.messages.height()
 		setTimeout(function() {
 			var dHeight = heightBefore - $ui.messages.height()
