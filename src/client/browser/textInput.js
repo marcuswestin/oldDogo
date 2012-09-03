@@ -12,28 +12,33 @@ function setTextInput(data) {
 	$input.val(data.text)
 }
 
+var keyboardHeight = 216
 function showTextInput(data) {
 	hideTextInput()
 	var at = data.at
 	$input = $(input())
 		.css({ position:'absolute', border:0, margin:0, padding:0, zIndex:1 })
 		.css({ width:at.width, height:at.height, left:at.x, top:at.y - topBarOffset })
-		.appendTo($('#viewport'))
+		.appendTo($('.dogoApp'))
 		.on('keypress', onKeyPress)
 	
 	if (data.backgroundColor) {
 		$input.css({ backgroundColor:'rgba('+data.backgroundColor.join(',')+')' })
 	}
 	
-	var keyboardAnimationDuration = 50 //250
+	var keyboardAnimationDuration = 200
 	setTimeout(function() {
+		$('.dogoApp').css({ '-webkit-transform':'translateY(-'+keyboardHeight+'px)', '-webkit-transition':'-webkit-transform '+keyboardAnimationDuration+'ms' })
 		events.fire('keyboard.willShow', { keyboardAnimationDuration:keyboardAnimationDuration })
 		setTimeout(function() {
 			$input.focus()
 		}, keyboardAnimationDuration)
 	}, 0)
 	$input.on('blur', function($e) {
-		events.fire('keyboard.willHide', { keyboardAnimationDuration:keyboardAnimationDuration })
+		$('.dogoApp').css({ '-webkit-transform':'translateY(0)' })
+		setTimeout(function() {
+			events.fire('keyboard.willHide', { keyboardAnimationDuration:keyboardAnimationDuration })
+		})
 	})
 }
 
