@@ -17,13 +17,12 @@ small-face()
 		font-style italic; font-size 20px; margin 150px 10px;
 	.messages
 		padding 0 0 44px 0;
-	messageSpacing = 5px;
 	.messageBubble
-		margin messageSpacing 0 0 36px; display inline-block;
+		margin 5px 0 0 36px; display inline-block;
 		.textContent
 			light(); padding 6px 8px 6px; max-width 200px;
 		.pictureContent
-			border-radius 2px;
+			border-radius 4px;
 	.messageBubble.fromMe
 		float right; margin-right 36px;
 		.face
@@ -31,7 +30,7 @@ small-face()
 	.messageBubble.newGroup
 		margin-top 10px;
 	.messageBubble.picture
-		margin-bottom -(messageSpacing);
+		box-shadow 0 0 0;
 	.dogo-info
 		width 100%; margin 8px 0; padding 4px 0 10px 0; border-width 1px 0; border-style solid;
 		.encouragement
