@@ -37,8 +37,8 @@ function renderConversation(opts) {
 			(messages.length == 0 && div('loading', 'Loading...'))
 		)).on('scroll', checkScrollBounds),
 		function() {
+			$ui.wrapper.scrollTop($ui.messages.height())
 			setTimeout(function() {
-				$ui.wrapper.scrollTop($ui.messages.height())
 				events.fire('conversation.rendered', currentView)
 			}, 100)
 			checkScrollBounds()
