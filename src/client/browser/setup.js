@@ -79,11 +79,11 @@ function setupBrowserDebugMode() {
 			serverUrl:location.host
 		}
 		bridge.eventHandler('app.start', { config:config, client:'0.91.0-browser' })
-		$('#viewport').css({ margin:'0 auto', position:'relative', top:185, height:viewport.height() })
+		$('#viewport').css({ margin:'0 auto', position:'relative', top:55, height:viewport.height() })
 		$('body').css({ background:'#222' }).prepend(
 			div(style({ position:'absolute', top:0, left:0, width:'100%' }),
-				img({ src:'/static/img/status-bar.png' }, style({ width:320, display:'block', margin:'0 auto', position:'relative', top:164 })),
-				img({ src:'/static/img/iphone4.png' }, style({ margin:'10px auto', display:'block' }))
+				img({ src:'/static/img/status-bar.png' }, style({ width:320, display:'block', margin:'0 auto', position:'relative', top:34 })),
+				img({ src:'/static/img/iphone4.png' }, style({ margin:'-120px auto', display:'block' }))
 			)
 		)
 	})
