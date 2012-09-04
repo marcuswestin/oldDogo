@@ -250,7 +250,7 @@ events.on('device.rotated', function(info) {
 			var closeOffset = deg < 0 ? [0, height - 35] : [width - 35, 0]
 			$close.css({ '-webkit-transform':'translate('+closeOffset[0]+'px, '+closeOffset[1]+'px)' })
 
-			var offset = deg < 0 ? [62, -221] : [-222, -221]
+			var offset = deg < 0 ? [72, -211] : [-212, -211]
 			$pos.css({ '-webkit-transform':'translate('+offset[0]+'px, '+offset[1]+'px)' })
 			$rot.css({ '-webkit-transform':'rotate('+deg+'deg)' })
 		})
