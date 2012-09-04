@@ -104,7 +104,7 @@ function selectDraw(img, message) {
 		})
 	})
 }
-selectDraw.duration = 400
+selectDraw.duration = 300
 function hideDraw() {
 	$('.dogoApp .draw-composer').css({
 		'-webkit-transition':'-webkit-transform '+selectDraw.duration+'ms ease-in',
