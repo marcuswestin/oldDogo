@@ -5,18 +5,17 @@ var drawer = require('./drawer')
 var currentAccountId
 var currentFacebookId
 var $ui
-var textHidden = true
+var currentTool = null
 
 var composer = module.exports = {
 	selectDraw:selectDraw,
 	sendMessage:sendMessage,
 	hide:function() {
 		drawer.remove()
+		resetCurrentTool()
 		if (!$ui) { return }
 		$ui.surface.empty()
 		delete $ui
-		if (textHidden) { return }
-		textHidden = true
 		bridge.command('textInput.hide')
 	},
 	render: function(opts) {
@@ -28,38 +27,51 @@ var composer = module.exports = {
 
 		currentAccountId = opts.accountId
 		currentFacebookId = opts.facebookId
+		resetCurrentTool()
 		
 		return div('composer',
 			$ui.surface = $(div('surface')),
 			div('tools',
-				div('button tool', div('icon write'), button(selectText)),
-				div('button tool', div('icon photo'), button(onSelectPhoto)),
-				div('button tool', div('icon draw'), button(onSelectDraw))
+				div('button tool', div('icon write'), button(toolSelector(selectText))),
+				div('button tool', div('icon photo'), button(toolSelector(onSelectPhoto))),
+				div('button tool', div('icon draw'), button(toolSelector(onSelectDraw)))
 			)
 		)
-		
-		function selectText(e) {
-			$('.composer .tools').append(
-				div('closeTextInput', div('icon'), button(function() {
-					bridge.command('textInput.hide')
-				}))
-			)	
-			composer.hide()
-			textHidden = false
-			var onReturnHandler = events.on('textInput.return', function(info) {
-				if (!$ui) { return }
-				bridge.command('textInput.set', { text:'' })
-				var body = trim(info.text)
-				if (!body) { return }
-				sendMessage({ body:body })
-			})
-			events.once('keyboard.willHide', function(info) {
-				events.off('textInput.return', onReturnHandler)
-			})
-			
-			events.fire('composer.selectedText')
-		}
 	}
+}
+
+function resetCurrentTool() {
+	currentTool = null
+}
+
+function toolSelector(fn) {
+	return function() {
+		if (currentTool == fn) { return }
+		bridge.command('textInput.hide')
+		fn()
+		currentTool = fn
+	}
+}
+
+function selectText($e) {
+	$('.composer .tools').append(
+		div('closeTextInput', div('icon'), button(function() {
+			bridge.command('textInput.hide')
+		}))
+	)	
+	var onReturnHandler = events.on('textInput.return', function(info) {
+		if (!$ui) { return }
+		bridge.command('textInput.set', { text:'' })
+		var body = trim(info.text)
+		if (!body) { return }
+		sendMessage({ body:body })
+	})
+	events.once('keyboard.willHide', function(info) {
+		if (currentTool == selectText) { resetCurrentTool() }
+		events.off('textInput.return', onReturnHandler)
+	})
+	
+	events.fire('composer.selectedText')
 }
 
 function onSelectDraw($e) { selectDraw() }
