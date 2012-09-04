@@ -1,7 +1,8 @@
-var pickers = require('./pickers')
 var pens = require('./pens')
 var paint = require('./paint')
 var pictures = require('../../data/pictures')
+var makePenPicker = require('./pickers/penPicker')
+var makeColorPicker = require('./pickers/colorPicker')
 
 module.exports = {
 	render:render,
@@ -54,8 +55,8 @@ function render(_opts) {
 			div('controls-rot', controlsTrans('-webkit-transform'),
 				div('controls', controlsTrans('width'), style({ width:width }),
 					div('tools',
-						state.colorPicker = pickers.color(),
-						state.penPicker = pickers.pen({ background:background, colorPicker:state.colorPicker }),
+						state.colorPicker = makeColorPicker(),
+						state.penPicker = makePenPicker({ background:background, colorPicker:state.colorPicker }),
 						div('right',
 							div('button undo', 'Undo', button(undoDraw)),
 							div('button clear', 'Clear', button(clearFg)),
