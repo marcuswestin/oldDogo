@@ -193,6 +193,48 @@ function cacheMessage(message) {
 	cache.unshift(message)
 }
 
+var inputHeight = 39
+events.on('composer.selectedText', function() {
+	var y0 = viewport.height() - $('.composer').height() - inputHeight - 8
+	var pos = { x:viewport.width() - 200 - 58, y:y0, width:220, height:inputHeight }
+	var $bubble = $(div('messageBubble fromMe',
+		$(face.mine()).css({ 'float':'right' }),
+		style({
+			position:'absolute', left:pos.x, top:pos.y, width:pos.width, height:pos.height,
+			background:'#fff', boxShadow:'none', border:'1px inset #BFC79F', borderRight:'none', borderBottom:'none'
+		})
+	)).appendTo('.dogoApp')
+	bridge.command('textInput.show', {
+		at:pos,
+		returnKeyType:'Send',
+		font: { name:'Open Sans', size:16 },
+		backgroundColor:[0,0,0,0],
+		shiftWebview:true
+	})
+	var onChangeHeightHandler = events.on('textInput.changedHeight', function adjustHeight(info) {
+		$bubble.css({ height:info.height, top:parseInt($bubble.css('top'))-info.heightChange })
+		var $wrapper = $('.messagesWrapper')
+		var isAtBottom = Math.abs($wrapper[0].scrollHeight - ($wrapper.scrollTop() + $wrapper.height())) < 40
+		$('.messagesWrapper .messages').css({ marginBottom:info.height - inputHeight + 60 })
+		if (isAtBottom) {
+			$wrapper.scrollTop($wrapper[0].scrollHeight)
+		} else {
+			$wrapper.scrollTop($wrapper.scrollTop() + info.heightChange)
+		}
+	})
+	setTimeout(function() {
+		onChangeHeightHandler({ height:inputHeight, heightChange:0 })
+	})
+	events.once('keyboard.willHide', function(info) {
+		$bubble.remove()
+		$('.composer .tools .closeTextInput').remove()
+		$('.messagesWrapper .messages').css({ marginBottom:0 })
+		events.off('textInput.changedHeight', onChangeHeightHandler)
+		bridge.command('textInput.hide')
+	})
+	
+})
+
 events.on('push.message', function(message) {
 	if (!currentView || !currentView.accountId || currentView.accountId != message.senderAccountId) { return }
 	cacheMessage(message)

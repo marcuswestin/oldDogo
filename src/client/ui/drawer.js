@@ -67,15 +67,19 @@ function render(_opts) {
 		)
 	))
 	
+	p = paint([width, height])
+	$ui.append($paint = $(p.el))
+	
 	if (opts.img) {
 		// TODO this call is way overloaded
 		loadBackgroundImage({ mediaId:opts.img.mediaId, style:opts.img.style, width:opts.message.pictureWidth, height:opts.message.pictureHeight, pictureSecret:opts.message.pictureSecret, conversationId:opts.message.conversationId })
 	} else {
-		loadBackgroundImage({ backgroundPath:'img/background/exclusive_paper.jpg', width:640, height:960 })
+		p.withBackground(function(bg) {
+			bg.fillStyle('#fff').fillRect([0,0], [width,height])
+		})
+		// loadBackgroundImage({ backgroundPath:'img/background/exclusive_paper.jpg', width:640, height:960 })
 	}
 	
-	p = paint([width, height])
-	$ui.append($paint = $(p.el))
 	if (tags.isTouch) {
 		$paint.on('touchstart', pencilDown).on('touchmove', pencilMove).on('touchend', pencilUp)
 	} else {

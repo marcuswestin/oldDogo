@@ -6,7 +6,6 @@ var currentAccountId
 var currentFacebookId
 var $ui
 var textHidden = true
-var inputHeight = 39
 
 var composer = module.exports = {
 	selectDraw:selectDraw,
@@ -14,7 +13,6 @@ var composer = module.exports = {
 	hide:function() {
 		drawer.remove()
 		if (!$ui) { return }
-		gScroller.$head.show()
 		$ui.surface.empty()
 		delete $ui
 		if (textHidden) { return }
@@ -48,8 +46,6 @@ var composer = module.exports = {
 			)	
 			composer.hide()
 			textHidden = false
-			var y0 = viewport.height() - inputHeight
-			var pos = { x:0, y:y0, width:284, height:inputHeight }
 			var onReturnHandler = events.on('textInput.return', function(info) {
 				if (!$ui) { return }
 				bridge.command('textInput.set', { text:'' })
@@ -57,34 +53,11 @@ var composer = module.exports = {
 				if (!body) { return }
 				sendMessage({ body:body })
 			})
-			var $bubble = $(div(style({ borderRadius:5, position:'absolute', left:pos.x, top:pos.y, width:pos.width, height:pos.height, background:'#fff' }))).appendTo('#viewport')
-			bridge.command('textInput.show', {
-				at:pos,
-				returnKeyType:'Send',
-				font: { name:'Open Sans', size:16 },
-				backgroundColor:[0,0,0,0],
-				shiftWebview:true
-			})
 			events.once('keyboard.willHide', function(info) {
-				$bubble.remove()
-				$('.composer .tools .closeTextInput').remove()
-				$('.messagesWrapper .messages').css({ marginBottom:0 })
 				events.off('textInput.return', onReturnHandler)
-				events.off('textInput.changedHeight', onChangeHeightHandler)
-				bridge.command('textInput.hide')
 			})
-			var onChangeHeightHandler = events.on('textInput.changedHeight', function adjustHeight(info) {
-				$bubble.css({ height:info.height, top:parseInt($bubble.css('top'))-info.heightChange })
-				var $wrapper = $('.messagesWrapper')
-				var isAtBottom = ($wrapper[0].scrollHeight == $wrapper.scrollTop() + $wrapper.height())
-				$('.messagesWrapper .messages').css({ marginBottom:info.height - inputHeight })
-				if (isAtBottom) {
-					$wrapper.scrollTop(9999999)
-				} else {
-					$wrapper.scrollTop($wrapper.scrollTop() + info.heightChange)
-				}
-			})
-			$ui.surface.append(div('writer'))
+			
+			events.fire('composer.selectedText')
 		}
 	}
 }
@@ -107,9 +80,27 @@ function onSelectPhoto($e) {
 }
 
 function selectDraw(img, message) {
-	composer.hide()
-	gScroller.$head.hide()
-	$('.dogoApp').append(drawer.render({ onSend:sendImage, onHide:composer.hide, img:img, message:message }))
+	$('.dogoApp').append(
+		drawer.render({ onSend:sendImage, onHide:hideDraw, img:img, message:message }).css({
+			'-webkit-transform':'translateY('+viewport.height()+'px)',
+		})
+	)
+	setTimeout(function() {
+		$('.dogoApp .draw-composer').css({
+			'-webkit-transition':'-webkit-transform '+selectDraw.duration+'ms ease-out',
+			'-webkit-transform':'translateY(0px)'
+		})
+	})
+}
+selectDraw.duration = 400
+function hideDraw() {
+	$('.dogoApp .draw-composer').css({
+		'-webkit-transition':'-webkit-transform '+selectDraw.duration+'ms ease-in',
+		'-webkit-transform':'translateY('+viewport.height()+'px)'
+	})
+	setTimeout(function() {
+		composer.hide()
+	}, selectDraw.duration)
 }
 
 function sendImage(data, width, height) {

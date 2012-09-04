@@ -12,6 +12,11 @@ faceDim = 25px
 small-face()
 	float left; border-radius 16px; margin 0 0 0 -32px; width faceDim; height faceDim; border 1px solid #fff;
 
+.messageBubble.fromMe, .conversation .messageBubble.fromMe
+	float right; margin-right 36px;
+	.face
+		float right; margin 1px -31px 0 0;
+
 .conversation
 	.ghostTown
 		font-style italic; font-size 20px; margin 150px 10px;
@@ -23,10 +28,6 @@ small-face()
 			light(); padding 6px 8px 6px; max-width 200px;
 		.pictureContent
 			border-radius 4px;
-	.messageBubble.fromMe
-		float right; margin-right 36px;
-		.face
-			float right; margin 1px -31px 0 0;
 	.messageBubble.newGroup
 		margin-top 10px;
 	.messageBubble.picture
@@ -53,7 +54,7 @@ small-face()
 	// background url('/blowtorch/img/paper/exclusive-paper-bg.jpg'); background-size 320px 100px;
 
 .draw-composer
-	line-height 0; z-index 1; background offWhite;
+	line-height 0; z-index 2; background offWhite;
 	position absolute; bottom 0;
 	.loading
 		relative top 150px; font-size 30px;

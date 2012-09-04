@@ -155,19 +155,16 @@ logo()
 			float left; margin 2px 2px 1px 1px;
 	
 .composer
-	position absolute; bottom 0; width 320px; padding 0;
+	position absolute; bottom 0; width 320px; background #126EAF;
 	.surface
 		bodyRadius = 6px; bodyWidth = 320px;
-		.writer
-			display inline-block; width bodyWidth; box-shadow 0 -1px 6px #444;
-			textarea
-				border none; width bodyWidth - 4px; height 50px;
 
 	.tools
+		margin-top -5px;
 		.closeTextInput
-			absolute bottom 0 right 0; width 40px; height 40px; background linear-gradient(top, rgba(10, 0, 0, 0), rgba(10, 0, 0, .5));
+			absolute bottom 0 right 0; width 40px; height 40px;
 			.icon
-				absolute bottom 9px right 6px; icon(22px, 22px, 'white/298-circlex.png')
+				absolute bottom 6px right 6px; icon(22px, 22px, 'white/298-circlex.png')
 		.right
 			float right;
 		.tool
