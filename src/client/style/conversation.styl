@@ -83,9 +83,10 @@ buttonRadius = 4px;
 .button
 	padding 3px 8px 5px; border-radius buttonRadius; background #1A84BB;
 	color #fff; text-align center; display inline-block; font-weight 100;
-	box-shadow 0 3px 0 #143075; -webkit-transform translateY(0);
+	box-shadow 0 3px 0 rgba(20, 48, 117, 1); -webkit-transform translateY(0);
+	-webkit-transition -webkit-transform 80ms;
 .button.active
-	box-shadow 0 0 0 #143075; -webkit-transform translateY(3px);
+	box-shadow 0 3px 0 rgba(20, 48, 117, 0); -webkit-transform translateY(3px);
 .dom-buttom
 	cursor pointer;
 
