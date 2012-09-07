@@ -421,6 +421,9 @@ pens.silk = proto(basePen,
 	}
 )
 
+pens.byName = {}
 pens.list = map(Object.keys(pens), function(name) {
-	return { name:name, create:pens[name] }
+	var pen = { path:'pens/'+name, create:pens[name] }
+	pens.byName[name] = pen
+	return pen
 })

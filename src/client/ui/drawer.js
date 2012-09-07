@@ -1,8 +1,7 @@
 var pens = require('./pens')
 var paint = require('./paint')
 var pictures = require('../../data/pictures')
-var makePenPicker = require('./pickers/penPicker')
-var makeColorPicker = require('./pickers/colorPicker')
+var makeToolPicker = require('./pickers/toolPicker')
 
 module.exports = {
 	render:render,
@@ -10,8 +9,8 @@ module.exports = {
 }
 
 var state = {
-	colorPicker: null,
-	pen: null
+	pen:null,
+	toolPicker:null
 }
 
 var width
@@ -46,6 +45,8 @@ function render(_opts) {
 	
 	var controlsTrans = function(name) { return style({ '-webkit-transition':name+' '+controlsDuration/1000+'s' })}
 	
+	p = paint([width, height])
+	
 	$ui = $(div('draw-composer',
 		div('loading', 'Loading...'),
 		div('close button', div('icon'), controlsTrans('-webkit-transform'), style({ bottom:height - 30, left:3 }), button(function() {
@@ -55,8 +56,7 @@ function render(_opts) {
 			div('controls-rot', controlsTrans('-webkit-transform'),
 				div('controls', controlsTrans('width'), style({ width:width }),
 					div('tools',
-						state.colorPicker = makeColorPicker(),
-						state.penPicker = makePenPicker({ background:background, colorPicker:state.colorPicker }),
+						state.toolPicker = makeToolPicker({ paint:p, width:width, height:height }),
 						div('right',
 							div('button undo', 'Undo', button(undoDraw)),
 							div('button clear', 'Clear', button(clearFg)),
@@ -68,7 +68,6 @@ function render(_opts) {
 		)
 	))
 	
-	p = paint([width, height])
 	$ui.append($paint = $(p.el))
 	
 	if (opts.img) {
@@ -167,10 +166,6 @@ function render(_opts) {
 		drawImg.src = url
 	}
 	
-	function createPen(pen) {
-		return pen.create({ colorPicker:state.colorPicker, paint:p, width:width, height:height })
-	}
-	
 	function getPoint($e) {
 		var coords = $e.originalEvent
 		if (tags.isTouch) {
@@ -185,22 +180,21 @@ function render(_opts) {
 	function pencilDown(e) {
 		e.preventDefault()
 		p.pushLayer()
-		var pen = state.penPicker.getCurrent()
-		state.pen = createPen(pen)
-		state.pen.handleDown(getPoint(e))
+		state.tool = state.toolPicker.getCurrent()
+		state.tool.handleDown(getPoint(e))
 	}
 
 	function pencilMove(e) {
 		e.preventDefault()
-		if (!state.pen) { return }
-		state.pen.handleMove(getPoint(e))
+		if (!state.tool) { return }
+		state.tool.handleMove(getPoint(e))
 	}
 
 	function pencilUp(e) {
 		e.preventDefault()
-		if (!state.pen) { return }
-		state.pen.handleUp(getPoint(e))
-		delete state.pen
+		if (!state.tool) { return }
+		state.tool.handleUp(getPoint(e))
+		state.tool = null
 	}
 }
 

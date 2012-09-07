@@ -2,7 +2,10 @@ var currentPicker
 var zIndex = 1
 
 module.exports = {
-	getCurrent:function() { return this.current },
+	getCurrent:function() {
+		return this.current
+	},
+	getSecondary:function() {},
 	isOpen:false,
 	toggle:function() {
 		var wasOpen = this.isOpen
@@ -13,7 +16,7 @@ module.exports = {
 		}
 		currentPicker = this
 		var self = this
-		this.$ui.css({ 'z-index':zIndex++ }).find('.list').each(function(i) {
+		this.$primary.css({ 'z-index':zIndex++ }).find('.list').each(function(i) {
 			$(this).find('.item').each(function(j) {
 				var $el = $(this)
 				var pos = wasOpen ? [0,0] : self.getPos(i, j, self.itemLists[i].length - 1)
@@ -26,21 +29,26 @@ module.exports = {
 				// }, self.delay(i,j))
 			})
 		})
+		this.$primary.find('.current').css({ 'z-index':zIndex++ })
 		this.isOpen = !this.isOpen
 	},
 	onClose:function(i,j){},
 	onOpen:function(i,j){},
 	renderTag: function($tag) {
-		this.$ui=$(div('picker '+this.className,
-			div('lists'),
-			div('current', this._renderItem(this.current, true, bind(this, this.toggle)))
+		return $(div('picker '+this.className,
+			this.$primary=$(div('primary',
+				div('lists', this.renderLists()),
+				div('current', this._renderItem(this.current, true, bind(this, this.toggle)))
+			)),
+			this.$secondary=$(div('secondary',
+				this.getSecondary(this.current)
+			))
 		))
-		this.renderLists()
-		return this.$ui
 	},
 	_renderItem:function(item, isCurrent, onSelect) {
 		var touchHandler = isCurrent ? button(curry(onSelect, item)) : this.touchHandler(onSelect, item)
 		return div('item', this.renderItem(isCurrent ? this.current : item, isCurrent), touchHandler, style({
+			'-webkit-transform':'translate(0,0)',
 			'-webkit-transition':'-webkit-transform 0.20s',
 			position:'absolute'
 		}))
@@ -48,15 +56,16 @@ module.exports = {
 	renderLists:function() {
 		var selectItem = bind(this, function(payload) {
 			this.current = payload
-			this.$ui.find('.current').empty().append(this._renderItem(payload, true, selectItem))
+			this.$primary.find('.current').empty().append(this._renderItem(payload, true, bind(this, this.toggle)))
+			this.$secondary.empty().append(this.getSecondary(this.current))
 			this.toggle()
 		})
 		
-		this.$ui.find('.lists').empty().append(div(map(this.itemLists, this, function renderList(list, i) {
+		return map(this.itemLists, this, function renderList(list, i) {
 			return div('list', map(list, this, function renderListItem(payload, j) {
 				return this._renderItem(payload, false, selectItem)
 			}))
-		})))
+		})
 	},
 	touchHandler:function(onSelect, item) {
 		return button(curry(onSelect, item))

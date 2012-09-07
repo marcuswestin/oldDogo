@@ -22,7 +22,7 @@ module.exports = proto(basePicker,
 		
 		renderItem: function(color, isCurrent) {
 			var alpha = isCurrent ? 1 : .95
-			var diameter = 50
+			var diameter = 51
 			var styles = {
 				width:diameter, height:diameter,
 				'border-radius':35
