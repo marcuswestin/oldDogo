@@ -24,9 +24,9 @@ module.exports = {
 				if (wasOpen) { self.onClose(i,j,$el) }
 				else { self.onOpen(i,j,$el) }
 				
-				// setTimeout(function() {
-					$el.css('-webkit-transform', 'translate('+Math.round(pos[0])+'px, '+Math.round(pos[1])+'px)')
-				// }, self.delay(i,j))
+				setTimeout(function() {
+					$el.css({ '-webkit-transform':'translate('+Math.round(pos[0])+'px, '+Math.round(pos[1])+'px)' })
+				}, self.delay(i,j))
 			})
 		})
 		this.$primary.find('.current').css({ 'z-index':zIndex++ })
@@ -45,11 +45,12 @@ module.exports = {
 			))
 		))
 	},
+	transition:200,
 	_renderItem:function(item, isCurrent, onSelect) {
 		var touchHandler = isCurrent ? button(curry(onSelect, item)) : this.touchHandler(onSelect, item)
 		return div('item', this.renderItem(isCurrent ? this.current : item, isCurrent), touchHandler, style({
 			'-webkit-transform':'translate(0,0)',
-			'-webkit-transition':'-webkit-transform 0.20s',
+			'-webkit-transition':'-webkit-transform '+this.transition+'ms',
 			position:'absolute'
 		}))
 	},
@@ -71,6 +72,6 @@ module.exports = {
 		return button(curry(onSelect, item))
 	},
 	delay:function(i,j) {
-		return i * 5 + j * 40
+		return i * 10 + j * 30
 	}
 }

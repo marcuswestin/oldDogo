@@ -42,8 +42,8 @@ module.exports = proto(basePicker,
 		current: pens.byName.fill,
 		className:'toolPicker',
 		closeSize:[48,48],
-		openSize:[85,85],
-		itemLists:[pens.list.slice(0,3), pens.list.slice(3, 6)],
+		openSize:[96,96],
+		itemLists:[[pens.byName.fill, mustache]],
 		renderItem:function(pen, isCurrent) {
 			var styles = {
 				width:this.closeSize[0], height:this.closeSize[1], overflow:'hidden', display:'inline-block', margin:'0 4px 0 0',

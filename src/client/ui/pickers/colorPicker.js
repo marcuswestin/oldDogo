@@ -43,8 +43,12 @@ module.exports = proto(basePicker,
 			}
 			var hsvBase
 			var rgb = item
+			var maxDelay = this.delay(this.itemLists[0].length, this.itemLists[1].length) + this.transition
 			var onDone = function() {
-				$(this).find('.dot').css({ 'background-color':rgbaString(item) }) // reset
+				var resetRgba = rgbaString(item)
+				setTimeout(bind(this, function() {
+					$(this).find('.dot').css({ 'background-color':resetRgba }) // reset
+				}), maxDelay)
 				onSelect(rgb)
 				rgb = item
 			}
@@ -78,7 +82,7 @@ module.exports = proto(basePicker,
 		
 		getPos: function(i, j, num) {
 			var quarterCircle = Math.PI / 2
-			var expand = 73
+			var expand = 69
 			if (!num) { num = 1 }
 			var x = Math.cos(j * quarterCircle/num)*expand*i
 			var y = -(Math.sin(j * quarterCircle/num)*expand*i + 60)
