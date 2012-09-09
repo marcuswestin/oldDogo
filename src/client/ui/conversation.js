@@ -18,7 +18,8 @@ var conversation = module.exports = {
 
 function renderConversation(opts) {
 	// setTimeout(function() { addMessage({ wasPushed:true, body:'R u?' }) }, 1000) // AUTOS
-	// setTimeout(function() { composer.selectDraw() })
+	// setTimeout(function() { composer.selectDraw() }) // AUTOS
+	// setTimeout(function() { composer.selectPhoto() }) // AUTOS
 	
 	currentView = opts
 	$ui = {}

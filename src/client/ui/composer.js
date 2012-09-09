@@ -7,8 +7,14 @@ var currentFacebookId
 var $ui
 var currentTool = null
 
+var selectText = toolSelector(_selectText)
+var selectPhoto = toolSelector(_selectPhoto)
+var selectDraw = toolSelector(_selectDraw)
+
 var composer = module.exports = {
+	selectText:selectText,
 	selectDraw:selectDraw,
+	selectPhoto:selectPhoto,
 	sendMessage:sendMessage,
 	hide:function() {
 		drawer.remove()
@@ -32,9 +38,9 @@ var composer = module.exports = {
 		return div('composer',
 			$ui.surface = $(div('surface')),
 			div('tools',
-				div('button tool', div('icon write'), button(toolSelector(selectText))),
-				div('button tool', div('icon photo'), button(toolSelector(onSelectPhoto))),
-				div('button tool', div('icon draw'), button(toolSelector(onSelectDraw)))
+				div('button tool', div('icon write'), button(selectText)),
+				div('button tool', div('icon photo'), button(selectPhoto)),
+				div('button tool', div('icon draw'), button(selectDraw))
 			)
 		)
 	}
@@ -47,13 +53,14 @@ function resetCurrentTool() {
 function toolSelector(fn) {
 	return function() {
 		if (currentTool == fn) { return }
+		var args = (arguments[0] && arguments[0].preventDefault) ? [] : arguments // don't pass through event objects as arguments
 		bridge.command('textInput.hide')
-		fn()
+		fn.apply(this, args)
 		currentTool = fn
 	}
 }
 
-function selectText($e) {
+function _selectText() {
 	$('.composer .tools').append(
 		div('closeTextInput', div('icon'), button(function() {
 			bridge.command('textInput.hide')
@@ -67,15 +74,14 @@ function selectText($e) {
 		sendMessage({ body:body })
 	})
 	events.once('keyboard.willHide', function(info) {
-		if (currentTool == selectText) { resetCurrentTool() }
+		if (currentTool == _selectText) { resetCurrentTool() }
 		events.off('textInput.return', onReturnHandler)
 	})
 	
 	events.fire('composer.selectedText')
 }
 
-function onSelectDraw($e) { selectDraw() }
-function onSelectPhoto($e) {
+function _selectPhoto() {
 	bridge.command('menu.show', {
 		titles:['Pick from Library', 'Take Photo']
 	}, function(err, res) {
@@ -84,14 +90,15 @@ function onSelectPhoto($e) {
 		var sources = ['libraryPhotos', 'camera']
 		var source = sources[res.index]
 		if (!source) { return }
-		bridge.command('media.pick', { source:source }, function(err, res) {
+		bridge.command('media.pick', { source:source, allowsEditing:true }, function(err, res) {
+			if (currentTool == _selectPhoto) { resetCurrentTool() }
 			if (!res.mediaId) { return }
 			selectDraw({ mediaId:res.mediaId }, { pictureWidth:res.width, pictureHeight:res.height })
 		})
 	})
 }
 
-function selectDraw(img, message) {
+function _selectDraw(img, message) {
 	$('.dogoApp').append(
 		drawer.render({ onSend:sendImage, onHide:hideDraw, img:img, message:message }).css(translate.y(viewport.height()))
 	)
