@@ -12,7 +12,7 @@ exec('rm -rf '+dir, function() {
 			if (err) { return console.log(err) }
 			combine.compileStylus(content.toString(), { filename:styl, minify:true }, function(err, css) {
 				var html = fs.readFileSync('src/client/dogo.html').toString()
-				var js = combine.compileJs('src/client/dogo.js', { minify:false })
+				var js = combine.compileJs('src/client/dogo.js', { minify:true })
 				
 				html = html.replace('<script src="/require/src/client/dogo"></script>',
 					'<script src="appJs.html"></script>')
