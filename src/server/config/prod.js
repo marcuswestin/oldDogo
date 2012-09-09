@@ -11,7 +11,9 @@ module.exports = {
 		user:"dogo_rw"
 	},
 	s3: {
-		bucket:'dogo-prod-conv'
+		bucket:'dogo-prod-conv',
+		accessKeyId:'AKIAJDUJ4DPW4DE7552Q',
+		secretAccessKey:'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'
 	},
 	push: {
 		certData:fs.readFileSync(__dirname + '/prod/cert.pem'),

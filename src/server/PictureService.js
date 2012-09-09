@@ -1,12 +1,11 @@
-var accessKeyId = 'AKIAJDUJ4DPW4DE7552Q'
-var secretAccessKey = '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'
 var region = 'us-west-1'
-var s3 = require('aws2js').load('s3', accessKeyId, secretAccessKey)
+var aws2js = require('aws2js')
 var knox = require('knox')
 var uuid = require('uuid')
 var imagemagick = require('imagemagick')
 var pictures = require('../data/pictures')
 var s3Permission = 'public-read'
+var s3
 
 function getSignedUrl(bucket, filename) {
 	var knoxClient = knox.createClient({
@@ -26,6 +25,7 @@ module.exports = proto(null,
 	function(database, s3conf) {
 		this.db = database
 		pictures.bucket = s3conf.bucket
+		s3 = aws2js.load('s3', s3conf.accessKeyId, s3conf.secretAccessKey)
 		s3.setBucket(s3conf.bucket)
 	}, {
 		upload: function(accountId, conversation, base64PictureData, pictureWidth, pictureHeight, callback) {
