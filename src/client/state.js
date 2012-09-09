@@ -3,9 +3,9 @@ gState = {
 		gState.cache[key] = value
 		bridge.command('state.set', { key:key, value:value })
 	},
-	clear: function() {
+	clear: function(callback) {
 		gState.cache = {}
-		bridge.command('state.clear')
+		bridge.command('state.clear', callback)
 	},
 	load:function(callback) {
 		bridge.command('state.load', function(err, res) {

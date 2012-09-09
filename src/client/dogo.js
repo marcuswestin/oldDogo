@@ -33,7 +33,7 @@ appInfo = {}
 events.on('app.start', function onAppStart(info) {
 	appInfo = info
 	api.setHeaders({ 'x-dogo-mode':appInfo.config.mode, 'x-dogo-client':appInfo.client })
-	startApp()
+	startApp(info)
 	
 	if (appInfo.config.mode == 'dev') {
 		$('body').on('touchstart', '.head .title', function() {
@@ -87,11 +87,19 @@ events.on('push.notification', function onPushNotification(info) {
 
 bridge.eventHandler = function bridgeEventHandler(name, info) { events.fire(name, info) }
 
-function startApp() {
+function startApp(info) {
 	gState.load(function onStateLoaded(err) {
 		if (err) { alert("Uh oh. It looks like you need to re-install Dogo. I'm sorry! :-/") }
 		
-		if (appInfo.config.mode == 'dev') {
+		if (gState.cache['mode'] && info.config.mode != gState.cache['mode']) {
+			gState.clear(function() {
+				bridge.command('app.restart')
+			})
+			return
+		}
+		gState.set('mode', info.config.mode)
+		
+		if (info.config.mode == 'dev') {
 			if (isPhantom) {
 				// do nothing
 			} else if (tags.isTouch) {
