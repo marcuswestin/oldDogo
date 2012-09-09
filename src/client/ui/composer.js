@@ -120,11 +120,14 @@ function sendImage(data, width, height) {
 }
 
 function sendMessage(params) {
+	var clientUid = gState.nextClientUid()
+	
 	var message = eventEmitter({
 		toAccountId:currentAccountId,
 		toFacebookId:currentFacebookId,
 		senderAccountId:gState.myAccount().accountId,
 		localId:unique(),
+		clientUid:clientUid,
 		isSending:true
 	})
 	

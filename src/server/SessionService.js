@@ -50,7 +50,9 @@ module.exports = proto(null,
 		_finishCreateSession: function(authToken, accountId, account, callback) {
 			this.accountService.getContacts(accountId, bind(this, function(err, contacts) {
 				if (err) { return logError(err, callback, 'createSession.getContacts') }
-				callback(null, { authToken:authToken, account:account, contacts:contacts })
+				this.accountService.bumpClientUidBlock(accountId, bind(this, function(err, clientUidBlock) {
+					callback(null, { authToken:authToken, account:account, contacts:contacts, clientUidBlock:clientUidBlock })
+				}))
 			}))
 		},
 		createSessionForAccountId: function(accountId, callback) {

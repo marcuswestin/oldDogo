@@ -16,6 +16,8 @@ CREATE TABLE picture (
 CREATE TABLE account (
 	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 	facebook_id BIGINT UNSIGNED NOT NULL,
+	last_client_uid_block_start BIGINT UNSIGNED NOT NULL DEFAULT 0,
+	last_client_uid_block_end BIGINT UNSIGNED NOT NULL DEFAULT 100000,
 	email VARCHAR(255) DEFAULT NULL,
 	email_verified_time INT UNSIGNED DEFAULT NULL,
 	timezone TINYINT SIGNED DEFAULT NULL,
@@ -79,6 +81,8 @@ CREATE TABLE message (
 	body VARCHAR(1024) DEFAULT NULL,
 	picture_id BIGINT UNSIGNED DEFAULT NULL,
 	sent_time INT UNSIGNED,
+	client_uid BIGINT UNSIGNED NOT NULL,
+	UNIQUE KEY index_sender_account_id_client_uid_tmp (sender_account_id, client_uid),
 	FOREIGN KEY (sender_account_id) REFERENCES account(id),
 	PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

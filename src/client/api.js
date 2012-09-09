@@ -124,7 +124,7 @@ function handleSession(facebookSession, callback, err, res) {
 
 	gState.set('contactsByAccountId', contactsByAccountId)
 	gState.set('contactsByFacebookId', contactsByFacebookId)
-	gState.set('sessionInfo', { myAccount:res.account, authToken:res.authToken, facebookSession:facebookSession })
+	gState.set('sessionInfo', { myAccount:res.account, authToken:res.authToken, facebookSession:facebookSession, clientUidBlock:res.clientUidBlock })
 	callback(null)
 }
 

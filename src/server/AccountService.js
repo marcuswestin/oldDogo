@@ -2,6 +2,8 @@ var uuid = require('uuid'),
 	facebook = require('./util/facebook'),
 	sql = require('./util/sql')
 
+var clientUidBlockSize = 100000
+
 module.exports = proto(null,
 	function(database) {
 		this.db = database
@@ -49,6 +51,28 @@ module.exports = proto(null,
 		},
 		setPushAuth: function(accountId, pushToken, pushSystem, callback) {
 			this._updateAccountPushAuth(this.db, accountId, pushToken, pushSystem, callback)
+		},
+		bumpClientUidBlock: function(accountId, callback) {
+			this.db.transact(this, function(tx) {
+				callback = txCallback(tx, callback)
+				this._selectClientUidBlock(accountId, function(err, clientUidBlock) {
+					if (err) { return callback(err) }
+					clientUidBlock.start += clientUidBlockSize
+					clientUidBlock.end += clientUidBlockSize
+					this._updateClientUidBlock(tx, accountId, clientUidBlock, function(err) {
+						if (err) { return callback(err) }
+						callback(null, clientUidBlock)
+					})
+				})
+			})
+		},
+		_selectClientUidBlock:function(conn, accountId, callback) {
+			conn.selectOne(this, 'SELECT last_client_uid_block_start AS start, client_uid_block_end AS end FROM account WHERE id=?',
+				[accountId], callback)
+		},
+		_updateClientUidBlock:function(conn, accountId, clientUidBlock, callback) {
+			conn.updateOne(this, 'UPDATE account SET last_client_uid_block_start=?, last_client_uid_block_end=? WHERE id=?',
+				[clientUidBlock.start, clientUidBlock.end, accountId], callback)
 		},
 		_createClaimedAccount:function(fbAccount, fbFriends, callback) {
 			console.log('create new account with', fbFriends.length, 'friends')

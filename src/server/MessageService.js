@@ -20,7 +20,7 @@ module.exports = proto(null,
 				callback(null, conversations)
 			})
 		},
-		sendMessage: function(accountId, toFacebookAccountId, toAccountId, body, base64Picture, pictureWidth, pictureHeight, prodPush, callback) {
+		sendMessage: function(accountId, clientUid, toFacebookAccountId, toAccountId, body, base64Picture, pictureWidth, pictureHeight, prodPush, callback) {
 			if (body) {
 				body = trim(body)
 				if (!body) { return callback('Empty body') }
@@ -35,7 +35,7 @@ module.exports = proto(null,
 					
 					var proceed = bind(this, function(err, pictureId) {
 						if (err) { return callback(err) }
-						this._createMessage(accountId, toAccountId, conversation.id, body, pictureId, bind(this, function(err, message) {
+						this._createMessage(accountId, clientUid, toAccountId, conversation.id, body, pictureId, bind(this, function(err, message) {
 							if (err) { return callback(err) }
 							this.pushService.sendMessagePush(message, accountId, toAccountId, prodPush)
 							callback(null, { message:message, toAccountId:toAccountId, toFacebookId:toFacebookAccountId, disableInvite:true })
@@ -133,10 +133,10 @@ module.exports = proto(null,
 				})
 			})
 		},
-		_createMessage: function(accountId, toAccountId, conversationId, body, pictureId, callback) {
+		_createMessage: function(accountId, clientUid, toAccountId, conversationId, body, pictureId, callback) {
 			this.db.transact(this, function(tx) {
 				callback = txCallback(tx, callback)
-				this._insertMessage(tx, accountId, conversationId, body, pictureId, function(err, messageId) {
+				this._insertMessage(tx, accountId, clientUid, conversationId, body, pictureId, function(err, messageId) {
 					if (err) { return logError(err, callback, '_createMessage._insertMessage') }
 					this._updateConversationLastMessage(tx, conversationId, messageId, function(err) {
 						if (err) { return logErr(err, callback, '_createMessage._updateConversationLastMessage') }
@@ -168,10 +168,10 @@ module.exports = proto(null,
 				'INSERT INTO conversation_participation SET conversation_id=?, account_id=?',
 				[convoId, accountId], callback)
 		},
-		_insertMessage: function(conn, accountId, convoId, body, pictureId, callback) {
+		_insertMessage: function(conn, accountId, clientUid, convoId, body, pictureId, callback) {
 			conn.insert(this,
-				'INSERT INTO message SET sent_time=?, sender_account_id=?, conversation_id=?, body=?, picture_id=?',
-				[conn.time(), accountId, convoId, body, pictureId], callback)
+				'INSERT INTO message SET sent_time=?, sender_account_id=?, client_uid=?, conversation_id=?, body=?, picture_id=?',
+				[conn.time(), accountId, clientUid, convoId, body, pictureId], callback)
 		},
 		_selectMessage: function(conn, messageId, callback) {
 			conn.selectOne(this, this.sql.selectMessage+' WHERE message.id=?', [messageId], callback)
@@ -211,6 +211,7 @@ module.exports = proto(null,
 			selectMessage:sql.selectFrom('message', {
 				id:'message.id',
 				senderAccountId:'message.sender_account_id',
+				clientUid:'message.client_uid',
 				conversationId:'message.conversation_id',
 				sentTime:'message.sent_time',
 				body:'message.body',

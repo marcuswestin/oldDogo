@@ -60,11 +60,11 @@ function setupRoutes(app, accountService, messageService, sessionService, pictur
 		accountService.getContacts(req.session.accountId, wrapRespond(req, res, 'contacts'))
 	})
 	app.post('/api/messages', filter.session, function postMessage(req, res) {
-		var params = getParams(req, 'toFacebookId', 'toAccountId', 'body', 'base64Picture', 'pictureWidth', 'pictureHeight', 'picWidth', 'picHeight', 'devPush')
+		var params = getParams(req, 'toFacebookId', 'toAccountId', 'clientUid', 'body', 'base64Picture', 'pictureWidth', 'pictureHeight', 'picWidth', 'picHeight', 'devPush')
 		var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
 		if (!params.pictureWidth) { params.pictureWidth = 920 }
 		if (!params.pictureHeight) { params.pictureHeight = 640 }
-		messageService.sendMessage(req.session.accountId,
+		messageService.sendMessage(req.session.accountId, params.clientUid,
 			params.toFacebookId, params.toAccountId, params.body,
 			params.base64Picture, params.pictureWidth, params.pictureHeight,
 			prodPush, curry(respond, req, res))
