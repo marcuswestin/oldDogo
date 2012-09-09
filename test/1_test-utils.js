@@ -13,12 +13,13 @@ var fs = require('fs')
 var time = require('std/time')
 var request = require('request')
 var makeRouter = require('../src/server/makeRouter')
+var conf = require('../src/server/config/test')
 
 var u = module.exports = {}
-u.database = new Database({ host:'localhost', database:'dogo_test', user:'dogo_tester', password:'test' })
+u.database = new Database({ host:conf.db.host, database:conf.db.database, user:conf.db.user, password:conf.db.password })
 u.accountService = new AccountService(u.database)
 u.pushService = new PushService(u.database, null, null)
-u.pictureService = new PictureService(u.database, { bucket:'test' })
+u.pictureService = new PictureService(u.database, { bucket:conf.s3.bucket })
 u.messageService = new MessageService(u.database, u.accountService, u.pushService)
 u.sessionService = new SessionService(u.database, u.accountService)
 u.fbAppId = '219049001532833'
@@ -56,7 +57,7 @@ u.is = function(a, b) {
 	}
 }
 
-u.port = 9090
+u.port = conf.port
 var api = u.api = {
 	post: function(path, params, callback) { api.send('post', path, params, callback) },
 	get: function(path, params, callback) {
