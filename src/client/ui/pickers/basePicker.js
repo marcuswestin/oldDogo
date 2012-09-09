@@ -1,5 +1,6 @@
 var currentPicker
 var zIndex = 1
+var duration = 200
 
 module.exports = {
 	getCurrent:function() {
@@ -25,7 +26,7 @@ module.exports = {
 				else { self.onOpen(i,j,$el) }
 				
 				setTimeout(function() {
-					$el.css({ '-webkit-transform':'translate('+Math.round(pos[0])+'px, '+Math.round(pos[1])+'px)' })
+					$el.css(translate(pos[0], pos[1]))
 				}, self.delay(i,j))
 			})
 		})
@@ -45,14 +46,11 @@ module.exports = {
 			))
 		))
 	},
-	transition:200,
 	_renderItem:function(item, isCurrent, onSelect) {
 		var touchHandler = isCurrent ? button(curry(onSelect, item)) : this.touchHandler(onSelect, item)
-		return div('item', this.renderItem(isCurrent ? this.current : item, isCurrent), touchHandler, style({
-			'-webkit-transform':'translate(0,0)',
-			'-webkit-transition':'-webkit-transform '+this.transition+'ms',
-			position:'absolute'
-		}))
+		return div('item', touchHandler, style({ position:'absolute' }, translate(0, 0, duration)),
+			this.renderItem(isCurrent ? this.current : item, isCurrent)
+		)
 	},
 	renderLists:function() {
 		var selectItem = bind(this, function(payload) {

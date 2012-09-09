@@ -52,10 +52,7 @@ module.exports = {
 		)
 	},
 	slideOut: function() {
-		$('.connectView').css({
-			'-webkit-transition': '-webkit-transform .4s ease-in-out',
-			'-webkit-transform': 'translateY('+(-viewport.height())+'px)'
-		})
+		$('.connectView').css(translate.y(-viewport.height()))
 		// Warning: Actually removing the conenct view after the transition has completed causes an error where the screen becomes unresponsive. ¿Que?
 	}
 }

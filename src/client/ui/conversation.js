@@ -282,7 +282,7 @@ events.on('app.willEnterForeground', function() {
 function promptInvite(message, accountId, facebookId) {
 	composer.hide()
 	loadAccountId(accountId, function(account) {
-		var $infoBar = $(div(transition('height', 500), div('dogo-info blue',
+		var $infoBar = $(div(style(transition('height', 500)), div('dogo-info blue',
 			div('invite',
 				div('encouragement', 'Very Expressive!'),
 				div('personal', account.name.split(' ')[0], " doesn't have Dogo yet."),

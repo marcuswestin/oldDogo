@@ -11,19 +11,15 @@ error = function error(err) {
 				div('close icon', button(function() { error.hide() })),
 				div('message')
 			)
-		)).appendTo('.scroller-body').css({
-			position:'absolute', top:0, left:0,
-			'-webkit-transform': 'translateY(-150px)'
-		})
+		)).appendTo('.scroller-body')
+			.css({ position:'absolute', top:0, left:0 })
+			.css(translate.y(-150))
 	}
 	setTimeout(function() {
-		error.$tag.css({
-			'-webkit-transition': '-webkit-transform .6s',
-			'-webkit-transform':'translateY(0)'
-		}).find('.message').text(message)
+		error.$tag.css(translate.y(0, 600)).find('.message').text(message)
 	})
 	error.hide = function() {
-		error.$tag.css({ '-webkit-transform':'translateY(-150px)' })
+		error.$tag.css(translate.y(-150))
 	}
 }
 error.hide = function() {}

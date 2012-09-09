@@ -17,7 +17,8 @@ viewport = tags.viewport
 button = tags.button
 list = tags.list
 style = tags.style
-transition = style.transition
+transition = tags.style.transition
+translate = tags.style.translate
 
 require('./events')
 require('./state')
@@ -59,7 +60,7 @@ loading.pos = function(y) {
 	if (!loading.$ui) {
 		loading.$ui = $(div('loading-wrapper', div('icon'))).appendTo('.dogoApp')
 	}
-	// loading.$ui.css({ '-webkit-transform':'translateY('+(y-2)+'px)' })
+	// loading.$ui.css(translate.y(y-2))
 }
 
 getId = function getId(d) { return d.id }

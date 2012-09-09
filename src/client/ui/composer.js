@@ -93,23 +93,15 @@ function onSelectPhoto($e) {
 
 function selectDraw(img, message) {
 	$('.dogoApp').append(
-		drawer.render({ onSend:sendImage, onHide:hideDraw, img:img, message:message }).css({
-			'-webkit-transform':'translateY('+viewport.height()+'px)',
-		})
+		drawer.render({ onSend:sendImage, onHide:hideDraw, img:img, message:message }).css(translate.y(viewport.height()))
 	)
 	setTimeout(function() {
-		$('.dogoApp .draw-composer').css({
-			'-webkit-transition':'-webkit-transform '+selectDraw.duration+'ms ease-out',
-			'-webkit-transform':'translateY(0px)'
-		})
+		$('.dogoApp .draw-composer').css(translate.y(0, selectDraw.duration))
 	})
 }
 selectDraw.duration = 300
 function hideDraw() {
-	$('.dogoApp .draw-composer').css({
-		'-webkit-transition':'-webkit-transform '+selectDraw.duration+'ms ease-in',
-		'-webkit-transform':'translateY('+viewport.height()+'px)'
-	})
+	$('.dogoApp .draw-composer').css(translate.y(viewport.height(), selectDraw.duration))
 	setTimeout(function() {
 		composer.hide()
 	}, selectDraw.duration)

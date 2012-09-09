@@ -47,13 +47,10 @@ module.exports = proto(basePicker,
 		renderItem:function(pen, isCurrent) {
 			var styles = {
 				width:this.closeSize[0], height:this.closeSize[1], overflow:'hidden', display:'inline-block', margin:'0 4px 0 0',
-				'-webkit-transition-property': 'width, height',
-				'-webkit-transition-duration': '0.10s',
-				// '-webkit-transition-timing-function': 'linear',
 				border:'2px solid #433', borderRadius:4,
 				background:'#fff'
 			}
-			return img('pen', style(styles), { src:'/blowtorch/img/'+(pen.path)+'.png' })
+			return img('pen', style(styles, transition('width, height', 100)), { src:'/blowtorch/img/'+(pen.path)+'.png' })
 		},
 		getPos:function(i, j, num) {
 			var w = this.openSize[0] + 10
