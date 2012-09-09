@@ -1,7 +1,7 @@
 ;(function(global) {
 	
-	function PaintContext(dim) {
-		this.ratio = window.devicePixelRatio || 1
+	function PaintContext(dim, pixelRatio) {
+		this.pixelRatio = pixelRatio || window.devicePixelRatio || 1
 		this.dim = dim
 		this.el = this.create('div', true)
 		this.bg = this.addCanvas(this.el)
@@ -130,7 +130,7 @@
 		},
 		createLayer:function() {
 			var ctx = this.create('canvas').getContext('2d')
-			this.scale(ctx, [this.ratio, this.ratio])
+			this.scale(ctx, [this.pixelRatio, this.pixelRatio])
 			return ctx
 		},
 		
@@ -149,10 +149,9 @@
 		 ***********/
 		create:function(tag, relative) {
 			var el = document.createElement(tag)
-			var ratio = this.ratio
 			var dim = this.dim
-			el.setAttribute('width', dim[0] * ratio)
-			el.setAttribute('height', dim[1] * ratio)
+			el.setAttribute('width', dim[0] * this.pixelRatio)
+			el.setAttribute('height', dim[1] * this.pixelRatio)
 			el.style.width = dim[0]+'px'
 			el.style.height = dim[1]+'px'
 			el.style.position = relative ? 'relative' : 'absolute'
@@ -160,6 +159,7 @@
 		},
 		addCanvas:function(el, canvas) {
 			var ctx = el.appendChild(canvas || this.createLayer().canvas).getContext('2d')
+			this.scale(ctx, [1/this.pixelRatio, 1/this.pixelRatio])
 			return ctx
 		},
 		toTag:function() {
@@ -186,7 +186,7 @@
 		return ({}).toString.call(obj) == '[object Array]'
 	}
 
-	function paint(dim) { return new PaintContext(dim) }
+	function paint(dim, pixelRatio) { return new PaintContext(dim, pixelRatio) }
 	
 	function checkNum() {
 		for (var i=0; i<arguments.length; i++) {
