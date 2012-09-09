@@ -28,14 +28,14 @@ function showTextInput(data) {
 	
 	var keyboardAnimationDuration = 200
 	setTimeout(function() {
-		$('.dogoApp').css({ '-webkit-transform':'translateY(-'+keyboardHeight+'px)', '-webkit-transition':'-webkit-transform '+keyboardAnimationDuration+'ms' })
+		if (data.shiftWebview) { $('.dogoApp').css(translate.y(-keyboardHeight, keyboardAnimationDuration)) }
 		events.fire('keyboard.willShow', { keyboardAnimationDuration:keyboardAnimationDuration })
 		setTimeout(function() {
 			$input.focus()
 		}, keyboardAnimationDuration)
 	}, 0)
 	$input.on('blur', function($e) {
-		$('.dogoApp').css({ '-webkit-transform':'translateY(0)' })
+		if (data.shiftWebview) { $('.dogoApp').css(translate.y(0)) }
 		setTimeout(function() {
 			events.fire('keyboard.willHide', { keyboardAnimationDuration:keyboardAnimationDuration })
 		})
