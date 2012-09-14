@@ -55,9 +55,8 @@ function render(_opts) {
 					div('tools',
 						state.toolPicker = makeToolPicker({ paint:p, width:dim, height:dim }),
 						div('right',
-							div('button undo', 'Undo', button(undoDraw)),
-							div('button clear', 'Clear', button(clearFg)),
-							div('button tool send', 'Send', button(sendImage))
+							div('button undo secondary', div('icon'), button(undoDraw)),
+							div('button send', 'Send', button(sendImage))
 						)
 					)
 				)
@@ -68,7 +67,7 @@ function render(_opts) {
 	$ui.append($paint = $(p.el).css({ top:gScroller.$head.height() }))
 	
 	p.withBackground(function(bg) {
-		bg.fillStyle('#000').fillRect([0,0], canvasDensity)
+		bg.fillStyle('#FFFFFF').fillRect([0,0], canvasDensity)
 	})
 	if (opts.img) {
 		// TODO this call is way overloaded
@@ -83,7 +82,6 @@ function render(_opts) {
 	
 	return $ui
 	
-	function clearFg() { p.clearDrawn() }
 	function undoDraw() { p.popLayer() }
 	
 	function loadBackgroundImage(opts) {
@@ -113,7 +111,7 @@ function render(_opts) {
 			p.withBackground(function(bg) {
 				var delta = [canvasDensity[0] - picWidth, canvasDensity[1] - picHeight]
 				bg
-					.fillStyle('#000').fillRect([0, 0], canvasDensity)
+					.fillStyle('#FFFFFF').fillRect([0, 0], canvasDensity)
 					.save()
 						.translate([delta[0] / 2, delta[1] / 2])
 						.drawImage(drawImg, [0, 0], [picWidth, picHeight])
