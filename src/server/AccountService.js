@@ -55,7 +55,7 @@ module.exports = proto(null,
 		bumpClientUidBlock: function(accountId, callback) {
 			this.db.transact(this, function(tx) {
 				callback = txCallback(tx, callback)
-				this._selectClientUidBlock(accountId, function(err, clientUidBlock) {
+				this._selectClientUidBlock(tx, accountId, function(err, clientUidBlock) {
 					if (err) { return callback(err) }
 					clientUidBlock.start += clientUidBlockSize
 					clientUidBlock.end += clientUidBlockSize
