@@ -30,6 +30,17 @@ module.exports = function makeRouter(accountService, messageService, sessionServ
 
 function setupRoutes(app, accountService, messageService, sessionService, pictureService, opts) {
 	var filter = {
+		oldClients: function filterOldClient(req, res, next) {
+			var client = req.headers['x-dogo-client']
+			if (false && semver.lt(client, '0.96.0')) {
+				res.writeHead(400, {
+					'x-dogo-process': 'alert("You have an outdated client. Please upgrade to the most recent version.")'
+				})
+				res.end()
+				return
+			}
+			next()
+		},
 		session: function filterSession(req, res, next) {
 			sessionService.authenticateRequest(req, function(err, accountId) {
 				if (err) { return next(err) }
@@ -39,59 +50,60 @@ function setupRoutes(app, accountService, messageService, sessionService, pictur
 			})
 		}
 	}
+	filter.oldClientsAndSession = [filter.oldClients, filter.session]
 	
 	app.get('/api/ping', function(req, res) {
 		res.end('"Dogo!"')
 	})
-	app.post('/api/sessions', function postSessions(req, res) {
+	app.post('/api/sessions', filter.oldClients, function postSessions(req, res) {
 		var params = getParams(req, 'facebookAccessToken', 'facebookRequestId')
 		sessionService.createSession(params.facebookAccessToken, params.facebookRequestId, curry(respond, req, res))
 	})
-	app.get('/api/session', function getSession(req, res) {
+	app.get('/api/session', filter.oldClients, function getSession(req, res) {
 		var params = getParams(req, 'authToken')
 		sessionService.getSession(params.authToken, curry(respond, req, res))
 	})
-	app.get('/api/conversations', filter.session, function getConversations(req, res) {
+	app.get('/api/conversations', filter.oldClientsAndSession, function getConversations(req, res) {
 		var params = getParams(req)
 		messageService.getConversations(req.session.accountId, wrapRespond(req, res, 'conversations'))
 	})
-	app.get('/api/contacts', filter.session, function getContacts(req, res) {
+	app.get('/api/contacts', filter.oldClientsAndSession, function getContacts(req, res) {
 		var params = getParams(req)
 		accountService.getContacts(req.session.accountId, wrapRespond(req, res, 'contacts'))
 	})
-	app.post('/api/messages', filter.session, function postMessage(req, res) {
-		var params = getParams(req, 'toFacebookId', 'toAccountId', 'body', 'base64Picture', 'pictureWidth', 'pictureHeight', 'picWidth', 'picHeight', 'devPush')
+	app.post('/api/messages', filter.oldClientsAndSession, function postMessage(req, res) {
+		var params = getParams(req, 'toFacebookId', 'toAccountId', 'clientUid', 'body', 'base64Picture', 'pictureWidth', 'pictureHeight', 'picWidth', 'picHeight', 'devPush')
 		var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
 		if (!params.pictureWidth) { params.pictureWidth = 920 }
 		if (!params.pictureHeight) { params.pictureHeight = 640 }
-		messageService.sendMessage(req.session.accountId,
+		messageService.sendMessage(req.session.accountId, params.clientUid,
 			params.toFacebookId, params.toAccountId, params.body,
 			params.base64Picture, params.pictureWidth, params.pictureHeight,
 			prodPush, curry(respond, req, res))
 	})
-	app.get('/api/messages', filter.session, function getConversationMessages(req, res) {
+	app.get('/api/messages', filter.oldClientsAndSession, function getConversationMessages(req, res) {
 		var params = getParams(req, 'withAccountId', 'withFacebookId')
 		messageService.getMessages(req.session.accountId,
 			params.withAccountId, params.withFacebookId,
 			wrapRespond(req, res, 'messages'))
 	})
-	app.post('/api/push_auth', filter.session, function postPushAuth(req, res) {
+	app.post('/api/push_auth', filter.oldClientsAndSession, function postPushAuth(req, res) {
 		var params = getParams(req, 'pushToken', 'pushSystem')
 		accountService.setPushAuth(req.session.accountId, params.pushToken, params.pushSystem,
 			curry(respond, req, res))
 	})
-	app.get('/api/account_info', filter.session, function getAccountInfo(req, res) {
+	app.get('/api/account_info', filter.oldClientsAndSession, function getAccountInfo(req, res) {
 		var params = getParams(req, 'accountId', 'facebookId')
 		accountService.getAccount(params.accountId, params.facebookId, wrapRespond(req, res, 'account'))
 	})
-	app.get('/api/image', filter.session, function getPicture(req, res) {
+	app.get('/api/image', filter.oldClientsAndSession, function getPicture(req, res) {
 		var params = getParams(req, 'conversationId', 'pictureId', 'pictureSecret')
 		pictureService.getPictureUrl(req.session.accountId, params.conversationId, params.pictureId, params.pictureSecret, function(err, url) {
 			if (err) { return respond(req, res, err) }
 			res.redirect(url)
 		})
 	})
-	app.get('/api/version/info', filter.session, function getVersionInfo(req, res) {
+	app.get('/api/version/info', filter.oldClientsAndSession, function getVersionInfo(req, res) {
 		var url = null // 'http://marcus.local:9000/api/version/download/latest.tar'
 		respond(req, res, null, { url:url })
 	})
@@ -154,6 +166,12 @@ function setupDev(app) {
 
 	app.get('/static/*', function(req, res) {
 		fs.readFile('src/website'+req.url, curry(respond, req, res))
+	})
+	app.get('/img/*', function(req, res) {
+		fs.readFile('src/client'+req.url, curry(respond, req, res))
+	})
+	app.get('/img_src/*', function(req, res) {
+		fs.readFile('src/client'+req.url, curry(respond, req, res))
 	})
 	
 	app.get('/stylus/*', function(req, res) {

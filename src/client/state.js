@@ -26,6 +26,16 @@ gState = {
 		var sessionInfo = gState.cache['sessionInfo']
 		return sessionInfo && sessionInfo['facebookSession']
 	},
+	nextClientUid:function() {
+		var sessionInfo = gState.cache['sessionInfo']
+		if (sessionInfo.clientUidBlock.start == sessionInfo.clientUidBlock.end) {
+			alert("We're sorry, you must re-install the app to send more messages. Our bad!")
+			throw new Error("Ran out of UIDs")
+		}
+		var clientUid = sessionInfo.clientUidBlock.start = sessionInfo.clientUidBlock.start + 1
+		gState.set('sessionInfo', sessionInfo)
+		return clientUid
+	},
 	cache: {},
 	checkNewVersion:function() {
 		api.get('version/info', function(err, res) {

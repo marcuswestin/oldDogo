@@ -74,6 +74,14 @@ small-face()
 			float right; position relative; bottom 1px;
 			.button
 				margin 0 2px; padding 4px 10px 6px;
+				.icon
+					display inline-block;
+			.button.undo
+				padding-bottom 0px; margin-top 1px;
+				.icon
+					icon(19px, 23px, 'white/215-subscription.png');
+			.button.send
+				relative bottom 6px;
 	.close.button
 		absolute top 4px; z-index 1; font-size 14px; padding 5px 7px 25px;
 		.icon
@@ -81,10 +89,12 @@ small-face()
 
 buttonRadius = 4px;
 .button
-	padding 3px 8px 5px; border-radius buttonRadius; background #1A84BB;
+	padding 3px 8px 5px; border-radius buttonRadius; background #4FC4DF;
 	color #fff; text-align center; display inline-block; font-weight 100;
-	box-shadow 0 3px 0 rgba(20, 48, 117, 1); -webkit-transform translateY(0);
-	-webkit-transition -webkit-transform 80ms;
+	box-shadow 0 3px 0 #142C71; -webkit-transform translateY(0);
+	-webkit-transition -webkit-transform 80ms; text-shadow 0 -1px 0 #1A84BB;
+.button.secondary
+	background #1A84BB;
 .button.active, .button.selected
 	box-shadow 0 3px 0 rgba(20, 48, 117, 0); -webkit-transform translateY(3px);
 .dom-buttom
