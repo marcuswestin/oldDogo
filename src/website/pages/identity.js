@@ -30,14 +30,14 @@ function fontSize(size) {
 	return style({ fontSize:size })
 }
 
-function abs(top, left) {
+function abs(left, top) {
 	return style({ position:'absolute', top:top, left:left })
 }
 
 function graphic(w, h, content) {
 	return div(
 		div('subtitle', w,'x',h),
-		div(style({ position:'relative', width:w, height:h, border:'3px solid blue', margin:10 }),
+		div(style({ position:'relative', width:w, height:h, margin:10 }),
 			content
 		)
 	)
@@ -58,22 +58,35 @@ function svg(w, h, callback) {
 	})
 }
 
+function logo(imgSize, pos, mult) {
+	if (!mult) { mult = 1 }
+	var size = [Math.floor(imgSize*mult), Math.floor(imgSize*mult)]
+	return div(abs(pos[0], pos[1]),
+		style({ background:'url(/img_src/logo-'+imgSize+'.png) transparent', backgroundSize:size[0]+'px '+size[1]+'px', width:size[0], height:size[1] })
+	)
+}
+
+function grad(amount, pos) {
+	var where = pos ? (pos[0]+'px '+pos[1]+'px') : 'center'
+	return style({ background:'-webkit-radial-gradient('+where+', circle cover, #FFE2AA 0%, #FF9F36 '+amount+'%)', width:'100%', height:'100%' })
+}
+
 $(function() {
 	
 	$('.sections').append(
-		section('icons red-linen', 'Icons',
+		section('icons', 'Icons',
 			graphic(57, 57,
-				div('logo', 'Dogo', fontSize(27), abs(7, 0))
+				div(grad(150), logo(68, [12, 12], 1/2))
 			),
 			graphic(114, 114,
-				div('logo', 'Dogo', fontSize(54), abs(15, 0))
+				div(grad(150), logo(68, [24, 24], 1))
 			),
 			div('title', 'Splash Screens'),
 			graphic(320,480,
-				div('logo', 'Dogo', fontSize(135), abs(122, 21))
+				div(grad(110, [160, 150]), logo(228, [100, 100], 1/2))
 			),
 			graphic(640,960,
-				div('logo', 'Dogo', fontSize(280), abs(196, 30))
+				div(grad(110, [320, 300]), logo(228, [200, 200], 1))
 			)
 		),
 		section('pickers', 'Pickers',	

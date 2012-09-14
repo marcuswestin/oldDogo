@@ -167,6 +167,12 @@ function setupDev(app) {
 	app.get('/static/*', function(req, res) {
 		fs.readFile('src/website'+req.url, curry(respond, req, res))
 	})
+	app.get('/img/*', function(req, res) {
+		fs.readFile('src/client'+req.url, curry(respond, req, res))
+	})
+	app.get('/img_src/*', function(req, res) {
+		fs.readFile('src/client'+req.url, curry(respond, req, res))
+	})
 	
 	app.get('/stylus/*', function(req, res) {
 		combine.compileStylusPath(req.path, {}, curry(respondCss, req, res))
