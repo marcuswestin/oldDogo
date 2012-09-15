@@ -15,7 +15,6 @@
 		2C45C54F15C77A2600FE147C /* logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C45C54B15C77A2600FE147C /* logo@2x.png */; };
 		2C45C55115CACBD300FE147C /* img in Resources */ = {isa = PBXBuildFile; fileRef = 2C45C55015CACBD300FE147C /* img */; };
 		2C4EF9EF1573196800EE57C8 /* BTViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C4EF9EE1573196800EE57C8 /* BTViewController.m */; };
-		2C5AEAEB15A5F49E00E8BF14 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 2C5AEAEA15A5F49E00E8BF14 /* fonts */; };
 		2C720C191567C6E900AC9BF4 /* BTNet.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C161567C59100AC9BF4 /* BTNet.m */; };
 		2C720C6F15684C3100AC9BF4 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C5E15684C3100AC9BF4 /* NSData+Base64.m */; };
 		2C720C7015684C3100AC9BF4 /* NSDate+RFC1123.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C6015684C3100AC9BF4 /* NSDate+RFC1123.m */; };
@@ -69,10 +68,9 @@
 		2C45C54915C77A2600FE147C /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		2C45C54A15C77A2600FE147C /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		2C45C54B15C77A2600FE147C /* logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo@2x.png"; sourceTree = "<group>"; };
-		2C45C55015CACBD300FE147C /* img */ = {isa = PBXFileReference; lastKnownFileType = folder; name = img; path = ../img; sourceTree = "<group>"; };
+		2C45C55015CACBD300FE147C /* img */ = {isa = PBXFileReference; lastKnownFileType = folder; name = img; path = ../../static/img; sourceTree = SOURCE_ROOT; };
 		2C4EF9ED1573196800EE57C8 /* BTViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTViewController.h; sourceTree = "<group>"; };
 		2C4EF9EE1573196800EE57C8 /* BTViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTViewController.m; sourceTree = "<group>"; };
-		2C5AEAEA15A5F49E00E8BF14 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../fonts; sourceTree = "<group>"; };
 		2C720C151567C59100AC9BF4 /* BTNet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BTNet.h; sourceTree = "<group>"; };
 		2C720C161567C59100AC9BF4 /* BTNet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BTNet.m; sourceTree = "<group>"; };
 		2C720C5D15684C3100AC9BF4 /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
@@ -222,7 +220,6 @@
 				2C45C54915C77A2600FE147C /* Default@2x.png */,
 				2C45C54A15C77A2600FE147C /* logo.png */,
 				2C45C54B15C77A2600FE147C /* logo@2x.png */,
-				2C5AEAEA15A5F49E00E8BF14 /* fonts */,
 				2C45C55015CACBD300FE147C /* img */,
 			);
 			name = images;
@@ -378,7 +375,7 @@
 /* Begin PBXLegacyTarget section */
 		2CF1C8B915E9BAA600F4916D /* dogo-ios-build */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = "dogo-ios-client";
+			buildArgumentsString = "ios-client";
 			buildConfigurationList = 2CF1C8BA15E9BAA600F4916D /* Build configuration list for PBXLegacyTarget "dogo-ios-build" */;
 			buildPhases = (
 			);
@@ -446,7 +443,6 @@
 				2CD1A038153FB6B0008949F2 /* InfoPlist.strings in Resources */,
 				2CD1A089153FB85D008949F2 /* FBDialog.bundle in Resources */,
 				2CCAFE691569EC1C002766A1 /* vibrate.wav in Resources */,
-				2C5AEAEB15A5F49E00E8BF14 /* fonts in Resources */,
 				2C45C54C15C77A2600FE147C /* Default.png in Resources */,
 				2C45C54D15C77A2600FE147C /* Default@2x.png in Resources */,
 				2C45C54E15C77A2600FE147C /* logo.png in Resources */,

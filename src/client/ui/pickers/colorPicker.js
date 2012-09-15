@@ -29,7 +29,7 @@ module.exports = proto(basePicker,
 			}
 			var content
 			if (typeof color == 'string') {
-				styles.backgroundImage = 'url("/blowtorch/img/colors/'+color+'.png")'
+				styles.backgroundImage = 'url("/static/img/colors/'+color+'.png")'
 				styles.backgroundSize = diameter+'px '+diameter+'px'
 			} else {
 				styles.background = rgbaString(color, alpha)

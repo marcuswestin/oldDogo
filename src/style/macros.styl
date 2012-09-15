@@ -36,7 +36,7 @@ animate-rotation(duration)
 
 icon(width, height, name, paddingTop=0, paddingRight=0, paddingBottom=paddingTop, paddingLeft=paddingRight)
 	width width; height height; background transparent paddingLeft paddingTop no-repeat;
-	background-image url('/blowtorch/img/glyphish/'+name); background-size width height; padding paddingTop paddingRight paddingBottom paddingLeft;
+	background-image url('/static/img/glyphish/'+name); background-size width height; padding paddingTop paddingRight paddingBottom paddingLeft;
 
 box-shadow(offsetX=0, offsetY=1px, blur=2px, color=rgba(0,0,0,0.5), inout=null)
 	box-shadow inout color offsetX offsetY blur;
@@ -73,7 +73,7 @@ image(url, width, height, xOffset=0, yOffset=0, repeat=no-repeat)
 	width width;
 	height height;
 	background transparent xOffset yOffset repeat;
-	background-image url('/img/'+url);
+	background-image url('/static/img/'+url);
 	display inline-block;
 
 disable-select()

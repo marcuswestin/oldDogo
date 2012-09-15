@@ -1,5 +1,4 @@
 require('../template/websiteTemplate')
-require('lib/jquery-1.7.2')
 require('globals/tags')
 
 button($('#getDogo'), function() {
@@ -9,7 +8,6 @@ button($('#getDogo'), function() {
 $(function() {
 	function fadeIn(selector, delay, duration) {
 		setTimeout(function() {
-			console.log("here")
 			$(selector).css({ '-webkit-transition':'opacity '+duration+'ms', opacity:1 })
 		}, delay)
 	}

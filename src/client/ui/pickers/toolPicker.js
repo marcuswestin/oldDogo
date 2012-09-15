@@ -50,7 +50,7 @@ module.exports = proto(basePicker,
 				border:'2px solid #433', borderRadius:4,
 				background:'#fff'
 			}
-			return img('pen', style(styles, transition('width, height', 100)), { src:'/blowtorch/img/'+(pen.path)+'.png' })
+			return img('pen', style(styles, transition('width, height', 100)), { src:'/static/img/'+(pen.path)+'.png' })
 		},
 		getPos:function(i, j, num) {
 			var w = this.openSize[0] + 10

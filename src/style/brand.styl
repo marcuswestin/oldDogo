@@ -4,11 +4,11 @@ brandGradient(where=center, amount=120%)
 
 logoGraphic(size=68)
 	disable-select();
-	width (size)px; height (size)px; background url("/img/logoGraphic-"+size+".png"); background-size (size)px (size)px;
+	width (size)px; height (size)px; background url("/static/img/logoGraphic-"+size+".png"); background-size (size)px (size)px;
 
 logoName(w=81,h=36)
 	disable-select();
-	width (w)px; height (h)px; background url("/img/logoName-"+w+"x"+h+".png");
+	width (w)px; height (h)px; background url("/static/img/logoName-"+w+"x"+h+".png");
 
 brandGradientBackground()
 	html
@@ -21,5 +21,5 @@ brandGradientBackground()
 		min-height 100%;
 
 bgImg(name, w, h)
-	width (w)px; height (h)px; background url("/img/"+name+".png") transparent no-repeat; background-size (w)px (h)px;
+	width (w)px; height (h)px; background url("/static/img/"+name+".png") transparent no-repeat; background-size (w)px (h)px;
 	disable-select();

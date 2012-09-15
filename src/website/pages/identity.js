@@ -1,4 +1,3 @@
-require('lib/jquery-1.7.2')
 require('lib/raphael-2.1.0')
 require('tags')
 require('globals/brand')
@@ -63,7 +62,7 @@ function logoGraphic(imgSize, pos, mult) {
 	if (!mult) { mult = 1 }
 	var size = [Math.floor(imgSize*mult), Math.floor(imgSize*mult)]
 	return div(abs(pos[0], pos[1]),
-		style({ background:'url(/img/logoGraphic-'+imgSize+'.png) transparent', backgroundSize:size[0]+'px '+size[1]+'px', width:size[0], height:size[1] })
+		style({ background:'url(/static/img/logoGraphic-'+imgSize+'.png) transparent', backgroundSize:size[0]+'px '+size[1]+'px', width:size[0], height:size[1] })
 	)
 }
 

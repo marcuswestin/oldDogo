@@ -144,31 +144,12 @@ function setupDev(app) {
 	app.get('/test', sendPage('test'))
 	
 	app.get('/app', sendFile('src/client/dogo.html', 'text/html'))
-	app.get('/jquery.js', sendFile('src/client/lib/jquery-1.7.2.js'))
-	
-	app.get('/blowtorch/img/*', function(req, res) {
-		var path = req.path.replace('/blowtorch/img/', '')
-		fs.readFile('src/img/'+path, function(err, content) {
-			if (err) { return respond(req, res, err) }
-			res.writeHead(200, { 'Content-Type':'image/png' })
-			res.end(content)
-		})
-	})
-
-	app.get('/blowtorch/fonts/*', function(req, res) {
-		var path = req.path.replace('/blowtorch/fonts/', '')
-		fs.readFile('src/client/fonts/'+path, function(err, content) {
-			if (err) { return respond(req, res, err) }
-			res.writeHead(200, { 'Content-Type':'font/ttf' })
-			res.end(content)
-		})
-	})
-
+		
 	app.get('/static/*', function(req, res) {
-		fs.readFile('src/website'+req.url, curry(respond, req, res))
+		fs.readFile('src'+req.url, curry(respond, req, res))
 	})
-	app.get('/img/*', function(req, res) {
-		fs.readFile('src/'+req.url, curry(respond, req, res))
+	app.get('/resources/*', function(req, res) {
+		fs.readFile('src'+req.url, curry(respond, req, res))
 	})
 	
 	app.get('/stylus/*', function(req, res) {
@@ -263,6 +244,8 @@ function respond(req, res, err, content, contentType) {
 	} else {
 		if (req.url.match(/\.html$/)) {
 			contentType = 'text/html'
+		} else if (req.url.match(/\.js$/)) {
+			contentType = 'application/javascript'
 		}
 	}
 	

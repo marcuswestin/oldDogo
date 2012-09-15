@@ -1,4 +1,4 @@
-require('lib/jquery-1.7.2')
+require('lib/jquery-1.8.1')
 require('globals/tags')
 
 require('./events')

@@ -84,11 +84,11 @@ setup-source:
 
 # Testflight
 ############
-dogo-ios-client:
+ios-client:
 	${NODE} src/scripts/build-client.js
 	hostname > build/dogo-ios-build/dev-hostname.txt
 
-fly-build: dogo-ios-client
+fly-build: ios-client
 	rm -rf src/client/ios/build
 	xcodebuild -project src/client/ios/dogo.xcodeproj -sdk iphoneos GCC_PREPROCESSOR_DEFINITIONS="TESTFLIGHT" -configuration Release
 	# xcodebuild -project src/client/ios/dogo.xcodeproj -sdk iphonesimulator5.1 GCC_PREPROCESSOR_DEFINITIONS="TESTFLIGHT" -configuration Release
