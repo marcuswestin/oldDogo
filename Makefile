@@ -136,7 +136,7 @@ build-website:
 
 # Dependencies
 ##############
-NODE = /usr/local/bin/node
+NODE = `which node`
 REDIS = /usr/local/bin/redis-server
 MYSQL = /usr/local/bin/mysql.server
 BREW = /usr/local/bin/brew
