@@ -33,7 +33,7 @@ page.onPrompt = function() {
 	phantom.exit()
 }
 
-var url = 'http://localhost:9000/app.html'
+var url = 'http://localhost:9000/app'
 page.open(url, function (status) {
 	page.includeJs('http://localhost:9000/require/src/client/dogo', function() {
 		console.log("OPenened url", url)

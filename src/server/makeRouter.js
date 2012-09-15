@@ -143,7 +143,7 @@ function setupDev(app) {
 	app.get('/identity', sendPage('identity'))
 	app.get('/test', sendPage('test'))
 	
-	app.get('/app.html', sendFile('src/client/dogo.html'))
+	app.get('/app', sendFile('src/client/dogo.html', 'text/html'))
 	app.get('/jquery.js', sendFile('src/client/lib/jquery-1.7.2.js'))
 	
 	app.get('/blowtorch/img/*', function(req, res) {
@@ -185,9 +185,11 @@ function setupDev(app) {
 		}
 	}
 	
-	function sendFile(path) {
+	function sendFile(path, contentType) {
 		return function (req, res) {
-			fs.readFile(path, curry(respond, req, res))
+			fs.readFile(path, function(err, content) {
+				respond(req, res, err, content, contentType)
+			})
 		}
 	}
 }

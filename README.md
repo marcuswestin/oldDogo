@@ -9,7 +9,7 @@ To get started for the first time:
 Then, to run the dev server locally:
 
 	make run
-	# Now go to http://localhost:9000/app.html
+	# Now go to http://localhost:9000/app
 
 # Get to Prod
 #############
