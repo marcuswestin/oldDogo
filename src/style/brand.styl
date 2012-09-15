@@ -1,0 +1,25 @@
+brandGradient(where=center, amount=120%)
+	background -webkit-radial-gradient(where, circle cover, #FFF4C4 0%, #FFB714 (amount));
+	width 100%; height 100%;
+
+logoGraphic(size=68)
+	disable-select();
+	width (size)px; height (size)px; background url("/img/logoGraphic-"+size+".png"); background-size (size)px (size)px;
+
+logoName(w=81,h=36)
+	disable-select();
+	width (w)px; height (h)px; background url("/img/logoName-"+w+"x"+h+".png");
+
+brandGradientBackground()
+	html
+		brandGradient(154px 110px, 700px);
+		min-height 100%;
+	@media screen and (-webkit-min-device-pixel-ratio: 2), screen and (max--moz-device-pixel-ratio: 2)
+		// foo
+	body
+		height 100%;
+		min-height 100%;
+
+bgImg(name, w, h)
+	width (w)px; height (h)px; background url("/img/"+name+".png") transparent no-repeat; background-size (w)px (h)px;
+	disable-select();

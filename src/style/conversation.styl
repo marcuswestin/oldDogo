@@ -1,5 +1,6 @@
 @import "./macros"
 @import "./questions"
+@import "./buttons"
 
 offWhite = #EBEAE7
 
@@ -62,7 +63,6 @@ small-face()
 		position absolute; bottom 0; z-index 1;
 	.controls
 		line-height 20px; padding 2px 0; box-shadow 0 -2px 3px #222; width 100%; height 33px;
-		// background url('/blowtorch/img/background/red-linen.jpg'); background-size 327px 327px;
 		background #FC9545;
 		.picker
 			position absolute;
@@ -86,18 +86,4 @@ small-face()
 		absolute top 4px; z-index 1; font-size 14px; padding 5px 7px 25px;
 		.icon
 			icon(20px, 20px, 'xtras-white/37-circle-x.png');
-
-buttonRadius = 4px;
-.button
-	padding 3px 8px 5px; border-radius buttonRadius; background #4FC4DF;
-	color #fff; text-align center; display inline-block; font-weight 100;
-	box-shadow 0 3px 0 #142C71; -webkit-transform translateY(0);
-	-webkit-transition -webkit-transform 80ms; text-shadow 0 -1px 0 #1A84BB;
-.button.secondary
-	background #1A84BB;
-.button.active, .button.selected
-	box-shadow 0 3px 0 rgba(20, 48, 117, 0); -webkit-transform translateY(3px);
-.dom-buttom
-	cursor pointer;
-
 

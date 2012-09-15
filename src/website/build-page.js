@@ -4,7 +4,7 @@ var options = require('std/options')
 var combine = require('../combine')
 var marked = require('marked')
 
-var basePath = 'template/base'
+var basePath = 'template/websiteTemplate'
 
 var existsSync = fs.existsSync || require('path').existsSync
 

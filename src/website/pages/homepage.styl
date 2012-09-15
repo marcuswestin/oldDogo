@@ -1,23 +1,33 @@
-@import "../template/base"
-@import "./macros"
+@import "../template/websiteTemplate"
 
-linen-background()
+brandGradientBackground()
 
 #content
 	absolute top 80px left 120px;
-	#logo
-		logo()
-		absolute top 0 left 0; font-size 85px;
-	#info
-		font-family 'Open Sans'; font-weight 300; font-size 30px; color #222; text-shadow 0 1px 0 rgba(250,250,250,.3);
-		absolute top 120px left 60px; disable-select(); cursor default; width 280px;
+	font-family 'Open Sans';
+	#logoGraphic
+		logoGraphic(68);
+	#logoName
+		logoName(157, 67); margin 40px 0 0 0;
+		h1
+			display none;
+	#slogan
+		bgImg('theMostExpressive', 339, 63); margin 10px 0 0 0;
+		.text
+			display none;
+	#getDogo.button
+		padding 8px 8px 4px 10px; margin 40px 0; font-size 20px; text-shadow none; font-weight 100; border-radius 6px;
+		.graphic
+			bgImg('getDogo', 118, 30)
+		.link
+			display none;
 
 /* Smartphones (portrait and landscape) ----------- */
 @media only screen and (device-width: 320px) and (max-device-width: 480px)
 	body
 		background-image none
 	#content
-		absolute top 0 left 0; width 320px; height 420px; background-image -webkit-radial-gradient(140px 90px, circle contain, rgba(255, 240, 240, .3), rgba(255, 255, 255, .05) 400px);
+		absolute top 0 left 0; width 320px; height 420px;
 		#logo
 			top 40px; left 20px;
 		#info

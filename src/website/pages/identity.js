@@ -59,11 +59,11 @@ function svg(w, h, callback) {
 	})
 }
 
-function logo(imgSize, pos, mult) {
+function logoGraphic(imgSize, pos, mult) {
 	if (!mult) { mult = 1 }
 	var size = [Math.floor(imgSize*mult), Math.floor(imgSize*mult)]
 	return div(abs(pos[0], pos[1]),
-		style({ background:'url(/img/logo-'+imgSize+'.png) transparent', backgroundSize:size[0]+'px '+size[1]+'px', width:size[0], height:size[1] })
+		style({ background:'url(/img/logoGraphic-'+imgSize+'.png) transparent', backgroundSize:size[0]+'px '+size[1]+'px', width:size[0], height:size[1] })
 	)
 }
 
@@ -72,17 +72,17 @@ $(function() {
 	$('.sections').append(
 		section('icons', 'Icons',
 			graphic(57, 57,
-				div(brandGradient(120), logo(68, [12, 12], 1/2))
+				div(brandGradient('center', 120), logoGraphic(68, [12, 12], 1/2))
 			),
 			graphic(114, 114,
-				div(brandGradient(120), logo(68, [24, 24], 1))
+				div(brandGradient('center', 120), logoGraphic(68, [24, 24], 1))
 			),
 			div('title', 'Splash Screens'),
 			graphic(320,480,
-				div(brandGradient(110, [160, 150]), logo(228, [100, 100], 1/2))
+				div(brandGradient([160, 150], 110), logoGraphic(228, [100, 100], 1/2))
 			),
 			graphic(640,960,
-				div(brandGradient(110, [320, 300]), logo(228, [200, 200], 1))
+				div(brandGradient([320, 300], 110), logoGraphic(228, [200, 200], 1))
 			)
 		),
 		section('pickers', 'Pickers',	
