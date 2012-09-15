@@ -6,7 +6,6 @@ button($('#getDogo'), function() {
 	console.log("HERE")
 })
 
-$('.anim').css({ opacity:0 })
 $(function() {
 	function fadeIn(selector, delay, duration) {
 		setTimeout(function() {
