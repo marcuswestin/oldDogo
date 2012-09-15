@@ -1,5 +1,5 @@
-var rgbToHsv = require('colors/rgbToHsv')
-var hsvToRgb = require('colors/hsvToRgb')
+var rgbToHsv = require('client/colors/rgbToHsv')
+var hsvToRgb = require('client/colors/hsvToRgb')
 var basePicker = require('./basePicker')
 
 var colorLists = [

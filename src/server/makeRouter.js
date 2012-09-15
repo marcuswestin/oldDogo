@@ -148,7 +148,7 @@ function setupDev(app) {
 	
 	app.get('/blowtorch/img/*', function(req, res) {
 		var path = req.path.replace('/blowtorch/img/', '')
-		fs.readFile('src/client/img/'+path, function(err, content) {
+		fs.readFile('src/img/'+path, function(err, content) {
 			if (err) { return respond(req, res, err) }
 			res.writeHead(200, { 'Content-Type':'image/png' })
 			res.end(content)
@@ -168,10 +168,7 @@ function setupDev(app) {
 		fs.readFile('src/website'+req.url, curry(respond, req, res))
 	})
 	app.get('/img/*', function(req, res) {
-		fs.readFile('src/client'+req.url, curry(respond, req, res))
-	})
-	app.get('/img_src/*', function(req, res) {
-		fs.readFile('src/client'+req.url, curry(respond, req, res))
+		fs.readFile('src/'+req.url, curry(respond, req, res))
 	})
 	
 	app.get('/stylus/*', function(req, res) {

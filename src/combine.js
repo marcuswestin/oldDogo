@@ -12,8 +12,8 @@ module.exports = {
 	compileStylus:compileStylus
 }
 
-fs.readdirSync(__dirname+'/client').forEach(function(name) {
-	var path = __dirname+'/client/'+name,
+fs.readdirSync(__dirname).forEach(function(name) {
+	var path = __dirname+'/'+name,
 		stat = fs.statSync(path)
 	if (stat.isDirectory()) {
 		jsCompiler.addPath(name, path)
@@ -22,7 +22,7 @@ fs.readdirSync(__dirname+'/client').forEach(function(name) {
 })
 
 function compileStylusPath(stylusPath, opts, callback) {
-	var filename = __dirname + stylusPath.replace('/stylus/src', '')
+	var filename = __dirname + stylusPath.replace('/stylus', '')
 	if (!filename.match(/\.styl$/)) { filename += '.styl' }
 	opts.filename = filename
 	fs.readFile(filename, function(err, content) {

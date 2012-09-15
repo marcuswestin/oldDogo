@@ -17,7 +17,7 @@ exec('rm -rf '+dir, function() {
 				html = html.replace('<script src="/require/src/client/dogo"></script>',
 					'<script src="appJs.html"></script>')
 				
-				html = html.replace('<link rel="stylesheet" type="text/css" href="/stylus/src/client/style/dogo.styl" />',
+				html = html.replace('<link rel="stylesheet" type="text/css" href="/stylus/style/dogo.styl" />',
 					'<link rel="stylesheet" type="text/css" href="appCss.css" />')
 				
 				fs.writeFileSync(dir+'/app.html', html)

@@ -20,8 +20,8 @@ module.exports = function buildPage(name, opts, callback) {
 	var bottom = templateFile('bottom')
 	var page = pageFile(name)
 	var params = {
-		STYLE_NAME: 'src/website/'+(existsSync(pagePath(name, 'styl')) ? 'pages/'+name : basePath),
-		SCRIPT_NAME: 'src/website/'+(existsSync(pagePath(name, 'js')) ? 'pages/'+name : basePath)
+		STYLE_NAME: 'website/'+(existsSync(pagePath(name, 'styl')) ? 'pages/'+name : basePath),
+		SCRIPT_NAME: 'website/'+(existsSync(pagePath(name, 'js')) ? 'pages/'+name : basePath)
 	}
 	each(params, function(val, KEY) {
 		var regexp = new RegExp('\\{\\{ '+KEY+' \\}\\}', 'g')

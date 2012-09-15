@@ -1,6 +1,7 @@
 require('lib/jquery-1.7.2')
 require('lib/raphael-2.1.0')
 require('tags')
+require('globals/brand')
 style = require('tags/style')
 slice = require('std/slice')
 
@@ -62,13 +63,8 @@ function logo(imgSize, pos, mult) {
 	if (!mult) { mult = 1 }
 	var size = [Math.floor(imgSize*mult), Math.floor(imgSize*mult)]
 	return div(abs(pos[0], pos[1]),
-		style({ background:'url(/img_src/logo-'+imgSize+'.png) transparent', backgroundSize:size[0]+'px '+size[1]+'px', width:size[0], height:size[1] })
+		style({ background:'url(/img/logo-'+imgSize+'.png) transparent', backgroundSize:size[0]+'px '+size[1]+'px', width:size[0], height:size[1] })
 	)
-}
-
-function grad(amount, pos) {
-	var where = pos ? (pos[0]+'px '+pos[1]+'px') : 'center'
-	return style({ background:'-webkit-radial-gradient('+where+', circle cover, #FFE2AA 0%, #FF9F36 '+amount+'%)', width:'100%', height:'100%' })
 }
 
 $(function() {
@@ -76,17 +72,17 @@ $(function() {
 	$('.sections').append(
 		section('icons', 'Icons',
 			graphic(57, 57,
-				div(grad(150), logo(68, [12, 12], 1/2))
+				div(brandGradient(120), logo(68, [12, 12], 1/2))
 			),
 			graphic(114, 114,
-				div(grad(150), logo(68, [24, 24], 1))
+				div(brandGradient(120), logo(68, [24, 24], 1))
 			),
 			div('title', 'Splash Screens'),
 			graphic(320,480,
-				div(grad(110, [160, 150]), logo(228, [100, 100], 1/2))
+				div(brandGradient(110, [160, 150]), logo(228, [100, 100], 1/2))
 			),
 			graphic(640,960,
-				div(grad(110, [320, 300]), logo(228, [200, 200], 1))
+				div(brandGradient(110, [320, 300]), logo(228, [200, 200], 1))
 			)
 		),
 		section('pickers', 'Pickers',	
