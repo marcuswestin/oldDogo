@@ -2,7 +2,9 @@ require('../template/websiteTemplate')
 require('globals/tags')
 
 button($('#getDogo'), function() {
-	alert("Dogo will be available in the App Store. Come back later!")
+	setTimeout(function() {
+		alert("Dogo will be available in the App Store. Come back later!")
+	}, 50)
 })
 
 $(function() {
