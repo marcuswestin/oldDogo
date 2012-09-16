@@ -3,32 +3,30 @@
 brandGradientBackground()
 
 #content
-	absolute top 80px left 120px;
+	padding 80px 0 0 120px;
 	font-family 'Open Sans';
-	#logoGraphic
-		logoGraphic(68);
+	#logoIcon
+		logoIcon();
 	#logoName
-		logoName(157, 67); margin 40px 0 0 0;
+		logoName(); margin 40px 0 0 0;
 		h1
 			display none;
 	#slogan
-		bgImg('theMostExpressive', 356, 63); margin 10px 0 0 0;
+		bgImg('theMostExpressive', 290, 50); margin 10px 0 0 0;
 		.text
 			display none;
 	#getDogo.button
-		padding 8px 8px 4px 10px; margin 40px 0; font-size 20px; text-shadow none; font-weight 100; border-radius 6px;
+		padding 6px 8px; margin 40px 0; font-size 20px; text-shadow none; font-weight 100; border-radius 6px;
 		.graphic
-			bgImg('getDogo', 118, 30)
+			bgImg('getDogo', 108, 28)
 		.link
 			display none;
 
 /* Smartphones (portrait and landscape) ----------- */
 @media only screen and (device-width: 320px) and (max-device-width: 480px)
-	body
-		background-image none
 	#content
-		absolute top 0 left 0; width 320px; height 420px;
+		padding 20px 0 40px 15px;
 		#logo
-			top 40px; left 20px;
+			absolute top 40px left 20px;
 		#info
-			top 160px; left 30px;
+			absolute top 160px left 30px;
