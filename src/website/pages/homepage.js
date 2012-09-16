@@ -2,7 +2,7 @@ require('../template/websiteTemplate')
 require('globals/tags')
 
 button($('#getDogo'), function() {
-	console.log("HERE")
+	alert("Dogo will be available in the App Store. Come back later!")
 })
 
 $(function() {
