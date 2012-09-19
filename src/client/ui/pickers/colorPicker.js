@@ -4,9 +4,13 @@ var basePicker = require('./basePicker')
 
 var colorLists = [
 	['multi-color1'],
-	[[15,10,10], [100,90,90], [255,245,245]],
-	[[210,0,0],[210,210,0],[100,210,50],[0,0,210],[125,10,210]],
-	[[212,69,3],[236,169,31], [79,124,128], [145,161,112], [184,143,170], [171,128,88], [70,130,180]]
+	[[89, 197, 202], [129, 228, 164], [252, 212, 128], [250, 141, 69]],
+	[[110, 33, 81], [39, 118, 184], [185, 163, 133], [20, 16, 50]],
+	[[223, 88, 88], [106, 125, 150], [102, 77, 116], [247, 224, 226]]
+	// Old colors
+	// [[15,10,10], [100,90,90], [255,245,245]],
+	// [[210,0,0],[210,210,0],[100,210,50],[0,0,210],[125,10,210]],
+	// [[212,69,3],[236,169,31], [79,124,128], [145,161,112], [184,143,170], [171,128,88], [70,130,180]]
 ]
 
 module.exports = proto(basePicker,
@@ -81,15 +85,27 @@ module.exports = proto(basePicker,
 		},
 		
 		getPos: function(i, j, num) {
-			var quarterCircle = Math.PI / 2
-			var expand = 69
-			if (!num) { num = 1 }
-			var x = Math.cos(j * quarterCircle/num)*expand*i
-			var y = -(Math.sin(j * quarterCircle/num)*expand*i + 60)
-			return [x, y]
+			// return getCirclePos(i, j, num)
+			return getGridPos(i, j, num)
 		}
 	}
 )
+
+function getGridPos(i, j, num) {
+	var x = j * 60 - 50
+	var y = -i * 60
+	return [x, y]
+}
+
+function getCirclePos(i, j, num) {
+	var quarterCircle = Math.PI / 2
+	var expand = 69
+	if (!num) { num = 1 }
+	var x = Math.cos(j * quarterCircle/num)*expand*i
+	var y = -(Math.sin(j * quarterCircle/num)*expand*i + 60)
+	return [x, y]
+}
+
 function rgbFromPos(hsvBase, pos) {
 	var saturationRatio = 1 + (-pos.dx / 100)
 	var valueRatio = 1 + (pos.dy / 100)
