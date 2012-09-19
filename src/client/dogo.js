@@ -118,6 +118,7 @@ function startApp(info) {
 		
 		if (isPhantom) {
 			api.refresh('fa48a930-5e94-4f18-b180-998728a5fe85', onConnected)
+			bridge.command('app.show')
 		} else if (gState.authToken()) {
 			onConnected()
 		} else {
@@ -128,6 +129,10 @@ function startApp(info) {
 				})
 			)
 		}
+		
+		setTimeout(function() {
+			bridge.command('app.show')
+		}, 750)
 		
 		function migrateNewClientUidBlock() {
 			var sessionInfo = gState.cache['sessionInfo']
@@ -147,7 +152,6 @@ function startApp(info) {
 			buildContactsIndex()
 		}
 		
-		bridge.command('app.show')
 		if (isPhantom) {
 			var readyEvent = document.createEvent('Events')
 			readyEvent.initEvent('PhantomStartTest')
