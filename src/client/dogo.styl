@@ -3,6 +3,7 @@
 @import "../style/conversation"
 @import "../fonts/opensans-all"
 @import "../fonts/yellowtail-regular"
+@import "./brand"
 
 .blue
 	background blueLight; color blueDark; border-color blueDark;
@@ -25,10 +26,11 @@ body
 		absolute top 0 left 0; width 100%; height 100%;
 
 .dogoApp
-	font-family "Open Sans"; font-weight 300;
+	font-family "Open Sans"; font-weight 300; font-size 14px;
 	color #333;
 	border-radius 12px 12px 0 0;
-	background -webkit-radial-gradient(center, circle cover, #FFE2AA 0%, #FF9F36 120%);
+	background -webkit-radial-gradient(center, circle cover, #FFF4C4 0%, #FFB714 100%);
+	// background -webkit-radial-gradient(center, circle cover, #FFE2AA 0%, #FF9F36 120%);
 	height 100%; overflow hidden;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none; /* Disable selection/Copy of UIWebView */
@@ -39,8 +41,6 @@ body
 .scroller-head.flat
 	box-shadow none;
 
-.logo
-	logoIcon(64)
 .slogan
 	font-size 20px; color #1A84BB; font-weight 100;
 	
@@ -55,7 +55,9 @@ body
 		font-size 21px; text-align center; padding 7px 0 0 0;
 		max-width 225px; text-overflow ellipsis; white-space nowrap; overflow hidden; margin 0 auto;
 	.title.logo
-		text-shadow 0 1px 0 rgba(50,0,0,.3); 
+		margin-top 4px;
+	.logoIcon
+		absolute top 6px left 6px;
 	.back.icon
 		absolute top left; icon(28px, 28px, 'xtras-white/36-circle-west.png', 8px, 8px);
 	.search-control
@@ -133,7 +135,7 @@ body
 	.conversations
 		min-height 254px;
 		.messageBubble
-			margin 7px 8px 0 36px;
+			margin 7px 8px 0 60px;
 			.name
 				padding 5px 8px 0;
 				text-shadow: 0 1px 0 #ffffff;
@@ -152,7 +154,7 @@ body
 			float left; margin 2px 2px 1px 1px;
 	
 .composer
-	position absolute; bottom 0; width 320px; background #126EAF;
+	position absolute; bottom 0; width 320px; background #126EAF; z-index 2;
 	.surface
 		bodyRadius = 6px; bodyWidth = 320px;
 
@@ -200,7 +202,7 @@ body
 		.person
 			padding 4px 4px 2px; clear both; background linear-gradient(top, #fff, #ececec); cursor pointer;
 			.face
-				float left; width faceDim*2; height faceDim*2; background-size faceDim*2 faceDim*2;
+				float left;
 			.name
 				float left; margin 0 0 0 4px;
 		.person:last-child

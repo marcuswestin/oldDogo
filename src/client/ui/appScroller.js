@@ -25,8 +25,8 @@ function scrollerRenderHeadContent(view, opts) {
 			div('button', 'X', button(function() { gState.clear(); bridge.command('app.restart') })),
 			div('button', 'U', button(function() { gState.checkNewVersion() }))
 		),
-		showBackButton && div('icon back', button(function() { gScroller.pop() })),
-		div('title' + (isHome ? ' logo' : ''), view.title || 'Dogo'),
+		showBackButton ? div('icon back', button(function() { gScroller.pop() })) : div('logoIcon', logoIcon(32), button(searchButton.renderSearchInput)),
+		div('title' + (isHome ? ' logo' : ''), view.title || logoName(60, 26, 'white')),
 		searchButton.render()
 	)
 }

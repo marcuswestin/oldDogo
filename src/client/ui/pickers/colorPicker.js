@@ -25,7 +25,7 @@ module.exports = proto(basePicker,
 			var diameter = 51
 			var styles = {
 				width:diameter, height:diameter,
-				'border-radius':35
+				'border-radius':10
 			}
 			var content
 			if (typeof color == 'string') {

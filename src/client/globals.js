@@ -1,5 +1,6 @@
 require('lib/jquery-1.8.1')
 require('globals/tags')
+require('globals/brand')
 
 require('./events')
 require('./state')

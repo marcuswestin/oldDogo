@@ -1,15 +1,24 @@
 var face = module.exports = {
 
-	facebook: function(account, showRibbon, lazyLoad) {
+	large: function(account, showRibbon, lazyLoad) {
+		return face.facebook(account, showRibbon, lazyLoad, true)
+	},
+	
+	facebook: function(account, showRibbon, lazyLoad, large) {
 		return div('face', showRibbon && account.memberSince && div('member-ribbon'),
 			lazyLoad
 				? [{ facebookId:account.facebookId }, style({ backgroundColor:'#fff' })]
-				: style(face.backgroundStyle(account.facebookId))
+				: style(face.backgroundStyle(account.facebookId, large))
 		)
 	},
 	
-	backgroundStyle:function(facebookId) {
-		return { backgroundImage:'url("http://graph.facebook.com/'+facebookId+'/picture")', backgroundColor:'rgba(255, 255, 255, .4)' }
+	backgroundStyle:function(facebookId, large) {
+		var postFix = large ? '?type=normal' : ''
+		var size = large ? 50 : 25
+		return {
+			background:'url("http://graph.facebook.com/'+facebookId+'/picture'+postFix+'") #fff no-repeat',
+			width:size, height:size, backgroundSize:size+'px auto'
+		}
 	},
 	
 	loadAccount: function(accountId, showRibbon) {

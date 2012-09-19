@@ -4,19 +4,19 @@
 
 offWhite = #EBEAE7
 
-faceDim = 25px
+faceDim = 100px
 .face
 	width faceDim; height faceDim; background-size faceDim faceDim;
 	.member-ribbon
 		width 16px; height 16px; background url("/static/img/badge.png"); float right; margin 32px 0 0;
 
 small-face()
-	float left; border-radius 3px; margin 4px 0 0 -31px; width faceDim; height faceDim; border 1px solid #fff; box-shadow 0 1px 0 #BFC79F;
+	float left; border-radius 3px; margin 0 0 0 -56px; width faceDim; height faceDim; border 1px solid #fff; box-shadow 0 1px 0 #BFC79F;
 
 .messageBubble.fromMe, .conversation .messageBubble.fromMe
-	float right; margin-right 36px;
+	float right; margin-right 40px;
 	.face
-		float right; margin 0 -31px 0 0;
+		float right; margin 0 -34px 0 0;
 
 .conversation
 	.ghostTown
@@ -26,7 +26,7 @@ small-face()
 	.messageBubble
 		margin 5px 0 0 36px; display inline-block;
 		.textContent
-			light(); padding 6px 8px 6px; max-width 200px;
+			light(); padding 3px 9px; max-width 200px;
 		.pictureContent
 			border-radius 4px;
 	.messageBubble.newGroup
@@ -49,7 +49,7 @@ small-face()
 
 
 .messageBubble
-	border-radius 3px 3px 9px 9px; word-wrap break-word; box-shadow 0 2px 0 #BFC79F; background #fff;
+	border-radius 3px; word-wrap break-word; box-shadow 0 1px 1px rgba(18, 110, 175, 0.74); background #fff;
 	.face
 		float left; small-face()
 

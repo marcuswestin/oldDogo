@@ -105,6 +105,16 @@ var checkScrollBounds = once(function checkScrollBounds() {
 	}
 })
 
+var ratio = (window.devicePixelRatio || 1)
+var imagePostfix = (ratio == 2 ? '@2x' : '')
+function image(name, size) {
+	var url = '/static/img/'+name+imagePostfix+'.png'
+	return div(style({ display:'inline-block', width:size[0], height:size[1],
+		background:'url("'+url+'") transparent no-repeat', backgroundSize:size[0]+'px '+size[1]+'px',
+		'float':'right', margin:'6px -5px 0 0'
+	}))
+}
+
 var lastMessageWasFromMe = null;
 function renderMessage(message) {
 	var isVeryFirstMessage = (lastMessageWasFromMe === null)
@@ -123,6 +133,7 @@ function renderMessage(message) {
 	return [div(
 		div('messageBubble '+classes.join(' '),
 			shouldRenderFace && face.loadAccount(message.senderAccountId),
+			(messageIsFromMe && message.body) ? image('bubbleArrow-right', [5,10]) : image('bubbleArrrow-left', [6,10]),
 			renderContent(message)
 		)),
 		message.wasPushed && !message.questionAnswered && questions.hasYesNoQuestion(message.body) && questions.renderYesNoResponder(function(answer) {

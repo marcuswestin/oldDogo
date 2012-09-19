@@ -50,7 +50,7 @@ function renderBubble(message) {
 		loadAccountId(message.accountId, function doRenderBubble(account) {
 			$bubble.empty().append(
 				div('unreadDot'),
-				face.facebook(account),
+				face.large(account),
 				div('name', account.name),
 				div('body', (!message.body && !message.pictureId)
 					? div('youStarted', "You started the conversation.")

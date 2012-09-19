@@ -15,6 +15,7 @@
 		2C45C54F15C77A2600FE147C /* logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C45C54B15C77A2600FE147C /* logo@2x.png */; };
 		2C45C55115CACBD300FE147C /* img in Resources */ = {isa = PBXBuildFile; fileRef = 2C45C55015CACBD300FE147C /* img */; };
 		2C4EF9EF1573196800EE57C8 /* BTViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C4EF9EE1573196800EE57C8 /* BTViewController.m */; };
+		2C64C511160657D7005DDB07 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 2C64C510160657D7005DDB07 /* fonts */; };
 		2C720C191567C6E900AC9BF4 /* BTNet.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C161567C59100AC9BF4 /* BTNet.m */; };
 		2C720C6F15684C3100AC9BF4 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C5E15684C3100AC9BF4 /* NSData+Base64.m */; };
 		2C720C7015684C3100AC9BF4 /* NSDate+RFC1123.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C6015684C3100AC9BF4 /* NSDate+RFC1123.m */; };
@@ -71,6 +72,7 @@
 		2C45C55015CACBD300FE147C /* img */ = {isa = PBXFileReference; lastKnownFileType = folder; name = img; path = ../../static/img; sourceTree = SOURCE_ROOT; };
 		2C4EF9ED1573196800EE57C8 /* BTViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTViewController.h; sourceTree = "<group>"; };
 		2C4EF9EE1573196800EE57C8 /* BTViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTViewController.m; sourceTree = "<group>"; };
+		2C64C510160657D7005DDB07 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../../fonts; sourceTree = "<group>"; };
 		2C720C151567C59100AC9BF4 /* BTNet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BTNet.h; sourceTree = "<group>"; };
 		2C720C161567C59100AC9BF4 /* BTNet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BTNet.m; sourceTree = "<group>"; };
 		2C720C5D15684C3100AC9BF4 /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
@@ -220,6 +222,7 @@
 				2C45C54915C77A2600FE147C /* Default@2x.png */,
 				2C45C54A15C77A2600FE147C /* logo.png */,
 				2C45C54B15C77A2600FE147C /* logo@2x.png */,
+				2C64C510160657D7005DDB07 /* fonts */,
 				2C45C55015CACBD300FE147C /* img */,
 			);
 			name = images;
@@ -453,6 +456,7 @@
 				2CF1C8AF15E9AFE700F4916D /* appCss.css in Resources */,
 				2CF1C8B015E9AFE700F4916D /* appJs.html in Resources */,
 				2C25DD2F15E9E4220005D147 /* dev-hostname.txt in Resources */,
+				2C64C511160657D7005DDB07 /* fonts in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
