@@ -78,7 +78,7 @@ function setupBrowserDebugMode() {
 			},
 			serverUrl:location.host
 		}
-		bridge.eventHandler('app.start', { config:config, client:'0.91.0-browser' })
+		bridge.eventHandler('app.start', { config:config, client:'0.97.0-browser' })
 		$('#viewport').css({ margin:'0 auto', position:'relative', top:55, height:viewport.height() })
 		$('body').css({ background:'#222' }).prepend(
 			div(style({ position:'absolute', top:0, left:0, width:'100%' }),
