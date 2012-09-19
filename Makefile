@@ -85,7 +85,8 @@ setup-source:
 # Testflight
 ############
 ios-client:
-	${NODE} src/scripts/build-client.js
+	# Bah: xcode doesn't like the `which node` incantaion... # ${NODE} src/scripts/build-client.js
+	/usr/local/bin/node src/scripts/build-client.js
 	hostname > build/dogo-ios-build/dev-hostname.txt
 
 fly-build: ios-client
