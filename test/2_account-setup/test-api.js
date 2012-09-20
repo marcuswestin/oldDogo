@@ -70,7 +70,7 @@ describe('Setup with Facebook Connect', function() {
 		})
 		it('should let you send a first message', function(done) {
 			var fbFriend = u.fbTestData.users[1]
-			api.post('messages', { toFacebookId:fbFriend.id, body:'Hi' }, function(err, res) {
+			api.post('messages', { toFacebookId:fbFriend.id, body:'Hi', clientUid:u.clientUid() }, function(err, res) {
 				check(err)
 				is(res.message.id)
 				is(res.message.body, 'Hi')
@@ -84,7 +84,7 @@ describe('Setup with Facebook Connect', function() {
 				is(firstConvo)
 				is(res.conversations.length, 1)
 				var newFbFriend = u.fbTestData.users[2]
-				api.post('messages', { toFacebookId:newFbFriend.id, body:'Ho' }, function(err, res) {
+				api.post('messages', { toFacebookId:newFbFriend.id, body:'Ho', clientUid:u.clientUid() }, function(err, res) {
 					var message = res.message
 					api.get('conversations', function(err, res) {
 						is(res.conversations.length, convoCount + 1)

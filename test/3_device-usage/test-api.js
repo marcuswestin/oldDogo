@@ -7,7 +7,7 @@ var is = u.is
 function sendMessage(body, callback) {
 	api.get('conversations', function(err, res) {
 		check(err)
-		api.post('messages', { toAccountId:res.conversations[0].withAccountId, body:body }, function(err, res) {
+		api.post('messages', { toAccountId:res.conversations[0].withAccountId, body:body, clientUid:u.clientUid() }, function(err, res) {
 			check(err)
 			callback(err, res)
 		})

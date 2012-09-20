@@ -47,7 +47,7 @@ test-setup:
 
 test-usage: ${PHANTOMJS}
 	./node_modules/mocha/bin/mocha --reporter list --bail test/3_device-usage/test-api.js
-	${PHANTOMJS} test/3_device-usage/test-phantom-client.js
+	# ${PHANTOMJS} test/3_device-usage/test-phantom-client.js
 
 test-misc:
 	./node_modules/mocha/bin/mocha --reporter list --bail test/test-questions.js

@@ -53,8 +53,8 @@ module.exports = proto(null,
 		getMessages: function(accountId, withAccountId, withFacebookId, callback) {
 			this._withContactAccountId(accountId, withAccountId, withFacebookId, function(err, withAccountId) {
 				if (err) { return callback(err) }
-				this.getConversation(accountId, withAccountId, bind(this, function(err, conversation) {
-					if (err) { return logErr(err, callback, 'getMessages.getConversation', accountId, withAccountId) }
+				this._selectConversation(this.db, accountId, withAccountId, bind(this, function(err, conversation) {
+					if (err) { return logErr(err, callback, 'getMessages._selectConversation', accountId, withAccountId) }
 					if (!conversation) { return callback(null, []) }
 					this._selectMessages(this.db, conversation.id, bind(this, function(err, messages) {
 						if (err) { return logErr(err, callback, 'getMessages._selectMessages', conversation.id) }
@@ -98,13 +98,8 @@ module.exports = proto(null,
 				this.accountService.withFacebookContactId(accountId, contactFacebookId, bind(this, callback))
 			}
 		},
-		getConversation: function(account1Id, account2Id, callback) {
-			try { var ids = this._orderConvoIds(account1Id, account2Id) }
-			catch (err) { return callback(err) }
-			this._selectConversation(this.db, ids.account1Id, ids.account2Id, callback)
-		},
 		withConversation: function(account1Id, account2Id, callback) {
-			this.getConversation(account1Id, account2Id, bind(this, function(err, conversation) {
+			this._selectConversation(this.db, account1Id, account2Id, bind(this, function(err, conversation) {
 				if (err) { return callback(err) }
 				if (conversation) {
 					callback.call(this, null, conversation)
@@ -188,7 +183,9 @@ module.exports = proto(null,
 				+ 'ORDER BY last_received.sent_time DESC, convo.created_time DESC, convo.id DESC', [accountId], callback)
 		},
 		_selectConversation: function(conn, account1Id, account2Id, callback) {
-			conn.selectOne(this, this.sql.selectConvo+'WHERE account_1_id=? AND account_2_id=?', [account1Id, account2Id], callback)
+			try { var ids = this._orderConvoIds(account1Id, account2Id) }
+			catch (err) { return callback(err) }
+			conn.selectOne(this, this.sql.selectConvo+'WHERE account_1_id=? AND account_2_id=?', [ids.account1Id, ids.account2Id], callback)
 		},
 		_selectConversationById: function(conn, conversationId, callback) {
 			conn.selectOne(this, this.sql.selectConvo+'WHERE id=?', [conversationId], callback)
