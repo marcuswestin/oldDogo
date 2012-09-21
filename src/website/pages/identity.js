@@ -74,6 +74,13 @@ $(function() {
 			graphic(114, 114,
 				div(brandGradient('center', 120), renderIcon(64, [24, 24]))
 			),
+			graphic(72, 72,
+				div(brandGradient('center', 120), renderIcon(32, [20, 20]))
+			),
+			graphic(144, 144,
+				div(brandGradient('center', 120), renderIcon(64, [40, 40]))
+			),
+
 			div('title', 'Splash Screens'),
 			graphic(320,480,
 				div(brandGradient([160, 150], 110), renderIcon(128, [100, 100]))
