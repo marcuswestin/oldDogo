@@ -265,6 +265,9 @@ function respond(req, res, err, content, contentType) {
 	
 	headers['Content-Type'] = contentType
 	// headers['Content-Length'] = content.length
+	if (contentType == 'application/json') {
+		headers['Cache-Control'] = 'no-cache'
+	}
 	
 	res.writeHead(code, headers)
 	res.end(content)
