@@ -1,3 +1,5 @@
+set foreign_key_checks = 0;
+
 CREATE TABLE picture (
 	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 	created_by_account_id BIGINT UNSIGNED DEFAULT NULL,
