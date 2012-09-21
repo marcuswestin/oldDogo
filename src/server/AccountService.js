@@ -89,28 +89,23 @@ module.exports = proto(null,
 			})
 		},
 		_insertFbContacts:function(tx, fbAccount, fbFriends, callback, err) {
-			var accountId = null
 			if (err) { return logErr(err, callback, '_insertFbContacts', accountId) }
-			var next = bind(this, function(err) {
-				if (err) {
-					if (err.message.match(/Duplicate entry/)) {
-						// ignore
-					} else {
-						return callback(err)
-					}
-				}
-				if (!fbFriends.length) { return finish() }
-				var friend = fbFriends.shift()
-				this._insertFacebookContact(tx, accountId, friend.id, friend.name, next)
-			})
-			var finish = bind(this, function() {
-				this._selectAccountByAccountId(tx, accountId, callback)
-			})
 			this._selectAccountByFacebookId(tx, fbAccount.id, function(err, account) {
 				if (err) { return logErr(err, callback, 'select id by facebook id', fbAccount) }
-				accountId = account.accountId
+				var accountId = account.accountId
 				if (!accountId) { return callback("No Dogo account matches this Facebook account") }
-				next()
+				serialMap(fbFriends, {
+					this:this,
+					iterate: function(friend, next) {
+						tx.insertIgnoreDuplicateEntry(this,
+							'INSERT INTO facebook_contact SET account_id=?, contact_facebook_id=?, contact_facebook_name=?',
+							[accountId, fbContactFbAccountId, fbContactName], next
+						)
+					},
+					finish: function(err, res) {
+						this._selectAccountByAccountId(tx, accountId, callback)
+					}
+				})
 			})
 		},
 		_insertClaimedAccount: function(conn, fbAcc, callback) {
@@ -136,11 +131,6 @@ module.exports = proto(null,
 			conn.insert(this,
 				'INSERT INTO account SET created_time=?, facebook_id=?, full_name=?',
 				[conn.time(), fbAccountId, name], callback)
-		},
-		_insertFacebookContact: function(conn, accountId, fbContactFbAccountId, fbContactName, callback) {
-			conn.insert(this,
-				'INSERT INTO facebook_contact SET account_id=?, contact_facebook_id=?, contact_facebook_name=?',
-				[accountId, fbContactFbAccountId, fbContactName], callback)
 		},
 		_selectFacebookContact: function(conn, accountId, fbContactFbAccountId, callback) {
 			conn.selectOne(this,

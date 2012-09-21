@@ -27,13 +27,14 @@ serialMap = function serialMap(items, opts) {
 	var result = []
 	var iterate = opts.iterate
 	var finish = opts.finish
+	var ctx = opts.context
 	// the given iterator may expect arguments (item + i + next), or just (item + i)
-	var callIterator = (iterate.length == 3 ? iterate : function(item, i, next) { iterate(item, next) })
+	var callIterator = (iterate.length == 3 ? iterate : function(item, i, next) { iterate.call(this, item, next) })
 	function next() {
 		if (i == items.length) { return finish(null, result) }
 		var iterationI = i
 		process.nextTick(function() {
-			callIterator(items[iterationI], iterationI, iteratorCallback)
+			callIterator.call(ctx, items[iterationI], iterationI, iteratorCallback)
 		})
 		i += 1
 	}
