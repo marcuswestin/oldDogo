@@ -21,6 +21,17 @@ var connectionBase = {
 			callback.call(this, err, !err && info.insertId)
 		})
 	},
+	
+	insertIgnoreDuplicateEntry:function(ctx, query, args, callback) {
+		this.insert(ctx, query, args, function(err, info) {
+			if (err && !err.message.match(/Duplicate entry/)) {
+				callback(err)
+			} else {
+				callback(null)
+			}
+		})
+	},
+	
 	updateOne:function(ctx, query, args, callback) {
 		this.query(ctx, query, args, function(err, info) {
 			if (err) { console.error('updateOne error', query, args, err) }
@@ -51,6 +62,15 @@ module.exports = proto(connectionBase,
 			}
 			this._takeConnection(function(conn) {
 				fn.call(ctx, Transaction(this, conn))
+			})
+		},
+		autocommit: function(ctx, fn) {
+			if (!fn) {
+				fn = ctx
+				ctx = this
+			}
+			this._takeConnection(function(conn) {
+				fn.call(tx, Transaction(this, conn))
 			})
 		},
 		query: function(ctx, query, args, callback) {

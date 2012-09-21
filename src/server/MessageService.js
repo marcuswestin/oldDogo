@@ -1,6 +1,7 @@
 var trim = require('std/trim')
 var sql = require('./util/sql')
 var uuid = require('uuid')
+var orderConversationIds = require('./util/ids').orderConversationIds
 
 module.exports = proto(null,
 	function(database, accountService, pushService, pictureService) {
@@ -112,7 +113,7 @@ module.exports = proto(null,
 			}))
 		},
 		_createConversationId: function(account1Id, account2Id, callback) {
-			try { var ids = this._orderConvoIds(account1Id, account2Id) }
+			try { var ids = orderConversationIds(account1Id, account2Id) }
 			catch (err) { return callback(err) }
 			this.db.transact(this, function(tx) {
 				callback = txCallback(tx, callback, this)
@@ -143,14 +144,6 @@ module.exports = proto(null,
 					})
 				})
 			})
-		},
-		_orderConvoIds: function(id1, id2) {
-			if (typeof id1 == 'string') { id1 = parseInt(id1, 10) }
-			if (typeof id2 == 'string') { id2 = parseInt(id2, 10) }
-			if ((typeof id1 != 'number') || (typeof id2 != 'number')) { throw new Error('Bad id') }
-			return id1 < id2
-				? { account1Id:id1, account2Id:id2 }
-				: { account1Id:id2, account2Id:id1 }
 		},
 		_insertConversation: function(conn, ids, callback) {
 			var secret = uuid.v4()
@@ -183,7 +176,7 @@ module.exports = proto(null,
 				+ 'ORDER BY last_received.sent_time DESC, convo.created_time DESC, convo.id DESC', [accountId], callback)
 		},
 		_selectConversation: function(conn, account1Id, account2Id, callback) {
-			try { var ids = this._orderConvoIds(account1Id, account2Id) }
+			try { var ids = orderConversationIds(account1Id, account2Id) }
 			catch (err) { return callback(err) }
 			conn.selectOne(this, this.sql.selectConvo+'WHERE account_1_id=? AND account_2_id=?', [ids.account1Id, ids.account2Id], callback)
 		},
