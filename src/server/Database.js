@@ -49,6 +49,7 @@ module.exports = proto(connectionBase,
 		this._poolSize = 4
 		this._pool = map(new Array(this._poolSize), function() {
 			var client = mysql.createClient({ host:conf.host, port:3306, user:conf.user, password:conf.password, database:conf.database })
+			client.query("SET SESSION sql_mode='STRICT_ALL_TABLES,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'")
 			// client.query('SET NAMES utf8mb4')
 			return client
 		})
