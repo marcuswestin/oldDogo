@@ -39,6 +39,8 @@ module.exports = proto(null,
 							if (err) { return callback(err) }
 							this.pushService.sendMessagePush(message, accountId, toAccountId, prodPush)
 							callback(null, { message:message, toAccountId:toAccountId, toFacebookId:toFacebookAccountId, disableInvite:true })
+							
+							this.notifyWebhook(accountId, message)
 						}))
 					})
 					
@@ -48,6 +50,28 @@ module.exports = proto(null,
 						proceed(null, null)
 					}
 				}))
+			})
+		},
+		notifyWebhook:function(accountId, message) {
+			var pictures = require('../data/pictures')
+			var request = require('request')
+
+			// message.sentTime, body, pictureId, pictureSecret, pictureWidth, pictureHeight
+			this.db.selectOne(this, 'SELECT first_name FROM account WHERE id=?', [accountId], function(err, res) {
+				if (err) { return console.log("ERROR", err) }
+				var notification = { event:'message', message:{ from:res.first_name } }
+				if (message.pictureId) {
+					notification.message.picture = { url:pictures.urlFromMessage(message, pictures.pixels.thumb) }
+				} else if (message.body) {
+					notification.message.body = message.body
+				} else {
+					console.log("ERROR Got message without pciture or body")
+					return
+				}
+				var webhookListenerHost = 'http://localhost:9090/'
+				request.post({ url:'http://localhost:9090/', body:JSON.stringify(notification) }, function(err, res) {
+					console.log("GOT", arguments)
+				})
 			})
 		},
 		getMessages: function(accountId, withAccountId, withFacebookId, callback) {

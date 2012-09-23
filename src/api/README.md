@@ -1,0 +1,7 @@
+- Fire up Auriono 1.0.1
+- Check IP/Mac in WebServer - they are hard coded
+- Plug chip into time capsule by ehternet
+- Upload it
+- Run node webhookListener.js
+- Run make run
+- Send a message - it should print

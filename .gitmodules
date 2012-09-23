@@ -67,3 +67,6 @@
 [submodule "node_modules/marked"]
 	path = node_modules/marked
 	url = git://github.com/chjj/marked.git
+[submodule "src/api/printer"]
+	path = src/api/printer
+	url = git@github.com:marcuswestin/printer.git

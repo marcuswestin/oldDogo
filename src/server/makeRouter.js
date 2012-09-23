@@ -32,7 +32,7 @@ function setupRoutes(app, accountService, messageService, sessionService, pictur
 	var filter = {
 		oldClients: function filterOldClient(req, res, next) {
 			var client = req.headers['x-dogo-client']
-			if (semver.lt(client, '0.96.0')) {
+			if (false && semver.lt(client, '0.96.0')) {
 				res.writeHead(400, {
 					'x-dogo-process': 'alert("You have an outdated client. Please upgrade to the most recent version.")'
 				})
@@ -144,6 +144,7 @@ function setupDev(app) {
 	app.get('/test', sendPage('test'))
 	
 	app.get('/app', sendFile('src/client/dogo.html', 'text/html'))
+	app.get('/app.html', sendFile('src/client/dogo.html', 'text/html'))
 		
 	app.get('/static/*', function(req, res) {
 		fs.readFile('src'+req.url, curry(respond, req, res))
