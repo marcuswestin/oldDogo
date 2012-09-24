@@ -53,20 +53,6 @@ u.clientUid._unique = new Date().getTime()
 	}
 }())
 
-u.fbTestData = {}
-var fbCacheFile = __dirname+'/.fbTestDataCache.json'
-u.stashFbTestData = function(authToken) {
-	u.fbTestData.dogoAuthToken = authToken
-	api.authToken = u.fbTestData.dogoAuthToken
-	console.log("Writing fb test data to disc", fbCacheFile)
-	fs.writeFileSync(fbCacheFile, JSON.stringify(u.fbTestData))
-}
-u.loadFbTestData = function() {
-	u.fbTestData = JSON.parse(fs.readFileSync(fbCacheFile).toString())
-	api.authToken = u.fbTestData.dogoAuthToken
-	console.log("Loaded fb test data from disc")
-}
-
 u.pushService.testCount = 0
 u.pushService.sendMessagePush = function() {
 	u.pushService.testCount += 1

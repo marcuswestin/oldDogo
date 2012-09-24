@@ -15,8 +15,6 @@ function sendMessage(body, callback) {
 }
 
 describe('Conversations', function() {
-	u.loadFbTestData()
-	
 	it('should be possible to get messages by account id', function(done) {
 		api.get('conversations', function(err, res) {
 			api.get('messages', { withAccountId:res.conversations[0].withAccountId }, function(err, res) {

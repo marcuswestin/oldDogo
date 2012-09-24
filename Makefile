@@ -8,7 +8,7 @@ run: run-databases
 	${NODE} src/server/run.js --config=dev
 
 # Run all tests
-test: test-setup test-usage test-misc
+test: reset-test-db test-server
 test-offline:
 	make test OFFLINE=yes
 
@@ -43,16 +43,9 @@ deploy-nginx-conf: ${FAB}
 
 # Testing
 #########
-test-setup:
-	make reset-test-db;
-	./node_modules/mocha/bin/mocha --reporter list --bail test/1_test-utils.js test/2_account-setup/test-api.js --dogo-test-offline=${OFFLINE}
-
-test-usage: ${PHANTOMJS}
-	./node_modules/mocha/bin/mocha --reporter list --bail test/3_device-usage/test-api.js --dogo-test-offline=${OFFLINE}
+test-server: ${PHANTOMJS}
+	./node_modules/mocha/bin/mocha --reporter list --bail test/1_test-utils.js test/2_account-setup/test-api.js test/3_device-usage/test-api.js test/test-questions.js --dogo-test-offline=${OFFLINE}
 	# ${PHANTOMJS} test/3_device-usage/test-phantom-client.js
-
-test-misc:
-	./node_modules/mocha/bin/mocha --reporter list --bail test/test-questions.js
 
 # Setup
 #######

@@ -16,8 +16,8 @@ describe('Setup with Facebook Connect', function() {
 		var params = { client_id:u.fbAppId, client_secret:u.fbAppSecret, grant_type:'client_credentials' }
 		facebook.post('/oauth/access_token', params, function(err, res) {
 			check(err)
-			u.fbTestData.accessToken = res.access_token
-			is(u.fbTestData.accessToken)
+			api.accessToken = res.access_token
+			is(api.accessToken)
 			done()
 		})
 	})
@@ -25,7 +25,7 @@ describe('Setup with Facebook Connect', function() {
 	it('should allow creating a test FB user', function(done) {
 		if (true) { return done() }
 		this.timeout(0)
-		var params = { installed:true, name:'John Cowp', local:'en_US', permissions:'read_stream', method:'post', access_token:u.fbTestData.accessToken }
+		var params = { installed:true, name:'John Cowp', local:'en_US', permissions:'read_stream', method:'post', access_token:api.accessToken }
 		facebook.post('/'+u.fbAppId+'/accounts/test-users', params, function(err, user) {
 			check(err)
 			is(user.id)
@@ -33,19 +33,20 @@ describe('Setup with Facebook Connect', function() {
 		})
 	})
 
+	var fbUsers
 	it('should let you list the current test FB users', function(done) {
 		this.timeout(0)
-		var params = { access_token:u.fbTestData.accessToken }
+		var params = { access_token:api.accessToken }
 		facebook.get('/'+u.fbAppId+'/accounts/test-users', params, function(err, res) {
 			check(err)
-			u.fbTestData.users = res.data
-			is(u.fbTestData.users.length)
+			fbUsers = res.data
+			is(fbUsers.length)
 			done()
 		})
 	})
 	
 	it('should let you create a session', function(done) {
-		var fbUser = u.fbTestData.users[0]
+		var fbUser = fbUsers[0]
 		this.timeout(0)
 		api.post('sessions', { facebookAccessToken:fbUser.access_token }, function(err, res) {
 			check(err)
@@ -53,7 +54,7 @@ describe('Setup with Facebook Connect', function() {
 			is(res.account)
 			is(res.account.facebookId, fbUser.id)
 			
-			u.stashFbTestData(res.authToken)
+			api.authToken = res.authToken
 			
 			done()
 		})
