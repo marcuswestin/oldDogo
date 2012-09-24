@@ -9,6 +9,8 @@ run: run-databases
 
 # Run all tests
 test: test-setup test-usage test-misc
+test-offline:
+	make test OFFLINE=yes
 
 # Create a new iOS build and deliver it to all developers via testflight
 fly-dev: fly-build
@@ -43,10 +45,10 @@ deploy-nginx-conf: ${FAB}
 #########
 test-setup:
 	make reset-test-db;
-	./node_modules/mocha/bin/mocha --reporter list --bail test/1_test-utils.js test/2_account-setup/test-api.js
+	./node_modules/mocha/bin/mocha --reporter list --bail test/1_test-utils.js test/2_account-setup/test-api.js --dogo-test-offline=${OFFLINE}
 
 test-usage: ${PHANTOMJS}
-	./node_modules/mocha/bin/mocha --reporter list --bail test/3_device-usage/test-api.js
+	./node_modules/mocha/bin/mocha --reporter list --bail test/3_device-usage/test-api.js --dogo-test-offline=${OFFLINE}
 	# ${PHANTOMJS} test/3_device-usage/test-phantom-client.js
 
 test-misc:
@@ -143,6 +145,7 @@ MYSQL = /usr/local/bin/mysql.server
 BREW = /usr/local/bin/brew
 PHANTOMJS = /usr/local/bin/phantomjs
 FAV = /usr/local/bin/fab
+OFFLINE = no
 
 ${REDIS}: ${BREW}
 	${BREW} install redis

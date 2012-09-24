@@ -5,6 +5,7 @@ var url = require('url')
 var qs = require('querystring')
 var fs = require('fs')
 var request = require('request')
+var facebook = require('../../src/server/util/facebook')
 
 var api = u.api
 
@@ -13,9 +14,9 @@ describe('Setup with Facebook Connect', function() {
 		this.timeout(0)
 		// https://developers.facebook.com/docs/authentication/applications/
 		var params = { client_id:u.fbAppId, client_secret:u.fbAppSecret, grant_type:'client_credentials' }
-		request.post({ url:'https://graph.facebook.com/oauth/access_token', qs:params }, function(err, res) {
+		facebook.post('/oauth/access_token', params, function(err, res) {
 			check(err)
-			u.fbTestData.accessToken = qs.parse(res.body).access_token
+			u.fbTestData.accessToken = res.access_token
 			is(u.fbTestData.accessToken)
 			done()
 		})
@@ -25,21 +26,19 @@ describe('Setup with Facebook Connect', function() {
 		if (true) { return done() }
 		this.timeout(0)
 		var params = { installed:true, name:'John Cowp', local:'en_US', permissions:'read_stream', method:'post', access_token:u.fbTestData.accessToken }
-		request.post({ url:'https://graph.facebook.com/'+u.fbAppId+'/accounts/test-users', qs:params }, function(err, res) {
+		facebook.post('/'+u.fbAppId+'/accounts/test-users', params, function(err, user) {
 			check(err)
-			var user = JSON.parse(res.body)
 			is(user.id)
 			done()
 		})
 	})
 
 	it('should let you list the current test FB users', function(done) {
-		if (u.fbTestData.users) { return done() }
 		this.timeout(0)
 		var params = { access_token:u.fbTestData.accessToken }
-		request.get({ url:'https://graph.facebook.com/'+u.fbAppId+'/accounts/test-users', qs:params }, function(err, res) {
+		facebook.get('/'+u.fbAppId+'/accounts/test-users', params, function(err, res) {
 			check(err)
-			u.fbTestData.users = JSON.parse(res.body).data
+			u.fbTestData.users = res.data
 			is(u.fbTestData.users.length)
 			done()
 		})
