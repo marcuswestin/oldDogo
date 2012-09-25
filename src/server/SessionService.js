@@ -1,7 +1,7 @@
-var uuid = require('uuid'),
-	redis = require('redis'),
-	time = require('std/time'),
-	facebook = require('./util/facebook')
+var uuid = require('uuid')
+var redis = require('redis')
+var time = require('std/time')
+var facebook = require('./util/facebook')
 var log = makeLog('SessionService')
 
 module.exports = proto(null,

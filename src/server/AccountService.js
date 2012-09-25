@@ -1,6 +1,6 @@
-var uuid = require('uuid'),
-	facebook = require('./util/facebook'),
-	sql = require('./util/sql')
+var uuid = require('uuid')
+var facebook = require('./util/facebook')
+var sql = require('./util/sql')
 var orderConversationIds = require('./util/ids').orderConversationIds
 
 
