@@ -24,7 +24,7 @@ var connectionBase = {
 	},
 	
 	insertIgnoreDuplicateEntry:function(ctx, query, args, callback) {
-		this.insert(ctx, query, args, function(err, info) {
+		this.query(ctx, query, args, function(err, info) {
 			if (err && !err.message.match(/Duplicate entry/)) {
 				callback(err)
 			} else {
