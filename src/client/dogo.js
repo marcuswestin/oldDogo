@@ -88,9 +88,7 @@ events.on('push.notification', function onPushNotification(info) {
 bridge.eventHandler = function bridgeEventHandler(name, info) { events.fire(name, info) }
 
 function startApp(info) {
-	gState.load(function onStateLoaded(err) {
-		if (err) { alert("Uh oh. It looks like you need to re-install Dogo. I'm sorry! :-/") }
-		
+	gState.load('sessionInfo', function onStateLoaded(sessionInfo) {
 		if (gState.cache['mode'] && info.config.mode != gState.cache['mode']) {
 			gState.clear(function() {
 				bridge.command('app.restart')
@@ -119,7 +117,7 @@ function startApp(info) {
 		if (isPhantom) {
 			// api.refresh('fa48a930-5e94-4f18-b180-998728a5fe85', onConnected)
 			bridge.command('app.show')
-		} else if (gState.authToken()) {
+		} else if (gState.getSessionInfo('authToken')) {
 			onConnected()
 		} else {
 			$('#viewport').append(

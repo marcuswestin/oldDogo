@@ -27,7 +27,7 @@ function get(path, params, callback) {
 }
 
 function getAuth() {
-	var authToken = gState.authToken()
+	var authToken = gState.getSessionInfo('authToken')
 	return authToken ? 'Basic '+base64.encode(authToken) : null
 }
 

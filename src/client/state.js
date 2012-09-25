@@ -1,4 +1,5 @@
 gState = {
+	cache: {},
 	set: function(key, value) {
 		gState.cache[key] = value
 		bridge.command('state.set', { key:key, value:value })
@@ -7,27 +8,23 @@ gState = {
 		gState.cache = {}
 		bridge.command('state.clear', callback)
 	},
-	load:function(callback) {
-		bridge.command('state.load', function(err, res) {
-			if (err) { return callback(err) }
-			gState.cache = res || {}
-			callback(null)
+	load:function(key, callback) {
+		bridge.command('state.load', { key:key }, function(err, res) {
+			gState.cache[key] = res
+			callback(res)
 		})
 	},
-	authToken:function() {
-		var sessionInfo = gState.cache['sessionInfo']
-		return sessionInfo && sessionInfo['authToken']
+	getSessionInfo:function(key) {
+		return (gState.cache['sessionInfo'] || {})[key]
 	},
 	myAccount:function() {
-		var sessionInfo = gState.cache['sessionInfo']
-		return sessionInfo && sessionInfo['myAccount']
+		return gState.getSessionInfo('myAccount')
 	},
 	facebookSession:function() {
-		var sessionInfo = gState.cache['sessionInfo']
-		return sessionInfo && sessionInfo['facebookSession']
+		return gState.getSessionInfo('facebookSession')
 	},
 	nextClientUid:function() {
-		var sessionInfo = gState.cache['sessionInfo']
+		var sessionInfo = gState.getSessionInfo()
 		if (sessionInfo.clientUidBlock.start == sessionInfo.clientUidBlock.end) {
 			alert("We're sorry, you must re-install the app to send more messages. Our bad!")
 			throw new Error("Ran out of UIDs")
@@ -36,7 +33,6 @@ gState = {
 		gState.set('sessionInfo', sessionInfo)
 		return clientUid
 	},
-	cache: {},
 	checkNewVersion:function() {
 		api.get('version/info', function(err, res) {
 			if (err || !res.url) { return }

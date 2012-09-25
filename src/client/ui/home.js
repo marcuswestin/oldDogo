@@ -31,7 +31,7 @@ module.exports = {
 					onSelect:selectConversation,
 					getItemId:function conversationId(conv) { return 'home-convo-'+conv.conversationId },
 					reAddItems:true,
-					renderItem:renderBubble
+					renderItem:renderConversation
 				})
 			),
 			function() {
@@ -41,27 +41,18 @@ module.exports = {
 	}
 }
 
-function renderBubble(message) {
+function renderConversation(conversation) {
 	$ui.info.empty()
-	return div('clear messageBubble text', { id:bubbleId(message.accountId) }, function renderBubbleContent($bubble) {
-		if (!accountKnown(message.accountId)) {
-			$bubble.append(div('loading', 'Loading...'))
-		}
-		loadAccountId(message.accountId, function doRenderBubble(account) {
-			$bubble.empty().append(
-				div('unreadDot'),
-				face.large(account),
-				div('name', account.name),
-				div('body', (!message.body && !message.pictureId)
-					? div('youStarted', "You started the conversation.")
-					: (message.pictureId ? div('youStarted', 'sent you a picture') : message.body)
-				)
-			)
-			if (message.hasUnread) {
-				$bubble.addClass('hasUnread')
-			}
-		})
-	})
+	var person = conversation.person
+	return div('conversation clear hasUnread',
+		div('unreadDot'),
+		face.large(person),
+		div('name', person.fullName),
+		div('body', (!message.body && !message.pictureId)
+			? div('youStarted', "You started the conversation.")
+			: (message.pictureId ? div('youStarted', 'sent you a picture') : message.body)
+		)
+	)
 }
 
 function messageFromConvo(convo) {
@@ -100,15 +91,19 @@ function messageFromSentMessage(message, accountId) {
 	}
 }
 
+function filterConversations(conversations) {
+	return _.filter(conversations, function(conv) { return !!conv.lastMessage })
+}
+
 function reloadConversations() {
 	loading(true)
 	api.get('conversations', function getConversations(err, res) {
 		loading(false)
 		if (err) { return error(err) }
-		var messages = map(res.conversations, messageFromConvo)
-		gState.set('home-conversations', messages)
-		$ui.conversations.append(messages)
-		if (res.conversations.length == 0) {
+		gState.set('conversations', res.conversations)
+		var displayConversations = filterConversations(res.conversations)
+		$ui.conversations.append(displayConversations)
+		if (displayConversations.length == 0) {
 			$ui.info.empty().append(div('ghostTown', "Send a message to a friend", div('icon arrow')))
 		}
 	})

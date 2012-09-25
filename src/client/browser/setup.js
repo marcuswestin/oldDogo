@@ -36,7 +36,7 @@ function setupBrowserDebugMode() {
 				localStorage.clear()
 				break
 			case 'state.load':
-				callback(null, _getState())
+				callback(null, _getState()[data.key])
 				break
 			case 'index.build':
 				index.build(data)

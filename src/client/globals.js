@@ -19,6 +19,7 @@ curry = require('std/curry')
 filter = require('std/filter')
 flatten = require('std/flatten')
 paint = require('client/ui/paint')
+_ = require('underscore')
 
 parseUrl = require('std/url')
 
