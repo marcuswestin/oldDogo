@@ -3,26 +3,22 @@ module.exports = {
 }
 
 function run(config) {
-	require('./util/globals')
-
-	var Database = require('./Database'),
-		AccountService = require('./AccountService'),
-		SessionService = require('./SessionService'),
-		PictureService = require('./PictureService'),
-		MessageService = require('./MessageService'),
-		PushService = require('./PushService')
-	
+	var Database = require('./Database')
+	var AccountService = require('./AccountService')
+	var SessionService = require('./SessionService')
+	var PictureService = require('./PictureService')
+	var MessageService = require('./MessageService')
+	var PushService = require('./PushService')
 	var makeRouter = require('./makeRouter')
-
-	var devConfig = require('./config/dev'),
-		prodConfig = require('./config/prod')
+	var devConfig = require('./config/dev')
+	var prodConfig = require('./config/prod')
 	
-	var database = new Database(config.db),
-		accountService = new AccountService(database),
-		pushService = new PushService(database, devConfig.push, prodConfig.push),
-		sessionService = new SessionService(database, accountService),
-		pictureService = new PictureService(database, config.s3),
-		messageService = new MessageService(database, accountService, pushService, pictureService)
+	var database = new Database(config.db)
+	var accountService = new AccountService(database)
+	var pushService = new PushService(database, devConfig.push, prodConfig.push)
+	var sessionService = new SessionService(database, accountService)
+	var pictureService = new PictureService(database, config.s3)
+	var messageService = new MessageService(database, accountService, pushService, pictureService)
 
 	var router = makeRouter(accountService, messageService, sessionService, pictureService, { log:config.log, dev:config.dev })
 

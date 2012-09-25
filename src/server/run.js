@@ -1,3 +1,4 @@
+require('./util/globals')
 var cluster = require('cluster')
 var numCPUs = Math.min(require('os').cpus().length - 1, 2)
 
