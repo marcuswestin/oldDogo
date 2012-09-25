@@ -6,6 +6,7 @@ var imagemagick = require('imagemagick')
 var pictures = require('../data/pictures')
 var s3Permission = 'public-read'
 var s3
+var log = makeLog('PictureService')
 
 function getSignedUrl(bucket, filename) {
 	var knoxClient = knox.createClient({
@@ -49,9 +50,9 @@ module.exports = proto(null,
 						callback(null, pictureId)
 					})
 				})
-				console.log('Uploading picture', pictureId, pictures.url(conversationId, pictureSecret))
+				log('Uploading picture', pictureId, pictures.url(conversationId, pictureSecret))
 				s3.putBuffer(path, buf, s3Permission, getHeaders(buf.length), function(err, resHeaders) {
-					console.log('Upload picture DONE', pictureId, err)
+					log('Upload picture DONE', pictureId, err)
 					proceed(err)
 				})
 				this.uploadThumb(buf, conversationId, pictureSecret, pictures.pixels.thumb, proceed)
@@ -73,10 +74,10 @@ module.exports = proto(null,
 				customArgs: customArgs
 			}, function(err, stdout, stderr) {
 				if (err) { return proceed(err) }
-				console.log('Uploading thumbnail', pictures.url(conversationId, pictureSecret, thumbSize))
+				log('Uploading thumbnail', pictures.url(conversationId, pictureSecret, thumbSize))
 				var thumbBuf = new Buffer(stdout, 'binary')
 				s3.putBuffer(thumbPath, thumbBuf, s3Permission, getHeaders(thumbBuf.length), function(err, resHeaders) {
-					console.log('Upload thumbnail DONE', err)
+					log('Upload thumbnail DONE', err)
 					callback(err, null)
 				})
 			})

@@ -2,6 +2,7 @@ var uuid = require('uuid'),
 	redis = require('redis'),
 	time = require('std/time'),
 	facebook = require('./util/facebook')
+var log = makeLog('SessionService')
 
 module.exports = proto(null,
 	function(db, accountService) {
@@ -67,7 +68,7 @@ module.exports = proto(null,
 			try {
 				var parts = authorization.split(' ')
 				if (parts.length != 2) {
-					console.warn('Saw bad auth', authorization)
+					log.warn('Saw bad auth', authorization)
 					return callback('Bad auth')
 				}
 				
@@ -82,7 +83,7 @@ module.exports = proto(null,
 					authToken = authToken.split(':')[1]
 				}
 			} catch(e) {
-				console.warn(e)
+				log.warn(e)
 				return callback('Error parsing auth: '+ authorization)
 			}
 			
@@ -96,7 +97,7 @@ module.exports = proto(null,
 			var stackTrace = new Error(),
 				self = this
 			this._redis.setex(key, exp, val, function(err, data) {
-				if (err) { console.warn("redis setex error", key, exp, val, stackTrace.stack) }
+				if (err) { log.warn("redis setex error", key, exp, val, stackTrace.stack) }
 				cb.call(self, err, data)
 			})
 		},
@@ -104,7 +105,7 @@ module.exports = proto(null,
 			var stackTrace = new Error(),
 				self = this
 			this._redis.get(key, function(err, data) {
-				if (err) { console.warn("redis get error", key, exp, val, stackTrace.stack) }
+				if (err) { log.warn("redis get error", key, exp, val, stackTrace.stack) }
 				cb.call(self, err, data)
 			})
 		}

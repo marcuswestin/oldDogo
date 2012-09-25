@@ -6,6 +6,7 @@ var curry = require('std/curry')
 var slice = require('std/slice')
 var http = require('http')
 var semver = require('semver')
+var log = require('./util/log').makeLog('Router')
 
 require('color')
 
@@ -23,7 +24,7 @@ module.exports = function makeRouter(accountService, messageService, sessionServ
 	return {
 		listen:function(port) {
 			server.listen(port)
-			console.log("dogo-web listening on :"+port)
+			log("dogo-web listening on :"+port)
 		}
 	}
 }
@@ -108,10 +109,10 @@ function setupRoutes(app, accountService, messageService, sessionService, pictur
 		res.writeHead(204)
 		res.end()
 		return
-		console.log('download version', req.url)
+		log('download version', req.url)
 		fs.readFile(__dirname+'/../../build/dogo-ios-build.tar', bind(this, function(err, tar) {
 			if (err) { return respond(req, res, err) }
-			console.log("send download response", tar.length)
+			log("send download response", tar.length)
 			respond(req, res, null, tar, 'application/x-tar')
 		}))
 	})
@@ -124,7 +125,7 @@ function setupRoutes(app, accountService, messageService, sessionService, pictur
 		messageService.saveFacebookRequest(req.session.accountId, params.facebookRequestId, params.toAccountId, params.conversationId, curry(respond, req, res))
 	})
 	app.use(function onError(err, req, res, next){
-		console.log("Route error".red, err)
+		log.error("Route error".red, err)
 		respond(req, res, err)
 	})
 }
@@ -192,7 +193,7 @@ function getParams(req) {
 	var logParams = JSON.stringify(params)
 	if (logParams.length > 250) { logParams = logParams.substr(0, 250) + ' (......)' }
 	
-	console.log(getTime(), req.method, req.url, req.meta, logParams)
+	log(getTime(), req.method, req.url, req.meta, logParams)
 	return params
 }
 
@@ -226,7 +227,7 @@ function respond(req, res, err, content, contentType) {
 			code = 401
 			content = 'Authorization Required'
 			headers['WWW-Authenticate'] = 'Basic'
-			console.warn("Unauthorized".red, req.url.pink)
+			log.warn("Unauthorized".red, req.url.pink)
 		} else {
 			var stackError = new Error()
 			code = 500
@@ -234,7 +235,7 @@ function respond(req, res, err, content, contentType) {
 			if (respond.log) {
 				var logBody = JSON.stringify(req.body)
 				if (logBody.length > 400) { logBody = logBody.substr(0, 400) + ' (......)' }
-				console.warn('error', content, req.url, logBody, stackError.stack)
+				log.warn('error', content, req.url, logBody, stackError.stack)
 			}
 		}
 		contentType = 'text/plain'
@@ -269,9 +270,9 @@ function respond(req, res, err, content, contentType) {
 	res.writeHead(code, headers)
 	res.end(content)
 	} catch(e) {
-		console.log("Error sending message", e.stack || e)
+		log.warn("Error sending message", e.stack || e)
 		try { res.end("Error sending message") }
-		catch(e) { console.log("COULD NOT RESPOND") }
+		catch(e) { log.error("COULD NOT RESPOND") }
 	}
-	console.log(getTime(), 'Responded', req.method, req.url, req.meta)
+	log(getTime(), 'Responded', req.method, req.url, req.meta)
 }

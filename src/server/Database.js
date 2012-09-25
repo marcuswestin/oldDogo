@@ -1,22 +1,23 @@
 var mysql = require('mysql')
+var log = makeLog('Database')
 
 var connectionBase = {
 	selectOne: function(ctx, query, args, callback) {
 		this.query(ctx, query, args, function(err, rows) {
-			if (err) { console.error('selectOne error', query, args, err) }
+			if (err) { log.error('selectOne error', query, args, err) }
 			if (!err && rows.length > 1) { err = "Got more rows than expected" }
 			callback.call(this, err, err ? undefined : (rows[0] || null))
 		})
 	},
 	select:function(ctx, query, args, callback) {
 		this.query(ctx, query, args, function(err, rows) {
-			if (err) { console.error('select error', query, args, err) }
+			if (err) { log.error('select error', query, args, err) }
 			callback.call(this, err, !err && rows)
 		})
 	},
 	insert:function(ctx, query, args, callback) {
 		this.query(ctx, query, args, function(err, info) {
-			if (err) { console.error('insert error', query, args, err) }
+			if (err) { log.error('insert error', query, args, err) }
 			if (!err && !info.insertId) { err = "Did not recieve an insertId" }
 			callback.call(this, err, !err && info.insertId)
 		})
@@ -34,7 +35,7 @@ var connectionBase = {
 	
 	updateOne:function(ctx, query, args, callback) {
 		this.query(ctx, query, args, function(err, info) {
-			if (err) { console.error('updateOne error', query, args, err) }
+			if (err) { log.error('updateOne error', query, args, err) }
 			if (!err && info.affectedRows > 1) { err = "Updated more rows than expected ("+info.affectedRows+")" }
 			callback.call(this, err, null)
 		})
@@ -179,6 +180,6 @@ var Autocommit = proto(connectionBase,
 
 function logError(err, query, args, stack) {
 	err = new Error((err.message || err) + '\n\t' + JSON.stringify(query) + ' '+JSON.stringify(args), stack)
-	// console.warn(err)
+	// log.warn(err)
 	return err
 }

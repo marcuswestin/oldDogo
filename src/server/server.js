@@ -29,6 +29,6 @@ function run(config) {
 	config.db.password = config.db.password.replace(/[^\*]/g, '*')
 	config.push.keyData = '******'
 	config.push.certData = '******'
-	console.log('starting server with config', config)
+	log('starting server with config', config)
 	router.listen(config.port)
 }

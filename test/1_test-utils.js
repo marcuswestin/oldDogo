@@ -48,7 +48,9 @@ u.clientUid._unique = new Date().getTime()
 				}
 				callback(null, data)
 			}
-			break
+		}
+		if (arg == '--dogo-test-verbose=no') {
+			require('../src/server/util/log').doLog = function() { /* ignore */ }
 		}
 	}
 }())

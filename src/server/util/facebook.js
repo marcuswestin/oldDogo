@@ -10,7 +10,6 @@ module.exports = {
 function send(method, path, qsParams, callback) {
 	request[method]({ url:'https://graph.facebook.com/' + path, qs:qsParams }, function(err, res) {
 		if (err) { return callback(err) }
-		console.log("FB", path, res.body)
 		try {
 			if (res.headers['content-type'].match(/^text\/javascript/)) {
 				var body = JSON.parse(res.body)

@@ -1,4 +1,5 @@
 var request = require('request')
+var log = makeLog('sms')
 
 module.exports = {
 	setConfig:setConfig,
@@ -15,14 +16,14 @@ function setConfig(conf) {
 
 function send(to, text, callback) {
 	if (!url) {
-		console.log("Ignoring send sms", to, text)
+		log("Ignoring send sms", to, text)
 		return
 	}
 	var params = { From:from, To:to, Body:text }
-	console.log("Sending SMS", to, text)
+	log("Sending SMS", to, text)
 	request.post({ url:url, form:params }, function(err, res) {
-		// if (err) { console.log("Error sending SMS", err) }
-		// else { console.log("Sent SMS") }
+		// if (err) { log.error("Error sending SMS", err) }
+		// else { log("Sent SMS") }
 		callback && callback(err, res)
 	})
 }
@@ -36,5 +37,5 @@ function send(to, text, callback) {
 // var url = 'https://'+accountSid+':'+authToken+'@api.twilio.com/2010-04-01/Accounts/'+accountSid+'/SMS/Messages.json'
 // var params = { From: twilioSandbox, To: yourPhone, Body: text }
 // request.post({ url:url, form:params }, function(err, res) {
-// 	console.log("HERE", err, res)
+// 	log("HERE", err, res)
 // })

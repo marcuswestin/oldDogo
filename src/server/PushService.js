@@ -1,5 +1,6 @@
-var apns = require('apn'),
-	sql = require('./util/sql')
+var apns = require('apn')
+var sql = require('./util/sql')
+var log = makeLog('PushService')
 
 module.exports = proto(null,
 	function(database, dev, prod) {
@@ -17,7 +18,7 @@ module.exports = proto(null,
 				errorCallback: bind(this, this.onApnError)
 			}
 			this.devApnsConnection = new apns.Connection(devOpts)
-			console.log("Created apns connection", devOpts.gateway+':'+devOpts.port)
+			log("Created apns connection", devOpts.gateway+':'+devOpts.port)
 		}
 		
 		if (prod) {
@@ -33,17 +34,17 @@ module.exports = proto(null,
 			}
 			
 			this.prodApnsConnection = new apns.Connection(prodOpts)
-			console.log("Created apns connection", prodOpts.gateway+':'+prodOpts.port)
+			log("Created apns connection", prodOpts.gateway+':'+prodOpts.port)
 		}
 	}, {
 		sendMessagePush:function(message, fromAccountId, toAccountId, prodPush) {
 			this.db.selectOne(this, this.sql.selectPushInfo+'WHERE id=?', [toAccountId], function(err, data) {
 				if (err) { return }
-				if (!data.pushToken) { return console.log('Bah No push token for', toAccountId) }
-				if (data.pushSystem != 'ios') { return console.error('WARNING Unknown push system', data.pushSystem) }
+				if (!data.pushToken) { return log('Bah No push token for', toAccountId) }
+				if (data.pushSystem != 'ios') { return log.error('WARNING Unknown push system', data.pushSystem) }
 				
 				this.db.selectOne(this, this.sql.selectAccountFirstName+'WHERE id=?', [fromAccountId], function(err, fromAccountInfo) {
-					if (err) { return console.log("ERROR this.sql.selectAccountFirstName", fromAccountId) }
+					if (err) { return log.error("ERROR this.sql.selectAccountFirstName", fromAccountId) }
 					var notification = new apns.Notification()
 					notification.payload = { id:message.id, senderAccountId:message.senderAccountId, conversationId:message.conversationId, toDogoId:toAccountId }
 					notification.badge = 1
@@ -60,10 +61,10 @@ module.exports = proto(null,
 					notification.device = new apns.Device(data.pushToken, ascii=true)
 
 					if (prodPush) {
-						console.log("Send distribution push notification", JSON.stringify(notification).length)
+						log("Send distribution push notification", JSON.stringify(notification).length)
 						this.prodApnsConnection.sendNotification(notification)
 					} else {
-						console.log("Send sandbox push notification", JSON.stringify(notification).length)
+						log("Send sandbox push notification", JSON.stringify(notification).length)
 						this.devApnsConnection.sendNotification(notification)
 					}
 				})
@@ -71,7 +72,7 @@ module.exports = proto(null,
 		},
 		
 		onApnError:function() {
-			console.error("WARNING apn error", arguments)
+			log.error("WARNING apn error", arguments)
 		},
 		
 		sql: {

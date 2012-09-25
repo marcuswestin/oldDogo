@@ -33,18 +33,18 @@ if (cluster.isMaster) {
 	}
 	var count = 0
 	cluster.on('death', function(worker) {
-		console.log(worker.pid, 'died')
+		log(worker.pid, 'died')
 		if (worker.exitCode) {
 			onBadDeath(worker.exitCode)
-			console.log("WARNING bad worker exit code", worker.exitCode)
+			log("WARNING bad worker exit code", worker.exitCode)
 		}
 		count++
 		setTimeout(function() {
-			console.log('forking again')
+			log('forking again')
 			cluster.fork()
 		}, 1000)
 	})
 } else {
-	console.log('starting', process.pid)
+	log('starting', process.pid)
 	require('./server').run(config)
 }

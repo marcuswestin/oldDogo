@@ -16,11 +16,11 @@ getId = function(model) {
 
 logError = logErr = function logError(err, callback /* , args ... */) {
 	var args = slice(arguments, 2)
-	console.error('Error:', args, err.stack || err.message || err)
+	log.error('Error:', args, err.stack || err.message || err)
 	if (typeof callback == 'function') {
 		callback(err, null)
 	} else {
-		console.error("SHIT SHIT SHIT, logErr callback stack hanging!!!")
+		log.error("SHIT SHIT SHIT, logErr callback stack hanging!!!")
 	}
 }
 
