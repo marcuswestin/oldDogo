@@ -29,18 +29,18 @@ module.exports = proto(null,
 				}))
 			})
 		},
-		withFacebookContactId:function(accountId, contactFbAccountId, callback) {
-			this._selectFacebookContact(this.db, accountId, contactFbAccountId, function(err, fbContact) {
-				if (err) { return callback(err) }
-				if (!fbContact) { return callback('Facebook contact not found') }
-				var accountFbId = fbContact.facebookId
-				this._selectAccountByFacebookId(this.db, fbContact.facebookId, function(err, acc) {
-					if (err) { return callback(err) }
-					if (acc) { return callback(null, acc.accountId) }
-					this._insertUnclaimedAccount(this.db, fbContact.facebookId, fbContact.name, callback)
-				})
-			})
-		},
+		// withFacebookContactId:function(accountId, contactFbAccountId, callback) {
+		// 	this._selectFacebookContact(this.db, accountId, contactFbAccountId, function(err, fbContact) {
+		// 		if (err) { return callback(err) }
+		// 		if (!fbContact) { return callback('Facebook contact not found') }
+		// 		var accountFbId = fbContact.facebookId
+		// 		this._selectAccountByFacebookId(this.db, fbContact.facebookId, function(err, acc) {
+		// 			if (err) { return callback(err) }
+		// 			if (acc) { return callback(null, acc.accountId) }
+		// 			this._insertUnclaimedAccount(this.db, fbContact.facebookId, fbContact.name, callback)
+		// 		})
+		// 	})
+		// },
 		getAccount: function(accountId, facebookId, callback) {
 			if (accountId) {
 				this._selectAccountByAccountId(this.db, accountId, callback)
@@ -89,8 +89,8 @@ module.exports = proto(null,
 						var proceed = bind(this, this._insertFbContacts, tx, fbAcc, fbFriends, callback)
 						if (fbAcc.email && !fbAcc.email.match('proxymail.facebook.com')) {
 							tx.insert(this,
-								'INSERT INTO account_email SET email_address=?, created_time=?, claimed_time=?',
-								[fbAcc.email, timestamp, timestamp], proceed
+								'INSERT INTO account_email SET account_id=?, email_address=?, created_time=?, claimed_time=?',
+								[accountId, fbAcc.email, timestamp, timestamp], proceed
 							)
 						} else {
 							proceed()
@@ -190,11 +190,11 @@ module.exports = proto(null,
 				'INSERT INTO account SET created_time=?, facebook_id=?, full_name=?',
 				[conn.time(), fbAccountId, name], callback)
 		},
-		_selectFacebookContact: function(conn, accountId, fbContactFbAccountId, callback) {
-			conn.selectOne(this,
-				this.sql.selectFacebookContact+'WHERE account_id=? AND contact_facebook_id=?',
-				[accountId, fbContactFbAccountId], callback)
-		},
+		// _selectFacebookContact: function(conn, accountId, fbContactFbAccountId, callback) {
+		// 	conn.selectOne(this,
+		// 		this.sql.selectFacebookContact+'WHERE account_id=? AND contact_facebook_id=?',
+		// 		[accountId, fbContactFbAccountId], callback)
+		// },
 		_selectAccountByFacebookId: function(conn, fbAccountId, callback) {
 			conn.selectOne(this, this.sql.account+'WHERE facebook_id=?', [fbAccountId], callback)
 		},
@@ -202,10 +202,10 @@ module.exports = proto(null,
 			conn.selectOne(this, this.sql.account+'WHERE id=?', [accountId], callback)
 		},
 		sql: {
-			selectFacebookContact: sql.selectFrom('facebook_contact', {
-				facebookId:'contact_facebook_id',
-				name:'contact_facebook_name'
-			}),
+			// selectFacebookContact: sql.selectFrom('facebook_contact', {
+			// 	facebookId:'contact_facebook_id',
+			// 	name:'contact_facebook_name'
+			// }),
 			account: sql.selectFrom('account', {
 				facebookId:'facebook_id',
 				name:'full_name',
@@ -215,14 +215,14 @@ module.exports = proto(null,
 				id:'id',
 				pushToken:'push_token',
 				memberSince:'claimed_time'
-			}),
-			contact: sql.selectFrom('facebook_contact', {
-				accountId: 'account.id',
-				facebookId: 'facebook_contact.contact_facebook_id',
-				fullName: 'facebook_contact.contact_facebook_name',
-				name: 'facebook_contact.contact_facebook_name',
-				memberSince: 'account.claimed_time'
-			}) + 'LEFT OUTER JOIN account ON facebook_contact.contact_facebook_id=account.facebook_id\n'
+			})
+			// contact: sql.selectFrom('facebook_contact', {
+			// 	accountId: 'account.id',
+			// 	facebookId: 'facebook_contact.contact_facebook_id',
+			// 	fullName: 'facebook_contact.contact_facebook_name',
+			// 	name: 'facebook_contact.contact_facebook_name',
+			// 	memberSince: 'account.claimed_time'
+			// }) + 'LEFT OUTER JOIN account ON facebook_contact.contact_facebook_id=account.facebook_id\n'
 		}
 	}
 )

@@ -15,24 +15,24 @@ module.exports = proto(null,
 				callback = ac.wrapCallback(callback)
 				ac.select(this, this.sql.selectParticipation+'WHERE partic.account_id=?', [accountId], function(err, participations) {
 					if (err) { return callback(err) }
-					populateContactAccounts.call(this, participations)
+					populatePeople.call(this, participations)
 					
-					function populateContactAccounts(participations) {
+					function populatePeople(participations) {
 						serialMap(participations, {
 							context:this,
 							iterate: function(partic, i, next) {
 								ac.selectOne(this, 'SELECT full_name as fullName, claimed_time as memberSince, facebook_id as facebookId, id FROM account WHERE id=?',
-									[partic.contactDogoId], next
+									[partic.personDogoId], next
 								)
 							},
-							finish:function(err, contacts) {
+							finish:function(err, people) {
 								if (err) { return callback(err) }
-								populateMessages.call(this, participations, contacts)
+								populateMessages.call(this, participations, people)
 							}
 						})
 					}
 					
-					function populateMessages(participartions, contacts) {
+					function populateMessages(participartions, people) {
 						serialMap(participartions, {
 							context:this,
 							iterate:function(partic, next) {
@@ -53,14 +53,14 @@ module.exports = proto(null,
 							},
 							finish:function(err, conversations) {
 								if (err) { return callback(err) }
-								mergeData.call(this, participations, contacts, conversations)
+								mergeData.call(this, participations, people, conversations)
 							}
 						})
 					}
 					
-					function mergeData(participartions, contacts, conversations) {
+					function mergeData(participartions, people, conversations) {
 						each(conversations, function(convo, i) {
-							convo.contact = contacts[i]
+							convo.person = people[i]
 						})
 						callback(null, conversations)
 					}
@@ -128,13 +128,13 @@ module.exports = proto(null,
 					
 				})
 		},
-		_withContactAccountId: function(accountId, contactAccountId, contactFacebookId, callback) {
-			if (contactAccountId) {
-				callback.call(this, null, contactAccountId)
-			} else {
-				this.accountService.withFacebookContactId(accountId, contactFacebookId, bind(this, callback))
-			}
-		},
+		// _withContactAccountId: function(accountId, contactAccountId, contactFacebookId, callback) {
+		// 	if (contactAccountId) {
+		// 		callback.call(this, null, contactAccountId)
+		// 	} else {
+		// 		this.accountService.withFacebookContactId(accountId, contactFacebookId, bind(this, callback))
+		// 	}
+		// },
 		_createConversationId: function(account1Id, account2Id, callback) {
 			try { var ids = orderConversationIds(account1Id, account2Id) }
 			catch (err) { return callback(err) }
@@ -174,11 +174,11 @@ module.exports = proto(null,
 				'INSERT INTO conversation SET created_time=?, account_1_id=?, account_2_id=?, secret=?',
 				[conn.time(), ids.account1Id, ids.account2Id, secret], callback)
 		},
-		_insertParticipation: function(conn, convoId, accountId, callback) {
-			conn.insert(this,
-				'INSERT INTO conversation_participation SET conversation_id=?, account_id=?',
-				[convoId, accountId], callback)
-		},
+		// _insertParticipation: function(conn, convoId, accountId, callback) {
+		// 	conn.insert(this,
+		// 		'INSERT INTO conversation_participation SET conversation_id=?, account_id=?',
+		// 		[convoId, accountId], callback)
+		// },
 		_insertMessage: function(conn, accountId, clientUid, convoId, body, pictureId, callback) {
 			conn.insert(this,
 				'INSERT INTO message SET sent_time=?, sender_account_id=?, client_uid=?, conversation_id=?, body=?, picture_id=?',
@@ -226,7 +226,7 @@ module.exports = proto(null,
 			}),
 			
 			selectParticipation:sql.selectFrom('conversation_participation partic', {
-				contactDogoId: '(CASE convo.account_1_id WHEN partic.account_id THEN convo.account_2_id ELSE convo.account_1_id END)',
+				personDogoId: '(CASE convo.account_1_id WHEN partic.account_id THEN convo.account_2_id ELSE convo.account_1_id END)',
 				conversationId: 'partic.conversation_id',
 				lastReceivedMessageId: 'partic.last_received_message_id',
 				lastReadMessageId: 'partic.last_read_message_id',
