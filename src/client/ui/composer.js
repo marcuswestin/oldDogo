@@ -115,7 +115,7 @@ function hideDraw() {
 }
 
 function sendImage(data, width, height) {
-	sendMessage({ pictureWidth:width, pictureHeight:height, base64Picture:data })
+	sendMessage({ picture:{ width:width, height:height, base64Data:data } })
 	composer.hide()
 }
 

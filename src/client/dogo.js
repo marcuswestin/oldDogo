@@ -117,7 +117,7 @@ function startApp(info) {
 		viewport.fit($('#viewport'))
 		
 		if (isPhantom) {
-			api.refresh('fa48a930-5e94-4f18-b180-998728a5fe85', onConnected)
+			// api.refresh('fa48a930-5e94-4f18-b180-998728a5fe85', onConnected)
 			bridge.command('app.show')
 		} else if (gState.authToken()) {
 			onConnected()

@@ -28,12 +28,12 @@ module.exports = proto(null,
 		s3 = aws2js.load('s3', s3conf.accessKeyId, s3conf.secretAccessKey)
 		s3.setBucket(s3conf.bucket)
 	}, {
-		upload: function(accountId, conversation, base64PictureData, pictureWidth, pictureHeight, callback) {
+		upload: function(accountId, conversationId, base64PictureData, pictureWidth, pictureHeight, callback) {
 			this._insertPicture(this.db, accountId, pictureWidth, pictureHeight, function(err, pictureId, pictureSecret) {
 				if (err) { return callback(err) }
 				var buf = new Buffer(base64PictureData.replace(/^data:image\/\w+;base64,/, ""), 'base64')
 				var size = buf.length
-				var path = pictures.path(conversation.id, pictureSecret)
+				var path = pictures.path(conversationId, pictureSecret)
 				var waitingFor = 2
 				var proceed = bind(this, function(err) {
 					if (err && callback) {
@@ -49,12 +49,12 @@ module.exports = proto(null,
 						callback(null, pictureId)
 					})
 				})
-				console.log('Uploading picture', pictureId, pictures.url(conversation.id, pictureSecret))
+				console.log('Uploading picture', pictureId, pictures.url(conversationId, pictureSecret))
 				s3.putBuffer(path, buf, s3Permission, getHeaders(buf.length), function(err, resHeaders) {
 					console.log('Upload picture DONE', pictureId, err)
 					proceed(err)
 				})
-				this.uploadThumb(buf, conversation.id, pictureSecret, pictures.pixels.thumb, proceed)
+				this.uploadThumb(buf, conversationId, pictureSecret, pictures.pixels.thumb, proceed)
 			})
 		},
 		

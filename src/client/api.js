@@ -13,7 +13,7 @@ module.exports = {
 	getHeaders:getHeaders,
 	setHeaders:setHeaders,
 	connect:connect,
-	refresh:refresh,
+	// refresh:refresh,
 	getPath:getPath,
 	error:error
 }
@@ -106,9 +106,9 @@ function connect(opts, callback) {
 	api.post('sessions', params, curry(handleSession, opts.facebookSession, callback))
 }
 
-function refresh(authToken, callback) {
-	api.get('session', { authToken:authToken }, curry(handleSession, null, callback))
-}
+// function refresh(authToken, callback) {
+// 	api.get('session', { authToken:authToken }, curry(handleSession, null, callback))
+// }
 
 function handleSession(facebookSession, callback, err, res) {
 	if (err) { return callback(err) }

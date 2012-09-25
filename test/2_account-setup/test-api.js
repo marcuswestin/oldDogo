@@ -61,34 +61,38 @@ describe('Setup with Facebook Connect', function() {
 	})
 	
 	describe('First session', function() {
-		it('should have 0 conversations', function(done) {
+		var convId
+		var accId
+		it('should have 0 conversations with a message', function(done) {
 			api.get('conversations', function(err, res) {
 				check(err)
-				is(!res.conversations.length)
+				each(res.conversations, function(conv) {
+					is(!conv.lastMessageId)
+				})
+				convId = res.conversations[0].id
+				accId = res.conversations[0].contact.id
 				done()
 			})
 		})
 		it('should let you send a first message', function(done) {
-			var fbFriend = u.fbTestData.users[1]
-			api.post('messages', { toFacebookId:fbFriend.id, body:'Hi', clientUid:u.clientUid() }, function(err, res) {
+			api.post('messages', { toConversationId:convId, toAccountId:accId, body:'Hi', clientUid:u.clientUid() }, function(err, res) {
 				check(err)
 				is(res.message.id)
 				is(res.message.body, 'Hi')
 				done()
 			})
 		})
-		it('should then have one conversation, and sending a message to another friend should create a second conversation', function(done) {
+		it('should then have one conversation, & messaging a 2nd friend should create a 2nd conversation', function(done) {
 			api.get('conversations', function(err, res) {
 				var convoCount = res.conversations.length
-				var firstConvo = res.conversations[0]
-				is(firstConvo)
-				is(res.conversations.length, 1)
-				var newFbFriend = u.fbTestData.users[2]
-				api.post('messages', { toFacebookId:newFbFriend.id, body:'Ho', clientUid:u.clientUid() }, function(err, res) {
-					var message = res.message
+				var secondConvo = res.conversations[1]
+				is(secondConvo)
+				is(numConversationsWithMessages(res.conversations), 1)
+				api.post('messages', { toConversationId:secondConvo.id, toAccountId:secondConvo.contact.id, body:'Ho', clientUid:u.clientUid() }, function(err, res) {
+					is(res.message)
 					api.get('conversations', function(err, res) {
-						is(res.conversations.length, convoCount + 1)
-						is(firstConvo.id, res.conversations[1].id) // the new conversation should now appear first, and the old conversation second
+						is(numConversationsWithMessages(res.conversations), 2)
+						is(secondConvo.id, res.conversations[1].id) // the new conversation should now appear first, and the old conversation second
 						done()
 					})
 				})
@@ -96,3 +100,7 @@ describe('Setup with Facebook Connect', function() {
 		})
 	})
 })
+
+function numConversationsWithMessages(conversations) {
+	return _.reduce(conversations, function(memo, conv) { return memo + (conv.lastMessage ? 1 : 0) }, 0)
+}

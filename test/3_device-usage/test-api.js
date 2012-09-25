@@ -7,7 +7,8 @@ var is = u.is
 function sendMessage(body, callback) {
 	api.get('conversations', function(err, res) {
 		check(err)
-		api.post('messages', { toAccountId:res.conversations[0].withAccountId, body:body, clientUid:u.clientUid() }, function(err, res) {
+		var conv = res.conversations[0]
+		api.post('messages', { toConversationId:conv.id, toAccountId:conv.contact.id, body:body, clientUid:u.clientUid() }, function(err, res) {
 			check(err)
 			callback(err, res)
 		})
@@ -17,7 +18,7 @@ function sendMessage(body, callback) {
 describe('Conversations', function() {
 	it('should be possible to get messages by account id', function(done) {
 		api.get('conversations', function(err, res) {
-			api.get('messages', { withAccountId:res.conversations[0].withAccountId }, function(err, res) {
+			api.get('messages', { conversationId:res.conversations[0].id }, function(err, res) {
 				check(err)
 				is(res.messages.length)
 				done()

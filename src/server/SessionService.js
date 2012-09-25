@@ -9,52 +9,48 @@ module.exports = proto(null,
 		this.accountService = accountService
 		this._redis = redis.createClient()
 	}, {
-		createSession: function(fbAccessToken, fbRequestId, callback) {
+		createSession: function(fbAccessToken, callback) {
 			if (fbAccessToken) {
-				facebook.get('me', { access_token:fbAccessToken }, bind(this, function(err, fbAccount) {
+				facebook.get('/me', { access_token:fbAccessToken }, bind(this, function(err, fbAccount) {
 					if (err) { return logError(err, callback, '_handleFacebookAccount', fbAccessToken) }
-					if (!fbAccount) { return logError('Facebook did not return information for user', callback, { fbAccessToken:fbAccessToken, fbRequestId:fbRequestId }) }
+					if (!fbAccount) { return logError('Facebook did not return information for user', callback, { fbAccessToken:fbAccessToken }) }
 					this.accountService.lookupOrCreateByFacebookAccount(fbAccount, fbAccessToken, bind(this, function(err, account) {
 						if (err) { return logError(err, callback, 'createSession.lookupOrCreateByFacebookAccount', account) }
-						this.createSessionAndGetContacts(account.accountId, account, callback)
+						this.createSessionForAccountId(account.id, bind(this, function(err, authToken) {
+							if (err) { return logError(err, callback, 'createSession.createSessionForAccountId', account.id) }
+							this.accountService.bumpClientUidBlock(account.id, bind(this, function(err, clientUidBlock) {
+								callback(null, { authToken:authToken, account:account, clientUidBlock:clientUidBlock })
+							}))
+						}))
 					}))
 				}))
-			} else if (fbRequestId) {
-				this.db.selectOne(this,
-					'SELECT to_account_id FROM facebook_request WHERE facebook_request_id=? AND response_time IS NULL',
-					[fbRequestId], function(err, res) {
-						if (err) { return callback(err) }
-						if (!res) { return callback("This facebook request has already been responded to. Download Dogo to continue!") }
-						this.createSessionAndGetContacts(res.to_account_id, null, callback)
-					}
-				)
+			// } else if (fbRequestId) {
+			// 	this.db.selectOne(this,
+			// 		'SELECT to_account_id FROM facebook_request WHERE facebook_request_id=? AND response_time IS NULL',
+			// 		[fbRequestId], function(err, res) {
+			// 			if (err) { return callback(err) }
+			// 			if (!res) { return callback("This facebook request has already been responded to. Download Dogo to continue!") }
+			// 			this.createSessionAndGetConversations(res.to_account_id, null, callback)
+			// 		}
+			// 	)
 			} else {
-				callback('Missing access token or request id')
+				callback('Missing facebook access token')
 			}
 		},
-		createSessionAndGetContacts: function(accountId, account, callback) {
-			this.createSessionForAccountId(accountId, bind(this, function(err, authToken) {
-				if (err) { return logError(err, callback, 'createSession.createSessionForAccountId', accountId) }
-				this._finishCreateSession(authToken, accountId, account, callback)
-			}))
-		},
-		getSession: function(authToken, callback) {
-			this._authenticateSession(authToken, bind(this, function(err, accountId) {
-				if (err) { return callback(err) }
-				this.accountService.getAccount(accountId, null, bind(this, function(err, account) {
-					if (err) { return callback(err) }
-					this._finishCreateSession(authToken, accountId, account, callback)
-				}))
-			}))
-		},
-		_finishCreateSession: function(authToken, accountId, account, callback) {
-			this.accountService.getContacts(accountId, bind(this, function(err, contacts) {
-				if (err) { return logError(err, callback, 'createSession.getContacts') }
-				this.accountService.bumpClientUidBlock(accountId, bind(this, function(err, clientUidBlock) {
-					callback(null, { authToken:authToken, account:account, contacts:contacts, clientUidBlock:clientUidBlock })
-				}))
-			}))
-		},
+		// getSession: function(authToken, callback) {
+		// 	this._authenticateSession(authToken, bind(this, function(err, accountId) {
+		// 		if (err) { return callback(err) }
+		// 		this.accountService.getAccount(accountId, null, bind(this, function(err, account) {
+		// 			if (err) { return callback(err) }
+		// 			this._finishCreateSession(authToken, accountId, account, callback)
+		// 		}))
+		// 	}))
+		// },
+		// _finishCreateSession: function(authToken, accountId, account, callback) {
+		// 	this.accountService.getConversations(accountId, bind(this, function(err, conversations) {
+		// 		if (err) { return logError(err, callback, 'createSession.getContacts') }
+		// 	}))
+		// },
 		createSessionForAccountId: function(accountId, callback) {
 			var authToken = uuid.v4(),
 				expiration = 1 * time.day
@@ -62,13 +58,6 @@ module.exports = proto(null,
 			this.setex('sess:'+authToken, expiration, accountId, function(err) {
 				if (err) { return callback(err) }
 				callback(null, authToken)
-			})
-		},
-		_authenticateSession: function(authToken, callback) {
-			this.get('sess:'+authToken, function(err, accountId) {
-				if (err) { return callback(err) }
-				if (!accountId) { return callback('Unauthorized') }
-				callback(null, accountId)
 			})
 		},
 		authenticateRequest: function(req, callback) {
@@ -96,8 +85,12 @@ module.exports = proto(null,
 				console.warn(e)
 				return callback('Error parsing auth: '+ authorization)
 			}
-
-			this._authenticateSession(authToken, callback)
+			
+			this.get('sess:'+authToken, function(err, accountId) {
+				if (err) { return callback(err) }
+				if (!accountId) { return callback('Unauthorized') }
+				callback(null, accountId)
+			})
 		},
 		setex:function(key, exp, val, cb) {
 			var stackTrace = new Error(),

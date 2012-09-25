@@ -5,7 +5,7 @@ var connectionBase = {
 		this.query(ctx, query, args, function(err, rows) {
 			if (err) { console.error('selectOne error', query, args, err) }
 			if (!err && rows.length > 1) { err = "Got more rows than expected" }
-			callback.call(this, err, !err && rows[0])
+			callback.call(this, err, err ? undefined : (rows[0] || null))
 		})
 	},
 	select:function(ctx, query, args, callback) {
@@ -71,7 +71,7 @@ module.exports = proto(connectionBase,
 				ctx = this
 			}
 			this._takeConnection(function(conn) {
-				fn.call(tx, Transaction(this, conn))
+				fn.call(ctx, Autocommit(this, conn))
 			})
 		},
 		query: function(ctx, query, args, callback) {
@@ -119,6 +119,20 @@ var Transaction = proto(connectionBase,
 				callback.apply(ctx, arguments)
 			})
 		},
+		wrapCallback:function wrapTxCallback(callback) {
+			var tx = this
+			return function(err, result) {
+				try {
+					if (err) { tx.rollback() }
+					else { tx.commit() }
+				} catch(e) {
+					// Should this really be wrapped in a try/catch? And should we really overwrite the error?
+					err = e
+				}
+				callback.call(this, err, result)
+			}
+			
+		},
 		commit:function() {
 			this._finish('COMMIT')
 		},
@@ -128,6 +142,35 @@ var Transaction = proto(connectionBase,
 		_finish:function(command) {
 			if (!this._conn) { return }
 			this._conn.query(command)
+			this.db._returnConnection(this._conn)
+			delete this._conn
+		}
+	}
+)
+
+var Autocommit = proto(connectionBase,
+	function(db, conn) {
+		this.db = db
+		this._conn = conn
+	}, {
+		query:function(ctx, query, args, callback) {
+			if (!this._conn) {
+				callback('Autocommit closed')
+				return
+			}
+			this._conn.query(query, args, function(err) {
+				if (err) { err = logError(err, query, args) }
+				callback.apply(ctx, arguments)
+			})
+		},
+		wrapCallback:function(callback) {
+			var autocommit = this
+			return function() {
+				autocommit.done()
+				callback.apply(this, arguments)
+			}
+		},
+		done:function() {
 			this.db._returnConnection(this._conn)
 			delete this._conn
 		}

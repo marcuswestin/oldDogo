@@ -57,12 +57,13 @@ function setupRoutes(app, accountService, messageService, sessionService, pictur
 	})
 	app.post('/api/sessions', filter.oldClients, function postSessions(req, res) {
 		var params = getParams(req, 'facebookAccessToken', 'facebookRequestId')
-		sessionService.createSession(params.facebookAccessToken, params.facebookRequestId, curry(respond, req, res))
+		if (params.facebookRequestId) { return respond(req, res, "Sessions for facebook requests is not ready yet. Sorry!") }
+		sessionService.createSession(params.facebookAccessToken, curry(respond, req, res))
 	})
-	app.get('/api/session', filter.oldClients, function getSession(req, res) {
-		var params = getParams(req, 'authToken')
-		sessionService.getSession(params.authToken, curry(respond, req, res))
-	})
+	// app.get('/api/session', filter.oldClients, function getSession(req, res) {
+	// 	var params = getParams(req, 'authToken')
+	// 	sessionService.getSession(params.authToken, curry(respond, req, res))
+	// })
 	app.get('/api/conversations', filter.oldClientsAndSession, function getConversations(req, res) {
 		var params = getParams(req)
 		messageService.getConversations(req.session.accountId, wrapRespond(req, res, 'conversations'))
@@ -72,20 +73,16 @@ function setupRoutes(app, accountService, messageService, sessionService, pictur
 		accountService.getContacts(req.session.accountId, wrapRespond(req, res, 'contacts'))
 	})
 	app.post('/api/messages', filter.oldClientsAndSession, function postMessage(req, res) {
-		var params = getParams(req, 'toFacebookId', 'toAccountId', 'clientUid', 'body', 'base64Picture', 'pictureWidth', 'pictureHeight', 'picWidth', 'picHeight', 'devPush')
+		var params = getParams(req, 'toConversationId', 'toAccountId', 'clientUid', 'body', 'picture')
 		var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
-		if (!params.pictureWidth) { params.pictureWidth = 920 }
-		if (!params.pictureHeight) { params.pictureHeight = 640 }
-		messageService.sendMessage(req.session.accountId, params.clientUid,
-			params.toFacebookId, params.toAccountId, params.body,
-			params.base64Picture, params.pictureWidth, params.pictureHeight,
+		messageService.sendMessage(req.session.accountId,
+			params.toConversationId, params.toAccountId, params.clientUid,
+			params.body, params.picture,
 			prodPush, curry(respond, req, res))
 	})
 	app.get('/api/messages', filter.oldClientsAndSession, function getConversationMessages(req, res) {
-		var params = getParams(req, 'withAccountId', 'withFacebookId')
-		messageService.getMessages(req.session.accountId,
-			params.withAccountId, params.withFacebookId,
-			wrapRespond(req, res, 'messages'))
+		var params = getParams(req, 'conversationId')
+		messageService.getMessages(req.session.accountId, params.conversationId, wrapRespond(req, res, 'messages'))
 	})
 	app.post('/api/push_auth', filter.oldClientsAndSession, function postPushAuth(req, res) {
 		var params = getParams(req, 'pushToken', 'pushSystem')
