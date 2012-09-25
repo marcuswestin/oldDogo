@@ -103,7 +103,7 @@ function handleResponse(jqXhr, url, callback, err, res) {
 function connect(opts, callback) {
 	var facebookAccessToken = opts.facebookSession && opts.facebookSession.accessToken
 	var params = { facebookAccessToken:facebookAccessToken, facebookRequestId:opts.facebookRequestId }
-	api.post('sessions', params, curry(handleSession, opts.facebookSession, callback))
+	api.post('session', params, curry(handleSession, opts.facebookSession, callback))
 }
 
 // function refresh(authToken, callback) {

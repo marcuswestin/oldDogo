@@ -48,7 +48,7 @@ describe('Setup with Facebook Connect', function() {
 	it('should let you create a session', function(done) {
 		var fbUser = fbUsers[0]
 		this.timeout(0)
-		api.post('sessions', { facebookAccessToken:fbUser.access_token }, function(err, res) {
+		api.post('session', { facebookAccessToken:fbUser.access_token }, function(err, res) {
 			check(err)
 			is(res.authToken)
 			is(res.account)
@@ -70,12 +70,12 @@ describe('Setup with Facebook Connect', function() {
 					is(!conv.lastMessageId)
 				})
 				convId = res.conversations[0].id
-				accId = res.conversations[0].contact.id
+				accId = res.conversations[0].person.id
 				done()
 			})
 		})
 		it('should let you send a first message', function(done) {
-			api.post('messages', { toConversationId:convId, toAccountId:accId, body:'Hi', clientUid:u.clientUid() }, function(err, res) {
+			api.post('message', { toConversationId:convId, toAccountId:accId, body:'Hi', clientUid:u.clientUid() }, function(err, res) {
 				check(err)
 				is(res.message.id)
 				is(res.message.body, 'Hi')
@@ -88,7 +88,7 @@ describe('Setup with Facebook Connect', function() {
 				var secondConvo = res.conversations[1]
 				is(secondConvo)
 				is(numConversationsWithMessages(res.conversations), 1)
-				api.post('messages', { toConversationId:secondConvo.id, toAccountId:secondConvo.contact.id, body:'Ho', clientUid:u.clientUid() }, function(err, res) {
+				api.post('message', { toConversationId:secondConvo.id, toAccountId:secondConvo.person.id, body:'Ho', clientUid:u.clientUid() }, function(err, res) {
 					is(res.message)
 					api.get('conversations', function(err, res) {
 						is(numConversationsWithMessages(res.conversations), 2)

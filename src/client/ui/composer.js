@@ -133,7 +133,7 @@ function sendMessage(params) {
 	
 	each(params, function(val, key) { message[key] = val })
 	
-	bridge.command('net.request', { method:"POST", headers:api.getHeaders(), path:api.getPath('messages'), params:message }, function(err, res) {
+	bridge.command('net.request', { method:"POST", headers:api.getHeaders(), path:api.getPath('message'), params:message }, function(err, res) {
 		if (err) { return error(err) }
 		events.fire('message.sent', res)
 		message.isSending = false

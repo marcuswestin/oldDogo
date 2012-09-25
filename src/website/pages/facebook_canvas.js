@@ -52,7 +52,7 @@ error = function(err) {
 						body:body
 					}
 					conversation.addMessage(message)
-					api.post('messages', message, function(err, res) {
+					api.post('message', message, function(err, res) {
 						if (err) { return error(err) }
 					})
 				}

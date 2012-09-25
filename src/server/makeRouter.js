@@ -56,7 +56,7 @@ function setupRoutes(app, accountService, messageService, sessionService, pictur
 	app.get('/api/ping', function(req, res) {
 		res.end('"Dogo!"')
 	})
-	app.post('/api/sessions', filter.oldClients, function postSessions(req, res) {
+	app.post('/api/session', filter.oldClients, function postSession(req, res) {
 		var params = getParams(req, 'facebookAccessToken', 'facebookRequestId')
 		if (params.facebookRequestId) { return respond(req, res, "Sessions for facebook requests is not ready yet. Sorry!") }
 		sessionService.createSession(params.facebookAccessToken, curry(respond, req, res))
@@ -73,7 +73,7 @@ function setupRoutes(app, accountService, messageService, sessionService, pictur
 		var params = getParams(req)
 		accountService.getContacts(req.session.accountId, wrapRespond(req, res, 'contacts'))
 	})
-	app.post('/api/messages', filter.oldClientsAndSession, function postMessage(req, res) {
+	app.post('/api/message', filter.oldClientsAndSession, function postMessage(req, res) {
 		var params = getParams(req, 'toConversationId', 'toAccountId', 'clientUid', 'body', 'picture')
 		var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
 		messageService.sendMessage(req.session.accountId,
