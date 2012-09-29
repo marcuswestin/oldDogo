@@ -18,7 +18,7 @@ function sendMessage(body, callback) {
 describe('Conversations', function() {
 	it('should be possible to get messages by account id', function(done) {
 		api.get('conversations', function(err, res) {
-			api.get('message', { conversationId:res.conversations[0].id }, function(err, res) {
+			api.get('messages', { conversationId:res.conversations[0].id }, function(err, res) {
 				check(err)
 				is(res.messages.length)
 				done()
