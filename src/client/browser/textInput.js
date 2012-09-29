@@ -17,10 +17,11 @@ function showTextInput(data) {
 	hideTextInput()
 	var at = data.at
 	$input = $(input())
-		.css({ position:'absolute', border:0, margin:0, padding:0, zIndex:1 })
+		.css({ position:'absolute', border:0, margin:0, padding:0, zIndex:3 })
 		.css({ width:at.width, height:at.height, left:at.x, top:at.y - topBarOffset })
 		.appendTo($('.dogoApp'))
-		.on('keypress', onKeyPress)
+		.on('keyup', onChange)
+		.on('keypress', onChange)
 	
 	if (data.backgroundColor) {
 		$input.css({ backgroundColor:'rgba('+data.backgroundColor.join(',')+')' })
@@ -50,11 +51,11 @@ function animateTextInput(data) {
 
 function hideTextInput() {
 	if (!$input) { return }
-	$input.blur().remove()
+	$input.off('keyup').off('keypress').blur().remove()
 	delete $input
 }
 
-var onKeyPress = function($e) {
+var onChange = function($e) {
 	setTimeout(function() {
 		var params = { text:$input.val() }
 		events.fire('textInput.didChange', params)

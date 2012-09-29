@@ -1,9 +1,5 @@
 var base64 = require('std/base64')
 
-// import ./bridge
-// import ./state
-// import ./config
-// 
 module.exports = {
 	post:post,
 	get:get,

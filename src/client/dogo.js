@@ -11,7 +11,7 @@ error = function error(err) {
 				div('close icon', button(function() { error.hide() })),
 				div('message')
 			)
-		)).appendTo('.scroller-body')
+		)).appendTo('.tags-scroller-body')
 			.css({ position:'absolute', top:0, left:0 })
 			.css(translate.y(-150))
 	}

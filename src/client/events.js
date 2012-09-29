@@ -1,7 +1,7 @@
 var each = require('std/each')
 
 // global
-events = {
+module.exports = {
 	on:on,
 	fire:fire,
 	once:once,

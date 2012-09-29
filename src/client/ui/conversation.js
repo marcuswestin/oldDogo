@@ -16,20 +16,20 @@ var conversation = module.exports = {
 	addMessage:addMessage
 }
 
-function renderConversation(opts) {
+function renderConversation(view) {
 	// setTimeout(function() { addMessage({ wasPushed:true, body:'R u?' }) }, 1000) // AUTOS
 	// setTimeout(function() { composer.selectDraw() }) // AUTOS
 	// setTimeout(function() { composer.selectPhoto() }) // AUTOS
 	
-	currentView = opts
+	currentView = view
 	$ui = {}
 
 	lastMessageWasFromMe = null
 	
-	var messages = opts.messages || []
+	var messages = view.messages || []
 	return div('conversation', function($el) {
 		setTimeout(function() { $el.append(
-		$ui.wrapper=$(div('messagesWrapper', style({ height:opts.height, 'overflow-y':'scroll', '-webkit-overflow-scrolling':'touch', overflowX:'hidden' }),
+		$ui.wrapper=$(div('messagesWrapper', style({ height:view.height, 'overflow-y':'scroll', '-webkit-overflow-scrolling':'touch', overflowX:'hidden' }),
 			$ui.info = $(div('info')),
 			$ui.invite=$(div('invite')),
 			div('messages', $ui.messages = list({
@@ -43,10 +43,10 @@ function renderConversation(opts) {
 		function() {
 			$ui.wrapper.scrollTop($ui.messages.height())
 			setTimeout(function() {
-				events.fire('conversation.rendered', currentView)
+				events.fire('conversation.rendered', view)
 			}, 100)
 			checkScrollBounds()
-			opts.refreshMessages && refreshMessages()
+			view.refreshMessages && refreshMessages()
 		}
 		) }, 75)
 	})
@@ -69,9 +69,7 @@ function refreshMessages() {
 		withFacebookId:currentView.facebookId
 	}
 	var wasCurrentView = currentView
-	loading(true)
 	api.get('messages', params, function refreshRenderMessages(err, res) {
-		loading(false)
 		$('.conversation .loading').remove()
 		if (wasCurrentView != currentView) { return }
 		if (err) { return error(err) }
@@ -294,7 +292,7 @@ events.on('app.willEnterForeground', function() {
 function promptInvite(message, accountId, facebookId) {
 	composer.hide()
 	loadAccountId(accountId, function(account) {
-		var $infoBar = $(div(style(transition('height', 500)), div('dogo-info blue',
+		var $infoBar = $(div(style(transition('height', 500)), div('dogo-info',
 			div('invite',
 				div('encouragement', 'Very Expressive!'),
 				div('personal', account.name.split(' ')[0], " doesn't have Dogo yet."),

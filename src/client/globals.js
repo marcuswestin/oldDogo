@@ -2,8 +2,8 @@ require('lib/jquery-1.8.1')
 require('globals/tags')
 require('globals/brand')
 
-require('./events')
-require('./state')
+events = require('./events')
+gState = require('./state')
 
 options = require('std/options')
 create = require('std/create')
@@ -20,31 +20,7 @@ filter = require('std/filter')
 flatten = require('std/flatten')
 paint = require('client/ui/paint')
 _ = require('underscore')
-
 parseUrl = require('std/url')
-
-loading = function loading(isLoading) {
-	if (isLoading) {
-		loading.count += 1
-		if (loading.count > 1) { return }
-		clearTimeout(loading.hideTimer)
-		loading.hideTimer = null
-		loading.showTimer = setTimeout(curry(loading.pos, gHeadHeight), 100)
-	} else {
-		loading.count -= 1
-		if (loading.count) { return }
-		clearTimeout(loading.showTimer)
-		loading.showTimer = null
-		loading.hideTimer = setTimeout(curry(loading.pos, 0), 100)
-	}
-}
-loading.count = 0
-loading.pos = function(y) {
-	if (!loading.$ui) {
-		loading.$ui = $(div('loading-wrapper', div('icon'))).appendTo('.dogoApp')
-	}
-	// loading.$ui.css(translate.y(y-2))
-}
 
 getId = function getId(d) { return d.id }
 

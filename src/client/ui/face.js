@@ -16,7 +16,7 @@ var face = module.exports = {
 		var postFix = large ? '?type=normal' : ''
 		var size = large ? 50 : 25
 		return {
-			background:'url("http://graph.facebook.com/'+facebookId+'/picture'+postFix+'") #fff no-repeat',
+			background:'url("http://graph.facebook.com/'+facebookId+'/picture'+postFix+'") transparent no-repeat',
 			width:size, height:size, backgroundSize:size+'px auto'
 		}
 	},

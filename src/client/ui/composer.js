@@ -103,12 +103,12 @@ function _selectDraw(img, message) {
 		drawer.render({ onSend:sendImage, onHide:hideDraw, img:img, message:message }).css(translate.y(viewport.height()))
 	)
 	setTimeout(function() {
-		$('.dogoApp .draw-composer').css(translate.y(0, selectDraw.duration))
+		$('.dogoApp .drawer').css(translate.y(0, selectDraw.duration))
 	})
 }
 selectDraw.duration = 300
 function hideDraw() {
-	$('.dogoApp .draw-composer').css(translate.y(viewport.height(), selectDraw.duration))
+	$('.dogoApp .drawer').css(translate.y(viewport.height(), selectDraw.duration))
 	setTimeout(function() {
 		composer.hide()
 	}, selectDraw.duration)

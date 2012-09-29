@@ -1,71 +1,49 @@
 var conversation = require('./conversation')
+function getConversationId(conversation) {
+	var getConversationId = (conversation.id || conversation)
+	return 'home-conversation-'+getConversationId
+}
 
-var $ui
+var conversationsList
 
 module.exports = {
 	render:function() {
-		var section = function(className, headerLabel, content) {
-			return div('section clear',
-				headerLabel && div('header',
-					div('label', headerLabel)
-				),
-				div('section '+className,
-					content
-				)
-			)
-		}
-		
-		$ui = {}
-		
-		var conversations = gState.cache['home-conversations'] || []
-		
 		// setTimeout(function() { selectConversation(conversations[0]) }) // AUTOS
 		
 		return div('home',
-			div('conversations',
-				$ui.info = $(div('info', 
-					conversations.length == 0 && div('loading', 'Loading...')
-				)),
-				$ui.conversations = list({
-					items:conversations,
-					onSelect:selectConversation,
-					getItemId:function conversationId(conv) { return 'home-convo-'+conv.conversationId },
-					reAddItems:true,
-					renderItem:renderConversation
+			div('conversations', div('info', 'Loading...'), function($conversations) {
+				gState.load('conversations', function(conversations) {
+					$conversations.empty().append(
+						div('info'),
+						conversationsList = list({
+							items:conversations,
+							onSelect:selectConversation,
+							getItemId:getConversationId,
+							reAddItems:true,
+							renderItem:renderConversation
+						})
+					)
+					reloadConversations()
 				})
-			),
-			function() {
-				reloadConversations()
-			}
+			})
 		)
 	}
 }
 
-function renderConversation(conversation) {
-	$ui.info.empty()
+renderConversation = function(conversation) {
 	var person = conversation.person
-	return div('conversation clear hasUnread',
+	var lastReceived = conversation.lastReceivedMessage
+	var lastRead = conversation.lastReadMessage
+	var hasUnread = lastReceived && (!lastRead || lastReceived.sentTime > lastRead.sentTime)
+	return div('conversation clear' + (hasUnread ? ' ' + hasUnread : ''),
 		div('unreadDot'),
 		face.large(person),
-		div('name', person.fullName),
-		div('body', (!message.body && !message.pictureId)
-			? div('youStarted', "You started the conversation.")
-			: (message.pictureId ? div('youStarted', 'sent you a picture') : message.body)
-		)
+		div('name', person.fullName)
+		// div('body', (!conversation.body && !message.pictureId)
+		// 	? div('youStarted', "You started the conversation.")
+		// 	: (message.pictureId ? div('youStarted', 'sent you a picture') : message.body)
+		// )
 	)
-}
-
-function messageFromConvo(convo) {
-	var hasUnread = (!convo.lastReadMessageId && convo.lastReceivedMessageId)
-					|| (convo.lastReadMessageId < convo.lastReceivedMessageId)
-	return {
-		accountId: convo.withAccountId,
-		hasUnread: hasUnread,
-		body: convo.lastReceivedBody,
-		lastReceivedMessageId: convo.lastReceivedMessageId,
-		pictureId: convo.lastReceivedPictureId,
-		conversationId: convo.id
-	}
 }
 
 function messageFromPush(pushMessage) {
@@ -92,60 +70,52 @@ function messageFromSentMessage(message, accountId) {
 }
 
 function filterConversations(conversations) {
+	return conversations
 	return _.filter(conversations, function(conv) { return !!conv.lastMessage })
 }
 
 function reloadConversations() {
-	loading(true)
 	api.get('conversations', function getConversations(err, res) {
-		loading(false)
 		if (err) { return error(err) }
 		gState.set('conversations', res.conversations)
 		var displayConversations = filterConversations(res.conversations)
-		$ui.conversations.append(displayConversations)
+		conversationsList.append(displayConversations)
 		if (displayConversations.length == 0) {
-			$ui.info.empty().append(div('ghostTown', "Send a message to a friend", div('icon arrow')))
+			$('.conversations .info').empty().append(
+				div('ghostTown', "Make some friends on Facebook, then come back to Dogo")
+			)
 		}
 	})
 }
 
-function selectConversation(message) {
-	var accountId = message.accountId
-	var account = accountKnown(accountId) && loadAccountId(accountId)
-	var title = (account ? account.name : 'Friend')
-	var conversation = { accountId:accountId }
-	gScroller.push({ title:title, conversation:conversation })
-	markRead(accountId)
-}
-
-function selectContact(contact) {
-	var conversation = { accountId:contact.accountId, facebookId:contact.facebookId }
-	gScroller.push({ title:contact.name, conversation:conversation })
-	markRead(contact.accountId)
+function selectConversation(conversation) {
+	gScroller.push({ conversation:conversation })
 }
 
 function bubbleId(withAccountId) { return 'conversation-bubble-'+withAccountId }
 
-function markRead(accountId) {
-	$ui.conversations.find('#'+bubbleId(accountId)).removeClass('hasUnread')
+function markRead(conversationId) {
+	conversationsList.find('#'+getConversationId(conversationId)).removeClass('hasUnread')
 }
 
 events.on('push.message', function(pushMessage) {
-	if (!$ui) { return }
-	$ui.conversations.prepend(messageFromPush(pushMessage))
+	return alert("FIX HOME push.message event")
+	// if (!$ui) { return }
+	// $ui.conversations.prepend(messageFromPush(pushMessage))
 })
 
 events.on('app.willEnterForeground', function() {
-	if (!$ui) { return }
+	if (!conversationsList) { return }
 	reloadConversations()
 })
 
 events.on('message.sent', function onMessageSentHome(info) {
-	var message = info.message
-	var toAccountId = info.toAccountId
-	$ui.conversations.prepend(messageFromSentMessage(message, toAccountId))
+	return alert('FIX HOME message.sent event')
+	// var message = info.message
+	// var toAccountId = info.toAccountId
+	// $ui.conversations.prepend(messageFromSentMessage(message, toAccountId))
 })
 
 events.on('conversation.rendered', function(info) {
-	markRead(info.accountId)
+	markRead(info.conversation)
 })

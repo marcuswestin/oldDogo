@@ -10,12 +10,12 @@ module.exports = {
 function createAndRenderScroller() {
 	gScroller = makeScroller({ onViewChange:function onViewChange() { events.fire('view.change') }, duration:300 })
 	$('#viewport').prepend(div('dogoApp',
-		gScroller.renderHead(gHeadHeight, scrollerRenderHeadContent),
-		gScroller.renderBody(3, scrollerRenderBodyContent)
+		gScroller.renderHead(gHeadHeight, renderScrollerHead),
+		gScroller.renderBody(3, renderScrollerView)
 	))
 }
 
-function scrollerRenderHeadContent(view, opts) {
+function renderScrollerHead(view, opts) {
 	var isHome = (gScroller.stack.length == 1)
 	var stackIsAboveHome = (gScroller.stack.length > 1)
 	var showBackButton = (opts.viewBelow && stackIsAboveHome)
@@ -31,24 +31,16 @@ function scrollerRenderHeadContent(view, opts) {
 	)
 }
 
-function scrollerRenderBodyContent(view, opts) {
+function renderScrollerView(view, opts) {
 	console.log("scroller.scrollerRenderBodyContent", JSON.stringify(view))
-	var convo = view.conversation
-	if (!convo) { return home.render(view) }
-	return [
-		conversation.render({
-			accountId:convo.accountId,
-			facebookId:convo.facebookId,
-			messages:gState.cache[conversation.id(convo, 'messages')],
-			myAccountId:gState.myAccount().accountId,
-			height:viewport.height() - gScroller.$head.height(),
-			refreshMessages:true
-		}),
-		composer.render({ accountId:convo.accountId, facebookId:convo.facebookId })
-	]
+	if (view.conversation) {
+		return [conversation.render(view), composer.render(view)]
+	} else {
+		return home.render(view)
+	}
 }
 
 events.on('searchButton.results', function(info) {
-	if (info.showing) { $('.scroller-head').addClass('flat') }
-	else { $('.scroller-head').removeClass('flat') }
+	if (info.showing) { $('.tags-scroller-head').addClass('flat') }
+	else { $('.tags-scroller-head').removeClass('flat') }
 })

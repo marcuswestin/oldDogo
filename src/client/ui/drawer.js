@@ -42,7 +42,7 @@ function render(_opts) {
 	
 	p = paint([dim, dim], pixelRatio)
 	
-	$ui = $(div('draw-composer', style(viewport.getSize()),
+	$ui = $(div('drawer', style(viewport.getSize()),
 		// div('loading', 'Loading...'),
 		div('close button',
 			div('icon'),
