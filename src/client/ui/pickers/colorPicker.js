@@ -56,7 +56,7 @@ module.exports = proto(basePicker,
 				onSelect(rgb)
 				rgb = item
 			}
-			return tags.draggable({
+			return draggable({
 				start:function(pos) {
 					hsvBase = getHsv(this)
 				},

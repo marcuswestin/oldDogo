@@ -1,10 +1,10 @@
 require('lib/raphael-2.1.0')
-require('tags')
 require('globals/brand')
 style = require('tags/style')
 slice = require('std/slice')
+tags = require('tags')
 
-tags.expose('div')
+div = tags('div')
 
 Raphael.fn.colorPickerIcon = function (x, y, r) {
 	var pi = Math.PI;

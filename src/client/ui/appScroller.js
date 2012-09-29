@@ -8,7 +8,7 @@ module.exports = {
 }
 
 function createAndRenderScroller() {
-	gScroller = tags.scroller({ onViewChange:function onViewChange() { events.fire('view.change') }, duration:300 })
+	gScroller = makeScroller({ onViewChange:function onViewChange() { events.fire('view.change') }, duration:300 })
 	$('#viewport').prepend(div('dogoApp',
 		gScroller.renderHead(gHeadHeight, scrollerRenderHeadContent),
 		gScroller.renderBody(3, scrollerRenderBodyContent)

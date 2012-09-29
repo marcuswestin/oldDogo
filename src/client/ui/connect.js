@@ -1,7 +1,7 @@
 module.exports = {
 	render: function(onConnected) {
 		
-		var scroller = tags.scroller({ duration:400, alwaysBounce:false })
+		var scroller = makeScroller({ duration:400, alwaysBounce:false })
 		return div('connectView',
 			div('logo', 'dogo'),
 			scroller.renderBody(2, function(view, info) {

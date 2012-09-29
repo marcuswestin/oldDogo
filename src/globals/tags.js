@@ -1,20 +1,16 @@
-require('tags')
-require('tags/button')
-require('tags/list')
-require('tags/style')
-require('tags/scroller')
-require('tags/util')
-require('tags/viewport')
+tags = require('tags')
+button = require('tags/button')
+list = require('tags/list')
+style = require('tags/style')
+makeScroller = require('tags/scroller')
+viewport = require('tags/viewport')
+draggable = require('tags/draggable')
 
-div = tags.createTag('div')
-br = tags.createTag('br')
-a = tags.createTag('a')
-input = tags.createTag('input')
-img = tags.createTag('img')
-canvas = tags.createTag('canvas')
-viewport = tags.viewport
-button = tags.button
-list = tags.list
-style = tags.style
-transition = tags.style.transition
-translate = tags.style.translate
+div = tags('div')
+br = tags('br')
+a = tags('a')
+input = tags('input')
+img = tags('img')
+canvas = tags('canvas')
+transition = style.transition
+translate = style.translate
