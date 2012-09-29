@@ -11,6 +11,8 @@ run: run-databases
 offline = no
 verbose = yes
 test: reset-test-db test-server
+t:
+	make test offline=yes verbose=no
 
 # Create a new iOS build and deliver it to all developers via testflight
 fly-dev: fly-build
