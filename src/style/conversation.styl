@@ -1,39 +1,33 @@
 @import "./macros"
 @import "./questions"
 @import "./buttons"
-
-offWhite = #EBEAE7
-
-faceDim = 100px
-.face
-	width faceDim; height faceDim; background-size faceDim faceDim;
-	.member-ribbon
-		width 16px; height 16px; background url("/static/img/badge.png"); float right; margin 32px 0 0;
-
-small-face()
-	float left; border-radius 3px; margin 0 0 0 -56px; width faceDim; height faceDim; border 1px solid #fff; box-shadow 0 1px 0 #BFC79F;
-
-.messageBubble.fromMe, .conversation .messageBubble.fromMe
-	float right; margin-right 40px;
-	.face
-		float right; margin 0 -34px 0 0;
+@import "./faces"
+@import "./common"
 
 .conversation
 	.ghostTown
-		font-style italic; font-size 20px; margin 150px 10px;
+		margin 150px 10px;
 	.messages
 		padding 0 0 44px 0;
 	.messageBubble
+		border-radius 3px; word-wrap break-word; box-shadow 0 1px 1px rgba(18, 110, 175, 0.74); background #fff;
 		margin 5px 0 0 36px; display inline-block;
+		.face
+			float left; small-face()
 		.textContent
 			light(); padding 3px 9px; max-width 200px;
 		.pictureContent
 			border-radius 4px;
+	.messageBubble.fromMe
+		float right; margin-right 40px;
+		.face
+			float right; margin 0 -34px 0 0;
 	.messageBubble.newGroup
 		margin-top 10px;
 	.messageBubble.picture
 		box-shadow 0 0 0;
 	.dogo-info
+		blueNotice()
 		width 100%; margin 8px 0; padding 4px 0 10px 0; border-width 1px 0; border-style solid;
 		.encouragement
 			font-size 23px; margin 0 0 4px 0;
@@ -45,15 +39,12 @@ small-face()
 		margin-top 100px; text-shadow none; color #fff; font-style italic;
 	.face
 		small-face()
+	.invite
+		text-align center; width 100%;
+		.button
+			font-size 22px; text-shadow rgba(0,0,0,.3); margin 0 auto; padding 6px 8px 8px; width 210px;
 
-
-
-.messageBubble
-	border-radius 3px; word-wrap break-word; box-shadow 0 1px 1px rgba(18, 110, 175, 0.74); background #fff;
-	.face
-		float left; small-face()
-
-.draw-composer
+.drawer
 	line-height 0; z-index 2; background #000;
 	position absolute; bottom 0;
 	.loading
@@ -86,3 +77,26 @@ small-face()
 		.icon
 			icon(20px, 20px, 'xtras-white/37-circle-x.png');
 
+.composer
+	position absolute; bottom 0; width 320px; background #126EAF; z-index 2;
+	.surface
+		bodyRadius = 6px; bodyWidth = 320px;
+
+	.tools
+		margin-top -5px;
+		.closeTextInput
+			absolute bottom 0 right 0; width 40px; height 40px;
+			.icon
+				absolute bottom 6px right 6px; icon(22px, 22px, 'white/298-circlex.png')
+		.right
+			float right;
+		.tool
+			display inline-block; margin 2px 0 0 4px; border-radius 4px; height 18px; width 24px; padding 6px 12px 8px;
+			.icon.draw
+				icon(24px, 20px, 'white/98-palette.png')
+			.icon.write
+				icon(24px, 22px, 'white/09-chat-2.png')
+			.icon.photo
+				icon(24px, 18px, 'white/86-camera.png')
+		.tool.send
+			float right; margin-right 1px;

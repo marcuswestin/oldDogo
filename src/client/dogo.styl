@@ -1,29 +1,13 @@
 @import "../style/normalize"
 @import "../style/macros"
+@import "../style/common"
 @import "../style/conversation"
+@import "../style/brand"
 @import "../static/fonts/opensans-all"
 @import "../static/fonts/yellowtail-regular"
-@import "./brand"
-
-.blue
-	background blueLight; color blueDark; border-color blueDark;
-
-.green
-	background greenLight; color greenDark; border-color greenDark;
-
-.yellow
-	background yellowLight; color yellowDark; border-color yellowDark;
-
-.red
-	background redLight; color redDark; border-color redDark;
 
 body
-	background #000; tap-highlight-color: rgba(0,0,0,0); -webkit-user-select: none;
-
-#viewport
-	position relative; overflow hidden;
-	> div
-		absolute top 0 left 0; width 100%; height 100%;
+	background #000;
 
 .dogoApp
 	font-family "Open Sans"; font-weight 300; font-size 14px;
@@ -35,15 +19,44 @@ body
 	-webkit-touch-callout: none;
 	-webkit-user-select: none; /* Disable selection/Copy of UIWebView */
 	-webkit-transition -webkit-transform .3s;
-
-.scroller-head
-	z-index 1; box-shadow 0 1px 2px rgba(0, 0, 0, .7);
-.scroller-head.flat
-	box-shadow none;
-
-.slogan
-	font-size 20px; color #1A84BB; font-weight 100;
 	
+	.errorNotice
+		width 100%;
+		.content
+			background rgba(255, 186, 186, 0.85);
+			 text-align center; padding 8px 0; border 1px solid; margin 0 3px; border-radius: 0 0 4px 4px;
+			.close.icon
+				icon(20px, 20px, 'xtras-white/37-circle-x.png'); float right; margin 1px 4px 0;
+	
+	#viewport
+		position relative; overflow hidden;
+		> div
+			absolute top 0 left 0; width 100%; height 100%;
+	
+	.tags-scroller-head
+		z-index 1; box-shadow 0 1px 2px rgba(0, 0, 0, .7);
+	.tags-scroller-head.flat
+		box-shadow none;
+
+
+.connectView
+	text-align center; width 100%;
+	background -webkit-radial-gradient(center, ellipse cover, #F7EBB7 0%, #F8BB4D 110%);
+	z-index 2;
+	.logo
+		font-size 60px; margin-top 140px; font-weight bold;
+	.slogan
+		font-size 20px; color #1A84BB; font-weight 100;
+		margin 215px 0 90px 0; -webkit-transform rotate(-7deg) translateX(30px);
+	.button
+		background #1A84BB; font-size 22px; text-shadow rgba(0,0,0,.3); margin 0 auto; padding 10px 8px 12px;
+		margin 0 auto 25px; width 200px; box-shadow 0 5px 0 #143075; border none; font-weight 100; border-radius 8px;
+	.button.active
+		box-shadow 0 5px 0 rgba(20, 48, 117, 0); -webkit-transform translateY(5px);
+	.notice
+		width 240px; margin 0 auto; color #F89246; font-size 13px;
+		.link
+			color #DD4421;
 
 .head
 	height 100%; width 100%; overflow hidden;
@@ -81,42 +94,6 @@ body
 		.button
 			margin 4px 2px 0;
 	
-
-.invite
-	text-align center; width 100%;
-	.button
-		font-size 22px; text-shadow rgba(0,0,0,.3); margin 0 auto; padding 6px 8px 8px;
-
-.connectView
-	text-align center; width 100%;
-	background -webkit-radial-gradient(center, ellipse cover, #F7EBB7 0%, #F8BB4D 110%);
-	z-index 2;
-	.logo
-		font-size 60px; margin-top 140px; font-weight bold;
-	.slogan
-		margin 215px 0 90px 0; -webkit-transform rotate(-7deg) translateX(30px);
-	.button
-		background #1A84BB; font-size 22px; text-shadow rgba(0,0,0,.3); margin 0 auto; padding 10px 8px 12px;
-		margin 0 auto 25px; width 200px; box-shadow 0 5px 0 #143075; border none; font-weight 100; border-radius 8px;
-	.button.active
-		box-shadow 0 5px 0 rgba(20, 48, 117, 0); -webkit-transform translateY(5px);
-	.notice
-		width 240px; margin 0 auto; color #F89246; font-size 13px;
-		.link
-			color #DD4421;
-			// color rgba(0, 65, 204, 0.75);
-	
-.invite .button
-	width 210px;
-
-.errorNotice
-	width 100%;
-	.content
-		background rgba(255, 186, 186, 0.85);
-		 text-align center; padding 8px 0; border 1px solid; margin 0 3px; border-radius: 0 0 4px 4px;
-		.close.icon
-			icon(20px, 20px, 'xtras-white/37-circle-x.png'); float right; margin 1px 4px 0;
-
 .home
 	.loading
 		relative top 120px;
@@ -126,74 +103,27 @@ body
 			icon(23px, 17px, 'white/213-reply.png');
 			-webkit-transform: rotate(120deg);
 			margin 0 0 1px 6px; display inline-block;
-			
-	.section
-		.header
-			height 40px; background color4; color #fff; // gradient(color4, color5); 
-			.label
-				padding 9px;
 	.conversations
 		min-height 254px;
-		.messageBubble
-			margin 7px 8px 0 60px;
-			.name
-				padding 5px 8px 0;
-				text-shadow: 0 1px 0 #ffffff;
-			.body
-				padding 0 8px 6px; light()
-			.unreadDot
-				width 20px; height 20px; background color1; border-radius 10px;
-				float right; margin 15px 8px 0 0; display none;
-		.messageBubble.hasUnread .unreadDot
-				display block;
-		.youStarted
-			light-italic()
 	.friends
 		padding 1px 0 0 2px;
 		.face
 			float left; margin 2px 2px 1px 1px;
-	
-.composer
-	position absolute; bottom 0; width 320px; background #126EAF; z-index 2;
-	.surface
-		bodyRadius = 6px; bodyWidth = 320px;
 
-	.tools
-		margin-top -5px;
-		.closeTextInput
-			absolute bottom 0 right 0; width 40px; height 40px;
-			.icon
-				absolute bottom 6px right 6px; icon(22px, 22px, 'white/298-circlex.png')
-		.right
-			float right;
-		.tool
-			display inline-block; margin 2px 0 0 4px; border-radius 4px; height 18px; width 24px; padding 6px 12px 8px;
-			.icon.draw
-				icon(24px, 20px, 'white/98-palette.png')
-			.icon.write
-				icon(24px, 22px, 'white/09-chat-2.png')
-			.icon.photo
-				icon(24px, 18px, 'white/86-camera.png')
-		.tool.send
-			float right; margin-right 1px;
-
-.loading-wrapper
-	absolute top 0 right 5px; width 31px; height 31px; border-radius 0 0 4px 4px; border 1px solid rgba(blueDark, .7);
-	background rgba(blueDark, .5); z-index 1; transition -webkit-transform 0.5s;
-	.icon
-		absolute top 2px left 3px; icon(26px, 26px, 'white/171-sun.png'); animate-rotation(1.5s)
-
-.loading
-	text-align center; color #fff; font-style italic; font-size 22px; 
-
-
-.clear
-	clear both
-
-.ghostTown
-	text-align center; color #fff; text-shadow 0 1px 0 #888; margin 10px 0; font-size 17px;
-.ghostTown.dark
-	color #333; text-shadow 0 1px 0 #ccc;
+.conversation
+	margin 7px 8px 0 60px;
+	.name
+		padding 5px 8px 0;
+		text-shadow: 0 1px 0 #ffffff;
+	.body
+		padding 0 8px 6px; light()
+	.unreadDot
+		width 20px; height 20px; background color1; border-radius 10px;
+		float right; margin 15px 8px 0 0; display none;
+	.youStarted
+		light-italic()
+.conversation.hasUnread .unreadDot
+		display block;
 
 .searchResults
 	absolute top 0 left 0; background #fff; width 100%; box-shadow 0 1px 4px #333;
@@ -208,7 +138,3 @@ body
 		.person:last-child
 			padding-bottom 4px;
 
-.link
-	color blueDark; text-decoration none;
-.link:active, .link:hover
-	text-decoration underline;
