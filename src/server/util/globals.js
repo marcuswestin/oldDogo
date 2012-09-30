@@ -4,11 +4,16 @@ each = require('std/each')
 map = require('std/map')
 bind = require('std/bind')
 slice = require('std/slice')
+options = require('std/options')
 _ = require('underscore')
-makeLog = require('./log').makeLog
-log = makeLog('Global')
 
 ListPromise = require('std/ListPromise')
+
+nop = noop = function() { return this }
+
+makeTimer = require('./makeTimer')
+makeLog = require('./log').makeLog
+log = makeLog('Global')
 
 getId = function(model) {
 	return typeof model == 'number' ? model : model.id

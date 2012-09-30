@@ -6,8 +6,11 @@ var qs = require('querystring')
 var fs = require('fs')
 var request = require('request')
 var facebook = require('../../src/server/util/facebook')
+var makeTimer = require('../../src/server/util/makeTimer')
 
 var api = u.api
+
+// makeTimer.disable()
 
 describe('Setup with Facebook Connect', function() {
 	it('should allow creating an FB app access token', function(done) {
@@ -48,7 +51,9 @@ describe('Setup with Facebook Connect', function() {
 	it('should let you create a session', function(done) {
 		var fbUser = fbUsers[0]
 		this.timeout(0)
+		var timer = makeTimer('create session').start('postSession')
 		api.post('session', { facebookAccessToken:fbUser.access_token }, function(err, res) {
+			timer.stop('postSession').report()
 			check(err)
 			is(res.authToken)
 			is(res.account)

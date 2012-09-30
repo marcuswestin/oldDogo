@@ -57,9 +57,11 @@ function setupRoutes(app, accountService, messageService, sessionService, pictur
 		res.end('"Dogo!"')
 	})
 	app.post('/api/session', filter.oldClients, function postSession(req, res) {
+		var timer = makeTimer('postSessionHandler').start('getParams')
 		var params = getParams(req, 'facebookAccessToken', 'facebookRequestId')
 		if (params.facebookRequestId) { return respond(req, res, "Sessions for facebook requests is not ready yet. Sorry!") }
-		sessionService.createSession(params.facebookAccessToken, curry(respond, req, res))
+		timer.stop('getParams')
+		sessionService.createSession(makeRequestMeta(req, { timer:timer }), params.facebookAccessToken, curry(respond, req, res))
 	})
 	// app.get('/api/session', filter.oldClients, function getSession(req, res) {
 	// 	var params = getParams(req, 'authToken')
@@ -128,6 +130,16 @@ function setupRoutes(app, accountService, messageService, sessionService, pictur
 		log.error("Route error".red, err)
 		respond(req, res, err)
 	})
+}
+
+function makeRequestMeta(req, opts) {
+	opts = options(opts, {
+		timer:makeTimer.dummy
+	})
+	if (typeof opts.timer == 'string') {
+		opts.timer = makeTimer(opts.timer)
+	}
+	return opts
 }
 
 function setupDev(app) {

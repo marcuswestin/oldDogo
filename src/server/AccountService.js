@@ -10,21 +10,25 @@ module.exports = proto(null,
 	function(database) {
 		this.db = database
 	}, {
-		lookupOrCreateByFacebookAccount:function(fbAccount, fbAccessToken, callback) {
+		lookupOrCreateByFacebookAccount:function(reqMeta, fbAccount, fbAccessToken, callback) {
+			reqMeta.timer.start('_selectAccountByFacebookId')
 			this._selectAccountByFacebookId(this.db, fbAccount.id, function(err, account) {
+				reqMeta.timer.stop('_selectAccountByFacebookId')
 				if (err) { return callback(err) }
 				
+				reqMeta.timer.start('get /me/friends from facebook')
 				facebook.get('/me/friends', { access_token:fbAccessToken }, bind(this, function(err, res) {
+					reqMeta.timer.stop('get /me/friends from facebook')
 					if (err) { return callback(err) }
 					var fbFriends = res.data
 					if (res.error || !fbFriends) {
 						callback(res.error || 'Facebook connect me/friends failed')
 					} else if (account && account.memberSince) {
-						this._insertFbContacts(this.db, fbAccount, fbFriends, callback)
+						this._insertFbContacts(reqMeta, this.db, fbAccount, fbFriends, callback)
 					} else if (account) {
-						this._claimAccount(fbAccount, fbFriends, callback)
+						this._claimAccount(reqMeta, fbAccount, fbFriends, callback)
 					} else {
-						this._createClaimedAccount(fbAccount, fbFriends, callback)
+						this._createClaimedAccount(reqMeta, fbAccount, fbFriends, callback)
 					}
 				}))
 			})
@@ -73,7 +77,7 @@ module.exports = proto(null,
 			conn.updateOne(this, 'UPDATE account SET last_client_uid_block_start=?, last_client_uid_block_end=? WHERE id=?',
 				[clientUidBlock.start, clientUidBlock.end, accountId], callback)
 		},
-		_createClaimedAccount:function(fbAcc, fbFriends, callback) {
+		_createClaimedAccount:function(reqMeta, fbAcc, fbFriends, callback) {
 			log('create new account with', fbFriends.length, 'friends')
 			this.db.transact(this, function(tx) {
 				callback = tx.wrapCallback(callback)
@@ -86,7 +90,7 @@ module.exports = proto(null,
 					[timestamp, timestamp, fbAcc.id, fbAcc.name, fbAcc.first_name, fbAcc.last_name, fbAcc.gender, fbAcc.locale, fbAcc.timezone],
 					function(err, accountId) {
 						if (err) { return callback(err) }
-						var proceed = bind(this, this._insertFbContacts, tx, fbAcc, fbFriends, callback)
+						var proceed = bind(this, this._insertFbContacts, reqMeta, tx, fbAcc, fbFriends, callback)
 						if (fbAcc.email && !fbAcc.email.match('proxymail.facebook.com')) {
 							tx.insert(this,
 								'INSERT INTO account_email SET account_id=?, email_address=?, created_time=?, claimed_time=?',
@@ -99,8 +103,9 @@ module.exports = proto(null,
 				)
 			})
 		},
-		_claimAccount:function(fbAcc, fbFriends, callback) {
+		_claimAccount:function(reqMeta, fbAcc, fbFriends, callback) {
 			log('claim account with', fbAcc, fbFriends.length, 'friends')
+			reqMeta.timer.start('_claimAccount')
 			this.db.transact(this, function(tx) {
 				callback = tx.wrapCallback(callback)
 				var timestamp = conn.time()
@@ -108,12 +113,17 @@ module.exports = proto(null,
 				tx.updateOne(this,
 					'UPDATE account SET claimed_time=?, full_name=?, first_name=?, last_name=?, gender=?, locale=?, timezone=?, email=?, email_verified_time=? WHERE facebook_id=?',
 					[timestamp, fbAcc.name, fbAcc.first_name, fbAcc.last_name, fbAcc.gender, fbAcc.locale, fbAcc.timezone, fbAcc.email, emailVerifiedTime, fbAcc.id],
-					bind(this, this._insertFbContacts, tx, fbAcc, fbFriends, callback)
+					bind(this, function(err) {
+						if (err) { return callback(err) }
+						reqMeta.timer.stop('_claimAccount')
+						this._insertFbContacts(reqMeta, tx, fbAcc, fbFriends, callback)
+					})
 				)
 			})
 		},
-		_insertFbContacts:function(tx, fbAccount, fbFriends, callback, err) {
+		_insertFbContacts:function(reqMeta, tx, fbAccount, fbFriends, callback, err) {
 			if (err) { return logErr(err, callback, '_insertFbContacts', fbAccount) }
+			reqMeta.timer.start('_insertFbContacts')
 			this._selectAccountByFacebookId(tx, fbAccount.id, function(err, userAccount) {
 				if (err) { return logErr(err, callback, 'select id by facebook id', fbAccount) }
 				var timestamp = tx.time()
@@ -132,6 +142,7 @@ module.exports = proto(null,
 						},
 						finish: function(err, friendAccountIds) {
 							if (err) { return callback(err) }
+							reqMeta.timer.stop('_insertFbContacts')
 							createConversations.call(this, friendAccountIds)
 						}
 					})

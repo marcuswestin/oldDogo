@@ -10,16 +10,24 @@ module.exports = proto(null,
 		this.accountService = accountService
 		this._redis = redis.createClient()
 	}, {
-		createSession: function(fbAccessToken, callback) {
+		createSession: function(reqMeta, fbAccessToken, callback) {
 			if (fbAccessToken) {
+				reqMeta.timer.start('get /me from facebook')
 				facebook.get('/me', { access_token:fbAccessToken }, bind(this, function(err, fbAccount) {
+					reqMeta.timer.stop('get /me from facebook')
 					if (err) { return logError(err, callback, '_handleFacebookAccount', fbAccessToken) }
 					if (!fbAccount) { return logError('Facebook did not return information for user', callback, { fbAccessToken:fbAccessToken }) }
-					this.accountService.lookupOrCreateByFacebookAccount(fbAccount, fbAccessToken, bind(this, function(err, account) {
+					reqMeta.timer.start('lookupOrCreateByFacebookAccount')
+					this.accountService.lookupOrCreateByFacebookAccount(reqMeta, fbAccount, fbAccessToken, bind(this, function(err, account) {
+						reqMeta.timer.stop('lookupOrCreateByFacebookAccount')
 						if (err) { return logError(err, callback, 'createSession.lookupOrCreateByFacebookAccount', account) }
+						reqMeta.timer.start('createSessionForAccountId')
 						this.createSessionForAccountId(account.id, bind(this, function(err, authToken) {
+							reqMeta.timer.stop('createSessionForAccountId')
 							if (err) { return logError(err, callback, 'createSession.createSessionForAccountId', account.id) }
+							reqMeta.timer.start('bumpClientUidBlock')
 							this.accountService.bumpClientUidBlock(account.id, bind(this, function(err, clientUidBlock) {
+								reqMeta.timer.stop('bumpClientUidBlock').report()
 								callback(null, { authToken:authToken, account:account, clientUidBlock:clientUidBlock })
 							}))
 						}))
