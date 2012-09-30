@@ -22,7 +22,8 @@ var state = module.exports = {
 		}
 	},
 	getSessionInfo:function(key) {
-		return (state.cache['sessionInfo'] || {})[key]
+		var sessionInfo = state.cache['sessionInfo'] || {}
+		return key ? sessionInfo[key] : sessionInfo
 	},
 	myAccount:function() {
 		return state.getSessionInfo('myAccount')

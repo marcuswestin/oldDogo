@@ -4,90 +4,94 @@ var pictures = require('../../data/pictures')
 var linkify = require('lib/linkify')
 var questions = require('./questions')
 
-var currentView
-var $ui
-
-var conversation = module.exports = {
-	id: function conversationId(convo, name) {
-		return 'conv-'+name+'-'+(convo.accountId ? 'dogo-'+convo.accountId : 'fb-'+convo.facebookId)
-	},
-	render:renderConversation,
-	refreshMessages:refreshMessages,
-	addMessage:addMessage
+module.exports = {
+	render:renderConversation
 }
 
-function renderConversation(view) {
-	// setTimeout(function() { addMessage({ wasPushed:true, body:'R u?' }) }, 1000) // AUTOS
+var view
+var $ui
+var lastMessageWasFromMe = null;
+
+events.on('view.change', function resetView() {
+	view = null
+	$ui = null
+	lastMessageWasFromMe = null
+	getMessagesList._list = null
+})
+
+function renderConversation(_view) {
+	// setTimeout(function() { onNewMessage({ wasPushed:true, body:'R u?' }) }, 1000) // AUTOS
 	// setTimeout(function() { composer.selectDraw() }) // AUTOS
 	// setTimeout(function() { composer.selectPhoto() }) // AUTOS
 	
-	currentView = view
+	view = _view
 	$ui = {}
-
 	lastMessageWasFromMe = null
-	
-	var messages = view.messages || []
-	return div('conversation', function($el) {
-		setTimeout(function() { $el.append(
+
+	var messages = []
+	return div('conversationView',
+		// function($el) { setTimeout(function() { $el.append(
 		$ui.wrapper=$(div('messagesWrapper', style({ height:view.height, 'overflow-y':'scroll', '-webkit-overflow-scrolling':'touch', overflowX:'hidden' }),
-			$ui.info = $(div('info')),
-			$ui.invite=$(div('invite')),
-			div('messages', $ui.messages = list({
-				items:messages,
-				onSelect:selectMessage,
-				renderItem:renderMessage,
-				getItemId:function messageId(message) { return 'message-'+(message.id || message.localId) }
-			})),
-			(messages.length == 0 && div('loading', 'Loading...'))
+			messages.length
+				? getMessagesList().append(messages)
+				: div('loading', 'Loading...')
 		)).on('scroll', checkScrollBounds),
+		
 		function() {
-			$ui.wrapper.scrollTop($ui.messages.height())
+			if (messages.length) {
+				// always begin at the bottom of the list of messages
+				$ui.wrapper.scrollTop(getMessagesList().height())
+			}
 			setTimeout(function() {
-				events.fire('conversation.rendered', view)
+				events.fire('conversation.rendered', view.conversation)
 			}, 100)
 			checkScrollBounds()
-			view.refreshMessages && refreshMessages()
+			refreshMessages()
 		}
-		) }, 75)
-	})
+		
+		// ) }, 75) }
+	)
 }
 
-
+function getMessagesList() {
+	if (getMessagesList._list) { return getMessagesList._list }
+	$('.conversationView .loading').remove()
+	$('.conversationView').append(
+		getMessagesList._list = list('messages', {
+			onSelect:selectMessage,
+			renderItem:renderMessage,
+			getItemId:function(message) { return message.clientUid },
+			renderEmpty:function() { return div('ghostTown', 'Start the conversation', br(), 'Draw something!') }
+		})
+	)
+	return getMessagesList._list
+}
 
 function selectMessage(message, _, $el) {
-	if (message.pictureId || message.base64Picture) {
-		composer.selectDraw($el.find('.messageBubble .pictureContent')[0], message)
-	} else {
-		// do nothing
-	}
+	alert("FINISH selectMessage")
+	// if (message.pictureId || message.base64Picture) {
+	// 	composer.selectDraw($el.find('.messageBubble .pictureContent')[0], message)
+	// } else {
+	// 	// do nothing
+	// }
 }
 
 function refreshMessages() {
-	if (!currentView) { return }
-	var params = {
-		withAccountId:currentView.accountId,
-		withFacebookId:currentView.facebookId
-	}
-	var wasCurrentView = currentView
-	api.get('messages', params, function refreshRenderMessages(err, res) {
-		$('.conversation .loading').remove()
-		if (wasCurrentView != currentView) { return }
+	if (!view) { return }
+	var wasCurrentView = view
+	api.get('messages', { conversationId:view.conversation.id }, function refreshRenderMessages(err, res) {
+		$('.conversationView .loading, .conversationView .ghostTown').remove()
+		if (wasCurrentView != view) { return }
 		if (err) { return error(err) }
-		// var cachedMessages = gState.cache[convId()]
-		// var lastCachedMessage = cachedMessages && cachedMessages[0]
-		// var lastReceivedMessage = res.messages[0]
-		// if (lastCachedMessage && lastReceivedMessage && lastCachedMessage.id == lastReceivedMessage.id) { return }
-		$ui.messages.append(res.messages)
-		if (!res.messages.length) {
-			$ui.info.empty().append(div('ghostTown', 'Start the conversation!'))
-		}
-		$ui.wrapper.scrollTop($ui.messages.height())
-		gState.set(conversation.id(currentView, 'messages'), res.messages)
+		var messagesList = getMessagesList()
+		messagesList.append(res.messages)
+		$ui.wrapper.scrollTop(messagesList.height())
+		// gState.set(conversation.id(view, 'messages'), res.messages)
 	})
 }
 
 var checkScrollBounds = once(function checkScrollBounds() {
-	if (!$ui.wrapper) { return }
+	if (!view) { return }
 	var pics = $ui.wrapper.find('.messageBubble .pictureContent')
 	var viewHeight = $ui.wrapper.height()
 	var viewTop = $ui.wrapper.scrollTop() - (viewHeight * 3/4) // preload 3/4 of a view above
@@ -113,10 +117,9 @@ function image(name, size) {
 	}))
 }
 
-var lastMessageWasFromMe = null;
 function renderMessage(message) {
 	var isVeryFirstMessage = (lastMessageWasFromMe === null)
-	var messageIsFromMe = (message.senderAccountId == currentView.myAccountId)
+	var messageIsFromMe = (message.senderAccountId == view.myAccountId)
 	var isFirstMessageInGroup = (lastMessageWasFromMe != messageIsFromMe || isVeryFirstMessage)
 	var shouldRenderFace = true || isFirstMessageInGroup
 	var classes = [
@@ -175,34 +178,27 @@ function renderContent(message) {
 }
 
 function onNewMessage(message) {
-	$ui.wrapper.find('.ghostTown').remove()
-	addMessage(message)
-}
-
-function addMessage(message) {
+	$('.conversationView .ghostTown').remove()
+	var messagesList = getMessagesList()
 	if (message.isSending || (message.wasPushed && !gIsTouching)) {
-		var heightBefore = $ui.messages.height()
+		// If this message was sent by me, or if I just received it and I'm not currently touching the screen, then scroll the new message into view
+		var heightBefore = messagesList.height()
 		setTimeout(function() {
-			var dHeight = heightBefore - $ui.messages.height()
+			var dHeight = heightBefore - messagesList.height()
 			$ui.wrapper.animate({
 				scrollTop: $ui.wrapper.scrollTop() - dHeight,
 				duration: 50
 			})
 		}, 50)
 	}
-	$ui.messages.append(message)
+	messagesList.append(message)
 }
 
-function isNearBottom() {
-	var deltaFromBottom = Math.abs(($ui.wrapper.scrollTop() + $ui.wrapper.height()) - ($ui.messages.height() + 50))
-	return deltaFromBottom < 100
-}
-
-function cacheMessage(message) {
-	var cache = gState.cache[conversation.id(currentView, 'messages')]
-	if (!cache) { return }
-	cache.unshift(message)
-}
+// function cacheMessage(message) {
+// 	var cache = gState.cache[conversation.id(view, 'messages')]
+// 	if (!cache) { return }
+// 	cache.unshift(message)
+// }
 
 var inputHeight = 39
 events.on('composer.selectedText', function() {
@@ -247,51 +243,35 @@ events.on('composer.selectedText', function() {
 })
 
 events.on('push.message', function(message) {
-	if (!currentView || !currentView.accountId || currentView.accountId != message.senderAccountId) { return }
-	cacheMessage(message)
+	if (!view || !view.accountId || view.accountId != message.senderAccountId) { return }
+	// cacheMessage(message)
 	onNewMessage(message)
 })
 
 events.on('message.sending', function(message) {
-	$ui.info.empty()
 	onNewMessage(message)
 	message.events.on('sent', function(response) {
-		var oldId = $ui.messages.getItemId(message)
-		var newId = $ui.messages.getItemId(response.message)
-		$('#'+oldId).attr('id', newId)
+		// Show that the message was succesfully sent
 	})
 })
 
-events.on('message.sent', function(info) {
-	var toAccountId = info.toAccountId
-	var toFacebookId = info.toFacebookId
-	if (!currentView) { return }
-	if (!currentView.accountId && toFacebookId && toFacebookId == currentView.facebookId) {
-		// A first message was sent to this facebook id, and the server responds with the newly created account id as well as the facebook id
-		currentView.accountId = toAccountId
-	}
-	if (currentView.accountId != toAccountId) { return }
-	var message = info.message
-	cacheMessage(message)
-	loadAccountId(toAccountId, function(account) {
-		if (account.memberSince) { return }
-		if (info.disableInvite) { return }
-		promptInvite(message, account.accountId, account.facebookId)
-	})
-})
-
-events.on('view.change', function() {
-	currentView = null
-	$ui = {}
+events.on('message.sent', function(serverResponse) {
+	var message = serverResponse.message
+	if (!view || view.conversation.id != message.conversationId) { return }
+	// cacheMessage(message)
+	if (view.conversation.person.memberSince) { return }
+	if (serverResponse.disableInvite) { return }
+	promptInvite(message)
 })
 
 events.on('app.willEnterForeground', function() {
 	refreshMessages()
 })
 
-function promptInvite(message, accountId, facebookId) {
+function promptInvite(message) {
 	composer.hide()
-	loadAccountId(accountId, function(account) {
+	var conversation = view.conversation
+	// loadAccountId(accountId, function(account) {
 		var $infoBar = $(div(style(transition('height', 500)), div('dogo-info',
 			div('invite',
 				div('encouragement', 'Very Expressive!'),
@@ -324,20 +304,18 @@ function promptInvite(message, accountId, facebookId) {
 					})
 					events.once('facebook.dialogCompleteWithUrl', function(info) {
 						var url = parseUrl(info.url)
-						var facebookRequestId = url.getSearchParam('request')
-						api.post('facebook_requests', { facebookRequestId:facebookRequestId, toAccountId:accountId, conversationId:message.conversationId }, function(err, res) {
-							if (err) { return error(err) }
-						})
+						var params = { conversationId:conversation.id, personId:conversation.person.id, facebookRequestId:url.getSearchParam('request') }
+						api.post('facebook_requests', params, error.handler)
 					})
 				}))
 			)
 		)))
-		var messageBubbles = $ui.messages.find('.messageBubble')
+		var messageBubbles = $ui.messagesList.find('.messageBubble')
 		$infoBar.css({ height:0, overflowY:'hidden' }).appendTo(messageBubbles[messageBubbles.length - 1].parentNode)
 		setTimeout(function() {
 			$infoBar.css({ height:$infoBar.find('.dogo-info').height() + 30 })
 		}, 500)
-	})
+	// })
 }
 
 gIsTouching = false

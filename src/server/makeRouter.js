@@ -76,10 +76,10 @@ function setupRoutes(app, accountService, messageService, sessionService, pictur
 	// 	accountService.getContacts(req.session.accountId, wrapRespond(req, res, 'contacts'))
 	// })
 	app.post('/api/message', filter.oldClientsAndSession, function postMessage(req, res) {
-		var params = getParams(req, 'toConversationId', 'toAccountId', 'clientUid', 'body', 'picture')
+		var params = getParams(req, 'toConversationId', 'toPersonId', 'clientUid', 'body', 'picture')
 		var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
 		messageService.sendMessage(req.session.accountId,
-			params.toConversationId, params.toAccountId, params.clientUid,
+			params.toConversationId, params.toPersonId, params.clientUid,
 			params.body, params.picture,
 			prodPush, curry(respond, req, res))
 	})

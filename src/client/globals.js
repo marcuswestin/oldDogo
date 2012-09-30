@@ -63,24 +63,44 @@ loadAccount = function loadAccount(accountId, facebookId, callback) {
 gHeadHeight = 45
 gKeyboardHeight = 216
 
-eventEmitter = function(params) {
-	var events = create(eventEmitter.proto, { listeners:{} })
-	Object.defineProperty(params, 'events', { value:events, writable:false, enumerable:false, configurable:false })
-	return params
+eventEmitter = function(dataClass, data) {
+	var events = create(eventEmitter.proto, { dataClass:dataClass, data:data })
+	Object.defineProperty(data, 'events', { value:events, writable:false, enumerable:false, configurable:false })
+	return data
 }
 eventEmitter.proto = {
 	on: function on(signal, callback) {
-		if (!this.listeners[signal]) {
-			this.listeners[signal] = []
+		var listenersClass = eventEmitter.listeners[this.dataClass]
+		if (!listenersClass) {
+			listenersClass = eventEmitter.listeners[this.dataClass] = {}
 		}
-		this.listeners[signal].push(callback)
+		var signalListeners = listenersClass[signal]
+		if (!signalListeners) {
+			signalListeners = listenersClass[signal] = {}
+		}
+		var id = this._getDataId()
+		var instanceListeners = signalListeners[id]
+		if (!instanceListeners) {
+			instanceListeners = signalListeners[id] = []
+		}
+		instanceListeners.push(callback)
 	},
-	fire: function fire(signal, args) {
-		each(this.listeners[signal], this, function(callback) {
-			callback.call(this, args)
+	fire: function fire(signal, info) {
+		var listenersClass = eventEmitter.listeners[this.dataClass]
+		if (!listenersClass) { return }
+		var signalListeners = listenersClass[signal]
+		if (!signalListeners) { return }
+		var id = this._getDataId()
+		var instanceListeners = signalListeners[id]
+		each(instanceListeners, this, function(callback) {
+			callback.call(this, info)
 		})
+	},
+	_getDataId:function() {
+		return (this.dataClass == 'message' ? this.data.clientUid : this.data.id)
 	}
 }
+eventEmitter.listeners = {}
 
 unique = function() {
 	return 'u'+(unique.current++)

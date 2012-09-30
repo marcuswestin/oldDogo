@@ -94,7 +94,7 @@ body
 		.button
 			margin 4px 2px 0;
 	
-.home
+.homeView
 	.loading
 		relative top 120px;
 	.ghostTown
@@ -105,12 +105,8 @@ body
 			margin 0 0 1px 6px; display inline-block;
 	.conversations
 		min-height 254px;
-	.friends
-		padding 1px 0 0 2px;
-		.face
-			float left; margin 2px 2px 1px 1px;
 
-.conversation
+.homeView .conversation, .searchResults .conversation
 	margin 7px 8px 0 60px;
 	.name
 		padding 5px 8px 0;
@@ -120,21 +116,14 @@ body
 	.unreadDot
 		width 20px; height 20px; background color1; border-radius 10px;
 		float right; margin 15px 8px 0 0; display none;
+	.unreadDot.hasUnread
+		display block;
 	.youStarted
 		light-italic()
-.conversation.hasUnread .unreadDot
-		display block;
+	.face
+		float left; margin-left -54px;
 
 .searchResults
 	absolute top 0 left 0; background #fff; width 100%; box-shadow 0 1px 4px #333;
 	overflow-y scroll; -webkit-overflow-scrolling touch; overflow-x hidden;
-	.people
-		.person
-			padding 4px 4px 2px; clear both; background linear-gradient(top, #fff, #ececec); cursor pointer;
-			.face
-				float left;
-			.name
-				float left; margin 0 0 0 4px;
-		.person:last-child
-			padding-bottom 4px;
 

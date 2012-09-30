@@ -1,6 +1,7 @@
 var conversation = require('./conversation')
-function getConversationId(conversation) {
-	var getConversationId = (conversation.id || conversation)
+
+function getConversationId(conv) {
+	var getConversationId = (conv.id || conv)
 	return 'home-conversation-'+getConversationId
 }
 
@@ -8,11 +9,10 @@ var conversationsList
 
 module.exports = {
 	render:function() {
-		// setTimeout(function() { selectConversation(conversations[0]) }) // AUTOS
-		
-		return div('home',
+		return div('homeView',
 			div('conversations', div('info', 'Loading...'), function($conversations) {
 				gState.load('conversations', function(conversations) {
+					setTimeout(function() { selectConversation(conversations[0]) }) // AUTOS
 					$conversations.empty().append(
 						div('info'),
 						conversationsList = list({
@@ -35,8 +35,8 @@ renderConversation = function(conversation) {
 	var lastReceived = conversation.lastReceivedMessage
 	var lastRead = conversation.lastReadMessage
 	var hasUnread = lastReceived && (!lastRead || lastReceived.sentTime > lastRead.sentTime)
-	return div('conversation clear' + (hasUnread ? ' ' + hasUnread : ''),
-		div('unreadDot'),
+	return div('conversation clear',
+		div('unreadDot' + (hasUnread ? ' hasUnread' : '')),
 		face.large(person),
 		div('name', person.fullName)
 		// div('body', (!conversation.body && !message.pictureId)
@@ -95,7 +95,7 @@ function selectConversation(conversation) {
 function bubbleId(withAccountId) { return 'conversation-bubble-'+withAccountId }
 
 function markRead(conversationId) {
-	conversationsList.find('#'+getConversationId(conversationId)).removeClass('hasUnread')
+	conversationsList.find('#'+getConversationId(conversationId)+' .unreadDot').removeClass('hasUnread')
 }
 
 events.on('push.message', function(pushMessage) {
@@ -116,6 +116,6 @@ events.on('message.sent', function onMessageSentHome(info) {
 	// $ui.conversations.prepend(messageFromSentMessage(message, toAccountId))
 })
 
-events.on('conversation.rendered', function(info) {
-	markRead(info.conversation)
+events.on('conversation.rendered', function(conversation) {
+	markRead(conversation)
 })

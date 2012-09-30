@@ -2,8 +2,7 @@ var trim = require('std/trim')
 var placeholder = 'Say something :)'
 var drawer = require('./drawer')
 
-var currentAccountId
-var currentFacebookId
+var currentConversation
 var $ui
 var currentTool = null
 
@@ -24,15 +23,10 @@ var composer = module.exports = {
 		delete $ui
 		bridge.command('textInput.hide')
 	},
-	render: function(opts) {
-		opts = options(opts, {
-			accountId:null,
-			facebookId:null
-		})
+	render: function(view) {
+		currentConversation = view.conversation
 		$ui = {}
 
-		currentAccountId = opts.accountId
-		currentFacebookId = opts.facebookId
 		resetCurrentTool()
 		
 		return div('composer',
@@ -122,9 +116,9 @@ function sendImage(data, width, height) {
 function sendMessage(params) {
 	var clientUid = gState.nextClientUid()
 	
-	var message = eventEmitter({
-		toAccountId:currentAccountId,
-		toFacebookId:currentFacebookId,
+	var message = eventEmitter('message', {
+		toConversationId:currentConversation.id,
+		toPersonId:currentConversation.person.id,
 		senderAccountId:gState.myAccount().accountId,
 		localId:unique(),
 		clientUid:clientUid,

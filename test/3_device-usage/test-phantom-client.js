@@ -68,7 +68,7 @@ page.open(url, function (status) {
 						var $event = jQuery.Event("touchstart");
 						$event.originalEvent = { touches: [{ fakePhantomTouchEvent:true }] }
 						$($conversations.find('.list-item')[0]).trigger($event).trigger('touchend')
-						waitFor('.conversation', function($conversation) {
+						waitFor('.conversationView', function($conversation) {
 							onDone()
 						})
 					}, 100)

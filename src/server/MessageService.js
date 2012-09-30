@@ -68,7 +68,7 @@ module.exports = proto(null,
 			})
 		},
 		
-		sendMessage: function(accountId, toConversationId, toAccountId, clientUid, body, picture, prodPush, callback) {
+		sendMessage: function(accountId, toConversationId, toPersonId, clientUid, body, picture, prodPush, callback) {
 			if (!body && !picture) { return callback('Empty message') }
 			this.db.selectOne(this,
 				'SELECT id FROM conversation_participation WHERE account_id=? AND conversation_id=?',
@@ -77,10 +77,10 @@ module.exports = proto(null,
 					if (!res) { return callback('Could not find that conversation') }
 					var proceed = bind(this, function(err, pictureId) {
 						if (err) { return callback(err) }
-						this._createMessage(accountId, clientUid, toConversationId, toAccountId, body, pictureId, bind(this, function(err, message) {
+						this._createMessage(accountId, clientUid, toConversationId, toPersonId, body, pictureId, bind(this, function(err, message) {
 							if (err) { return callback(err) }
 							callback(null, { message:message, disableInvite:true })
-							this.pushService.sendMessagePush(message, accountId, toAccountId, prodPush)
+							this.pushService.sendMessagePush(message, accountId, toPersonId, prodPush)
 						}))
 					})
 					if (picture) {

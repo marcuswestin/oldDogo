@@ -23,6 +23,9 @@ error = function error(err) {
 	}
 }
 error.hide = function() {}
+error.handler = function(err, res) {
+	if (err) { error(err) }
+}
 
 var connect = require('./ui/connect')
 var appScroller = require('./ui/appScroller')
@@ -159,6 +162,7 @@ function startApp(info) {
 }
 
 function buildContactsIndex() {
+	return
 	if (buildContactsIndex.built) { return }
 	buildContactsIndex.built = true
 	var facebookIdToNames = {}
