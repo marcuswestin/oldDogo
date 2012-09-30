@@ -13,7 +13,7 @@ module.exports = proto(null,
 		getConversations: function(accountId, callback) {
 			this.db.autocommit(this, function(ac) {
 				callback = ac.wrapCallback(callback)
-				ac.select(this, this.sql.selectParticipation+'WHERE partic.account_id=?', [accountId], function(err, participations) {
+				ac.select(this, this.sql.selectParticipation+'WHERE partic.account_id=? ORDER BY lastMessageId DESC, conversationId DESC', [accountId], function(err, participations) {
 					if (err) { return callback(err) }
 					populatePeople.call(this, participations)
 					

@@ -99,7 +99,7 @@ function renderSearchInput() {
 	
 	bridge.command('textInput.show', {
 		at:pos0,
-		returnKeyType:'Done',
+		returnKeyType:'Go',
 		contentInset: [0,0,0,-10]
 	})
 	

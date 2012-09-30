@@ -109,11 +109,8 @@ events.on('app.willEnterForeground', function() {
 	reloadConversations()
 })
 
-events.on('message.sent', function onMessageSentHome(info) {
-	return alert('FIX HOME message.sent event')
-	// var message = info.message
-	// var toAccountId = info.toAccountId
-	// $ui.conversations.prepend(messageFromSentMessage(message, toAccountId))
+events.on('message.sent', function onMessageSentHome(res, conversation) {
+	conversationsList.prepend(conversation)
 })
 
 events.on('conversation.rendered', function(conversation) {

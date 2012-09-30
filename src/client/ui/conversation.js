@@ -31,21 +31,21 @@ function renderConversation(_view) {
 	var messages = []
 	return div('conversationView',
 		// function($el) { setTimeout(function() { $el.append(
-		$ui.wrapper=$(div('messagesWrapper', style({ height:view.height, 'overflow-y':'scroll', '-webkit-overflow-scrolling':'touch', overflowX:'hidden' }),
-			messages.length
-				? getMessagesList().append(messages)
-				: div('loading', 'Loading...')
-		)).on('scroll', checkScrollBounds),
+		(messages.length
+			? getMessagesList().append(messages)
+			: div('loading', 'Loading...')),
+			
+		// )).on('scroll', checkScrollBounds),
 		
 		function() {
 			if (messages.length) {
 				// always begin at the bottom of the list of messages
-				$ui.wrapper.scrollTop(getMessagesList().height())
+				gScroller.getCurrentView().scrollTop(getMessagesList().height())
 			}
 			setTimeout(function() {
 				events.fire('conversation.rendered', view.conversation)
 			}, 100)
-			checkScrollBounds()
+			// checkScrollBounds()
 			refreshMessages()
 		}
 		
@@ -55,9 +55,8 @@ function renderConversation(_view) {
 
 function getMessagesList() {
 	if (getMessagesList._list) { return getMessagesList._list }
-	$('.conversationView .loading').remove()
-	$('.conversationView').append(
-		getMessagesList._list = list('messages', {
+	$('.conversationView').empty().append(
+		getMessagesList._list = list('messagesList', {
 			onSelect:selectMessage,
 			renderItem:renderMessage,
 			getItemId:function(message) { return message.clientUid },
@@ -85,27 +84,28 @@ function refreshMessages() {
 		if (err) { return error(err) }
 		var messagesList = getMessagesList()
 		messagesList.append(res.messages)
-		$ui.wrapper.scrollTop(messagesList.height())
+		gScroller.getCurrentView().scrollTop(messagesList.height())
 		// gState.set(conversation.id(view, 'messages'), res.messages)
 	})
 }
 
-var checkScrollBounds = once(function checkScrollBounds() {
-	if (!view) { return }
-	var pics = $ui.wrapper.find('.messageBubble .pictureContent')
-	var viewHeight = $ui.wrapper.height()
-	var viewTop = $ui.wrapper.scrollTop() - (viewHeight * 3/4) // preload 3/4 of a view above
-	var viewBottom = viewTop + viewHeight + (viewHeight * 1/2) // prelado 1/2 of a view below
-	for (var i=pics.length - 1; i >= 0; i--) { // loop in reverse order since you're likelier to be viewing the bottom of the conversation
-		var pic = pics[i]
-		var picTop = pic.offsetTop
-		var picBottom = picTop + pic.offsetHeight
-		if (picBottom > viewTop && picTop < viewBottom && pic.getAttribute('pictureUrl')) {
-			pic.style.backgroundImage = 'url('+pic.getAttribute('pictureUrl')+')'
-			pic.removeAttribute('pictureUrl')
-		}
-	}
-})
+// var checkScrollBounds = once(function checkScrollBounds() {
+// 	if (!view) { return }
+//	var $view = gScroller.getCurrentView()
+// 	var pics = $view.find('.messageBubble .pictureContent')
+// 	var viewHeight = $view.height()
+// 	var viewTop = $view.scrollTop() - (viewHeight * 3/4) // preload 3/4 of a view above
+// 	var viewBottom = viewTop + viewHeight + (viewHeight * 1/2) // prelado 1/2 of a view below
+// 	for (var i=pics.length - 1; i >= 0; i--) { // loop in reverse order since you're likelier to be viewing the bottom of the conversation
+// 		var pic = pics[i]
+// 		var picTop = pic.offsetTop
+// 		var picBottom = picTop + pic.offsetHeight
+// 		if (picBottom > viewTop && picTop < viewBottom && pic.getAttribute('pictureUrl')) {
+// 			pic.style.backgroundImage = 'url('+pic.getAttribute('pictureUrl')+')'
+// 			pic.removeAttribute('pictureUrl')
+// 		}
+// 	}
+// })
 
 var ratio = (window.devicePixelRatio || 1)
 var imagePostfix = (ratio == 2 ? '@2x' : '')
@@ -119,7 +119,8 @@ function image(name, size) {
 
 function renderMessage(message) {
 	var isVeryFirstMessage = (lastMessageWasFromMe === null)
-	var messageIsFromMe = (message.senderAccountId == view.myAccountId)
+	var me = gState.myAccount()
+	var messageIsFromMe = (message.senderAccountId == me.id)
 	var isFirstMessageInGroup = (lastMessageWasFromMe != messageIsFromMe || isVeryFirstMessage)
 	var shouldRenderFace = true || isFirstMessageInGroup
 	var classes = [
@@ -128,12 +129,14 @@ function renderMessage(message) {
 		isFirstMessageInGroup && !isVeryFirstMessage ? 'newGroup' : ''
 	]
 	
-	checkScrollBounds()
+	console.log("HERE", messageIsFromMe, me.id, message.senderAccountId)
+	
+	// checkScrollBounds()
 	lastMessageWasFromMe = messageIsFromMe
 	
 	return [div(
 		div('messageBubble '+classes.join(' '),
-			shouldRenderFace && face.loadAccount(message.senderAccountId),
+			shouldRenderFace && face.small(messageIsFromMe ? me : view.conversation.person),
 			(messageIsFromMe && message.body) ? image('bubbleArrow-right', [5,10]) : image('bubbleArrrow-left', [6,10]),
 			renderContent(message)
 		)),
@@ -170,10 +173,14 @@ function renderContent(message) {
 		return div('textContent', linkify(message.body))
 	} else if (message.pictureId) {
 		var pictureUrl = pictures.urlFromMessage(message, pictures.pixels.thumb)
-		return div('pictureContent', picSize(message), { pictureUrl:pictureUrl })
+		// var attrs = { pictureUrl:pictureUrl }
+		var attrs = style({ backgroundImage:pictureUrl })
+		return div('pictureContent', picSize(message), attrs)
 	} else {
 		var pictureUrl = message.base64Picture
-		return div('pictureContent', clipPicSize(message), { pictureUrl:pictureUrl })
+		// var attrs = { pictureUrl:pictureUrl }
+		var attrs = style({ backgroundImage:pictureUrl })
+		return div('pictureContent', clipPicSize(message), attrs)
 	}
 }
 
@@ -185,8 +192,9 @@ function onNewMessage(message) {
 		var heightBefore = messagesList.height()
 		setTimeout(function() {
 			var dHeight = heightBefore - messagesList.height()
-			$ui.wrapper.animate({
-				scrollTop: $ui.wrapper.scrollTop() - dHeight,
+			var $view = gScroller.getCurrentView()
+			$view.animate({
+				scrollTop: $view.scrollTop() - dHeight,
 				duration: 50
 			})
 		}, 50)
@@ -220,13 +228,13 @@ events.on('composer.selectedText', function() {
 	})
 	var onChangeHeightHandler = events.on('textInput.changedHeight', function adjustHeight(info) {
 		$bubble.css({ height:info.height, top:parseInt($bubble.css('top'))-info.heightChange })
-		var $wrapper = $('.messagesWrapper')
-		var isAtBottom = Math.abs($wrapper[0].scrollHeight - ($wrapper.scrollTop() + $wrapper.height())) < 40
-		$('.messagesWrapper .messages').css({ marginBottom:info.height - inputHeight + 60 })
+		var $view = gScroller.getCurrentView()
+		var isAtBottom = Math.abs($view[0].scrollHeight - ($view.scrollTop() + $view.height())) < 40
+		$('.conversationView .messagesList').css({ marginBottom:info.height - inputHeight + 60 })
 		if (isAtBottom) {
-			$wrapper.scrollTop($wrapper[0].scrollHeight)
+			$view.scrollTop($view[0].scrollHeight)
 		} else {
-			$wrapper.scrollTop($wrapper.scrollTop() + info.heightChange)
+			$view.scrollTop($view.scrollTop() + info.heightChange)
 		}
 	})
 	setTimeout(function() {
@@ -235,7 +243,7 @@ events.on('composer.selectedText', function() {
 	events.once('keyboard.willHide', function(info) {
 		$bubble.remove()
 		$('.composer .tools .closeTextInput').remove()
-		$('.messagesWrapper .messages').css({ marginBottom:0 })
+		$('.conversationView .messagesList').css({ marginBottom:0 })
 		events.off('textInput.changedHeight', onChangeHeightHandler)
 		bridge.command('textInput.hide')
 	})
@@ -310,7 +318,7 @@ function promptInvite(message) {
 				}))
 			)
 		)))
-		var messageBubbles = $ui.messagesList.find('.messageBubble')
+		var messageBubbles = getMessagesList().find('.messageBubble')
 		$infoBar.css({ height:0, overflowY:'hidden' }).appendTo(messageBubbles[messageBubbles.length - 1].parentNode)
 		setTimeout(function() {
 			$infoBar.css({ height:$infoBar.find('.dogo-info').height() + 30 })

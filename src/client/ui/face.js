@@ -4,6 +4,10 @@ var face = module.exports = {
 		return face.facebook(account, showRibbon, lazyLoad, true)
 	},
 	
+	small:function(person) {
+		return face.facebook(person, null, false, false)
+	},
+	
 	facebook: function(account, showRibbon, lazyLoad, large) {
 		return div('face', showRibbon && account.memberSince && div('member-ribbon'),
 			lazyLoad

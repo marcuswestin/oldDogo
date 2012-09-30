@@ -115,10 +115,11 @@ function sendImage(data, width, height) {
 
 function sendMessage(params) {
 	var clientUid = gState.nextClientUid()
+	var conversation = currentConversation
 	
 	var message = eventEmitter('message', {
-		toConversationId:currentConversation.id,
-		toPersonId:currentConversation.person.id,
+		toConversationId:conversation.id,
+		toPersonId:conversation.person.id,
 		senderAccountId:gState.myAccount().accountId,
 		localId:unique(),
 		clientUid:clientUid,
@@ -129,9 +130,11 @@ function sendMessage(params) {
 	
 	bridge.command('net.request', { method:"POST", headers:api.getHeaders(), path:api.getPath('message'), params:message }, function(err, res) {
 		if (err) { return error(err) }
-		events.fire('message.sent', res)
+		conversation.lastMessage = res.message
+		conversation.lastSentMessage = res.message
+		events.fire('message.sent', res, conversation)
 		message.isSending = false
-		message.events.fire('sent', res)
+		message.events.fire('sent', res.message)
 	})
 	
 	events.fire('message.sending', message)
