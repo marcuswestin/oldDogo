@@ -19,6 +19,12 @@ function renderScrollerHead(view, opts) {
 	var isHome = (gScroller.stack.length == 1)
 	var stackIsAboveHome = (gScroller.stack.length > 1)
 	var showBackButton = (opts.viewBelow && stackIsAboveHome)
+	var title = null
+	if (view.conversation) {
+		var names = view.conversation.person.fullName.split(' ')
+		if (names.length < 2) { return names[0] }
+		title = names[0] + ' ' + names[names.length-1][0] // first name plus first letter of last name
+	}
 	return div('head',
 		(appInfo.config.mode == 'dev') && div('devBar',
 			div('button', 'R', button(function() { bridge.command('app.restart') })),
@@ -26,7 +32,7 @@ function renderScrollerHead(view, opts) {
 			div('button', 'U', button(function() { gState.checkNewVersion() }))
 		),
 		showBackButton ? div('icon back', button(function() { gScroller.pop() })) : div('logoIcon', logoIcon(32), button(searchButton.renderSearchInput)),
-		div('title' + (isHome ? ' logo' : ''), view.title || logoName(60, 26, 'white')),
+		div('title', title || div('logo', logoName(60, 26, 'white'))),
 		searchButton.render()
 	)
 }
