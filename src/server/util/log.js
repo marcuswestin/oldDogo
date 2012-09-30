@@ -13,5 +13,7 @@ function makeLog(name) {
 }
 
 function doLog(name, level, args) {
-	console.log(name, level, ':', Array.prototype.join.call(args, ', '))
+	console.log(name, level, ':', Array.prototype.join.call(map(args, function(arg) {
+		return (typeof arg == 'string' || typeof arg == 'number' ? arg : JSON.stringify(arg))
+	}), ' | '))
 }
