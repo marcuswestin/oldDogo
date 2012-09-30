@@ -1,7 +1,6 @@
 @import "./macros"
 @import "./questions"
 @import "./buttons"
-@import "./faces"
 @import "./common"
 
 .conversation
@@ -13,7 +12,7 @@
 		border-radius 3px; word-wrap break-word; box-shadow 0 1px 1px rgba(18, 110, 175, 0.74); background #fff;
 		margin 5px 0 0 36px; display inline-block;
 		.face
-			float left; small-face()
+			float left;
 		.textContent
 			light(); padding 3px 9px; max-width 200px;
 		.pictureContent
@@ -37,8 +36,6 @@
 			margin-top 4px;
 	.loading
 		margin-top 100px; text-shadow none; color #fff; font-style italic;
-	.face
-		small-face()
 	.invite
 		text-align center; width 100%;
 		.button
