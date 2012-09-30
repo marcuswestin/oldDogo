@@ -32,7 +32,7 @@ u.clientUid._unique = new Date().getTime()
 ;(function(){
 	// HACK
 	for (var i=0, arg; arg=process.argv[i]; i++) {
-		if (arg == '--dogo-test-offline=yes') {
+		if (arg == '--dogo-test-online=false') {
 			var facebook = require('../src/server/util/facebook')
 			facebook.get = facebook.post = function intercept(path, params, callback) {
 				if (path == '/oauth/access_token') {
@@ -49,8 +49,11 @@ u.clientUid._unique = new Date().getTime()
 				callback(null, data)
 			}
 		}
-		if (arg == '--dogo-test-verbose=no') {
+		if (arg == '--dogo-test-verbose=false') {
 			require('../src/server/util/log').doLog = function() { /* ignore */ }
+		}
+		if (arg == '--dogo-test-time=false') {
+			require('../src/server/util/makeTimer').disable()
 		}
 	}
 }())

@@ -8,11 +8,12 @@ run: run-databases
 	${NODE} src/server/run.js --config=dev
 
 # Run all tests
-offline = no
-verbose = yes
+online = true
+verbose = true
+time = true
 test: reset-test-db test-server
 t:
-	make test offline=yes verbose=no
+	make test online=false verbose=false time=false
 
 # Create a new iOS build and deliver it to all developers via testflight
 fly-dev: fly-build
@@ -46,7 +47,9 @@ deploy-nginx-conf: ${FAB}
 # Testing
 #########
 test-server: ${PHANTOMJS}
-	./node_modules/mocha/bin/mocha --reporter list --bail test/1_test-utils.js test/2_account-setup/test-api.js test/3_device-usage/test-api.js test/test-questions.js --dogo-test-offline=${offline} --dogo-test-verbose=${verbose}
+	./node_modules/mocha/bin/mocha --reporter list --bail \
+		test/1_test-utils.js test/2_account-setup/test-api.js test/3_device-usage/test-api.js test/test-questions.js\
+		--dogo-test-online=${online} --dogo-test-verbose=${verbose} --dogo-test-time=${time}
 	# ${PHANTOMJS} test/3_device-usage/test-phantom-client.js
 
 # Setup
