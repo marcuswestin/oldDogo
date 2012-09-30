@@ -7,7 +7,7 @@ error = function error(err) {
 	var message = api.error(err)
 	if (!error.$tag) {
 		error.$tag = $(div('errorNotice',
-			div('content red',
+			div('content',
 				div('close icon', button(function() { error.hide() })),
 				div('message')
 			)
