@@ -97,7 +97,7 @@ describe('Setup with Facebook Connect', function() {
 					is(res.message)
 					api.get('conversations', function(err, res) {
 						is(numConversationsWithMessages(res.conversations), 2)
-						is(secondConvo.id, res.conversations[1].id) // the new conversation should now appear first, and the old conversation second
+						is(secondConvo.id, res.conversations[0].id) // the new conversation should now appear first, and the old conversation second
 						done()
 					})
 				})
