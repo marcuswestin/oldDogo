@@ -93,7 +93,7 @@ bridge.eventHandler = function bridgeEventHandler(name, info) { events.fire(name
 function startApp(info) {
 	gState.load('sessionInfo', function onStateLoaded(sessionInfo) {
 		gState.load('modeInfo', function onModeLoaded(modeInfo) {
-			if (!modeInfo.mode) {
+			if (!modeInfo || !modeInfo.mode) {
 				gState.set('modeInfo', { mode:info.config.mode })
 			} else if (info.config.mode != modeInfo.mode) {
 				gState.clear(function() {
