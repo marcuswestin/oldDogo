@@ -92,11 +92,7 @@ function render(_opts) {
 		} else if (opts.pictureSecret) {
 			// TODO Show loading indicator
 			var pictureUrl = pictures.url(opts.conversationId, opts.pictureSecret)
-			var asUrl = location.protocol+'//'+location.host+'/local_cache?pictureSecret='+opts.pictureSecret
-			bridge.command('net.cache', { url:pictureUrl, asUrl:asUrl, override:false }, function(err, res) {
-				if (err) { return }
-				doDrawBackgroundImage(asUrl, opts.width, opts.height)
-			})
+			doDrawBackgroundImage(pictureUrl, opts.width, opts.height)
 		} else if (opts.style) {
 			var underlyingUrl = opts.style.background.match(/url\((.*)\)/)[1]
 			if (underlyingUrl.match(/^data/) || !tags.isTouch) {

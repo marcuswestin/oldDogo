@@ -4,8 +4,6 @@
 
 @implementation AppDelegate
 
-@synthesize facebook, facebookCallback, textInput, textInputParams;
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
 
@@ -45,7 +43,7 @@
         
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque];
         
-        facebook = [[Facebook alloc] initWithAppId:@"219049001532833" andDelegate:self];
+        _facebook = [[Facebook alloc] initWithAppId:@"219049001532833" andDelegate:self];
         
         [[self.webView scrollView] setBounces:NO];
         self.webView.dataDetectorTypes = UIDataDetectorTypeNone;
@@ -58,34 +56,6 @@
     }
 }
 
-- (void)keyboardWillShow:(NSNotification *)notification {
-    [super keyboardWillShow:notification];
-    if ([textInputParams objectForKey:@"shiftWebview"]) {
-        [self shiftWebviewWithKeyboard:notification];
-    }
-}
-
-- (void)keyboardWillHide:(NSNotification *)notification {
-    [super keyboardWillHide:notification];
-    if ([textInputParams objectForKey:@"shiftWebview"]) {
-        [self shiftWebviewWithKeyboard:notification];
-    }
-}
-
-- (void)shiftWebviewWithKeyboard:(NSNotification *)notification {
-    NSDictionary* userInfo = [notification userInfo];
-    NSTimeInterval animationDuration;
-    CGRect begin;
-    CGRect end;
-    [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] getValue:&animationDuration];
-    [[userInfo objectForKey:UIKeyboardFrameBeginUserInfoKey] getValue:&begin];
-    [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] getValue:&end];
-    [UIView animateWithDuration:animationDuration animations:^{
-        CGRect frame = self.webView.frame;
-        self.webView.frame = CGRectMake(frame.origin.x, frame.origin.y-(begin.origin.y-end.origin.y), frame.size.width, frame.size.height);
-    }];
-}
-
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
         [[UIApplication sharedApplication] openURL:[request URL]];
@@ -95,7 +65,7 @@
 }
 
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-    return [facebook handleOpenURL:url]; 
+    return [_facebook handleOpenURL:url];
 }
 
 + (AppDelegate *)instance {
@@ -104,42 +74,37 @@
 
 
 // Commands
-- (void)handleCommand:(NSString *)command data:(id)data responseCallback:(ResponseCallback)responseCallback {
-    if ([command isEqualToString:@"facebook.connect"]) {
-        self.facebookCallback = responseCallback;
-        [facebook authorize:[data objectForKey:@"permissions"]];
-    } else if ([command isEqualToString:@"facebook.dialog"]) {
+- (void)setupBridgeHandlers {
+    [super setupBridgeHandlers];
+    // facebook.*
+    [self.javascriptBridge registerHandler:@"facebook.connect" handler:^(id data, WVJBResponse* response) {
+        _facebookResponse = response;
+        [_facebook authorize:[data objectForKey:@"permissions"]];
+    }];
+    [self.javascriptBridge registerHandler:@"facebook.dialog" handler:^(id data, WVJBResponse* response) {
         NSString* dialog = [data objectForKey:@"dialog"]; // oauth, feed, and apprequests
         NSMutableDictionary* params = [NSMutableDictionary dictionaryWithDictionary:[data objectForKey:@"params"]]; // so silly
-        [self.facebook dialog:dialog andParams:params andDelegate:self];
-    } else if ([command isEqualToString:@"facebook.setSession"]) {
-        facebook.accessToken = [data objectForKey:@"accessToken"];
+        [_facebook dialog:dialog andParams:params andDelegate:self];
+    }];
+    [self.javascriptBridge registerHandler:@"facebook.setSession" handler:^(id data, WVJBResponse* response) {
+        _facebook.accessToken = [data objectForKey:@"accessToken"];
         NSDate* expirationDate = [NSDate dateWithTimeIntervalSince1970:[[data objectForKey:@"expirationDate"] doubleValue]];
-        facebook.expirationDate = expirationDate;
-    } else if ([command isEqualToString:@"facebook.isSessionValid"]) {
-        responseCallback(nil, [NSDictionary dictionaryWithObject:jsonBool([facebook isSessionValid]) forKey:@"isValid"]);
-    } else if ([command isEqualToString:@"facebook.extendAccessTokenIfNeeded"]) {
-        [self.facebook extendAccessTokenIfNeeded];
-    } else if ([command isEqualToString:@"textInput.show"]) {
-        [self showTextInput:data];
-    } else if ([command isEqualToString:@"textInput.hide"]) {
-        [self hideTextInput];
-    } else if ([command isEqualToString:@"textInput.animate"]) {
-        [self animateTextInput:data];
-    } else if ([command isEqualToString:@"textInput.set"]) {
-        if (textInput) {
-            textInput.text = [data objectForKey:@"text"];
-            [self sizeTextInput];
-        }
-    } else if ([command isEqualToString:@"net.request"]) {
-        [self netRequest:data responseCallback:responseCallback];
-    } else {
-        NSLog(@"WARNING ObjC Got unknown command: %@ %@", command, data);
-    }
+        _facebook.expirationDate = expirationDate;
+    }];
+    [self.javascriptBridge registerHandler:@"facebook.isSessionValid" handler:^(id data, WVJBResponse* response) {
+        [response respondWith:[NSDictionary dictionaryWithObject:jsonBool([_facebook isSessionValid]) forKey:@"isValid"]];
+    }];
+    [self.javascriptBridge registerHandler:@"facebook.extendAccessTokenIfNeeded" handler:^(id data, WVJBResponse* response) {
+        [_facebook extendAccessTokenIfNeeded];
+    }];
+    
+    [self.javascriptBridge registerHandler:@"net.request" handler:^(id data, WVJBResponse *response) {
+        [self netRequest:data response:response];
+    }];
 }
 
-
-- (void) netRequest:(NSDictionary *)params responseCallback:(ResponseCallback)responseCallback {
+    
+- (void) netRequest:(NSDictionary *)params response:(WVJBResponse *)response {
     NSDictionary* postParams = [params objectForKey:@"params"];
     NSDictionary* headers = [params objectForKey:@"headers"];
     NSString* method = [params objectForKey:@"method"];
@@ -150,186 +115,32 @@
         [[UIApplication sharedApplication] endBackgroundTask:bgTaskId];
     }];
     
-    [BTNet request:url method:method headers:headers params:postParams responseCallback:^(NSError* error, NSDictionary *response) {
+    [BTNet request:url method:method headers:headers params:postParams responseCallback:^(NSError* error, NSDictionary *netResponse) {
         [[UIApplication sharedApplication] endBackgroundTask:bgTaskId];
         if (error) {
-            responseCallback(error.domain, nil);
+            [response respondWithError:error.domain];
         } else {
-            NSData* responseData = [response objectForKey:@"responseData"];
+            NSData* responseData = [netResponse objectForKey:@"responseData"];
             NSDictionary* jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:nil];
-            responseCallback(nil, jsonData);
-        }
-        if (responseCallback) {
-            responseCallback(nil, nil);
+            [response respondWith:jsonData];
         }
     }];
 }
 
 
-- (void)showTextInput:(NSDictionary *)params {
-    if (textInput) { [self hideTextInput]; }
-    textInput = [[UITextView alloc] initWithFrame:[self rectFromDict:[params objectForKey:@"at"]]];
-    textInputParams = params;
-    
-    textInput.font = [UIFont systemFontOfSize:17];
-    
-    textInput.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    textInput.clipsToBounds = YES;
-    textInput.scrollEnabled = NO;
-    textInput.keyboardType = UIKeyboardTypeDefault;
-    textInput.delegate = self;
-    
-    UIReturnKeyType returnKeyType = [self returnKeyTypeFromDict:params];
-    if (returnKeyType) {
-        textInput.returnKeyType = returnKeyType;
-    }
-    
-    NSDictionary* font = [params objectForKey:@"font"];
-    if (font) {
-        NSNumber* size = [font objectForKey:@"size"];
-        [textInput setFont:[UIFont fontWithName:[font objectForKey:@"name"] size:[size floatValue]]];
-    }
-    
-    NSString* backgroundImage = [params objectForKey:@"backgroundImage"];
-    if (backgroundImage) {
-        textInput.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:backgroundImage]];
-    }
-    if ([params objectForKey:@"backgroundColor"]) {
-        textInput.backgroundColor = [self colorFromParam:[params objectForKey:@"backgroundColor"]];
-    }
-    if ([params objectForKey:@"borderColor"]) {
-        textInput.layer.borderColor = [[self colorFromParam:[params objectForKey:@"borderColor"]] CGColor];
-        textInput.layer.borderWidth = 1.0;
-    }
-    if ([params objectForKey:@"cornerRadius"]) {
-        NSNumber* cornerRadius = [params objectForKey:@"cornerRadius"];
-        [textInput.layer setCornerRadius:[cornerRadius floatValue]];
-    }
-    if ([params objectForKey:@"contentInset"]) {
-        textInput.contentInset = [self insetsFromParam:[params objectForKey:@"contentInset"]];
-    }
-    
-    textInput.text = @"";
-    [self sizeTextInput];
-    [self.webView addSubview:textInput];
-    [textInput becomeFirstResponder];
-}
 
-- (UIEdgeInsets)insetsFromParam:(NSArray *)param {
-    NSNumber* n1 = [param objectAtIndex:0];
-    NSNumber* n2 = [param objectAtIndex:1];
-    NSNumber* n3 = [param objectAtIndex:2];
-    NSNumber* n4 = [param objectAtIndex:3];
-    return UIEdgeInsetsMake([n1 floatValue], [n2 floatValue], [n3 floatValue], [n4 floatValue]);
-}
-
-- (UIColor *)colorFromParam:(NSArray *)param {
-    NSNumber* red = [param objectAtIndex:0];
-    NSNumber* green = [param objectAtIndex:1];
-    NSNumber* blue = [param objectAtIndex:2];
-    NSNumber* alpha = [param objectAtIndex:3];
-    return [UIColor colorWithRed:[red floatValue] green:[green floatValue] blue:[blue floatValue] alpha:[alpha floatValue]];
-}
-
-- (void)hideTextInput {
-    if (!textInput) { return; }
-    [textInput resignFirstResponder];
-    [textInput removeFromSuperview];
-    textInput = nil;
-}
-
-- (void)sizeTextInput {
-    CGRect frame = textInput.frame;
-    frame.size.height = textInput.contentSize.height;
-    int dHeight = frame.size.height - textInput.frame.size.height;
-    if (dHeight != 0) {
-        frame.origin.y -= dHeight;
-        textInput.frame = frame;
-        NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
-                             [NSNumber numberWithInt:dHeight], @"heightChange",
-                             [NSNumber numberWithFloat:textInput.frame.size.height], @"height",
-                             nil];
-        [self notify:@"textInput.changedHeight" info:info];
-    }
-}
-
-- (void)textViewDidChange:(UITextView *)textView {
-    [self sizeTextInput];
-    [self notify:@"textInput.didChange" info:[NSDictionary dictionaryWithObjectsAndKeys:
-                                              self.textInput.text, @"text",
-                                              nil]];
-}
-
-- (UIReturnKeyType)returnKeyTypeFromDict:(NSDictionary *)params {
-    NSString* returnKeyType = [params objectForKey:@"returnKeyType"];
-    if ([returnKeyType isEqualToString:@"Done"]) { return UIReturnKeyDone; }
-    if ([returnKeyType isEqualToString:@"EmergencyCall"]) { return UIReturnKeyEmergencyCall; }
-    if ([returnKeyType isEqualToString:@"Go"]) { return UIReturnKeyGo; }
-    if ([returnKeyType isEqualToString:@"Google"]) { return UIReturnKeyGoogle; }
-    if ([returnKeyType isEqualToString:@"Join"]) { return UIReturnKeyJoin; }
-    if ([returnKeyType isEqualToString:@"Next"]) { return UIReturnKeyNext; }
-    if ([returnKeyType isEqualToString:@"Route"]) { return UIReturnKeyRoute; }
-    if ([returnKeyType isEqualToString:@"Search"]) { return UIReturnKeySearch; }
-    if ([returnKeyType isEqualToString:@"Send"]) { return UIReturnKeySend; }
-    return UIReturnKeyDefault;
-}
-
-- (CGRect)rectFromDict:(NSDictionary *)params {
-    CGRect frame;
-    if (textInput) {
-        frame = textInput.frame;
-    } else {
-        frame = CGRectMake(0, 0, 0, 0);
-    }
-    if ([params objectForKey:@"x"]) {
-        frame.origin.x = [[params objectForKey:@"x"] doubleValue];
-    }
-    if ([params objectForKey:@"y"]) {
-        frame.origin.y = [[params objectForKey:@"y"] doubleValue];
-    }
-    if ([params objectForKey:@"width"]) {
-        frame.size.width = [[params objectForKey:@"width"] doubleValue];
-    }
-    if ([params objectForKey:@"height"]) {
-        frame.size.height = [[params objectForKey:@"height"] doubleValue];
-    }
-    return frame;
-}
-
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
-    if([text isEqualToString:@"\n"]) {
-        [self notify:@"textInput.return" info:[NSDictionary dictionaryWithObject:textInput.text forKey:@"text"]];
-        return NO;
-    }
-    return YES;
-}
-
-- (void)textViewDidEndEditing:(UITextView *)textView {
-    [self notify:@"textInput.didEndEditing"];
-}
-
-- (void)animateTextInput:(NSDictionary *)params {
-    if (!textInput) { return; }
-    NSNumber* duration = [params objectForKey:@"duration"];
-    [UIView animateWithDuration:[duration doubleValue] animations:^{
-        textInput.frame = [self rectFromDict:[params objectForKey:@"to"]];
-        [self sizeTextInput];
-    }];
-     if ([params objectForKey:@"blur"]) {
-         [textInput resignFirstResponder];
-     }
-}
 
 // Facebook
 /**
  * Called when the user successfully logged in.
  */
+@synthesize facebook=_facebook, facebookResponse=_facebookResponse;
 - (void)fbDidLogin {
     NSMutableDictionary* facebookSession = [NSMutableDictionary dictionary];
-    NSNumber* expirationDate = [NSNumber numberWithDouble:[facebook.expirationDate timeIntervalSince1970]];
-    [facebookSession setObject:facebook.accessToken forKey:@"accessToken"];
+    NSNumber* expirationDate = [NSNumber numberWithDouble:[_facebook.expirationDate timeIntervalSince1970]];
+    [facebookSession setObject:_facebook.accessToken forKey:@"accessToken"];
     [facebookSession setObject:expirationDate forKey:@"expirationDate"];
-    self.facebookCallback(nil, facebookSession);
+    [_facebookResponse respondWith:facebookSession];
     [self notify:@"facebook.fbDidLogin" info:facebookSession];
 }
 
@@ -338,7 +149,7 @@
  */
 - (void)fbDidNotLogin:(BOOL)cancelled {
     NSDictionary* info = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:cancelled] forKey:@"cancelled"];
-    self.facebookCallback(info, nil);
+    [_facebookResponse respondWithError:info];
     [self notify:@"facebook.fbDidNotLogin" info:info];
 }
 

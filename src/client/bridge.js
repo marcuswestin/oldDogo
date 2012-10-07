@@ -1,53 +1,32 @@
-var callbacks = {},
-	bridgeReadyQueue = []
+var webViewJavascriptBridge
 
 var bridge = module.exports = {
-	command:function(command, data, responseHandler) {
+	command:function sendCommandToObjc(command, data, responseHandler) {
 		if (!responseHandler && typeof data == 'function') {
 			responseHandler = data
 			data = null
 		}
-		
-		var message = { command:command, data:data || {} }
-		
-		if (responseHandler) {
-			message.responseId = unique()
-			callbacks[message.responseId] = responseHandler
-		}
-
-		if (window.WebViewJavascriptBridge) {
-			WebViewJavascriptBridge.sendMessage(JSON.stringify(message))
-		} else {
-			bridgeReadyQueue.push(message)
-		}
+		webViewJavascriptBridge.callHandler(command, data, responseHandler)
 	},
 	init:init
 }
 
 function init() {
-	function onWebViewJavascriptBridgeReady() {
-		WebViewJavascriptBridge.setMessageHandler(function doHandleBridgeMessage(message) {
-			try { message = JSON.parse(message) }
-			catch(e) { console.log("Bad JSON", message) }
+	if (window.WebViewJavascriptBridge) {
+		onWebViewJavascriptBridgeReady(WebViewJavascriptBridge)
+	} else {
+		document.addEventListener('WebViewJavascriptBridgeReady', function(event) {
+			onWebViewJavascriptBridgeReady(event.bridge)
+		})
+	}
+	function onWebViewJavascriptBridgeReady(_webViewJavascriptBridge) {
+		webViewJavascriptBridge = _webViewJavascriptBridge
+		webViewJavascriptBridge.init(function handleMessage(message, response) {
 			if (message.event) {
 				bridge.eventHandler(message.event, message.info)
 			} else {
-				var responseId = message.responseId,
-					callback = callbacks[responseId]
-				delete callbacks[responseId]
-				typeof callback == 'function' && callback(message.error, message.data)
+				alert('Received unknown message')
 			}
 		})
-
-		for (var i=0, message; message=bridgeReadyQueue[i]; i++) {
-			WebViewJavascriptBridge.sendMessage(JSON.stringify(message))
-		}
-		delete bridgeReadyQueue
-	}
-
-	if (window.WebViewJavascriptBridge) {
-		onWebViewJavascriptBridgeReady()
-	} else {
-		document.addEventListener('WebViewJavascriptBridgeReady', onWebViewJavascriptBridgeReady)
 	}
 }

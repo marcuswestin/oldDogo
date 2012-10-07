@@ -92,13 +92,15 @@ bridge.eventHandler = function bridgeEventHandler(name, info) { events.fire(name
 
 function startApp(info) {
 	gState.load('sessionInfo', function onStateLoaded(sessionInfo) {
-		if (gState.cache['mode'] && info.config.mode != gState.cache['mode']) {
-			gState.clear(function() {
-				bridge.command('app.restart')
-			})
-			return
-		}
-		gState.set('mode', info.config.mode)
+		gState.load('modeInfo', function onModeLoaded(modeInfo) {
+			if (!modeInfo.mode) {
+				gState.set('modeInfo', { mode:info.config.mode })
+			} else if (info.config.mode != modeInfo.mode) {
+				gState.clear(function() {
+					bridge.command('app.restart')
+				})
+			}
+		})
 		
 		if (info.config.mode == 'dev') {
 			if (isPhantom) {

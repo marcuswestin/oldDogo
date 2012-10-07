@@ -24,11 +24,12 @@
 		2C720C7415684C3100AC9BF4 /* MKNetworkEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C6815684C3100AC9BF4 /* MKNetworkEngine.m */; };
 		2C720C7515684C3100AC9BF4 /* MKNetworkOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C6B15684C3100AC9BF4 /* MKNetworkOperation.m */; };
 		2C720C7615684C3100AC9BF4 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C6E15684C3100AC9BF4 /* Reachability.m */; };
+		2C8A76911621F39C000312FC /* BTTextInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C8A76901621F39C000312FC /* BTTextInput.m */; };
+		2C8A769B162218AC000312FC /* WebViewJavascriptBridge.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2C8A7699162218AC000312FC /* WebViewJavascriptBridge.js.txt */; };
+		2C8A769C162218AC000312FC /* WebViewJavascriptBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C8A769A162218AC000312FC /* WebViewJavascriptBridge.m */; };
 		2CA5EEF01618FB570019B20B /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 2CA5EEEF1618FB570019B20B /* fonts */; };
 		2CA5EEF21618FB650019B20B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CA5EEF11618FB650019B20B /* Default-568h@2x.png */; };
 		2CAE30591556262500742518 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CAE30581556262500742518 /* AudioToolbox.framework */; };
-		2CB2247915D700CC0027825B /* WebViewJavascriptBridge-template.js in Resources */ = {isa = PBXBuildFile; fileRef = 2CB2247615D700CC0027825B /* WebViewJavascriptBridge-template.js */; };
-		2CB2247A15D700CC0027825B /* WebViewJavascriptBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB2247815D700CC0027825B /* WebViewJavascriptBridge.m */; };
 		2CCAFE691569EC1C002766A1 /* vibrate.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2CCAFE681569EC1C002766A1 /* vibrate.wav */; };
 		2CD13242156783CA002386F3 /* DebugUIWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD13241156783CA002386F3 /* DebugUIWebView.m */; };
 		2CD132781567B639002386F3 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD132771567B639002386F3 /* CFNetwork.framework */; };
@@ -92,19 +93,20 @@
 		2C720C6B15684C3100AC9BF4 /* MKNetworkOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKNetworkOperation.m; sourceTree = "<group>"; };
 		2C720C6D15684C3100AC9BF4 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		2C720C6E15684C3100AC9BF4 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		2C8A768F1621F39C000312FC /* BTTextInput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTTextInput.h; sourceTree = "<group>"; };
+		2C8A76901621F39C000312FC /* BTTextInput.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTTextInput.m; sourceTree = "<group>"; };
+		2C8A7698162218AC000312FC /* WebViewJavascriptBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewJavascriptBridge.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		2C8A7699162218AC000312FC /* WebViewJavascriptBridge.js.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WebViewJavascriptBridge.js.txt; sourceTree = "<group>"; };
+		2C8A769A162218AC000312FC /* WebViewJavascriptBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewJavascriptBridge.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		2CA5EEEF1618FB570019B20B /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../../static/fonts; sourceTree = "<group>"; };
 		2CA5EEF11618FB650019B20B /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		2CAE30581556262500742518 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
-		2CB2247615D700CC0027825B /* WebViewJavascriptBridge-template.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "WebViewJavascriptBridge-template.js"; sourceTree = "<group>"; };
-		2CB2247715D700CC0027825B /* WebViewJavascriptBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewJavascriptBridge.h; sourceTree = "<group>"; };
-		2CB2247815D700CC0027825B /* WebViewJavascriptBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewJavascriptBridge.m; sourceTree = "<group>"; };
 		2CCAFE681569EC1C002766A1 /* vibrate.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = vibrate.wav; sourceTree = "<group>"; };
 		2CD13240156783CA002386F3 /* DebugUIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIWebView.h; sourceTree = "<group>"; };
 		2CD13241156783CA002386F3 /* DebugUIWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIWebView.m; sourceTree = "<group>"; };
 		2CD132771567B639002386F3 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		2CD132791567B63F002386F3 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		2CD1327B1567B645002386F3 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
-		2CD133081567C010002386F3 /* BTTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BTTypes.h; sourceTree = "<group>"; };
 		2CD133E61567C2C0002386F3 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		2CD1A029153FB6B0008949F2 /* dogo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dogo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2CD1A02D153FB6B0008949F2 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -217,6 +219,17 @@
 			path = Reachability;
 			sourceTree = "<group>";
 		};
+		2C8A7697162218AC000312FC /* WebViewJavascriptBridge */ = {
+			isa = PBXGroup;
+			children = (
+				2C8A7698162218AC000312FC /* WebViewJavascriptBridge.h */,
+				2C8A7699162218AC000312FC /* WebViewJavascriptBridge.js.txt */,
+				2C8A769A162218AC000312FC /* WebViewJavascriptBridge.m */,
+			);
+			name = WebViewJavascriptBridge;
+			path = ../../dependencies/WebViewJavascriptBridge/WebViewJavascriptBridge;
+			sourceTree = "<group>";
+		};
 		2CA9924B154FC9E400CF92FC /* images */ = {
 			isa = PBXGroup;
 			children = (
@@ -229,16 +242,6 @@
 			);
 			name = images;
 			path = ..;
-			sourceTree = "<group>";
-		};
-		2CB2247515D700CC0027825B /* WebViewJavascriptBridge */ = {
-			isa = PBXGroup;
-			children = (
-				2CB2247615D700CC0027825B /* WebViewJavascriptBridge-template.js */,
-				2CB2247715D700CC0027825B /* WebViewJavascriptBridge.h */,
-				2CB2247815D700CC0027825B /* WebViewJavascriptBridge.m */,
-			);
-			path = WebViewJavascriptBridge;
 			sourceTree = "<group>";
 		};
 		2CCAFE671569EC1C002766A1 /* sounds */ = {
@@ -320,16 +323,17 @@
 				2C09E49F1550D10B0089ECD5 /* BTState.h */,
 				2C09E4A01550D10B0089ECD5 /* BTState.m */,
 				2CD13240156783CA002386F3 /* DebugUIWebView.h */,
+				2C8A768F1621F39C000312FC /* BTTextInput.h */,
+				2C8A76901621F39C000312FC /* BTTextInput.m */,
 				2CD13241156783CA002386F3 /* DebugUIWebView.m */,
 				2C720C151567C59100AC9BF4 /* BTNet.h */,
 				2C720C161567C59100AC9BF4 /* BTNet.m */,
-				2CD133081567C010002386F3 /* BTTypes.h */,
 				2CFE18D71580A48100188E06 /* BTIndex.h */,
 				2CFE18D81580A48100188E06 /* BTIndex.m */,
 				2CD1A061153FB7B6008949F2 /* JSONKit */,
 				2CD1A064153FB7B6008949F2 /* Light-Untar */,
 				2C720C5B15684C3100AC9BF4 /* MKNetworkKit */,
-				2CB2247515D700CC0027825B /* WebViewJavascriptBridge */,
+				2C8A7697162218AC000312FC /* WebViewJavascriptBridge */,
 			);
 			name = "blowtorch-ios-sdk";
 			path = "../../../../dependencies/blowtorch/sdk/blowtorch-ios-sdk";
@@ -454,13 +458,13 @@
 				2C45C54E15C77A2600FE147C /* logo.png in Resources */,
 				2C45C54F15C77A2600FE147C /* logo@2x.png in Resources */,
 				2C45C55115CACBD300FE147C /* img in Resources */,
-				2CB2247915D700CC0027825B /* WebViewJavascriptBridge-template.js in Resources */,
 				2CF1C8AE15E9AFE700F4916D /* app.html in Resources */,
 				2CF1C8AF15E9AFE700F4916D /* appCss.css in Resources */,
 				2CF1C8B015E9AFE700F4916D /* appJs.html in Resources */,
 				2C25DD2F15E9E4220005D147 /* dev-hostname.txt in Resources */,
 				2CA5EEF01618FB570019B20B /* fonts in Resources */,
 				2CA5EEF21618FB650019B20B /* Default-568h@2x.png in Resources */,
+				2C8A769B162218AC000312FC /* WebViewJavascriptBridge.js.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -490,7 +494,8 @@
 				2C4EF9EF1573196800EE57C8 /* BTViewController.m in Sources */,
 				2CFE18D91580A48100188E06 /* BTIndex.m in Sources */,
 				2CFF879515D2B6FB00F73150 /* UIDeviceHardware.m in Sources */,
-				2CB2247A15D700CC0027825B /* WebViewJavascriptBridge.m in Sources */,
+				2C8A76911621F39C000312FC /* BTTextInput.m in Sources */,
+				2C8A769C162218AC000312FC /* WebViewJavascriptBridge.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

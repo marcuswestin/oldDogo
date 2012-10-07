@@ -1,24 +1,13 @@
 #import "BTAppDelegate.h"
 #import "FBConnect.h"
 
-@interface AppDelegate : BTAppDelegate <FBSessionDelegate, FBDialogDelegate, UITextViewDelegate>
+@interface AppDelegate : BTAppDelegate <FBSessionDelegate, FBDialogDelegate>
 
 @property (nonatomic, retain) Facebook *facebook;
-@property (nonatomic, copy) ResponseCallback facebookCallback;
+@property (nonatomic, copy) WVJBResponse* facebookResponse;
 
 + (AppDelegate*) instance;
 
-@property (atomic, strong) UITextView* textInput;
-@property (atomic,strong) NSDictionary* textInputParams;
-- (void) showTextInput:(NSDictionary*) params;
-- (void) hideTextInput;
-- (void) sizeTextInput;
-- (CGRect) rectFromDict:(NSDictionary*) params;
-- (UIReturnKeyType) returnKeyTypeFromDict:(NSDictionary*) params;
-- (void) animateTextInput:(NSDictionary*) params;
-- (UIColor*) colorFromParam:(NSArray*)param;
-- (UIEdgeInsets) insetsFromParam:(NSArray*)param;
-- (void) netRequest:(NSDictionary*)params responseCallback:(ResponseCallback)responseCallback;
-- (void) shiftWebviewWithKeyboard:(NSNotification*)notification;
+- (void) netRequest:(NSDictionary*)params response:(WVJBResponse*)response;
 
 @end
