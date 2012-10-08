@@ -19,11 +19,13 @@
 
         if (!mode) {
             mode = @"dev";
+            [WebViewJavascriptBridge enableLogging];
             NSString* hostnameFile = [[NSBundle mainBundle] pathForResource:@"dev-hostname" ofType:@"txt"];
             host = [NSString stringWithContentsOfFile:hostnameFile encoding:NSUTF8StringEncoding error:nil];
             host = [host stringByReplacingOccurrencesOfString:@"\n" withString:@""];
             host = [@"http://" stringByAppendingString:host];
             host = [host stringByAppendingString:@":9000"];
+//            host = @"http://localhost:9000";
         }
         
         NSDictionary* device = [NSDictionary dictionaryWithObjectsAndKeys:
