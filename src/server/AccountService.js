@@ -108,7 +108,7 @@ module.exports = proto(null,
 			reqMeta.timer.start('_claimAccount')
 			this.db.transact(this, function(tx) {
 				callback = tx.wrapCallback(callback)
-				var timestamp = conn.time()
+				var timestamp = tx.time()
 				var emailVerifiedTime = fbAcc.email ? timestamp : null
 				tx.updateOne(this,
 					'UPDATE account SET claimed_time=?, full_name=?, first_name=?, last_name=?, gender=?, locale=?, timezone=?, email=?, email_verified_time=? WHERE facebook_id=?',
