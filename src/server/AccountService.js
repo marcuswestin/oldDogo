@@ -26,7 +26,7 @@ module.exports = proto(null,
 					} else if (account && account.memberSince) {
 						this._insertFbContacts(reqMeta, this.db, fbAccount, fbFriends, callback)
 					} else if (account) {
-						this._claimAccount(reqMeta, fbAccount, fbFriends, callback)
+						this._claimAccount(reqMeta, account, fbAccount, fbFriends, callback)
 					} else {
 						this._createClaimedAccount(reqMeta, fbAccount, fbFriends, callback)
 					}
@@ -81,45 +81,56 @@ module.exports = proto(null,
 			log('create new account with', fbFriends.length, 'friends')
 			this.db.transact(this, function(tx) {
 				callback = tx.wrapCallback(callback)
-				var timestamp = tx.time()
-				var emailVerifiedTime = fbAcc.email ? timestamp : null
+				var emailVerifiedTime = fbAcc.email ? tx.time() : null
 				fbAcc.email, emailVerifiedTime
 				
 				tx.insert(this,
 					'INSERT INTO account SET created_time=?, claimed_time=?, facebook_id=?, full_name=?, first_name=?, last_name=?, gender=?, locale=?, timezone=?',
-					[timestamp, timestamp, fbAcc.id, fbAcc.name, fbAcc.first_name, fbAcc.last_name, fbAcc.gender, fbAcc.locale, fbAcc.timezone],
+					[tx.time(), tx.time(), fbAcc.id, fbAcc.name, fbAcc.first_name, fbAcc.last_name, fbAcc.gender, fbAcc.locale, fbAcc.timezone],
 					function(err, accountId) {
 						if (err) { return callback(err) }
-						var proceed = bind(this, this._insertFbContacts, reqMeta, tx, fbAcc, fbFriends, callback)
-						if (fbAcc.email && !fbAcc.email.match('proxymail.facebook.com')) {
-							tx.insert(this,
-								'INSERT INTO account_email SET account_id=?, email_address=?, created_time=?, claimed_time=?',
-								[accountId, fbAcc.email, timestamp, timestamp], proceed
-							)
-						} else {
-							proceed()
-						}
+						this._addFacebookEmail(reqMeta, tx, accountId, fbAcc, function() {
+							this._insertFacebookContacts(reqMeta, tx, fbAcc, fbFriends, callback)
+						})
 					}
 				)
 			})
 		},
-		_claimAccount:function(reqMeta, fbAcc, fbFriends, callback) {
+		_claimAccount:function(reqMeta, account, fbAcc, fbFriends, callback) {
 			log('claim account with', fbAcc, fbFriends.length, 'friends')
 			reqMeta.timer.start('_claimAccount')
 			this.db.transact(this, function(tx) {
 				callback = tx.wrapCallback(callback)
-				var timestamp = tx.time()
-				var emailVerifiedTime = fbAcc.email ? timestamp : null
+				var emailVerifiedTime = fbAcc.email ? tx.time() : null
+				// Insert email ignore
 				tx.updateOne(this,
-					'UPDATE account SET claimed_time=?, full_name=?, first_name=?, last_name=?, gender=?, locale=?, timezone=?, email=?, email_verified_time=? WHERE facebook_id=?',
-					[timestamp, fbAcc.name, fbAcc.first_name, fbAcc.last_name, fbAcc.gender, fbAcc.locale, fbAcc.timezone, fbAcc.email, emailVerifiedTime, fbAcc.id],
-					bind(this, function(err) {
+					'UPDATE account SET claimed_time=?, full_name=?, first_name=?, last_name=?, gender=?, locale=?, timezone=? WHERE facebook_id=? AND id=?',
+					[tx.time(), fbAcc.name, fbAcc.first_name, fbAcc.last_name, fbAcc.gender, fbAcc.locale, fbAcc.timezone, fbAcc.id, account.id],
+					function(err) {
 						if (err) { return callback(err) }
-						reqMeta.timer.stop('_claimAccount')
-						this._insertFbContacts(reqMeta, tx, fbAcc, fbFriends, callback)
-					})
+						this._addFacebookEmail(reqMeta, tx, account.id, fbAcc, function() {
+							reqMeta.timer.stop('_claimAccount')
+							this._insertFbContacts(reqMeta, tx, fbAcc, fbFriends, callback)
+						})
+					}
 				)
 			})
+		},
+		_addFacebookEmail:function(reqMeta, conn, accountId, fbAcc, callback) {
+			reqMeta.timer.start('_addFacebookEmail')
+			if (fbAcc.email && !fbAcc.email.match('proxymail.facebook.com')) {
+				conn.insert(this,
+					'INSERT INTO account_email SET account_id=?, email_address=?, created_time=?, claimed_time=?',
+					[accountId, fbAcc.email, conn.time(), conn.time()], function(err) {
+						if (err) { console.log("WARNING _addFacebookEmail failed", err, accountId, fbAcc) }
+						reqMeta.timer.stop('_addFacebookEmail')
+						callback.call(this)
+					}
+				)
+			} else {
+				reqMeta.timer.stop('_addFacebookEmail')
+				callback.call(this)
+			}
 		},
 		_insertFbContacts:function(reqMeta, tx, fbAccount, fbFriends, callback, err) {
 			if (err) { return logErr(err, callback, '_insertFbContacts', fbAccount) }
