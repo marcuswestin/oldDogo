@@ -35,6 +35,7 @@ function start(name) {
 
 function stop(name) {
 	var timers = this.timers
+	if (!timers[name]) { console.log("WARNING timer.stop:", name); return this }
 	timers[name].total += now() - timers[name].start
 	delete timers[name].start
 	return this
