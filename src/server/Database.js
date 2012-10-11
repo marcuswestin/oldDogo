@@ -40,9 +40,11 @@ var connectionBase = {
 			callback.call(this, err, null)
 		})
 	},
-	time: function() {
-		return Math.floor(new Date().getTime() / 1000)
-	}
+	time:getTime
+}
+
+function getTime() {
+	return Math.floor(new Date().getTime() / 1000)
 }
 
 module.exports = proto(connectionBase,
@@ -107,9 +109,13 @@ module.exports = proto(connectionBase,
 var Transaction = proto(connectionBase,
 	function(db, conn) {
 		this.db = db
+		this._time = getTime()
 		this._conn = conn
 		this._conn.query('START TRANSACTION')
 	}, {
+		time: function() {
+			return this._time
+		},
 		query:function(ctx, query, args, callback) {
 			if (!this._conn) {
 				callback('Transaction closed')
@@ -152,8 +158,12 @@ var Transaction = proto(connectionBase,
 var Autocommit = proto(connectionBase,
 	function(db, conn) {
 		this.db = db
+		this._time = getTime()
 		this._conn = conn
 	}, {
+		time: function() {
+			return this._time
+		},
 		query:function(ctx, query, args, callback) {
 			if (!this._conn) {
 				callback('Autocommit closed')
