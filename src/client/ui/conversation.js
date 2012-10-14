@@ -129,8 +129,6 @@ function renderMessage(message) {
 		isFirstMessageInGroup && !isVeryFirstMessage ? 'newGroup' : ''
 	]
 	
-	console.log("HERE", messageIsFromMe, me.id, message.senderAccountId)
-	
 	// checkScrollBounds()
 	lastMessageWasFromMe = messageIsFromMe
 	
