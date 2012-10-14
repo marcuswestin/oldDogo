@@ -203,15 +203,9 @@ function getParams(req) {
 	var logParams = JSON.stringify(params)
 	if (logParams.length > 250) { logParams = logParams.substr(0, 250) + ' (......)' }
 	
-	log(getTime(), req.method, req.url, req.meta, logParams)
+	log(req.method, req.url, req.meta, logParams)
 	return params
 }
-
-function getTime() {
-	var d = new Date()
-	return d.getFullYear()+'/'+d.getMonth()+'/'+d.getDate()+'-'+d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()
-}
-
 
 function wrapRespond(req, res, name) {
 	return function(err, data) {
@@ -249,7 +243,7 @@ function respond(req, res, err, content, contentType) {
 			content = err.stack || err.message || (err.toString && err.toString()) || err
 			if (respond.log) {
 				var logBody = JSON.stringify(req.body)
-				if (logBody.length > 400) { logBody = logBody.substr(0, 400) + ' (......)' }
+				if (logBody && logBody.length > 400) { logBody = logBody.substr(0, 400) + ' (......)' }
 				log.warn('error', content, req.url, logBody, stackError.stack)
 			}
 		}
@@ -289,5 +283,5 @@ function respond(req, res, err, content, contentType) {
 		try { res.end("Error sending message") }
 		catch(e) { log.error("COULD NOT RESPOND") }
 	}
-	log(getTime(), 'Responded', req.method, req.url, req.meta)
+	log('Responded', req.method, req.url, req.meta)
 }
