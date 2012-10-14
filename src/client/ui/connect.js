@@ -40,7 +40,7 @@ module.exports = {
 								onConnected()
 							})
 						})),
-						link('no thanks', function() {
+						link('noNotifications', 'no thanks', function() {
 							setTimeout(function() {
 								if (!confirm("Without notifications your friends' messages won't arrive right away o_O")) { return }
 								onConnected()

@@ -106,6 +106,10 @@ function setupBrowserDebugMode() {
 		gState.clear()
 		bridge.command('app.restart')
 	})))
+	$buttons.append(div(padded, 'Run tests', button(function() {
+		var clientTests = require('../clientTests')
+		clientTests.run()
+	})))
 	$('body').append($buttons)
 }
 

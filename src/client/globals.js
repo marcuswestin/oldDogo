@@ -107,10 +107,15 @@ unique = function() {
 }
 unique.current = 1
 
-link = function(title, path) {
+link = function(className, title, path) {
+	if (arguments.length == 2) {
+		title = className
+		path = title
+		className = ''
+	}
 	if (typeof path == 'function') {
-		return div('link', title, button(path))
+		return div('link '+className, title, button(path))
 	} else {
-		return a('link', title, { href:(appInfo.config.serverUrl + path), target:'_blank' })
+		return a('link '+className, title, { href:(appInfo.config.serverUrl + path), target:'_blank' })
 	}
 }
