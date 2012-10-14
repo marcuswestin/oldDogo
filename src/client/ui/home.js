@@ -12,7 +12,7 @@ module.exports = {
 		return div('homeView',
 			div('conversations', div('info', 'Loading...'), function($conversations) {
 				gState.load('conversations', function(conversations) {
-					setTimeout(function() { selectConversation(conversations[0]) }) // AUTOS
+					// setTimeout(function() { selectConversation(conversations[0]) }) // AUTOS
 					$conversations.empty().append(
 						div('info'),
 						conversationsList = list({
