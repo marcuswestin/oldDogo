@@ -17,10 +17,12 @@ var face = module.exports = {
 	},
 	
 	backgroundStyle:function(facebookId, large) {
-		var postFix = large ? '?type=normal' : ''
 		var size = large ? 50 : 25
+		var imageUrl = 'http://graph.facebook.com/'+facebookId+'/picture'+(large ? '?type=normal' : '')
+		var params = { url:imageUrl, cache:'cache', resize:size+'x^', mimeType:'image/jpg' }
+		var url = '//BTImage/fetchImage?'+parseUrl.query.string(params)
 		return {
-			background:'url("http://graph.facebook.com/'+facebookId+'/picture'+postFix+'") transparent no-repeat',
+			background:'url("'+url+'") transparent no-repeat',
 			width:size, height:size, backgroundSize:size+'px auto'
 		}
 	},

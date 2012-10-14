@@ -1,8 +1,15 @@
 #import "AppDelegate.h"
 #import <QuartzCore/QuartzCore.h>
 #import "UIDeviceHardware.h"
+#import "BTTextInput.h"
+#import "BTImage.h"
 
 @implementation AppDelegate
+
+- (void)setupModules {
+    [BTTextInput setup:self];
+    [BTImage setup:self];
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
