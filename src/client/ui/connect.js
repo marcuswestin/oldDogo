@@ -26,6 +26,7 @@ module.exports = {
 									}
 									$el.text('Connected!')
 									scroller.push()
+									events.fire('app.connected')
 								})
 							})
 						})),

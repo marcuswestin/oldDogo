@@ -32,9 +32,9 @@ var composer = module.exports = {
 		return div('composer',
 			$ui.surface = $(div('surface')),
 			div('tools',
-				div('button tool', div('icon write'), button(selectText)),
-				div('button tool', div('icon photo'), button(selectPhoto)),
-				div('button tool', div('icon draw'), button(selectDraw))
+				div('button tool write', div('icon write'), button(selectText)),
+				div('button tool photo', div('icon photo'), button(selectPhoto)),
+				div('button tool draw', div('icon draw'), button(selectDraw))
 			)
 		)
 	}
