@@ -146,11 +146,11 @@ function runConnectTests() {
 function run() {
 	disableAlerts()
 	tinyTest.run({
-		onTestStart:function(name) { console.log("Test:", name) },
-		onTestDone: function(name, duration) { console.log(duration+'ms') },
-		onTestFail: function(name, err) { console.log("ERROR", name, err) },
+		onTestStart:function(name) { console.warn("Test:", name) },
+		onTestDone: function(name, duration) { console.warn(duration+'ms') },
+		onTestFail: function(name, err) { console.error("ERROR", name, err) },
 		onAllDone: function(duration) {
-			console.log("Done:", duration+'ms')
+			console.warn("Done:", duration+'ms')
 			disableAlerts.reset()
 		}
 	})
