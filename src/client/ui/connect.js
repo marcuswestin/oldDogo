@@ -2,7 +2,7 @@ module.exports = {
 	render: function(onConnected) {
 		
 		var scroller = makeScroller({ duration:400, alwaysBounce:false })
-		return div('connectView',
+		return div('connectView', viewport.fit,
 			div('logo', 'dogo'),
 			scroller.renderBody(2, function(view, info) {
 				switch (info.index) {
@@ -53,7 +53,7 @@ module.exports = {
 		)
 	},
 	slideOut: function() {
-		$('.connectView').css(translate.y(-viewport.height()))
+		$('.connectView').css(translate.y(-viewport.height(), 500))
 		// Warning: Actually removing the conenct view after the transition has completed causes an error where the screen becomes unresponsive. ¿Que?
 	}
 }
