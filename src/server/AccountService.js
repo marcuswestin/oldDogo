@@ -90,7 +90,7 @@ module.exports = proto(null,
 					function(err, accountId) {
 						if (err) { return callback(err) }
 						this._addFacebookEmail(reqMeta, tx, accountId, fbAcc, function() {
-							this._insertFacebookContacts(reqMeta, tx, fbAcc, fbFriends, callback)
+							this._insertFbContacts(reqMeta, tx, fbAcc, fbFriends, callback)
 						})
 					}
 				)
