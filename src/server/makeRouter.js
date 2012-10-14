@@ -20,6 +20,8 @@ module.exports = function makeRouter(accountService, messageService, sessionServ
 	
 	setupRoutes(app, accountService, messageService, sessionService, pictureService, opts)
 	if (opts.dev) { setupDev(app) }
+	app.get('*', function onError(req, res, next) { respond(req, res, 404) })
+	app.post('*', function onError(req, res, next){ respond(req, res, 404) })
 	
 	return {
 		listen:function(port) {
@@ -125,10 +127,6 @@ function setupRoutes(app, accountService, messageService, sessionService, pictur
 	app.post('/api/facebook_requests', filter.session, function saveFacebookRequest(req, res) {
 		var params = getParams(req, 'facebookRequestId', 'toAccountId', 'conversationId')
 		messageService.saveFacebookRequest(req.session.accountId, params.facebookRequestId, params.toAccountId, params.conversationId, curry(respond, req, res))
-	})
-	app.use(function onError(err, req, res, next){
-		log.error("Route error".red, err)
-		respond(req, res, err)
 	})
 }
 
@@ -240,6 +238,11 @@ function respond(req, res, err, content, contentType) {
 			content = 'Authorization Required'
 			headers['WWW-Authenticate'] = 'Basic'
 			log.warn("Unauthorized".red, req.url.pink)
+		} else if (err == 404) {
+			code = 404
+			content = 'Could not find ' + req.url
+			contentType = 'text/plain'
+			log.warn('404', req.url)
 		} else {
 			var stackError = new Error()
 			code = 500
