@@ -16,7 +16,7 @@ module.exports = {
 					$conversations.empty().append(
 						div('info'),
 						conversationsList = list({
-							items:conversations,
+							items:filterConversations(conversations),
 							onSelect:selectConversation,
 							getItemId:getConversationId,
 							reAddItems:true,
@@ -70,7 +70,6 @@ function messageFromSentMessage(message, accountId) {
 }
 
 function filterConversations(conversations) {
-	return conversations
 	return _.filter(conversations, function(conv) { return !!conv.lastMessage })
 }
 
