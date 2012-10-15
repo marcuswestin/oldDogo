@@ -17,6 +17,7 @@
         NSString* mode;
         mode = @"testflight";
         NSString* host = @"https://dogoapp.com";
+        NSString* port = @"";
 #ifdef TESTFLIGHT
         mode = @"testflight";
 #endif
@@ -31,8 +32,7 @@
             host = [NSString stringWithContentsOfFile:hostnameFile encoding:NSUTF8StringEncoding error:nil];
             host = [host stringByReplacingOccurrencesOfString:@"\n" withString:@""];
             host = [@"http://" stringByAppendingString:host];
-            host = [host stringByAppendingString:@":9000"];
-//            host = @"http://localhost:9000";
+            port = @"9000";
         }
         
         NSDictionary* device = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -43,12 +43,12 @@
                                 nil];
         
         BOOL devMode = [mode isEqualToString:@"dev"];
-        self.serverHost = host;
+        [self setServerHost:host port:port];
 
         [self.config setValue:mode forKey:@"mode"];
         [self.config setValue:[self getCurrentVersion] forKey:@"currentVersion"];
         [self.config setValue:device forKey:@"device"];
-        [self.config setValue:self.serverHost forKey:@"serverUrl"];
+        [self.config setValue:self.serverUrl forKey:@"serverUrl"];
         
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque];
         
@@ -63,6 +63,23 @@
     } else {
         return NO;
     }
+}
+
+- (void)setupNetHandlers {
+    [super setupNetHandlers];
+
+    NSString* staticPrefix = @"/static/";
+    [WebViewProxy handleRequestsWithHost:self.serverHost pathPrefix:@"/static/img" handler:^(NSURLRequest *req, WVPResponse *res) {
+        NSString* path = [req.URL.path substringFromIndex:staticPrefix.length];
+        NSData* data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:path ofType:nil]];
+        [res respondWithData:data mimeType:nil];
+    }];
+    
+    [WebViewProxy handleRequestsWithHost:self.serverHost pathPrefix:@"/static/fonts" handler:^(NSURLRequest* req, WVPResponse *res) {
+        NSString* path = [req.URL.path substringFromIndex:staticPrefix.length];
+        NSData* data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:path ofType:nil]];
+        [res respondWithData:data mimeType:nil];
+    }];
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {

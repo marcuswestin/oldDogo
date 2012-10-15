@@ -1,4 +1,4 @@
-var ratio = (window.devicePixelRatio || 1)
+var ext = window.devicePixelRatio > 1 ? '@'+window.devicePixelRatio+'x' : ''
 
 brandGradient = function(pos, amount) {
 	if (!pos) { var where = 'center' }
@@ -7,7 +7,7 @@ brandGradient = function(pos, amount) {
 }
 
 logoIcon = function(size) {
-	if (!size) { size = 64 }
+	if (!size) { size = 32 }
 	return bgImg('logoIcon', size, size)
 }
 
@@ -18,10 +18,25 @@ logoName = function(w, h, color) {
 }
 
 bgImg = function(name, w, h) {
-	var imgUrl = '/static/img/'+name+'-'+(w*ratio)+'x'+(h*ratio)+'.png'
+	var imgUrl = '/static/img/'+name+'-'+w+'x'+h+ext+'.png'
 	return div('bgImg', style({
 		width:w, height:h, display:'inline-block',
 		background: 'url("'+imgUrl+'") transparent no-repeat',
 		backgroundSize: w+'px '+h+'px'
+	}))
+}
+
+icon = function(width, height, name, paddingTop, paddingRight, paddingBottom, paddingLeft) {
+	if (paddingTop == null) { paddingTop = 0 }
+	if (paddingRight == null) { paddingRight = 0 }
+	if (paddingBottom == null) { paddingBottom = paddingTop }
+	if (paddingLeft == null) { paddingLeft = paddingRight }
+	return div('icon', style({
+		width:width,
+		height:height,
+		background:'transparent '+paddingLeft+'px '+paddingTop+'px no-repeat',
+		backgroundImage:'url("/static/img/glyphish/'+name+ext+'.png")',
+		backgroundSize:width+'px '+height+'px',
+		padding:paddingTop+'px '+paddingRight+'px '+paddingBottom+'px '+paddingLeft+'px'
 	}))
 }

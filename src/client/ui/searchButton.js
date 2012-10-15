@@ -7,7 +7,7 @@ module.exports = {
 
 function renderSearchButton() {
 	return div('search-control',
-		div('search', div('icon'), button(renderSearchInput))
+		div('search', icon(32, 21, 'white/112-group', 12, 8), button(renderSearchInput))
 	)
 }
 

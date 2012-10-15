@@ -35,10 +35,11 @@ renderConversation = function(conversation) {
 	var lastReceived = conversation.lastReceivedMessage
 	var lastRead = conversation.lastReadMessage
 	var hasUnread = lastReceived && (!lastRead || lastReceived.sentTime > lastRead.sentTime)
-	return div('conversation clear',
+	return div('conversation',
 		div('unreadDot' + (hasUnread ? ' hasUnread' : '')),
 		face.large(person),
-		div('name', person.fullName)
+		div('name', person.fullName),
+		div('clear')
 		// div('body', (!conversation.body && !message.pictureId)
 		// 	? div('youStarted', "You started the conversation.")
 		// 	: (message.pictureId ? div('youStarted', 'sent you a picture') : message.body)

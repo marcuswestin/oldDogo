@@ -26,7 +26,7 @@ body
 			background rgba(255, 186, 186, 0.85);
 			 text-align center; padding 8px 0; border 1px solid; margin 0 3px; border-radius: 0 0 4px 4px;
 			.close.icon
-				icon(20px, 20px, 'xtras-white/37-circle-x.png'); float right; margin 1px 4px 0;
+				float right; margin 1px 4px 0;
 	
 	#viewport
 		position relative; overflow hidden;
@@ -72,12 +72,10 @@ body
 	.logoIcon
 		absolute top 6px left 6px;
 	.back.icon
-		absolute top left; icon(28px, 28px, 'xtras-white/36-circle-west.png', 8px, 8px);
+		absolute top left;
 	.search-control
 		.search, .search.active
 			absolute top right;
-			.icon
-				icon(32px, 21px, 'white/112-group.png', 12px, 8px);
 		.input
 			inputWidth = 300px;
 			width inputWidth; height 30px;
@@ -99,17 +97,12 @@ body
 		relative top 120px;
 	.ghostTown
 		position relative; top 10px; margin-left 20px;
-		.arrow.icon
-			icon(23px, 17px, 'white/213-reply.png');
-			-webkit-transform: rotate(120deg);
-			margin 0 0 1px 6px; display inline-block;
 	.conversations
-		min-height 254px;
+		min-height 254px; padding-top 1px
 
 .homeView .conversation, .searchResults .conversation
-	margin 7px 8px 0 60px;
+	padding 4px 4px 0 4px;
 	.name
-		padding 5px 8px 0;
 		text-shadow: 0 1px 0 #ffffff;
 	.body
 		padding 0 8px 6px; light()
@@ -121,7 +114,7 @@ body
 	.youStarted
 		light-italic()
 	.face
-		float left; margin-left -54px;
+		float left; margin-right 4px;
 
 .searchResults
 	absolute top 0 left 0; background #fff; width 100%; box-shadow 0 1px 4px #333;

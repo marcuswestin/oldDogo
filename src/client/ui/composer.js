@@ -32,9 +32,9 @@ var composer = module.exports = {
 		return div('composer',
 			$ui.surface = $(div('surface')),
 			div('tools',
-				div('button tool write', div('icon write'), button(selectText)),
-				div('button tool photo', div('icon photo'), button(selectPhoto)),
-				div('button tool draw', div('icon draw'), button(selectDraw))
+				div('button tool write', icon(24, 22, 'white/09-chat-2'), button(selectText)),
+				div('button tool photo', icon(24, 22, 'white/86-camera'), button(selectPhoto)),
+				div('button tool draw', icon(24, 20, 'white/98-palette'), button(selectDraw))
 			)
 		)
 	}
@@ -56,7 +56,7 @@ function toolSelector(fn) {
 
 function _selectText() {
 	$('.composer .tools').append(
-		div('closeTextInput', div('icon'), button(function() {
+		div('closeTextInput', icon(22, 22, 'white/298-circlex'), button(function() {
 			bridge.command('textInput.hide')
 		}))
 	)	
