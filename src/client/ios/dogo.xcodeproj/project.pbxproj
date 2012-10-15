@@ -49,7 +49,6 @@
 		2CD1A03A153FB6B0008949F2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1A039153FB6B0008949F2 /* main.m */; };
 		2CD1A03E153FB6B1008949F2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1A03D153FB6B1008949F2 /* AppDelegate.m */; };
 		2CD1A074153FB7B6008949F2 /* BTAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1A060153FB7B6008949F2 /* BTAppDelegate.m */; };
-		2CD1A075153FB7B6008949F2 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1A063153FB7B6008949F2 /* JSONKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CD1A076153FB7B6008949F2 /* NSFileManager+Tar.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1A066153FB7B6008949F2 /* NSFileManager+Tar.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CD1A089153FB85D008949F2 /* FBDialog.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2CD1A07C153FB85D008949F2 /* FBDialog.bundle */; };
 		2CD1A08A153FB85D008949F2 /* libfacebook_ios_sdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD1A082153FB85D008949F2 /* libfacebook_ios_sdk.a */; };
@@ -141,8 +140,6 @@
 		2CD1A03D153FB6B1008949F2 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		2CD1A05F153FB7B6008949F2 /* BTAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTAppDelegate.h; sourceTree = "<group>"; };
 		2CD1A060153FB7B6008949F2 /* BTAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTAppDelegate.m; sourceTree = "<group>"; };
-		2CD1A062153FB7B6008949F2 /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
-		2CD1A063153FB7B6008949F2 /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
 		2CD1A065153FB7B6008949F2 /* NSFileManager+Tar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSFileManager+Tar.h"; sourceTree = "<group>"; };
 		2CD1A066153FB7B6008949F2 /* NSFileManager+Tar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFileManager+Tar.m"; sourceTree = "<group>"; };
 		2CD1A07A153FB85D008949F2 /* Facebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Facebook.h; sourceTree = "<group>"; };
@@ -390,7 +387,6 @@
 				2C720C161567C59100AC9BF4 /* BTNet.m */,
 				2CFE18D71580A48100188E06 /* BTIndex.h */,
 				2CFE18D81580A48100188E06 /* BTIndex.m */,
-				2CD1A061153FB7B6008949F2 /* JSONKit */,
 				2CD1A064153FB7B6008949F2 /* Light-Untar */,
 				2C720C5B15684C3100AC9BF4 /* MKNetworkKit */,
 				2C8A7697162218AC000312FC /* WebViewJavascriptBridge */,
@@ -399,15 +395,6 @@
 			);
 			name = "blowtorch-ios-sdk";
 			path = "../../../../dependencies/blowtorch/sdk/blowtorch-ios-sdk";
-			sourceTree = "<group>";
-		};
-		2CD1A061153FB7B6008949F2 /* JSONKit */ = {
-			isa = PBXGroup;
-			children = (
-				2CD1A062153FB7B6008949F2 /* JSONKit.h */,
-				2CD1A063153FB7B6008949F2 /* JSONKit.m */,
-			);
-			path = JSONKit;
 			sourceTree = "<group>";
 		};
 		2CD1A064153FB7B6008949F2 /* Light-Untar */ = {
@@ -542,7 +529,6 @@
 				2CD1A03A153FB6B0008949F2 /* main.m in Sources */,
 				2CD1A03E153FB6B1008949F2 /* AppDelegate.m in Sources */,
 				2CD1A074153FB7B6008949F2 /* BTAppDelegate.m in Sources */,
-				2CD1A075153FB7B6008949F2 /* JSONKit.m in Sources */,
 				2CD1A076153FB7B6008949F2 /* NSFileManager+Tar.m in Sources */,
 				2C09E4A11550D10B0089ECD5 /* BTState.m in Sources */,
 				2CD13242156783CA002386F3 /* DebugUIWebView.m in Sources */,
