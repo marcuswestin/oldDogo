@@ -168,6 +168,10 @@ function setupDev(app) {
 		combine.handleRequireRequest(req, res)
 	})
 	
+	each(['BTImage'], function(btModule) {
+		require('../../dependencies/blowtorch/sdk/blowtorch-node-sdk/'+btModule).setup(app)
+	})
+	
 	function sendPage(name) {
 		return function(req, res) {
 			buildPage(name, curry(respondHtml, req, res))

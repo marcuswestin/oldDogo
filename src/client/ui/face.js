@@ -1,3 +1,9 @@
+var BT = {
+	url:function(module, path, params) {
+		return '//blowtorch:9000/'+module+'/'+path+'?'+parseUrl.query.string(params)
+	}
+}
+
 var face = module.exports = {
 
 	large: function(account, showRibbon, lazyLoad) {
@@ -20,9 +26,8 @@ var face = module.exports = {
 		var size = large ? 50 : 25
 		var imageUrl = 'http://graph.facebook.com/'+facebookId+'/picture'+(large ? '?type=normal' : '')
 		var params = { url:imageUrl, cache:'cache', resize:size+'x^', mimeType:'image/jpg' }
-		var url = '//BTImage/fetchImage?'+parseUrl.query.string(params)
 		return {
-			background:'url("'+url+'") transparent no-repeat',
+			background:'url("'+BT.url('BTImage', 'fetchImage', params)+'") transparent no-repeat',
 			width:size, height:size, backgroundSize:size+'px auto'
 		}
 	},
