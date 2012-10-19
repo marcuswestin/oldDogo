@@ -152,13 +152,12 @@ function setupDev(app) {
 	app.get('/test', sendPage('test'))
 	
 	app.get('/app', sendFile('src/client/dogo.html', 'text/html'))
+	app.get('/favicon.ico', sendFile('src/graphics/website/favicon.png', 'image/png'))
 		
-	app.get('/static/*', function(req, res) {
-		fs.readFile('src'+req.url, curry(respond, req, res))
-	})
-	app.get('/resources/*', function(req, res) {
-		fs.readFile('src'+req.url, curry(respond, req, res))
-	})
+	app.get('/fonts/*', sendStatic('src'))
+	app.get('/lib/*', sendStatic('src'))
+	app.get('/graphics/*', sendStatic('src'))
+	app.get('/img/*', sendStatic('src/graphics'))
 	
 	app.get('/stylus/*', function(req, res) {
 		combine.compileStylusPath(req.path, {}, curry(respondCss, req, res))
@@ -175,6 +174,12 @@ function setupDev(app) {
 	function sendPage(name) {
 		return function(req, res) {
 			buildPage(name, curry(respondHtml, req, res))
+		}
+	}
+	
+	function sendStatic(prefix) {
+		return function(req, res) {
+			fs.readFile(prefix+req.url, curry(respond, req, res))
 		}
 	}
 	

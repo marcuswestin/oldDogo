@@ -1,5 +1,7 @@
 require('./globals')
 
+image.base += 'mobileApp/'
+
 var time = require('std/time')
 var pictures = require('../data/pictures')
 

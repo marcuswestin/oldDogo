@@ -68,15 +68,15 @@
 - (void)setupNetHandlers {
     [super setupNetHandlers];
 
-    NSString* staticPrefix = @"/static/";
-    [WebViewProxy handleRequestsWithHost:self.serverHost pathPrefix:@"/static/img" handler:^(NSURLRequest *req, WVPResponse *res) {
-        NSString* path = [req.URL.path substringFromIndex:staticPrefix.length];
+    NSString* graphicsPrefix = @"/graphics/";
+    [WebViewProxy handleRequestsWithHost:self.serverHost pathPrefix:graphicsPrefix handler:^(NSURLRequest *req, WVPResponse *res) {
+        NSString* path = [req.URL.path substringFromIndex:graphicsPrefix.length];
         NSData* data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:path ofType:nil]];
         [res respondWithData:data mimeType:nil];
     }];
     
-    [WebViewProxy handleRequestsWithHost:self.serverHost pathPrefix:@"/static/fonts" handler:^(NSURLRequest* req, WVPResponse *res) {
-        NSString* path = [req.URL.path substringFromIndex:staticPrefix.length];
+    [WebViewProxy handleRequestsWithHost:self.serverHost pathPrefix:@"/fonts/" handler:^(NSURLRequest* req, WVPResponse *res) {
+        NSString* path = [req.URL.path substringFromIndex:1];
         NSData* data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:path ofType:nil]];
         [res respondWithData:data mimeType:nil];
     }];

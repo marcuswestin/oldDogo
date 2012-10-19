@@ -60,7 +60,7 @@ function svg(w, h, callback) {
 
 function renderIcon(size, pos) {
 	return div(abs(pos[0], pos[1]),
-		style({ background:'url(/static/img/logoIcon-'+size+'x'+size+'.png) transparent no-repeat', backgroundSize:size+'px '+size+'px', width:size, height:size })
+		style({ background:'url(/graphics/logoIcon/logoIcon-'+size+'x'+size+'.png) transparent no-repeat', backgroundSize:size+'px '+size+'px', width:size, height:size })
 	)
 }
 
@@ -87,7 +87,11 @@ $(function() {
 			),
 			graphic(640,960,
 				div(brandGradient([320, 300], 110), renderIcon(256, [200, 200]))
+			),
+			graphic(640,1136,
+				div(brandGradient([320, 300], 100), renderIcon(256, [200, 200]))
 			)
+			
 		),
 		section('pickers', 'Pickers',	
 			div('subtitle', 'Multi-color'),

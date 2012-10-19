@@ -88,7 +88,7 @@ function render(_opts) {
 		if (opts.mediaId) {
 			doDrawBackgroundImage('/blowtorch/media/'+opts.mediaId+'.jpg', opts.width, opts.height)
 		} else if (opts.backgroundPath) {
-			doDrawBackgroundImage('/static/'+opts.backgroundPath, opts.width, opts.height)
+			doDrawBackgroundImage('/'+opts.backgroundPath, opts.width, opts.height)
 		} else if (opts.pictureSecret) {
 			// TODO Show loading indicator
 			var pictureUrl = pictures.url(opts.conversationId, opts.pictureSecret)

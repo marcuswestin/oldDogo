@@ -33,7 +33,7 @@ var composer = module.exports = {
 			$ui.surface = $(div('surface')),
 			div('tools',
 				div('button tool write', icon(24, 22, 'white/09-chat-2'), button(selectText)),
-				div('button tool photo', icon(24, 22, 'white/86-camera'), button(selectPhoto)),
+				div('button tool photo', icon(24, 18, 'white/86-camera'), button(selectPhoto)),
 				div('button tool draw', icon(24, 20, 'white/98-palette'), button(selectDraw))
 			)
 		)

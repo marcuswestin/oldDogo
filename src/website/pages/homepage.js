@@ -1,13 +1,17 @@
 require('../template/websiteTemplate')
 require('globals/tags')
 
-button($('#getDogo'), function() {
-	setTimeout(function() {
-		alert("Dogo will be available in the App Store. Come back later!")
-	}, 50)
-})
-
 $(function() {
+	button($('#getDogo'), function() {
+		setTimeout(function() {
+			alert("Dogo will be available in the App Store. Come back later!")
+		}, 50)
+	})
+	
+	button($('#logoIcon, #logoName'), function() {
+		location.reload()
+	})
+	
 	function fadeIn(selector, delay, duration) {
 		setTimeout(function() {
 			$(selector).css({ '-webkit-transition':'opacity '+duration+'ms', opacity:1 })

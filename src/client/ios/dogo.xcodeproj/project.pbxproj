@@ -12,12 +12,13 @@
 		2C456677162A072E004CD78B /* BTTextInput.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C456676162A072E004CD78B /* BTTextInput.m */; };
 		2C45667A162A07AD004CD78B /* BTModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C456679162A0780004CD78B /* BTModule.m */; };
 		2C45667D162A286B004CD78B /* BTImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C45667C162A286B004CD78B /* BTImage.m */; };
-		2C45C54C15C77A2600FE147C /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C45C54815C77A2600FE147C /* Default.png */; };
-		2C45C54D15C77A2600FE147C /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C45C54915C77A2600FE147C /* Default@2x.png */; };
-		2C45C54E15C77A2600FE147C /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C45C54A15C77A2600FE147C /* logo.png */; };
-		2C45C54F15C77A2600FE147C /* logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C45C54B15C77A2600FE147C /* logo@2x.png */; };
-		2C45C55115CACBD300FE147C /* img in Resources */ = {isa = PBXBuildFile; fileRef = 2C45C55015CACBD300FE147C /* img */; };
 		2C4EF9EF1573196800EE57C8 /* BTViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C4EF9EE1573196800EE57C8 /* BTViewController.m */; };
+		2C55C9681631226F006DFEB6 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C55C9631631226F006DFEB6 /* Default-568h@2x.png */; };
+		2C55C9691631226F006DFEB6 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C55C9641631226F006DFEB6 /* Default.png */; };
+		2C55C96A1631226F006DFEB6 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C55C9651631226F006DFEB6 /* Default@2x.png */; };
+		2C55C96B1631226F006DFEB6 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C55C9661631226F006DFEB6 /* logo.png */; };
+		2C55C96C1631226F006DFEB6 /* logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C55C9671631226F006DFEB6 /* logo@2x.png */; };
+		2C55C96E1631229B006DFEB6 /* mobileApp in Resources */ = {isa = PBXBuildFile; fileRef = 2C55C96D1631229B006DFEB6 /* mobileApp */; };
 		2C720C191567C6E900AC9BF4 /* BTNet.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C161567C59100AC9BF4 /* BTNet.m */; };
 		2C720C6F15684C3100AC9BF4 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C5E15684C3100AC9BF4 /* NSData+Base64.m */; };
 		2C720C7015684C3100AC9BF4 /* NSDate+RFC1123.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C6015684C3100AC9BF4 /* NSDate+RFC1123.m */; };
@@ -30,8 +31,6 @@
 		2C8A769B162218AC000312FC /* WebViewJavascriptBridge.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2C8A7699162218AC000312FC /* WebViewJavascriptBridge.js.txt */; };
 		2C8A769C162218AC000312FC /* WebViewJavascriptBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C8A769A162218AC000312FC /* WebViewJavascriptBridge.m */; };
 		2C8A76B116271FF8000312FC /* WebViewProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C8A76B016271FF8000312FC /* WebViewProxy.m */; };
-		2CA5EEF01618FB570019B20B /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 2CA5EEEF1618FB570019B20B /* fonts */; };
-		2CA5EEF21618FB650019B20B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2CA5EEF11618FB650019B20B /* Default-568h@2x.png */; };
 		2CAE30591556262500742518 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CAE30581556262500742518 /* AudioToolbox.framework */; };
 		2CBA74D2162A2D0000DE2E95 /* BTCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBA74D1162A2D0000DE2E95 /* BTCache.m */; };
 		2CBA74F3162A427600DE2E95 /* UIImage+Alpha.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBA74ED162A427600DE2E95 /* UIImage+Alpha.m */; };
@@ -79,13 +78,14 @@
 		2C456679162A0780004CD78B /* BTModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BTModule.m; sourceTree = "<group>"; };
 		2C45667B162A286B004CD78B /* BTImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTImage.h; sourceTree = "<group>"; };
 		2C45667C162A286B004CD78B /* BTImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTImage.m; sourceTree = "<group>"; };
-		2C45C54815C77A2600FE147C /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
-		2C45C54915C77A2600FE147C /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
-		2C45C54A15C77A2600FE147C /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
-		2C45C54B15C77A2600FE147C /* logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo@2x.png"; sourceTree = "<group>"; };
-		2C45C55015CACBD300FE147C /* img */ = {isa = PBXFileReference; lastKnownFileType = folder; name = img; path = ../../static/img; sourceTree = SOURCE_ROOT; };
 		2C4EF9ED1573196800EE57C8 /* BTViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTViewController.h; sourceTree = "<group>"; };
 		2C4EF9EE1573196800EE57C8 /* BTViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTViewController.m; sourceTree = "<group>"; };
+		2C55C9631631226F006DFEB6 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		2C55C9641631226F006DFEB6 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		2C55C9651631226F006DFEB6 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		2C55C9661631226F006DFEB6 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
+		2C55C9671631226F006DFEB6 /* logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo@2x.png"; sourceTree = "<group>"; };
+		2C55C96D1631229B006DFEB6 /* mobileApp */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mobileApp; path = ../../../graphics/mobileApp; sourceTree = "<group>"; };
 		2C720C151567C59100AC9BF4 /* BTNet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BTNet.h; sourceTree = "<group>"; };
 		2C720C161567C59100AC9BF4 /* BTNet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BTNet.m; sourceTree = "<group>"; };
 		2C720C5D15684C3100AC9BF4 /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Base64.h"; sourceTree = "<group>"; };
@@ -110,8 +110,6 @@
 		2C8A769A162218AC000312FC /* WebViewJavascriptBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewJavascriptBridge.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		2C8A76AF16271FF8000312FC /* WebViewProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewProxy.h; sourceTree = "<group>"; };
 		2C8A76B016271FF8000312FC /* WebViewProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewProxy.m; sourceTree = "<group>"; };
-		2CA5EEEF1618FB570019B20B /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../../static/fonts; sourceTree = "<group>"; };
-		2CA5EEF11618FB650019B20B /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		2CAE30581556262500742518 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		2CBA74D0162A2D0000DE2E95 /* BTCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTCache.h; sourceTree = "<group>"; };
 		2CBA74D1162A2D0000DE2E95 /* BTCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTCache.m; sourceTree = "<group>"; };
@@ -197,6 +195,19 @@
 			path = "../../../../dependencies/blowtorch/sdk/blowtorch-ios-modules";
 			sourceTree = "<group>";
 		};
+		2C55C9621631226F006DFEB6 /* iosResources */ = {
+			isa = PBXGroup;
+			children = (
+				2C55C9631631226F006DFEB6 /* Default-568h@2x.png */,
+				2C55C9641631226F006DFEB6 /* Default.png */,
+				2C55C9651631226F006DFEB6 /* Default@2x.png */,
+				2C55C9661631226F006DFEB6 /* logo.png */,
+				2C55C9671631226F006DFEB6 /* logo@2x.png */,
+			);
+			name = iosResources;
+			path = ../../../graphics/iosResources;
+			sourceTree = "<group>";
+		};
 		2C5C1C611566200800035E03 /* dogo-ios-build */ = {
 			isa = PBXGroup;
 			children = (
@@ -270,20 +281,6 @@
 			path = ../../dependencies/WebViewProxy/WebViewProxy;
 			sourceTree = "<group>";
 		};
-		2CA9924B154FC9E400CF92FC /* images */ = {
-			isa = PBXGroup;
-			children = (
-				2C45C54815C77A2600FE147C /* Default.png */,
-				2C45C54915C77A2600FE147C /* Default@2x.png */,
-				2C45C54A15C77A2600FE147C /* logo.png */,
-				2C45C54B15C77A2600FE147C /* logo@2x.png */,
-				2CA5EEEF1618FB570019B20B /* fonts */,
-				2C45C55015CACBD300FE147C /* img */,
-			);
-			name = images;
-			path = ..;
-			sourceTree = "<group>";
-		};
 		2CBA74EA162A427600DE2E95 /* UIImage-Categories */ = {
 			isa = PBXGroup;
 			children = (
@@ -309,7 +306,6 @@
 		2CD1A01E153FB6B0008949F2 = {
 			isa = PBXGroup;
 			children = (
-				2CA5EEF11618FB650019B20B /* Default-568h@2x.png */,
 				2CD1A033153FB6B0008949F2 /* dogo */,
 				2CD1A02C153FB6B0008949F2 /* Frameworks */,
 				2CD1A02A153FB6B0008949F2 /* Products */,
@@ -350,7 +346,8 @@
 				2CD1A079153FB85D008949F2 /* facebook-ios-sdk */,
 				2C456674162A072E004CD78B /* blowtorch-ios-modules */,
 				2CD1A048153FB7B6008949F2 /* blowtorch-ios-sdk */,
-				2CA9924B154FC9E400CF92FC /* images */,
+				2C55C9621631226F006DFEB6 /* iosResources */,
+				2C55C96D1631229B006DFEB6 /* mobileApp */,
 				2CCAFE671569EC1C002766A1 /* sounds */,
 				2CD1A034153FB6B0008949F2 /* Supporting Files */,
 			);
@@ -502,18 +499,17 @@
 				2CD1A038153FB6B0008949F2 /* InfoPlist.strings in Resources */,
 				2CD1A089153FB85D008949F2 /* FBDialog.bundle in Resources */,
 				2CCAFE691569EC1C002766A1 /* vibrate.wav in Resources */,
-				2C45C54C15C77A2600FE147C /* Default.png in Resources */,
-				2C45C54D15C77A2600FE147C /* Default@2x.png in Resources */,
-				2C45C54E15C77A2600FE147C /* logo.png in Resources */,
-				2C45C54F15C77A2600FE147C /* logo@2x.png in Resources */,
-				2C45C55115CACBD300FE147C /* img in Resources */,
 				2CF1C8AE15E9AFE700F4916D /* app.html in Resources */,
 				2CF1C8AF15E9AFE700F4916D /* appCss.css in Resources */,
 				2CF1C8B015E9AFE700F4916D /* appJs.html in Resources */,
 				2C25DD2F15E9E4220005D147 /* dev-hostname.txt in Resources */,
-				2CA5EEF01618FB570019B20B /* fonts in Resources */,
-				2CA5EEF21618FB650019B20B /* Default-568h@2x.png in Resources */,
 				2C8A769B162218AC000312FC /* WebViewJavascriptBridge.js.txt in Resources */,
+				2C55C9681631226F006DFEB6 /* Default-568h@2x.png in Resources */,
+				2C55C9691631226F006DFEB6 /* Default.png in Resources */,
+				2C55C96A1631226F006DFEB6 /* Default@2x.png in Resources */,
+				2C55C96B1631226F006DFEB6 /* logo.png in Resources */,
+				2C55C96C1631226F006DFEB6 /* logo@2x.png in Resources */,
+				2C55C96E1631229B006DFEB6 /* mobileApp in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -107,10 +107,8 @@ function refreshMessages() {
 // 	}
 // })
 
-var ratio = (window.devicePixelRatio || 1)
-var imagePostfix = (ratio == 2 ? '@2x' : '')
-function image(name, size) {
-	var url = '/static/img/'+name+imagePostfix+'.png'
+function arrowImage(name, size) {
+	var url = image.url(name)
 	return div(style({ display:'inline-block', width:size[0], height:size[1],
 		background:'url("'+url+'") transparent no-repeat', backgroundSize:size[0]+'px '+size[1]+'px',
 		'float':'right', margin:'6px -5px 0 0'
@@ -135,7 +133,7 @@ function renderMessage(message) {
 	return [div(
 		div('messageBubble '+classes.join(' '),
 			shouldRenderFace && face.small(messageIsFromMe ? me : view.conversation.person),
-			(messageIsFromMe && message.body) ? image('bubbleArrow-right', [5,10]) : image('bubbleArrrow-left', [6,10]),
+			(messageIsFromMe && message.body) ? arrowImage('bubbleArrow-right', [5,10]) : arrowImage('bubbleArrow-left', [6,10]),
 			renderContent(message)
 		)),
 		message.wasPushed && !message.questionAnswered && questions.hasYesNoQuestion(message.body) && questions.renderYesNoResponder(function(answer) {

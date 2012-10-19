@@ -15,7 +15,7 @@ var face = module.exports = {
 	},
 	
 	facebook: function(account, showRibbon, lazyLoad, large) {
-		return div('face', showRibbon && account.memberSince && div('member-ribbon'),
+		return div('face', showRibbon && account.memberSince && style({ backgroundImage:image.backgroundUrl('badge') }),
 			lazyLoad
 				? [{ facebookId:account.facebookId }, style({ backgroundColor:'#fff' })]
 				: style(face.backgroundStyle(account.facebookId, large))
@@ -36,7 +36,7 @@ var face = module.exports = {
 		return div('face', function($tag) {
 			loadAccount(accountId, null, function(account) {
 				if (showRibbon && account.memberSince) {
-					$tag.append(div('member-ribbon'))
+					$tag.append(div(style({ backgroundImage:image.backgroundUrl('badge') })))
 				}
 				$tag.css(face.backgroundStyle(account.facebookId))
 			})
@@ -47,7 +47,7 @@ var face = module.exports = {
 		return div('face', function($tag) {
 			loadFacebook(facebookId, null, function(account) {
 				if (showRibbon && account.memberSince) {
-					$tag.append(div('member-ribbon'))
+					$tag.append(div(style({ backgroundImage:image.backgroundUrl('badge') })))
 				}
 				$tag.css(face.backgroundStyle(account.facebookId))
 			})

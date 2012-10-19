@@ -18,7 +18,7 @@ logoName = function(w, h, color) {
 }
 
 bgImg = function(name, w, h) {
-	var imgUrl = '/static/img/'+name+'-'+w+'x'+h+ext+'.png'
+	var imgUrl = image.url(name+'-'+w+'x'+h)
 	return div('bgImg', style({
 		width:w, height:h, display:'inline-block',
 		background: 'url("'+imgUrl+'") transparent no-repeat',
@@ -35,7 +35,7 @@ icon = function(width, height, name, paddingTop, paddingRight, paddingBottom, pa
 		width:width,
 		height:height,
 		background:'transparent '+paddingLeft+'px '+paddingTop+'px no-repeat',
-		backgroundImage:'url("/static/img/glyphish/'+name+ext+'.png")',
+		backgroundImage:image.backgroundUrl('glyphish/'+name),
 		backgroundSize:width+'px '+height+'px',
 		padding:paddingTop+'px '+paddingRight+'px '+paddingBottom+'px '+paddingLeft+'px'
 	}))

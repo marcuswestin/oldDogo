@@ -4,7 +4,7 @@ var makeColorPicker = require('./colorPicker')
 var makeStampPicker = require('./stampPicker')
 
 var mustache = {
-	path:'stamps/mustache',
+	path:'stamp-mustache',
 	create:function(opts) {
 		return {
 			handleDown:function(p) {
@@ -35,8 +35,8 @@ module.exports = proto(basePicker,
 		},
 		getSecondary:function(current) {
 			switch (current.path) {
-				case 'stamps/mustache': return this.opts.stampPicker
-				case 'pens/fill': return this.opts.colorPicker
+				case 'stamp-mustache': return this.opts.stampPicker
+				case 'pen-fill': return this.opts.colorPicker
 			}
 		},
 		current: pens.byName.fill,
@@ -50,7 +50,7 @@ module.exports = proto(basePicker,
 				border:'2px solid #433', borderRadius:4,
 				background:'#fff'
 			}
-			return img('pen', style(styles, transition('width, height', 100)), { src:'/static/img/'+(pen.path)+'.png' })
+			return img('pen', style(styles, transition('width, height', 100)), { src:'/img/'+(pen.path)+'.png' })
 		},
 		getPos:function(i, j, num) {
 			var w = this.openSize[0] + 10

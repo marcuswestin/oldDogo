@@ -3,7 +3,7 @@ var hsvToRgb = require('client/colors/hsvToRgb')
 var basePicker = require('./basePicker')
 
 var colorLists = [
-	['multi-color1'],
+	['multi1'],
 	[[89, 197, 202], [129, 228, 164], [252, 212, 128], [250, 141, 69]],
 	[[110, 33, 81], [39, 118, 184], [185, 163, 133], [20, 16, 50]],
 	[[223, 88, 88], [106, 125, 150], [102, 77, 116], [247, 224, 226]]
@@ -21,7 +21,7 @@ module.exports = proto(basePicker,
 		itemLists:colorLists,
 		
 		multiColors: {
-			'multi-color1':colorLists[2]
+			'multi1':colorLists[2]
 		},
 		
 		renderItem: function(color, isCurrent) {
@@ -33,7 +33,7 @@ module.exports = proto(basePicker,
 			}
 			var content
 			if (typeof color == 'string') {
-				styles.backgroundImage = 'url("/static/img/colors/'+color+'.png")'
+				styles.backgroundImage = image.backgroundImage('color-'+color)
 				styles.backgroundSize = diameter+'px '+diameter+'px'
 			} else {
 				styles.background = rgbaString(color, alpha)

@@ -1,6 +1,6 @@
 module.exports = function() {
 	return {
-		path:'stamps/mustache',
+		path:'stamp-mustache',
 		create:function(opts) {
 			return {
 				handleDown:function(p) {

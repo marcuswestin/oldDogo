@@ -119,3 +119,19 @@ link = function(className, title, path) {
 		return a('link '+className, title, { href:(appInfo.config.serverUrl + path), target:'_blank' })
 	}
 }
+
+image = (function() {
+	var ratio = (window.devicePixelRatio || 1)
+	var imagePostfix = (ratio == 2 ? '@2x' : '')
+	function imageUrl(name) {
+		return image.base + name + imagePostfix + '.png'
+	}
+	function backgroundUrl(name) {
+		return 'url("'+imageUrl(name)+'")'
+	}
+	return {
+		base: '/graphics/',
+		url: imageUrl,
+		backgroundUrl: backgroundUrl
+	}
+}())
