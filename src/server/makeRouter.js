@@ -157,7 +157,6 @@ function setupDev(app) {
 	app.get('/fonts/*', sendStatic('src'))
 	app.get('/lib/*', sendStatic('src'))
 	app.get('/graphics/*', sendStatic('src'))
-	app.get('/img/*', sendStatic('src/graphics'))
 	
 	app.get('/stylus/*', function(req, res) {
 		combine.compileStylusPath(req.path, {}, curry(respondCss, req, res))

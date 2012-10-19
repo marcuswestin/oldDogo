@@ -33,7 +33,7 @@ module.exports = proto(basePicker,
 			}
 			var content
 			if (typeof color == 'string') {
-				styles.backgroundImage = image.backgroundImage('color-'+color)
+				styles.backgroundImage = image.backgroundUrl('color-'+color)
 				styles.backgroundSize = diameter+'px '+diameter+'px'
 			} else {
 				styles.background = rgbaString(color, alpha)

@@ -50,7 +50,7 @@ module.exports = proto(basePicker,
 				border:'2px solid #433', borderRadius:4,
 				background:'#fff'
 			}
-			return img('pen', style(styles, transition('width, height', 100)), { src:'/img/'+(pen.path)+'.png' })
+			return img('pen', style(styles, transition('width, height', 100)), { src:image.url(pen.path) })
 		},
 		getPos:function(i, j, num) {
 			var w = this.openSize[0] + 10
