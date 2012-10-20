@@ -7,10 +7,11 @@ var slice = require('std/slice')
 var http = require('http')
 var semver = require('semver')
 var log = require('./util/log').makeLog('Router')
+var time = require('std/time')
 
 require('color')
 
-module.exports = function makeRouter(accountService, messageService, sessionService, pictureService, opts) {
+module.exports = function makeRouter(database, accountService, messageService, sessionService, pictureService, opts) {
 	
 	var app = express()
 	app.use(express.bodyParser({ limit:'8mb' }))
@@ -18,7 +19,7 @@ module.exports = function makeRouter(accountService, messageService, sessionServ
 	
 	respond.log = (opts.log || opts.dev)
 	
-	setupRoutes(app, accountService, messageService, sessionService, pictureService, opts)
+	setupRoutes(app, database, accountService, messageService, sessionService, pictureService, opts)
 	if (opts.dev) { setupDev(app) }
 	app.get('*', function onError(req, res, next) { respond(req, res, 404) })
 	app.post('*', function onError(req, res, next){ respond(req, res, 404) })
@@ -31,7 +32,7 @@ module.exports = function makeRouter(accountService, messageService, sessionServ
 	}
 }
 
-function setupRoutes(app, accountService, messageService, sessionService, pictureService, opts) {
+function setupRoutes(app, database, accountService, messageService, sessionService, pictureService, opts) {
 	var filter = {
 		oldClients: function filterOldClient(req, res, next) {
 			var client = req.headers['x-dogo-client']
@@ -54,6 +55,22 @@ function setupRoutes(app, accountService, messageService, sessionService, pictur
 		}
 	}
 	filter.oldClientsAndSession = [filter.oldClients, filter.session]
+	
+	app.post('/api/waitlist', function(req, res) {
+		var params = getParams(req, 'emailAddress')
+		accountService.lookupOrCreateByEmail(params.emailAddress, bind(this, function(err, account) {
+			if (err) { return respond(req, res, err) }
+			if (account.waitlistedTime) {
+				respond(req, res, null, { account:account, waitlistedSince:time.ago(account.waitlistedTime * time.seconds) })
+			} else {
+				account.waitlistedTime = database.time()
+				database.updateOne(this, 'UPDATE account SET waitlisted_time=? WHERE id=?', [account.waitlistedTime, account.id], function(err) {
+					if (err) { return respond(req, res, err) }
+					respond(req, res, null, { account:account, waitlistedSince:null })
+				})
+			}
+		}))
+	})
 	
 	app.get('/api/ping', function(req, res) {
 		res.end('"Dogo!"')

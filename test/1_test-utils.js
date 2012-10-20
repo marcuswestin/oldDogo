@@ -25,7 +25,7 @@ u.sessionService = new SessionService(u.database, u.accountService)
 u.fbAppId = '219049001532833'
 u.fbAppSecret = '8916710dbc540f3d439f4f6a67a3b5e7'
 u.fbAppAccessToken = '219049001532833|OyfUJ1FBjvZ3lVNjOMM3SFqm6CE'
-u.router = makeRouter(u.accountService, u.messageService, u.sessionService, u.pictureService, { log:false, dev:true })
+u.router = makeRouter(u.database, u.accountService, u.messageService, u.sessionService, u.pictureService, { log:false, dev:true })
 u.clientUid = function() { return u.clientUid._unique++ }
 u.clientUid._unique = new Date().getTime()
 

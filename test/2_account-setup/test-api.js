@@ -12,6 +12,26 @@ var api = u.api
 
 // makeTimer.disable()
 
+describe('Waitlist', function() {
+	var emailAddress = 'narcvs@gmail.com'
+	var waitlistedTime
+	it('should be possible to sign up', function(done) {
+		api.post('waitlist', { emailAddress:emailAddress }, function(err, res) {
+			check(err)
+			is(waitlistedTime = res.account.waitlistedTime)
+			done()
+		})
+	})
+	it('should detect that the email address has already been waitlisted', function(done) {
+		api.post('waitlist', { emailAddress:emailAddress }, function(err, res) {
+			check(err)
+			is(res.waitlistedSince)
+			is(res.account.waitlistedTime, waitlistedTime)
+			done()
+		})
+	})
+})
+
 describe('Setup with Facebook Connect', function() {
 	it('should allow creating an FB app access token', function(done) {
 		this.timeout(0)

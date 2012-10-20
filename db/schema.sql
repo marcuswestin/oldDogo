@@ -15,7 +15,7 @@ CREATE TABLE picture (
 
 CREATE TABLE account (
 	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-	facebook_id BIGINT UNSIGNED NOT NULL,
+	facebook_id BIGINT UNSIGNED DEFAULT NULL,
 	last_client_uid_block_start BIGINT UNSIGNED NOT NULL DEFAULT 0,
 	last_client_uid_block_end BIGINT UNSIGNED NOT NULL DEFAULT 100000,
 	timezone TINYINT SIGNED DEFAULT NULL,
@@ -29,6 +29,7 @@ CREATE TABLE account (
 	push_system ENUM('ios','android') DEFAULT NULL,
 	created_time INT UNSIGNED NOT NULL,
 	claimed_time INT UNSIGNED DEFAULT NULL,
+	waitlisted_time INT UNSIGNED DEFAULT NULL,
 	FOREIGN KEY (image_picture_id) REFERENCES picture(id),
 	UNIQUE KEY index_facebook_id (facebook_id),
 	PRIMARY KEY (id)
@@ -39,7 +40,7 @@ CREATE TABLE account_email (
 	account_id BIGINT UNSIGNED NOT NULL,
 	email_address VARCHAR(255) NOT NULL,
 	created_time INT UNSIGNED NOT NULL,
-	claimed_time INT UNSIGNED NOT NULL,
+	claimed_time INT UNSIGNED DEFAULT NULL,
 	UNIQUE KEY index_email_address (email_address),
 	FOREIGN KEY (account_id) REFERENCES account(id),
 	PRIMARY KEY (id)

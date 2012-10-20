@@ -33,6 +33,28 @@ module.exports = proto(null,
 				}))
 			})
 		},
+		lookupOrCreateByEmail:function(emailAddress, callback) {
+			if (!emailAddress) { return callback('Missing email address') }
+			this.db.transact(this, function(tx) {
+				callback = tx.wrapCallback(callback)
+				tx.selectOne(this, 'SELECT account_id as accountId FROM account_email WHERE email_address=?', [emailAddress], function(err, res) {
+					if (err) { return callback(err) }
+					if (res && res.accountId) {
+						this._selectAccountByAccountId(tx, res.accountId, callback)
+					} else {
+						tx.insert(this, 'INSERT INTO account SET created_time=?', [tx.time()], function(err, accountId) {
+							if (err) { return callback(err) }
+							tx.insert(this,
+								'INSERT INTO account_email SET email_address=?, account_id=?, created_time=?',
+								[emailAddress, accountId, tx.time()], function(err, accountEmailId) {
+									this._selectAccountByAccountId(tx, accountId, callback)
+								}
+							)
+						})
+					}
+				})
+			})
+		},
 		// withFacebookContactId:function(accountId, contactFbAccountId, callback) {
 		// 	this._selectFacebookContact(this.db, accountId, contactFbAccountId, function(err, fbContact) {
 		// 		if (err) { return callback(err) }
@@ -236,7 +258,8 @@ module.exports = proto(null,
 				accountId:'id',
 				id:'id',
 				pushToken:'push_token',
-				memberSince:'claimed_time'
+				memberSince:'claimed_time',
+				waitlistedTime:'waitlisted_time'
 			})
 			// contact: sql.selectFrom('facebook_contact', {
 			// 	accountId: 'account.id',

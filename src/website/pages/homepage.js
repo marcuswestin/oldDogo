@@ -1,10 +1,22 @@
 require('../template/websiteTemplate')
 require('globals/tags')
+var trim = require('std/trim')
+var api = require('client/api')
+var time = require('std/time')
 
 $(function() {
 	button($('#getDogo'), function() {
 		setTimeout(function() {
-			alert("Dogo will be available in the App Store. Come back later!")
+			var emailAddress = trim(prompt("There's a waiting list for Dogo. What's your email address?"))
+			if (!emailAddress) { return }
+			api.post('waitlist', { emailAddress:emailAddress }, function(err, res) {
+				if (err) { return alert('Oops! '+api.error(err)) }
+				if (res.waitlistedSince) {
+					alert(emailAddress+' was waitlisted '+res.waitlistedSince)
+				} else {
+					alert("You've been waitlisted! We'll be in touch soon.")
+				}
+			})
 		}, 50)
 	})
 	

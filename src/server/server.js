@@ -20,7 +20,7 @@ function run(config) {
 	var pictureService = new PictureService(database, config.s3)
 	var messageService = new MessageService(database, accountService, pushService, pictureService)
 
-	var router = makeRouter(accountService, messageService, sessionService, pictureService, { log:config.log, dev:config.dev })
+	var router = makeRouter(database, accountService, messageService, sessionService, pictureService, { log:config.log, dev:config.dev })
 
 	config.db.password = config.db.password.replace(/[^\*]/g, '*')
 	config.push.keyData = '******'
