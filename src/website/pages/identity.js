@@ -80,6 +80,10 @@ $(function() {
 			graphic(144, 144,
 				div(brandGradient('center', 120), renderIcon(64, [40, 40]))
 			),
+			graphic(340, 340,
+				div(brandGradient('center', 120), renderIcon(256, [40, 40]))
+			),
+
 
 			div('title', 'Splash Screens'),
 			graphic(320,480,
