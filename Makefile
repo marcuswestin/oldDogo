@@ -13,7 +13,7 @@ verbose = true
 time = true
 test: reset-test-db test-server
 t:
-	make test online=false verbose=false time=false
+	make test online=false verbose=true time=false
 
 # Create a new iOS build and deliver it to all developers via testflight
 fly-dev: fly-build
