@@ -3,29 +3,40 @@ var log = makeLog('Database')
 
 var connectionBase = {
 	selectOne: function(ctx, query, args, callback) {
+		var stackError = new Error()
 		this.query(ctx, query, args, function(err, rows) {
-			if (err) { log.error('selectOne error', query, args, err) }
-			if (!err && rows.length > 1) { err = "Got more rows than expected" }
+			if (err) { logError('selectOne error', query, args, err) }
+			if (!err && rows.length > 1) {
+				logError('Got more rows than expected', query, args, stackErr)
+				err = "Got more rows than expected"
+			}
 			callback.call(this, err, err ? undefined : (rows[0] || null))
 		})
 	},
 	select:function(ctx, query, args, callback) {
+		var stackError = new Error()
 		this.query(ctx, query, args, function(err, rows) {
-			if (err) { log.error('select error', query, args, err) }
+			if (err) { logError('select error', query, args, stackError) }
 			callback.call(this, err, !err && rows)
 		})
 	},
 	insert:function(ctx, query, args, callback) {
+		var stackError = new Error()
 		this.query(ctx, query, args, function(err, info) {
-			if (err) { log.error('insert error', query, args, err) }
-			if (!err && !info.insertId) { err = "Did not recieve an insertId" }
+			if (err) { logError('insert error', query, args, err) }
+			if (!err && !info.insertId) {
+				logError('insert error', query, args, stackError)
+				err = "Did not recieve an insertId"
+			}
 			callback.call(this, err, !err && info.insertId)
 		})
 	},
 	
 	insertIgnoreDuplicateEntry:function(ctx, query, args, callback) {
+		var stackError = new Error()
 		this.query(ctx, query, args, function(err, info) {
 			if (err && !err.message.match(/Duplicate entry/)) {
+				logError('insert ignore dup entry', query, args, stackErr)
 				callback(err)
 			} else {
 				callback(null)
@@ -78,11 +89,11 @@ module.exports = proto(connectionBase,
 			})
 		},
 		query: function(ctx, query, args, callback) {
-			var stack = new Error()
+			var stackError = new Error()
 			this._takeConnection(function(conn) {
 				var self = this
 				conn.query(query, args, function(err) {
-					if (err) { err = logError(err, query, args, stack.stack) }
+					if (err) { err = logError(err, query, args, stackError) }
 					self._returnConnection(conn)
 					callback.apply(ctx, arguments)
 				})
@@ -121,8 +132,9 @@ var Transaction = proto(connectionBase,
 				callback('Transaction closed')
 				return
 			}
+			var stackError = new Error()
 			this._conn.query(query, args, function(err) {
-				if (err) { err = logError(err, query, args) }
+				if (err) { err = logError(err, query, args, stackError) }
 				callback.apply(ctx, arguments)
 			})
 		},
@@ -169,8 +181,9 @@ var Autocommit = proto(connectionBase,
 				callback('Autocommit closed')
 				return
 			}
+			var stackError = new Error()
 			this._conn.query(query, args, function(err) {
-				if (err) { err = logError(err, query, args) }
+				if (err) { err = logError(err, query, args, stackError) }
 				callback.apply(ctx, arguments)
 			})
 		},
@@ -188,8 +201,8 @@ var Autocommit = proto(connectionBase,
 	}
 )
 
-function logError(err, query, args, stack) {
-	err = new Error((err.message || err) + '\n\t' + JSON.stringify(query) + ' '+JSON.stringify(args), stack)
-	// log.warn(err)
+function logError(err, query, args, stackErr) {
+	err = new Error((err.message || err) + '\n\t' + JSON.stringify(query) + ' '+JSON.stringify(args), stackErr.stack || stackErr)
+	log.warn(err, query, args, stackErr)
 	return err
 }
