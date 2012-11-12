@@ -16,8 +16,9 @@
 
         NSString* mode;
         mode = @"testflight";
-        NSString* host = @"https://dogoapp.com";
-        NSString* port = @"";
+        NSString* scheme = @"https:";
+        NSString* host = @"dogoapp.com";
+        NSString* port = nil;
 #ifdef TESTFLIGHT
         mode = @"testflight";
 #endif
@@ -25,13 +26,14 @@
         mode = @"appstore";
 #endif
 
+        [WebViewJavascriptBridge enableLogging];
         if (!mode) {
             mode = @"dev";
             [WebViewJavascriptBridge enableLogging];
             NSString* hostnameFile = [[NSBundle mainBundle] pathForResource:@"dev-hostname" ofType:@"txt"];
             host = [NSString stringWithContentsOfFile:hostnameFile encoding:NSUTF8StringEncoding error:nil];
             host = [host stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-            host = [@"http://" stringByAppendingString:host];
+            scheme = @"http:";
             port = @"9000";
         }
         
@@ -43,7 +45,7 @@
                                 nil];
         
         BOOL devMode = [mode isEqualToString:@"dev"];
-        [self setServerHost:host port:port];
+        [self setServerScheme:scheme host:host port:port];
 
         [self.config setValue:mode forKey:@"mode"];
         [self.config setValue:[self getCurrentVersion] forKey:@"currentVersion"];
@@ -134,7 +136,7 @@
     NSDictionary* postParams = [params objectForKey:@"params"];
     NSDictionary* headers = [params objectForKey:@"headers"];
     NSString* method = [params objectForKey:@"method"];
-    NSString* url = [self.serverHost stringByAppendingString:[params objectForKey:@"path"]];
+    NSString* url = [self.serverUrl stringByAppendingString:[params objectForKey:@"path"]];
     
     UIBackgroundTaskIdentifier bgTaskId = UIBackgroundTaskInvalid;
     bgTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{

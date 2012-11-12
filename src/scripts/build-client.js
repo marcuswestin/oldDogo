@@ -16,7 +16,7 @@ exec('rm -rf '+dir, function() {
 				var js = combine.compileJs('src/client/dogo.js', { minify:minify })
 				
 				html = html.replace('<script src="/require/client/dogo"></script>',
-					'<script src="appJs.html"></script>')
+					'<script src="appJs.js"></script>')
 				
 				html = html.replace('<link rel="stylesheet" type="text/css" href="/stylus/client/dogo.styl" />',
 					'<link rel="stylesheet" type="text/css" href="appCss.css" />')

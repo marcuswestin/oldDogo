@@ -48,7 +48,6 @@ events.on('app.start', function onAppStart(info) {
 })
 
 events.on('push.registered', function onPushRegistered(info) {
-	gState.set('pushToken', info.deviceToken)
 	api.post('push_auth', { pushToken:info.deviceToken, pushSystem:'ios' })
 })
 
