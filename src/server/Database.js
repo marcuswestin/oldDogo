@@ -7,7 +7,7 @@ var connectionBase = {
 		this.query(ctx, query, args, function(err, rows) {
 			if (err) { logError('selectOne error', query, args, err) }
 			if (!err && rows.length > 1) {
-				logError('Got more rows than expected', query, args, stackErr)
+				logError('Got more rows than expected', query, args, stackError)
 				err = "Got more rows than expected"
 			}
 			callback.call(this, err, err ? undefined : (rows[0] || null))
@@ -36,7 +36,7 @@ var connectionBase = {
 		var stackError = new Error()
 		this.query(ctx, query, args, function(err, info) {
 			if (err && !err.message.match(/Duplicate entry/)) {
-				logError('insert ignore dup entry', query, args, stackErr)
+				logError('insert ignore dup entry', query, args, stackError)
 				callback(err)
 			} else {
 				callback(null)
@@ -201,8 +201,8 @@ var Autocommit = proto(connectionBase,
 	}
 )
 
-function logError(err, query, args, stackErr) {
-	err = new Error((err.message || err) + '\n\t' + JSON.stringify(query) + ' '+JSON.stringify(args), stackErr.stack || stackErr)
-	log.warn(err, query, args, stackErr)
+function logError(err, query, args, stackError) {
+	err = new Error((err.message || err) + '\n\t' + JSON.stringify(query) + ' '+JSON.stringify(args), stackError.stack || stackError)
+	log.warn(err, query, args, stackError)
 	return err
 }
