@@ -225,10 +225,10 @@ function getParams(req) {
 		}
 	}
 	
-	var client = req.headers['x-dogo-client']
 	req.meta = {
 		accountId: req.session && req.session.accountId,
-		client: client
+		client: req.headers['x-dogo-client'],
+		agent: req.headers['user-agent']
 	}
 	
 	var logParams = JSON.stringify(params)
