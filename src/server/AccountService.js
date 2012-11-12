@@ -190,7 +190,7 @@ module.exports = proto(null,
 							tx.selectOne(this, 'SELECT id FROM conversation WHERE account_1_id=? AND account_2_id=?', [ids.account1Id, ids.account2Id], function(err, conv) {
 								if (err) { return next(err) }
 								if (conv) { return next(null, { conversationId:conv.id, ids:ids }) }
-								tx.insert(this, 'INSERT INTO conversation SET account_1_id=?, account_2_id=?, created_time=?',
+								tx.insertIgnoreDuplicateEntry(this, 'INSERT INTO conversation SET account_1_id=?, account_2_id=?, created_time=?',
 									[ids.account1Id, ids.account2Id, timestamp], function(err, convId) {
 										if (err) { return next(err) }
 										next(null, { conversationId:convId, ids:ids })
