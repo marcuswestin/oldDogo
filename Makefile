@@ -32,6 +32,9 @@ run-prod:
 	${NODE} src/server/run.js --config=prod
 
 # Deploy dogo api server to prod
+push-api:
+	gitpush
+	make deploy-dogo-api
 deploy-dogo-api: ${FAB}
 	echo "BUILDING AND DEPLOYING ${GIT_REV}"
 	fab deploy_dogo_api:${GIT_REV} -H dogo-web1
