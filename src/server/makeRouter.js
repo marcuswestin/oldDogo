@@ -97,7 +97,11 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 	// })
 	app.get('/api/conversations', filter.oldClientsAndSession, function getConversations(req, res) {
 		var params = getParams(req)
-		messageService.getConversations(req.session.accountId, wrapRespond(req, res, 'conversations'))
+		var timer = makeTimer('getConversations')
+		messageService.getConversations(req.session.accountId, function(err, conversations) {
+			timer.report()
+			respond(req, res, err, !err && { conversations:conversations })
+		})
 	})
 	// app.get('/api/contacts', filter.oldClientsAndSession, function getContacts(req, res) {
 	// 	var params = getParams(req)
@@ -113,7 +117,11 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 	})
 	app.get('/api/messages', filter.oldClientsAndSession, function getConversationMessages(req, res) {
 		var params = getParams(req, 'conversationId')
-		messageService.getMessages(req.session.accountId, params.conversationId, wrapRespond(req, res, 'messages'))
+		var timer = makeTimer('getMessages')
+		messageService.getMessages(req.session.accountId, params.conversationId, function(err, messages) {
+			timer.report()
+			respond(req, res, err, !err && { messages:messages })
+		})
 	})
 	app.post('/api/push_auth', filter.oldClientsAndSession, function postPushAuth(req, res) {
 		var params = getParams(req, 'pushToken', 'pushSystem')
