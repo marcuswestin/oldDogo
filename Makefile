@@ -1,7 +1,7 @@
 # Common commands 
 #################
 # Setup all dependencies
-setup: setup-all-dependencies reset-db	
+setup: setup-server setup-client reset-db	
 
 # Run local server
 run: run-databases
@@ -64,7 +64,7 @@ reset-test-db: run-databases
 	cat db/schema.sql | mysql -u dogo_tester --password=test dogo_test
 	if [ -f test/.fbTestDataCache.json ]; then mv test/.fbTestDataCache.json test/.fbTestDataCache.json.bak; fi
 
-setup-all-dependencies: setup-source setup-server
+setup-client: setup-source
 	cd node_modules/require && npm install --production .
 	cd dependencies/blowtorch && make setup
 	cd dependencies/facebook-ios-sdk && scripts/build_facebook_ios_sdk_static_lib.sh
@@ -74,6 +74,7 @@ setup-all-dependencies: setup-source setup-server
 
 setup-server: setup-source
 	bash src/scripts/npm-install-modules.sh
+	cd node_modules/mocha && npm install --production .
 
 setup-source:
 	echo "node_modules" > ~/.__npm_installed__gitignore
