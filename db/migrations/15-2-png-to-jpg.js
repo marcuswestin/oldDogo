@@ -4,7 +4,7 @@
 require('../../src/server/util/globals')
 var Database = require('../../src/server/Database')
 var PictureService = require('../../src/server/PictureService')
-var config = require('../../src/server/config/prod')
+var config = require('../../src/server/config/dev')
 var request = require('request')
 var accessKeyId = 'AKIAJDUJ4DPW4DE7552Q'
 var secretAccessKey = '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'
