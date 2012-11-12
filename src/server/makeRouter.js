@@ -37,6 +37,7 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 		oldClients: function filterOldClient(req, res, next) {
 			var client = req.headers['x-dogo-client']
 			if (semver.lt(client, '0.96.0-_')) {
+				log('refuse old client', client)
 				res.writeHead(400, {
 					'x-dogo-process': 'alert("You have an outdated client. Please upgrade to the most recent version.")'
 				})
@@ -46,9 +47,16 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 			next()
 		},
 		session: function filterSession(req, res, next) {
+			req.authorization = req.headers.authorization || req.param('authorization')
 			sessionService.authenticateRequest(req, function(err, accountId) {
-				if (err) { return next(err) }
-				if (!accountId) { return next('Unauthorized') }
+				if (err) {
+					log('bad auth', req.authorization)
+					return next(err)
+				}
+				if (!accountId) {
+					log('unauthorized client', req.authorization)
+					return next('Unauthorized')
+				}
 				req.session = { accountId:accountId }
 				next()
 			})

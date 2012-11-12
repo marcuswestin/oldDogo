@@ -70,13 +70,12 @@ module.exports = proto(null,
 			})
 		},
 		authenticateRequest: function(req, callback) {
-			var authorization = req.headers.authorization || req.param('authorization')
-			if (!authorization) { return callback('Unauthorized') }
+			if (!req.authorization) { return callback('Unauthorized') }
 
 			try {
-				var parts = authorization.split(' ')
+				var parts = req.authorization.split(' ')
 				if (parts.length != 2) {
-					log.warn('Saw bad auth', authorization)
+					log.warn('Saw bad auth', req.authorization)
 					return callback('Bad auth')
 				}
 				
@@ -92,7 +91,7 @@ module.exports = proto(null,
 				}
 			} catch(e) {
 				log.warn(e)
-				return callback('Error parsing auth: '+ authorization)
+				return callback('Error parsing auth: '+ req.authorization)
 			}
 			
 			this.get('sess:'+authToken, function(err, accountId) {
