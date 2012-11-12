@@ -73,7 +73,13 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 	})
 	
 	app.get('/api/ping', function(req, res) {
+		var timer = makeTimer('ping').start('getParams')
+		getParams(req)
+		timer.stop('getParams')
+		timer.start('respond')
 		res.end('"Dogo!"')
+		timer.stop('respond')
+		timer.report()
 	})
 	app.post('/api/session', filter.oldClients, function postSession(req, res) {
 		var timer = makeTimer('postSessionHandler').start('getParams')
