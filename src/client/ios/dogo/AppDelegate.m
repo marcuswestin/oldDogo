@@ -143,13 +143,16 @@
         [[UIApplication sharedApplication] endBackgroundTask:bgTaskId];
     }];
     
-    [BTNet request:url method:method headers:headers params:postParams responseCallback:^(NSError* error, NSDictionary *netResponse) {
+    [BTNet request:url method:method headers:headers params:postParams responseCallback:^(NSError* error, NSData *netData) {
         [[UIApplication sharedApplication] endBackgroundTask:bgTaskId];
         if (error) {
-            [response respondWithError:error.domain];
+            NSLog(@"ERROR %@ %@ %@ %@ %@", error, url, method, headers, postParams);
+            [response respondWithError:@"Could not complete request"];
         } else {
-            NSData* responseData = [netResponse objectForKey:@"responseData"];
-            NSDictionary* jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:nil];
+            NSDictionary* jsonData;
+            if (netData && netData.length) {
+                jsonData = [NSJSONSerialization JSONObjectWithData:netData options:NSJSONReadingAllowFragments error:nil];
+            }
             [response respondWith:jsonData];
         }
     }];
