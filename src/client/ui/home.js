@@ -19,8 +19,10 @@ module.exports = {
 							items:filterConversations(conversations),
 							onSelect:selectConversation,
 							getItemId:getConversationId,
-							reAddItems:true,
-							renderItem:renderConversation
+							renderItem:renderConversation,
+							renderEmpty:function() {
+								return div('ghostTown', "Make some friends on Facebook, then come back to Dogo")
+							}
 						})
 					)
 					reloadConversations()
@@ -70,11 +72,6 @@ function reloadConversations() {
 		gState.set('conversations', res.conversations)
 		var displayConversations = filterConversations(res.conversations)
 		conversationsList.append(displayConversations)
-		if (displayConversations.length == 0) {
-			$('.conversations .info').empty().append(
-				div('ghostTown', "Make some friends on Facebook, then come back to Dogo")
-			)
-		}
 	})
 }
 
@@ -101,7 +98,7 @@ events.on('app.willEnterForeground', function() {
 })
 
 events.on('message.sent', function onMessageSentHome(res, conversation) {
-	conversationsList.prepend(conversation)
+	conversationsList.prepend(conversation, { updateItems:true })
 })
 
 events.on('conversation.rendered', function(conversation) {
