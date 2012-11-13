@@ -72,6 +72,7 @@ function getMessagesList() {
 			refreshMessages()
 			if (!messages || !messages.length) { return }
 			getMessagesList._list.append(messages)
+			scrollToBottom()
 		})
 	}, 100)
 	return getMessagesList._list
@@ -94,7 +95,7 @@ function refreshMessages() {
 		if (err) { return error(err) }
 		var messagesList = getMessagesList()
 		messagesList.append(res.messages)
-		gScroller.getCurrentView().scrollTop(messagesList.height())
+		scrollToBottom()
 		gState.set(getMessagesCacheId(), res.messages)
 	})
 }
