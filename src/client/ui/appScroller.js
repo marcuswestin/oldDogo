@@ -11,7 +11,8 @@ function createAndRenderScroller() {
 	gScroller = makeScroller({ onViewChange:function onViewChange() { events.fire('view.change') }, duration:300 })
 	$('#viewport').prepend(div('dogoApp',
 		gScroller.renderHead(gHeadHeight, renderScrollerHead),
-		gScroller.renderBody(3, renderScrollerView)
+		gScroller.renderBody(3, renderScrollerView),
+		gScroller.renderFoot(renderScrollerFoot)
 	))
 }
 
@@ -39,9 +40,15 @@ function renderScrollerHead(view, opts) {
 
 function renderScrollerView(view, opts) {
 	if (view.conversation) {
-		return [conversation.render(view), composer.render(view)]
+		return conversation.render(view)
 	} else {
 		return home.render(view)
+	}
+}
+
+function renderScrollerFoot(view, opts) {
+	if (view.conversation) {
+		return composer.render(view)
 	}
 }
 
