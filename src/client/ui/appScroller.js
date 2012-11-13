@@ -38,7 +38,6 @@ function renderScrollerHead(view, opts) {
 }
 
 function renderScrollerView(view, opts) {
-	console.log("scroller.scrollerRenderBodyContent", JSON.stringify(view))
 	if (view.conversation) {
 		return [conversation.render(view), composer.render(view)]
 	} else {
