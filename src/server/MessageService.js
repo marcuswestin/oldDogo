@@ -99,6 +99,7 @@ module.exports = proto(null,
 				var participationId = res.id
 				this.db.select(this, this.sql.selectMessage+'WHERE conversation_id=? ORDER BY id DESC LIMIT 100', [conversationId], function(err, messages) {
 					if (err) { return callback(err) }
+					messages.reverse()
 					callback(null, messages)
 					var lastMessage = messages[messages.length - 1]
 					if (!lastMessage) { return }
