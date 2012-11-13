@@ -21,6 +21,7 @@ events.on('view.change', function resetView() {
 
 function renderConversation(_view) {
 	// setTimeout(function() { onNewMessage({ wasPushed:true, body:'R u?' }) }, 1000) // AUTOS
+	// setTimeout(function() { composer.selectText() }) // AUTOS
 	// setTimeout(function() { composer.selectDraw() }) // AUTOS
 	// setTimeout(function() { composer.selectPhoto() }) // AUTOS
 	
