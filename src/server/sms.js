@@ -1,7 +1,7 @@
 var request = require('request')
 var log = makeLog('sms')
 
-module.exports = {
+var sms = module.exports = {
 	setConfig:setConfig,
 	send:send,
 	notify:notify
