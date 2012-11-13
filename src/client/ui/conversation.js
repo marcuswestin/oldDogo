@@ -180,12 +180,12 @@ function renderContent(message) {
 	} else if (message.pictureId) {
 		var pictureUrl = pictures.urlFromMessage(message, pictures.pixels.thumb)
 		// var attrs = { pictureUrl:pictureUrl }
-		var attrs = style({ backgroundImage:pictureUrl })
+		var attrs = style({ backgroundImage:'url('+pictureUrl+')' })
 		return div('pictureContent', picSize(message), attrs)
 	} else {
 		var pictureUrl = message.base64Picture
 		// var attrs = { pictureUrl:pictureUrl }
-		var attrs = style({ backgroundImage:pictureUrl })
+		var attrs = style({ backgroundImage:'url('+pictureUrl+')' })
 		return div('pictureContent', clipPicSize(message), attrs)
 	}
 }

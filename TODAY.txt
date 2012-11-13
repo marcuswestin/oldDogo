@@ -1,18 +1,24 @@
-speed
-
+11/13 speed
 # why are pictures loading serially?
 # 	mkengine? webviewproxy?
-
 # store pictures to disc
 # 	keep flag in memory that we have stored it
-
 # store contacts to disc
-
 # store messages to disc
+# fix list tap during scroll - should stop list, not select an item
+# fix composer scrolling with messages
+# SMS me on waitlist signup
+# Show images in chat view
+
+
+fix scroller double-tap - suppress scroller selections that happen right after each other (this will interfere with testing and AUTOS though... hmm)
+
+stop smoothing drawings + make stroke thicker
 
 page chat view
 	first just on phone - load all messages from network, but don't load them into view
 
-# fix list tap during scroll - should stop list, not select an item
 
-fix scroller double-tap - suppress scroller selections that happen right after each other (this will interfere with testing and AUTOS though... hmm)
+
+
+add zen drawing style
