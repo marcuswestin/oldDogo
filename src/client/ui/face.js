@@ -25,7 +25,7 @@ var face = module.exports = {
 	backgroundStyle:function(facebookId, large) {
 		var size = large ? 50 : 25
 		var imageUrl = 'http://graph.facebook.com/'+facebookId+'/picture'+(large ? '?type=large' : '')
-		var params = { url:imageUrl, cache:'memory', resize:size+'x^', mimeType:'image/jpg', foo:'bar' }
+		var params = { url:imageUrl, cache:'Yup!', resize:size+'x^', mimeType:'image/jpg' }
 		return {
 			background:'url("'+BT.url('BTImage', 'fetchImage', params)+'") transparent no-repeat',
 			width:size, height:size, backgroundSize:size+'px auto'

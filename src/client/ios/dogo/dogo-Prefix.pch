@@ -17,7 +17,6 @@
 #ifdef __OBJC__
     #import <UIKit/UIKit.h>
     #import <Foundation/Foundation.h>
-    #import "MKNetworkKit.h"
 #endif
 
 #define jsonBool(val) [NSNumber numberWithBool:val]
