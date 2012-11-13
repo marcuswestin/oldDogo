@@ -93,11 +93,11 @@ module.exports = proto(null,
 		},
 		
 		getMessages: function(accountId, conversationId, callback) {
-			this.db.selectOne(this, 'SELECT id FROM conversation_participation WHERE account_id=? AND conversation_id=? ORDER BY id DESC LIMIT 65', [accountId, conversationId], function(err, res) {
+			this.db.selectOne(this, 'SELECT id FROM conversation_participation WHERE account_id=? AND conversation_id=?', [accountId, conversationId], function(err, res) {
 				if (err) { return callback(err) }
 				if (!res) { return callback('Unknown conversation') }
 				var participationId = res.id
-				this.db.select(this, this.sql.selectMessage+'WHERE conversation_id=?', [conversationId], function(err, messages) {
+				this.db.select(this, this.sql.selectMessage+'WHERE conversation_id=? ORDER BY id DESC LIMIT 100', [conversationId], function(err, messages) {
 					if (err) { return callback(err) }
 					callback(null, messages)
 					var lastMessage = messages[messages.length - 1]
