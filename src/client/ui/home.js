@@ -19,7 +19,7 @@ module.exports = {
 							items:filterConversations(conversations),
 							onSelect:selectConversation,
 							getItemId:getConversationId,
-							renderItem:renderConversation,
+							renderItem:gRenderConversation,
 							renderEmpty:function() {
 								return div('ghostTown', "Make some friends on Facebook, then come back to Dogo")
 							}
@@ -32,7 +32,7 @@ module.exports = {
 	}
 }
 
-var renderConversation = function(conversation) {
+gRenderConversation = function(conversation) {
 	var person = conversation.person
 	var lastReceived = conversation.lastReceivedMessage
 	var lastRead = conversation.lastReadMessage

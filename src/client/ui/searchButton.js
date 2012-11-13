@@ -36,7 +36,7 @@ function renderSearchInput() {
 			items:[],
 			onSelect:selectSearchResult,
 			renderItem:function renderSearchResult(result) {
-				return renderConversation(result.conversation)
+				return gRenderConversation(result.conversation)
 			},
 			renderEmpty:function() {
 				return div('ghostTown dark', "Type a friend's name")
