@@ -69,7 +69,7 @@ module.exports = proto(null,
 		},
 		
 		sendMessage: function(accountId, toConversationId, toPersonId, clientUid, body, picture, prodPush, callback) {
-			if (!body && !picture) { return callback('Empty message') }
+			if (!body && !picture) { return callback('You tried to send an empty message.') }
 			this.db.selectOne(this,
 				'SELECT id FROM conversation_participation WHERE account_id=? AND conversation_id=?',
 				[accountId, toConversationId], function(err, res) {
