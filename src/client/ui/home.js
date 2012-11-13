@@ -1,8 +1,8 @@
 var conversation = require('./conversation')
 
 function getConversationId(conv) {
-	var getConversationId = (conv.id || conv)
-	return 'home-conversation-'+getConversationId
+	var conversationId = (conv.id || conv)
+	return 'home-conversation-'+conversationId
 }
 
 var conversationsList
@@ -47,7 +47,7 @@ renderConversation = function(conversation) {
 	)
 }
 
-function messageFromPush(pushMessage) {
+function conversationFromPush(pushMessage) {
 	var currentConvo = gScroller.current().conversation
 	var isCurrent = (currentConvo && (currentConvo.accountId == pushMessage.senderAccountId)) // TODO also check facebookId
 	return {
@@ -57,16 +57,6 @@ function messageFromPush(pushMessage) {
 		lastReceivedMessageId: pushMessage.id,
 		pictureId: pushMessage.pictureId,
 		conversationId: pushMessage.conversationId
-	}
-}
-
-function messageFromSentMessage(message, accountId) {
-	return {
-		accountId: accountId,
-		hasUnread: false,
-		body: null, pictureId: null, // So that it will still show the most recent received message
-		lastReceivedMessageId: null,
-		conversationId: message.conversationId
 	}
 }
 
@@ -92,16 +82,17 @@ function selectConversation(conversation) {
 	gScroller.push({ conversation:conversation })
 }
 
-function bubbleId(withAccountId) { return 'conversation-bubble-'+withAccountId }
-
 function markRead(conversationId) {
 	conversationsList.find('#'+getConversationId(conversationId)+' .unreadDot').removeClass('hasUnread')
 }
 
 events.on('push.message', function(pushMessage) {
-	return alert("FIX HOME push.message event")
-	// if (!$ui) { return }
-	// $ui.conversations.prepend(messageFromPush(pushMessage))
+	// if (!conversationsList) { return }
+	// if (!conversationsList.find('#'+getConversationId(conversationId))) {
+	// 	return alert("TODO add conversation to home conversation list from push")
+	// }
+	// markRead(pushMessage.conversationId)
+	// conversationsList.prepend({ id:pushMessage.conversationId }) // put the conversation at the top of the conversations list
 })
 
 events.on('app.willEnterForeground', function() {
