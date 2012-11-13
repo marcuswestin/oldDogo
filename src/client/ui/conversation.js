@@ -69,9 +69,9 @@ function getMessagesList() {
 	})
 	setTimeout(function() {
 		gState.load(getMessagesCacheId(), function(messages) {
+			refreshMessages()
 			if (!messages || !messages.length) { return }
 			getMessagesList._list.append(messages)
-			refreshMessages()
 		})
 	}, 100)
 	return getMessagesList._list
