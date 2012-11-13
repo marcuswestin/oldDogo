@@ -30,7 +30,7 @@ module.exports = {
 	}
 }
 
-renderConversation = function(conversation) {
+var renderConversation = function(conversation) {
 	var person = conversation.person
 	var lastReceived = conversation.lastReceivedMessage
 	var lastRead = conversation.lastReadMessage
