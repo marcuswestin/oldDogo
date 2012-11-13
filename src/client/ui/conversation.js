@@ -32,38 +32,48 @@ function renderConversation(_view) {
 	var messages = []
 	return div('conversationView',
 		// function($el) { setTimeout(function() { $el.append(
-		(messages.length
-			? getMessagesList().append(messages)
-			: div('loading', 'Loading...')),
-			
+		getMessagesList(),
 		// )).on('scroll', checkScrollBounds),
 		
 		function() {
-			if (messages.length) {
-				// always begin at the bottom of the list of messages
-				gScroller.getCurrentView().scrollTop(getMessagesList().height())
-			}
 			setTimeout(function() {
 				events.fire('conversation.rendered', view.conversation)
 			}, 100)
 			// checkScrollBounds()
-			refreshMessages()
 		}
 		
 		// ) }, 75) }
 	)
 }
 
+function getMessagesCacheId() {
+	return 'convo-'+view.conversation.id+'-messages'
+}
+
+function scrollToBottom() {
+	gScroller.getCurrentView().scrollTop(getMessagesList().height())
+}
+
 function getMessagesList() {
 	if (getMessagesList._list) { return getMessagesList._list }
-	$('.conversationView').empty().append(
-		getMessagesList._list = list('messagesList', {
-			onSelect:selectMessage,
-			renderItem:renderMessage,
-			getItemId:function(message) { return message.clientUid },
-			renderEmpty:function() { return div('ghostTown', 'Start the conversation', br(), 'Draw something!') }
+	var drewLoading = false
+	getMessagesList._list = list('messagesList', {
+		onSelect:selectMessage,
+		renderItem:renderMessage,
+		getItemId:function(message) { return message.clientUid },
+		renderEmpty:function() {
+			if (drewLoading) { return div('ghostTown', 'Start the conversation', br(), 'Draw something!') }
+			drewLoading = true
+			return div('loading', 'Loading...')
+		}
+	})
+	setTimeout(function() {
+		gState.load(getMessagesCacheId(), function(messages) {
+			if (!messages || !messages.length) { return }
+			getMessagesList._list.append(messages)
+			refreshMessages()
 		})
-	)
+	}, 100)
 	return getMessagesList._list
 }
 
@@ -80,13 +90,12 @@ function refreshMessages() {
 	if (!view) { return }
 	var wasCurrentView = view
 	api.get('messages', { conversationId:view.conversation.id }, function refreshRenderMessages(err, res) {
-		$('.conversationView .loading, .conversationView .ghostTown').remove()
 		if (wasCurrentView != view) { return }
 		if (err) { return error(err) }
 		var messagesList = getMessagesList()
 		messagesList.append(res.messages)
 		gScroller.getCurrentView().scrollTop(messagesList.height())
-		// gState.set(conversation.id(view, 'messages'), res.messages)
+		gState.set(getMessagesCacheId(), res.messages)
 	})
 }
 

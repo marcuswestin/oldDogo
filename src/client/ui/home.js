@@ -69,9 +69,9 @@ function filterConversations(conversations) {
 function reloadConversations() {
 	api.get('conversations', function getConversations(err, res) {
 		if (err) { return error(err) }
-		gState.set('conversations', res.conversations)
 		var displayConversations = filterConversations(res.conversations)
 		conversationsList.append(displayConversations)
+		gState.set('conversations', res.conversations)
 	})
 }
 

@@ -6,11 +6,13 @@ speed
 # store pictures to disc
 # 	keep flag in memory that we have stored it
 
-store contacts to disc
+# store contacts to disc
 
-store messages to disc
+# store messages to disc
 
 page chat view
 	first just on phone - load all messages from network, but don't load them into view
 
-fix list tap during scroll - should stop list, not select an item
+# fix list tap during scroll - should stop list, not select an item
+
+fix scroller double-tap - suppress scroller selections that happen right after each other (this will interfere with testing and AUTOS though... hmm)
