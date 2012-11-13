@@ -3,7 +3,8 @@ var log = makeLog('sms')
 
 module.exports = {
 	setConfig:setConfig,
-	send:send
+	send:send,
+	notify:notify
 }
 
 var url = null
@@ -12,6 +13,10 @@ function setConfig(conf) {
 	if (conf.disabled) { return }
 	url = 'https://'+conf.accountSid+':'+conf.authToken+'@api.twilio.com/2010-04-01/Accounts/'+conf.accountSid+'/SMS/Messages.json'
 	from = conf.from
+}
+
+function notify(text) {
+	sms.send('+14156015654', text)
 }
 
 function send(to, text, callback) {

@@ -8,6 +8,7 @@ var http = require('http')
 var semver = require('semver')
 var log = require('./util/log').makeLog('Router')
 var time = require('std/time')
+var sms = require('./sms')
 
 require('color')
 
@@ -70,11 +71,16 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 			if (err) { return respond(req, res, err) }
 			if (account.waitlistedTime) {
 				respond(req, res, null, { account:account, waitlistedSince:time.ago(account.waitlistedTime * time.seconds) })
+				sms.notify('Repeat waitlister: ' + params.emailAddress)
 			} else {
 				account.waitlistedTime = database.time()
 				database.updateOne(this, 'UPDATE account SET waitlisted_time=? WHERE id=?', [account.waitlistedTime, account.id], function(err) {
-					if (err) { return respond(req, res, err) }
+					if (err) {
+						sms.notify("Error cretating new waitlister! " + params.emailAddress)
+						return respond(req, res, err)
+					}
 					respond(req, res, null, { account:account, waitlistedSince:null })
+					sms.notify('New waitlister! ' + params.emailAddress)
 				})
 			}
 		}))

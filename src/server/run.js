@@ -25,7 +25,7 @@ var lastSendTime
 var onBadDeath = function(exitCode) {
 	if (lastSendTime && (new Date().getTime() - lastSendTime < 60000)) { return }
 	lastSendTime = new Date().getTime()
-	sms.send('+14156015654', "Worker died with bad exit code:"+exitCode+'. Count:'+count)
+	sms.notify("Worker died with bad exit code:"+exitCode+'. Count:'+count)
 }
 
 if (cluster.isMaster) {
