@@ -278,7 +278,7 @@ function respond(req, res, err, content, contentType) {
 			code = 404
 			content = 'Could not find ' + req.url
 			contentType = 'text/plain'
-			log.warn('404', req.url)
+			log.warn('404', req.method, req.url)
 		} else {
 			var stackError = new Error()
 			code = 500
