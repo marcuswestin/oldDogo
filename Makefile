@@ -100,6 +100,15 @@ fly-build: ios-client
 	/usr/bin/xcrun -sdk iphoneos PackageApplication src/client/ios/build/Release-iphoneos/dogo.app -o ~/Desktop/dogo.ipa
 	${NODE} src/scripts/save-ipa.js
 
+fly-nightly: fly-build bump-ios-patch
+	curl http://testflightapp.com/api/builds.json \
+	-F file=@/Users/marcus/Desktop/dogo.ipa \
+	-F api_token='fa8a4a8d04599e74e456e4968117ad25_NDE5NDk0MjAxMi0wNC0yOSAyMzoxNTo0MC4zMzk0Njk' \
+	-F team_token='ac1087f484666207583bb7c62daf1fa2_ODU2NTUyMDEyLTA0LTI5IDIzOjQ1OjIwLjQ2Nzg2Ng' \
+	-F notes="Nightly build" \
+	-F notify=True \
+	-F distribution_lists='alpha'
+
 fly-alpha: fly-build bump-ios-patch
 	echo "Enter alpha release notes:\n"; read commitMessage; echo "\nOK! Uploading..."; curl http://testflightapp.com/api/builds.json \
 	-F file=@/Users/marcus/Desktop/dogo.ipa \
