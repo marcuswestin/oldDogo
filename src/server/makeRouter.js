@@ -69,6 +69,9 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 		var params = getParams(req, 'emailAddress')
 		accountService.lookupOrCreateByEmail(params.emailAddress, bind(this, function(err, account) {
 			if (err) { return respond(req, res, err) }
+			database.insert(this, 'INSERT INTO waitlist_event SET account_id=?, user_agent=?', [account.id, req.headers['user-agent']], function(err) {
+				if (err) { log.warn("COULD NOT INSERT WAITLIST EVENT", params.emailAddress, account.id, req.headers)}
+			})
 			if (account.waitlistedTime) {
 				respond(req, res, null, { account:account, waitlistedSince:time.ago(account.waitlistedTime * time.seconds) })
 				sms.notify('Repeat waitlister: ' + params.emailAddress)
