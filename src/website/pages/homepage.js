@@ -9,6 +9,11 @@ $(function() {
 		setTimeout(function() {
 			var emailAddress = trim(prompt("There's a waiting list for Dogo. What's your email address?"))
 			if (!emailAddress) { return }
+			if (!emailAddress.match('@.*\\.')) {
+				return setTimeout(function() {
+					alert("That does not look like an email address. Wanna try again?")
+				})
+			}
 			api.post('waitlist', { emailAddress:emailAddress }, function(err, res) {
 				if (err) { return alert('Oops! '+api.error(err)) }
 				if (res.waitlistedSince) {
