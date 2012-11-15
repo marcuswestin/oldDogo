@@ -90,7 +90,6 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 	})
 	
 	app.get('/api/ping', function(req, res) {
-		getParams(req)
 		res.end('"Dogo!"')
 	})
 	app.post('/api/session', filter.oldClients, function postSession(req, res) {
