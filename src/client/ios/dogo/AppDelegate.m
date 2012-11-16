@@ -59,7 +59,8 @@
         [[self.webView scrollView] setBounces:NO];
         self.webView.dataDetectorTypes = UIDataDetectorTypeNone;
         
-        [self startApp:devMode];
+        [self setupApp:devMode];
+        [self startApp];
         
         return YES;
     } else {

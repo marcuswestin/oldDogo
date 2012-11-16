@@ -155,7 +155,7 @@ function renderMessage(message) {
 	]
 }
 
-function picSize(message) {
+gPicSize = function(message) {
 	var size = pictures.display.thumb
 	return style({ width:size, height:size, backgroundSize:size+'px '+size+'px' })
 }
@@ -182,7 +182,7 @@ function renderContent(message) {
 		var pictureUrl = pictures.urlFromMessage(message, pictures.pixels.thumb)
 		// var attrs = { pictureUrl:pictureUrl }
 		var attrs = style({ backgroundImage:'url('+pictureUrl+')' })
-		return div('pictureContent', picSize(message), attrs)
+		return div('pictureContent', gPicSize(message), attrs)
 	} else {
 		var pictureUrl = message.base64Picture
 		// var attrs = { pictureUrl:pictureUrl }
