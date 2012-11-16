@@ -2,6 +2,13 @@ var mysql = require('mysql')
 var log = makeLog('Database')
 
 var connectionBase = {
+	query:function(ctx, query, args, callback) {
+		var stackError = new Error()
+		this._query(ctx, query, args, function(err) {
+			if (err) { err = logError(err, query, args, stackError) }
+			callback.apply(ctx, arguments)
+		})
+	},
 	selectOne: function(ctx, query, args, callback) {
 		var stackError = new Error()
 		this.query(ctx, query, args, function(err, rows) {
@@ -34,7 +41,7 @@ var connectionBase = {
 	
 	insertIgnoreDuplicateEntry:function(ctx, query, args, callback) {
 		var stackError = new Error()
-		this.query(ctx, query, args, function(err, info) {
+		this._query(ctx, query, args, function(err, info) {
 			if (err && !err.message.match(/Duplicate entry/)) {
 				logError('insert ignore dup entry', query, args, stackError)
 				callback(err)
@@ -88,12 +95,10 @@ module.exports = proto(connectionBase,
 				fn.call(ctx, Autocommit(this, conn))
 			})
 		},
-		query: function(ctx, query, args, callback) {
-			var stackError = new Error()
+		_query: function(ctx, query, args, callback) {
 			this._takeConnection(function(conn) {
 				var self = this
 				conn.query(query, args, function(err) {
-					if (err) { err = logError(err, query, args, stackError) }
 					self._returnConnection(conn)
 					callback.apply(ctx, arguments)
 				})
@@ -127,14 +132,12 @@ var Transaction = proto(connectionBase,
 		time: function() {
 			return this._time
 		},
-		query:function(ctx, query, args, callback) {
+		_query:function(ctx, query, args, callback) {
 			if (!this._conn) {
 				callback('Transaction closed')
 				return
 			}
-			var stackError = new Error()
 			this._conn.query(query, args, function(err) {
-				if (err) { err = logError(err, query, args, stackError) }
 				callback.apply(ctx, arguments)
 			})
 		},
@@ -176,14 +179,12 @@ var Autocommit = proto(connectionBase,
 		time: function() {
 			return this._time
 		},
-		query:function(ctx, query, args, callback) {
+		_query:function(ctx, query, args, callback) {
 			if (!this._conn) {
 				callback('Autocommit closed')
 				return
 			}
-			var stackError = new Error()
 			this._conn.query(query, args, function(err) {
-				if (err) { err = logError(err, query, args, stackError) }
 				callback.apply(ctx, arguments)
 			})
 		},
@@ -203,6 +204,6 @@ var Autocommit = proto(connectionBase,
 
 function logError(err, query, args, stackError) {
 	err = new Error((err.message || err) + '\n\t' + JSON.stringify(query) + ' '+JSON.stringify(args), stackError.stack || stackError)
-	log.warn(err, query, args, stackError)
+	log.warn(err, query, args, stackError.stack || stackError)
 	return err
 }
