@@ -15,6 +15,10 @@ require('color')
 module.exports = function makeRouter(database, accountService, messageService, sessionService, pictureService, opts) {
 	
 	var app = express()
+	app.use(function(req, res, next) {
+		req.timer = makeTimer(req.url)
+		next()
+	})
 	app.use(express.bodyParser({ limit:'8mb' }))
 	var server = http.createServer(app)
 	
@@ -93,11 +97,9 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 		res.end('"Dogo!"')
 	})
 	app.post('/api/session', filter.oldClients, function postSession(req, res) {
-		var timer = makeTimer('postSessionHandler').start('getParams')
 		var params = getParams(req, 'facebookAccessToken', 'facebookRequestId')
 		if (params.facebookRequestId) { return respond(req, res, "Sessions for facebook requests is not ready yet. Sorry!") }
-		timer.stop('getParams')
-		sessionService.createSession(makeRequestMeta(req, { timer:timer }), params.facebookAccessToken, curry(respond, req, res))
+		sessionService.createSession(req, params.facebookAccessToken, curry(respond, req, res))
 	})
 	// app.get('/api/session', filter.oldClients, function getSession(req, res) {
 	// 	var params = getParams(req, 'authToken')
@@ -105,9 +107,7 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 	// })
 	app.get('/api/conversations', filter.oldClientsAndSession, function getConversations(req, res) {
 		var params = getParams(req)
-		var timer = makeTimer('getConversations')
-		messageService.getConversations(req.session.accountId, function(err, conversations) {
-			timer.report()
+		messageService.getConversations(req, function(err, conversations) {
 			respond(req, res, err, !err && { conversations:conversations })
 		})
 	})
@@ -125,9 +125,7 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 	})
 	app.get('/api/messages', filter.oldClientsAndSession, function getConversationMessages(req, res) {
 		var params = getParams(req, 'conversationId')
-		var timer = makeTimer('getMessages')
 		messageService.getMessages(req.session.accountId, params.conversationId, function(err, messages) {
-			timer.report()
 			respond(req, res, err, !err && { messages:messages })
 		})
 	})
@@ -170,16 +168,6 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 		var params = getParams(req, 'facebookRequestId', 'toAccountId', 'conversationId')
 		messageService.saveFacebookRequest(req.session.accountId, params.facebookRequestId, params.toAccountId, params.conversationId, curry(respond, req, res))
 	})
-}
-
-function makeRequestMeta(req, opts) {
-	opts = options(opts, {
-		timer:makeTimer.dummy
-	})
-	if (typeof opts.timer == 'string') {
-		opts.timer = makeTimer(opts.timer)
-	}
-	return opts
 }
 
 function setupDev(app) {
@@ -335,5 +323,5 @@ function respond(req, res, err, content, contentType) {
 		try { res.end("Error sending message") }
 		catch(e) { log.error("COULD NOT RESPOND") }
 	}
-	log('Responded', req.method, req.url, req.meta)
+	log(req.method, req.url, req.meta, req.timer.report())
 }

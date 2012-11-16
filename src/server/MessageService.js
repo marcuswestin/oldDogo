@@ -10,19 +10,26 @@ module.exports = proto(null,
 		this.pushService = pushService
 		this.pictureService = pictureService
 	}, {
-		getConversations: function(accountId, callback) {
+		getConversations: function(req, callback) {
+			var accountId = req.session.accountId
 			this.db.autocommit(this, function(ac) {
 				callback = ac.wrapCallback(callback)
+				req.timer.start('selectParticipants')
 				ac.select(this, this.sql.selectParticipation+'WHERE partic.account_id=? ORDER BY lastMessageId DESC, conversationId DESC', [accountId], function(err, participations) {
+					req.timer.stop('selectParticipants')
 					if (err) { return callback(err) }
+
 					populatePeople.call(this, participations)
-					
 					function populatePeople(participations) {
 						serialMap(participations, {
 							context:this,
-							iterate: function(partic, i, next) {
+							iterate: function populatePerson(partic, i, next) {
+								req.timer.start('populatePerson')
 								ac.selectOne(this, 'SELECT full_name as fullName, claimed_time as memberSince, facebook_id as facebookId, id FROM account WHERE id=?',
-									[partic.personDogoId], next
+									[partic.personDogoId], function(err, res) {
+										req.timer.stop('populatePerson')
+										next(err, res)
+									}
 								)
 							},
 							finish:function(err, people) {
@@ -35,7 +42,8 @@ module.exports = proto(null,
 					function populateMessages(participartions, people) {
 						serialMap(participartions, {
 							context:this,
-							iterate:function(partic, next) {
+							iterate:function populateMessage(partic, next) {
+								req.timer.start('populateMessage')
 								var conversation = { id:partic.conversationId }
 								this._selectMessage(ac, partic.lastReceivedMessageId, function(err, lastReceivedMessage) {
 									if (err) { return next(err) }
@@ -46,6 +54,7 @@ module.exports = proto(null,
 										this._selectMessage(ac, partic.lastMessageId, function(err, lastMessage) {
 											if (err) { return next(err) }
 											conversation.lastMessage = lastMessage
+											req.timer.stop('populateMessage')
 											next(null, conversation)
 										})
 									})
@@ -59,9 +68,11 @@ module.exports = proto(null,
 					}
 					
 					function mergeData(participartions, people, conversations) {
+						req.timer.start('mergeData')
 						each(conversations, function(convo, i) {
 							convo.person = people[i]
 						})
+						req.timer.stop('mergeData')
 						callback(null, conversations)
 					}
 				})

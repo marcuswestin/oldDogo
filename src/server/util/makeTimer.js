@@ -42,11 +42,8 @@ function stop(name) {
 }
 
 function report() {
-	console.log('\nTimer report:', this.name)
-	console.log('Total time:', now() - this.t0+'ms')
-	for (var name in this.timers) {
-		var timer = this.timers[name]
-		console.log('\t', name+':', timer.total+'ms', timer.count > 1 ? '('+timer.count+' times)' : '')
-	}
+	return 'Time:'+(now() - this.t0)+'ms (' + map(this.timers, function(timer, name) {
+		return name + '*' + timer.count + ':' + timer.total + 'ms'
+	}).join(', ')+')'
 }
 
