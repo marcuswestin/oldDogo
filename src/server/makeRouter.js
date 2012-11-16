@@ -311,6 +311,8 @@ function respond(req, res, err, content, contentType) {
 			contentType = 'image/jpg'
 		} else if (req.url.match(/\.png$/)) {
 			contentType = 'image/png'
+		} else if (req.url.match(/\.ttf$/)) {
+			contentType = 'font/opentype'
 		} else {
 			contentType = 'application/json'
 		}
