@@ -110,7 +110,7 @@ fly-nightly: fly-build bump-ios-patch
 	-F team_token='ac1087f484666207583bb7c62daf1fa2_ODU2NTUyMDEyLTA0LTI5IDIzOjQ1OjIwLjQ2Nzg2Ng' \
 	-F notes="Nightly build" \
 	-F notify=True \
-	-F distribution_lists='alpha'
+	-F distribution_lists='nightly'
 
 fly-alpha: fly-build bump-ios-patch
 	echo "Enter alpha release notes:\n"; read commitMessage; echo "\nOK! Uploading..."; curl http://testflightapp.com/api/builds.json \
