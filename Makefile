@@ -40,6 +40,9 @@ deploy-dogo-api: ${FAB}
 	fab deploy_dogo_api:${GIT_REV} -H dogo-web1
 
 # Deploy dogo website to prod
+push-web:
+	gitpush
+	make deploy-dogo-website
 deploy-dogo-website: ${FAB}
 	fab deploy_dogo_website:${GIT_REV} -H dogo-web1
 
