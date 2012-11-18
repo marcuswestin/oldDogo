@@ -42,7 +42,7 @@ function renderSearchInput() {
 				return div('ghostTown dark', "Type a friend's name")
 			}
 		}))
-		.appendTo($('.dogoApp > .tags-scroller-body'))
+		.appendTo($('.dogoApp .tags-scroller-body'))
 
 	var searchItems = map(gState.get('conversations'), function(conversation) {
 		return {

@@ -2,6 +2,7 @@ var searchButton = require('./searchButton')
 var home = require('./home')
 var conversation = require('./conversation')
 var composer = require('./composer')
+var appBackground = require('./appBackground')
 
 module.exports = {
 	createAndRender:createAndRenderScroller
@@ -13,9 +14,12 @@ function createAndRenderScroller() {
 		duration:300
 	})
 	$('#viewport').prepend(div('dogoApp',
-		gScroller.renderHead(gHeadHeight, renderScrollerHead),
-		gScroller.renderBody(3, renderScrollerView),
-		gScroller.renderFoot(renderScrollerFoot)
+		appBackground.render(),
+		div('appForeground',
+			gScroller.renderHead(gHeadHeight, renderScrollerHead),
+			gScroller.renderBody(3, renderScrollerView),
+			gScroller.renderFoot(renderScrollerFoot)
+		)
 	))
 }
 
@@ -37,9 +41,27 @@ function renderScrollerHead(view, opts) {
 			div('button', 'X', button(function() { gState.clear(); bridge.command('app.restart') })),
 			div('button', 'U', button(function() { gState.checkNewVersion() }))
 		),
-		showBackButton ? div('back', icon(28, 28, 'xtras-white/36-circle-west', 8, 8), button(function() { gScroller.pop() })) : div('logoIcon', logoIcon(32), button(searchButton.renderSearchInput)),
+		showBackButton
+			? div('back', icon(28, 28, 'xtras-white/36-circle-west', 8, 8), button(function() { gScroller.pop() }))
+			: div('logoIcon', logoIcon(32), button(showAppBackground)),
 		div('title', title || div('logo', logoName(60, 26, 'white'))),
 		searchButton.render()
+	)
+}
+
+function showAppBackground() {
+	var logoIconSize = (32 + 6*2) // icon size + 6px margin on either side
+	var xOffset = viewport.width() - logoIconSize
+	$('.appForeground').css(style.translate.x(xOffset, 200))
+	appBackground.update(viewport.width()-logoIconSize)
+	$('#viewport').append(
+		div('foregroundOverlay',
+			style({ position:'absolute', top:0, right:0, width:logoIconSize, height:viewport.height() }),
+			button(function() {
+				$('.appForeground').css(style.translate.x(0, 200))
+				$(this).remove()
+			})
+		)
 	)
 }
 
