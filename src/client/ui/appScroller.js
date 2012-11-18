@@ -26,8 +26,10 @@ function renderScrollerHead(view, opts) {
 	var title = null
 	if (view.conversation) {
 		var names = view.conversation.person.fullName.split(' ')
-		if (names.length < 2) { return names[0] }
-		title = names[0] + ' ' + names[names.length-1][0] // first name plus first letter of last name
+		title = names[0]
+		if (names.length > 1) {
+			title += ' ' + names[names.length-1][0] // first name plus first letter of last name
+		}
 	}
 	return div('head',
 		(appInfo.config.mode == 'dev') && div('devBar',
