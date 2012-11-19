@@ -12,46 +12,46 @@
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
-
-        NSString* mode;
-        mode = @"testflight";
-        NSString* scheme = @"https:";
-        NSString* host = @"dogoapp.com";
-        NSString* port = nil;
+    NSString* mode;
+    mode = @"testflight";
+    NSString* scheme = @"https:";
+    NSString* host = @"dogoapp.com";
+    NSString* port = nil;
 #ifdef TESTFLIGHT
-        mode = @"testflight";
+    mode = @"testflight";
 #endif
 #ifdef APPSTORE
-        mode = @"appstore";
+    mode = @"appstore";
 #endif
-
+    
+    [WebViewJavascriptBridge enableLogging];
+    if (!mode) {
+        mode = @"dev";
         [WebViewJavascriptBridge enableLogging];
-        if (!mode) {
-            mode = @"dev";
-            [WebViewJavascriptBridge enableLogging];
-            NSString* hostnameFile = [[NSBundle mainBundle] pathForResource:@"dev-hostname" ofType:@"txt"];
-            host = [NSString stringWithContentsOfFile:hostnameFile encoding:NSUTF8StringEncoding error:nil];
-            host = [host stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-            scheme = @"http:";
-            port = @"9000";
-        }
-        
-        NSDictionary* device = [NSDictionary dictionaryWithObjectsAndKeys:
-                                [[UIDevice currentDevice] systemVersion], @"systemVersion",
-                                [UIDevice currentDevice].model, @"model",
-                                [UIDevice currentDevice].name, @"name",
-                                [UIDeviceHardware platformString], @"platform",
-                                nil];
-        
-        BOOL devMode = [mode isEqualToString:@"dev"];
-        [self setServerScheme:scheme host:host port:port];
+        NSString* hostnameFile = [[NSBundle mainBundle] pathForResource:@"dev-hostname" ofType:@"txt"];
+        host = [NSString stringWithContentsOfFile:hostnameFile encoding:NSUTF8StringEncoding error:nil];
+        host = [host stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+        scheme = @"http:";
+        port = @"9000";
+    }
+    
+    NSDictionary* device = [NSDictionary dictionaryWithObjectsAndKeys:
+                            [[UIDevice currentDevice] systemVersion], @"systemVersion",
+                            [UIDevice currentDevice].model, @"model",
+                            [UIDevice currentDevice].name, @"name",
+                            [UIDeviceHardware platformString], @"platform",
+                            nil];
+    
+    BOOL devMode = [mode isEqualToString:@"dev"];
+    [self setServerScheme:scheme host:host port:port];
+    
+    [self.config setValue:mode forKey:@"mode"];
+    [self.config setValue:[self getCurrentVersion] forKey:@"currentVersion"];
+    [self.config setValue:device forKey:@"device"];
+    [self.config setValue:self.serverUrl forKey:@"serverUrl"];
 
-        [self.config setValue:mode forKey:@"mode"];
-        [self.config setValue:[self getCurrentVersion] forKey:@"currentVersion"];
-        [self.config setValue:device forKey:@"device"];
-        [self.config setValue:self.serverUrl forKey:@"serverUrl"];
-        
+    if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
+
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque];
         
         _facebook = [[Facebook alloc] initWithAppId:@"219049001532833" andDelegate:self];

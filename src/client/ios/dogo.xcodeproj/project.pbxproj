@@ -19,7 +19,7 @@
 		2C70941C165A14E9007DDECD /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C70941B165A14E9007DDECD /* Default.png */; };
 		2C70941E165A14EE007DDECD /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C70941D165A14EE007DDECD /* Default@2x.png */; };
 		2C709420165A14F2007DDECD /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C70941F165A14F2007DDECD /* Default-568h@2x.png */; };
-		2C709422165A16BD007DDECD /* logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C55C9671631226F006DFEB6 /* logo@2x.png */; };
+		2C709428165A87F5007DDECD /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 2C709427165A87F5007DDECD /* fonts */; };
 		2C720C191567C6E900AC9BF4 /* BTNet.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C161567C59100AC9BF4 /* BTNet.m */; };
 		2C8A769B162218AC000312FC /* WebViewJavascriptBridge.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2C8A7699162218AC000312FC /* WebViewJavascriptBridge.js.txt */; };
 		2C8A769C162218AC000312FC /* WebViewJavascriptBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C8A769A162218AC000312FC /* WebViewJavascriptBridge.m */; };
@@ -75,16 +75,12 @@
 		2C45BA891652D0F600F11CED /* NSString+Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Util.m"; sourceTree = "<group>"; };
 		2C4EF9ED1573196800EE57C8 /* BTViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTViewController.h; sourceTree = "<group>"; };
 		2C4EF9EE1573196800EE57C8 /* BTViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTViewController.m; sourceTree = "<group>"; };
-		2C55C9631631226F006DFEB6 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		2C55C9641631226F006DFEB6 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
-		2C55C9651631226F006DFEB6 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
-		2C55C9661631226F006DFEB6 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
-		2C55C9671631226F006DFEB6 /* logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo@2x.png"; sourceTree = "<group>"; };
-		2C55C96D1631229B006DFEB6 /* mobileApp */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mobileApp; path = ../../../graphics/mobileApp; sourceTree = "<group>"; };
+		2C55C96D1631229B006DFEB6 /* mobileApp */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mobileApp; path = ../../graphics/mobileApp; sourceTree = "<group>"; };
 		2C709417165A14DA007DDECD /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		2C70941B165A14E9007DDECD /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		2C70941D165A14EE007DDECD /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		2C70941F165A14F2007DDECD /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		2C709427165A87F5007DDECD /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../../fonts; sourceTree = "<group>"; };
 		2C720C151567C59100AC9BF4 /* BTNet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BTNet.h; sourceTree = "<group>"; };
 		2C720C161567C59100AC9BF4 /* BTNet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BTNet.m; sourceTree = "<group>"; };
 		2C8A7698162218AC000312FC /* WebViewJavascriptBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewJavascriptBridge.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -186,19 +182,6 @@
 			path = Categories;
 			sourceTree = "<group>";
 		};
-		2C55C9621631226F006DFEB6 /* iosResources */ = {
-			isa = PBXGroup;
-			children = (
-				2C55C9631631226F006DFEB6 /* Default-568h@2x.png */,
-				2C55C9641631226F006DFEB6 /* Default.png */,
-				2C55C9651631226F006DFEB6 /* Default@2x.png */,
-				2C55C9661631226F006DFEB6 /* logo.png */,
-				2C55C9671631226F006DFEB6 /* logo@2x.png */,
-			);
-			name = iosResources;
-			path = ../../../graphics/iosResources;
-			sourceTree = "<group>";
-		};
 		2C5C1C611566200800035E03 /* dogo-ios-build */ = {
 			isa = PBXGroup;
 			children = (
@@ -209,6 +192,14 @@
 			);
 			name = "dogo-ios-build";
 			path = "../../../../../../../../build/dogo-ios-build";
+			sourceTree = "<group>";
+		};
+		2C709423165A865D007DDECD /* graphics */ = {
+			isa = PBXGroup;
+			children = (
+				2C55C96D1631229B006DFEB6 /* mobileApp */,
+			);
+			name = graphics;
 			sourceTree = "<group>";
 		};
 		2C8A7697162218AC000312FC /* WebViewJavascriptBridge */ = {
@@ -257,6 +248,9 @@
 		2CD1A01E153FB6B0008949F2 = {
 			isa = PBXGroup;
 			children = (
+				2C709427165A87F5007DDECD /* fonts */,
+				2C709423165A865D007DDECD /* graphics */,
+				2CCAFE671569EC1C002766A1 /* sounds */,
 				2C70941F165A14F2007DDECD /* Default-568h@2x.png */,
 				2C70941D165A14EE007DDECD /* Default@2x.png */,
 				2C70941B165A14E9007DDECD /* Default.png */,
@@ -301,9 +295,6 @@
 				2CD1A079153FB85D008949F2 /* facebook-ios-sdk */,
 				2C456674162A072E004CD78B /* blowtorch-ios-modules */,
 				2CD1A048153FB7B6008949F2 /* blowtorch-ios-sdk */,
-				2C55C9621631226F006DFEB6 /* iosResources */,
-				2C55C96D1631229B006DFEB6 /* mobileApp */,
-				2CCAFE671569EC1C002766A1 /* sounds */,
 				2CD1A034153FB6B0008949F2 /* Supporting Files */,
 			);
 			path = dogo;
@@ -464,7 +455,7 @@
 				2C70941C165A14E9007DDECD /* Default.png in Resources */,
 				2C70941E165A14EE007DDECD /* Default@2x.png in Resources */,
 				2C709420165A14F2007DDECD /* Default-568h@2x.png in Resources */,
-				2C709422165A16BD007DDECD /* logo@2x.png in Resources */,
+				2C709428165A87F5007DDECD /* fonts in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
