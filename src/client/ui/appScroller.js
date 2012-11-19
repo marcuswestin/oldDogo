@@ -21,6 +21,8 @@ function createAndRenderScroller() {
 			gScroller.renderFoot(renderScrollerFoot)
 		)
 	))
+	
+	// setTimeout(showAppBackground, 0) // AUTOS
 }
 
 function renderScrollerHead(view, opts) {
