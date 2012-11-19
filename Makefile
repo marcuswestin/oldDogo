@@ -108,7 +108,7 @@ fly-build: ios-client
 	/usr/bin/xcrun -sdk iphoneos PackageApplication src/client/ios/build/Release-iphoneos/dogo.app -o ~/Desktop/dogo.ipa
 	${NODE} src/scripts/save-ipa.js
 
-fly-nightly: fly-build bump-ios-patch
+fly-nightly: bump-ios-patch fly-build
 	curl http://testflightapp.com/api/builds.json \
 	-F file=@/Users/marcus/Desktop/dogo.ipa \
 	-F api_token='fa8a4a8d04599e74e456e4968117ad25_NDE5NDk0MjAxMi0wNC0yOSAyMzoxNTo0MC4zMzk0Njk' \
@@ -117,7 +117,7 @@ fly-nightly: fly-build bump-ios-patch
 	-F notify=True \
 	-F distribution_lists='nightly'
 
-fly-alpha: fly-build bump-ios-patch
+fly-alpha: bump-ios-patch fly-build
 	echo "Enter alpha release notes:\n"; read commitMessage; echo "\nOK! Uploading..."; curl http://testflightapp.com/api/builds.json \
 	-F file=@/Users/marcus/Desktop/dogo.ipa \
 	-F api_token='fa8a4a8d04599e74e456e4968117ad25_NDE5NDk0MjAxMi0wNC0yOSAyMzoxNTo0MC4zMzk0Njk' \
@@ -126,7 +126,7 @@ fly-alpha: fly-build bump-ios-patch
 	-F notify=True \
 	-F distribution_lists='alpha'
 
-fly-all: fly-build bump-ios-minor
+fly-all: bump-ios-minor fly-build
 	echo "Enter release notes:\n"; read commitMessage; echo "\nOK! Uploading..."; curl http://testflightapp.com/api/builds.json \
 	-F file=@/Users/marcus/Desktop/dogo.ipa \
 	-F api_token='fa8a4a8d04599e74e456e4968117ad25_NDE5NDk0MjAxMi0wNC0yOSAyMzoxNTo0MC4zMzk0Njk' \
