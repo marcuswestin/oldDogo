@@ -47,7 +47,7 @@ function renderCard(conversation) {
 		// style({ background:'rgb('+map(hsvToRgb([(Math.random() + 0.618033988749895) % 1, 0.03, 0.95]), Math.round)+')' }),
 		div('summary',
 			div('time', function($time) {
-				time.ago.brief(lastMessage.sentTime * 1000, function(timeStr) {
+				time.ago.brief(lastMessage.sentTime * time.seconds, function(timeStr) {
 					$time.text(timeStr)
 				})
 			}),
