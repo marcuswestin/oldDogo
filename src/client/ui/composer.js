@@ -19,7 +19,6 @@ var composer = module.exports = {
 		drawer.remove()
 		resetCurrentTool()
 		if (!$ui) { return }
-		$ui.surface.empty()
 		delete $ui
 		bridge.command('textInput.hide')
 	},
@@ -29,8 +28,7 @@ var composer = module.exports = {
 
 		resetCurrentTool()
 		
-		return div('composer',
-			$ui.surface = $(div('surface')),
+		return div('composer', style({ '-webkit-transform': 'translate3d(0,0,0)' }),
 			div('tools',
 				div('button tool write', icon(24, 22, 'white/09-chat-2'), button(selectText)),
 				div('button tool photo', icon(24, 18, 'white/86-camera'), button(selectPhoto)),
