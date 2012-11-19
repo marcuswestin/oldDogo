@@ -11,6 +11,24 @@ function renderSearchButton() {
 	)
 }
 
+function renderSearchResult(result) {
+	var conversation = result.conversation
+	var person = conversation.person
+	var lastReceived = conversation.lastReceivedMessage
+	var lastRead = conversation.lastReadMessage
+	var hasUnread = lastReceived && (!lastRead || lastReceived.sentTime > lastRead.sentTime)
+	return div('conversation',
+		div('unreadDot' + (hasUnread ? ' hasUnread' : '')),
+		face.large(person),
+		div('name', person.fullName),
+		div('clear')
+		// div('body', (!conversation.body && !message.pictureId)
+		// 	? div('youStarted', "You started the conversation.")
+		// 	: (message.pictureId ? div('youStarted', 'sent you a picture') : message.body)
+		// )
+	)
+}
+
 function renderSearchInput() {
 	var margin = 4
 	var width = viewport.width() - margin*2
@@ -35,9 +53,7 @@ function renderSearchInput() {
 		.append(searchList = list({
 			items:[],
 			onSelect:selectSearchResult,
-			renderItem:function renderSearchResult(result) {
-				return gRenderConversation(result.conversation)
-			},
+			renderItem:renderSearchResult,
 			renderEmpty:function() {
 				return div('ghostTown dark', "Type a friend's name")
 			}
