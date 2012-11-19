@@ -14,12 +14,12 @@
 		2C45667D162A286B004CD78B /* BTImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C45667C162A286B004CD78B /* BTImage.m */; };
 		2C45BA8A1652D0F600F11CED /* NSString+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C45BA891652D0F600F11CED /* NSString+Util.m */; };
 		2C4EF9EF1573196800EE57C8 /* BTViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C4EF9EE1573196800EE57C8 /* BTViewController.m */; };
-		2C55C9681631226F006DFEB6 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C55C9631631226F006DFEB6 /* Default-568h@2x.png */; };
-		2C55C9691631226F006DFEB6 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C55C9641631226F006DFEB6 /* Default.png */; };
-		2C55C96A1631226F006DFEB6 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C55C9651631226F006DFEB6 /* Default@2x.png */; };
-		2C55C96B1631226F006DFEB6 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C55C9661631226F006DFEB6 /* logo.png */; };
-		2C55C96C1631226F006DFEB6 /* logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C55C9671631226F006DFEB6 /* logo@2x.png */; };
 		2C55C96E1631229B006DFEB6 /* mobileApp in Resources */ = {isa = PBXBuildFile; fileRef = 2C55C96D1631229B006DFEB6 /* mobileApp */; };
+		2C709418165A14DA007DDECD /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C709417165A14DA007DDECD /* logo.png */; };
+		2C70941C165A14E9007DDECD /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C70941B165A14E9007DDECD /* Default.png */; };
+		2C70941E165A14EE007DDECD /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C70941D165A14EE007DDECD /* Default@2x.png */; };
+		2C709420165A14F2007DDECD /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C70941F165A14F2007DDECD /* Default-568h@2x.png */; };
+		2C709422165A16BD007DDECD /* logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C55C9671631226F006DFEB6 /* logo@2x.png */; };
 		2C720C191567C6E900AC9BF4 /* BTNet.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C161567C59100AC9BF4 /* BTNet.m */; };
 		2C8A769B162218AC000312FC /* WebViewJavascriptBridge.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2C8A7699162218AC000312FC /* WebViewJavascriptBridge.js.txt */; };
 		2C8A769C162218AC000312FC /* WebViewJavascriptBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C8A769A162218AC000312FC /* WebViewJavascriptBridge.m */; };
@@ -81,6 +81,10 @@
 		2C55C9661631226F006DFEB6 /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		2C55C9671631226F006DFEB6 /* logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo@2x.png"; sourceTree = "<group>"; };
 		2C55C96D1631229B006DFEB6 /* mobileApp */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mobileApp; path = ../../../graphics/mobileApp; sourceTree = "<group>"; };
+		2C709417165A14DA007DDECD /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
+		2C70941B165A14E9007DDECD /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		2C70941D165A14EE007DDECD /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
+		2C70941F165A14F2007DDECD /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		2C720C151567C59100AC9BF4 /* BTNet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BTNet.h; sourceTree = "<group>"; };
 		2C720C161567C59100AC9BF4 /* BTNet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BTNet.m; sourceTree = "<group>"; };
 		2C8A7698162218AC000312FC /* WebViewJavascriptBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewJavascriptBridge.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -253,6 +257,10 @@
 		2CD1A01E153FB6B0008949F2 = {
 			isa = PBXGroup;
 			children = (
+				2C70941F165A14F2007DDECD /* Default-568h@2x.png */,
+				2C70941D165A14EE007DDECD /* Default@2x.png */,
+				2C70941B165A14E9007DDECD /* Default.png */,
+				2C709417165A14DA007DDECD /* logo.png */,
 				2CD1A033153FB6B0008949F2 /* dogo */,
 				2CD1A02C153FB6B0008949F2 /* Frameworks */,
 				2CD1A02A153FB6B0008949F2 /* Products */,
@@ -451,12 +459,12 @@
 				2CF1C8B015E9AFE700F4916D /* appJs.html in Resources */,
 				2C25DD2F15E9E4220005D147 /* dev-hostname.txt in Resources */,
 				2C8A769B162218AC000312FC /* WebViewJavascriptBridge.js.txt in Resources */,
-				2C55C9681631226F006DFEB6 /* Default-568h@2x.png in Resources */,
-				2C55C9691631226F006DFEB6 /* Default.png in Resources */,
-				2C55C96A1631226F006DFEB6 /* Default@2x.png in Resources */,
-				2C55C96B1631226F006DFEB6 /* logo.png in Resources */,
-				2C55C96C1631226F006DFEB6 /* logo@2x.png in Resources */,
 				2C55C96E1631229B006DFEB6 /* mobileApp in Resources */,
+				2C709418165A14DA007DDECD /* logo.png in Resources */,
+				2C70941C165A14E9007DDECD /* Default.png in Resources */,
+				2C70941E165A14EE007DDECD /* Default@2x.png in Resources */,
+				2C709420165A14F2007DDECD /* Default-568h@2x.png in Resources */,
+				2C709422165A16BD007DDECD /* logo@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

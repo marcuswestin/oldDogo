@@ -15,6 +15,11 @@ test: reset-test-db test-server
 t:
 	make test online=false verbose=true time=false
 
+icons:
+	node src/scripts/createLogoIcons.js
+	cp src/graphics/logoIcon/logoIcon-32* src/graphics/mobileApp/
+	cp src/graphics/logoIcon/logoIcon-96* src/graphics/website/
+
 # Create a new iOS build and deliver it to all developers via testflight
 fly-dev: fly-build
 	curl http://testflightapp.com/api/builds.json \
