@@ -20,6 +20,7 @@
 		2C70941E165A14EE007DDECD /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C70941D165A14EE007DDECD /* Default@2x.png */; };
 		2C709420165A14F2007DDECD /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C70941F165A14F2007DDECD /* Default-568h@2x.png */; };
 		2C709428165A87F5007DDECD /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 2C709427165A87F5007DDECD /* fonts */; };
+		2C70942A165A8965007DDECD /* logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C709429165A8965007DDECD /* logo@2x.png */; };
 		2C720C191567C6E900AC9BF4 /* BTNet.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C720C161567C59100AC9BF4 /* BTNet.m */; };
 		2C8A769B162218AC000312FC /* WebViewJavascriptBridge.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2C8A7699162218AC000312FC /* WebViewJavascriptBridge.js.txt */; };
 		2C8A769C162218AC000312FC /* WebViewJavascriptBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C8A769A162218AC000312FC /* WebViewJavascriptBridge.m */; };
@@ -81,6 +82,7 @@
 		2C70941D165A14EE007DDECD /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		2C70941F165A14F2007DDECD /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		2C709427165A87F5007DDECD /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../../fonts; sourceTree = "<group>"; };
+		2C709429165A8965007DDECD /* logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo@2x.png"; sourceTree = "<group>"; };
 		2C720C151567C59100AC9BF4 /* BTNet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BTNet.h; sourceTree = "<group>"; };
 		2C720C161567C59100AC9BF4 /* BTNet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BTNet.m; sourceTree = "<group>"; };
 		2C8A7698162218AC000312FC /* WebViewJavascriptBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewJavascriptBridge.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -255,6 +257,7 @@
 				2C70941D165A14EE007DDECD /* Default@2x.png */,
 				2C70941B165A14E9007DDECD /* Default.png */,
 				2C709417165A14DA007DDECD /* logo.png */,
+				2C709429165A8965007DDECD /* logo@2x.png */,
 				2CD1A033153FB6B0008949F2 /* dogo */,
 				2CD1A02C153FB6B0008949F2 /* Frameworks */,
 				2CD1A02A153FB6B0008949F2 /* Products */,
@@ -456,6 +459,7 @@
 				2C70941E165A14EE007DDECD /* Default@2x.png in Resources */,
 				2C709420165A14F2007DDECD /* Default-568h@2x.png in Resources */,
 				2C709428165A87F5007DDECD /* fonts in Resources */,
+				2C70942A165A8965007DDECD /* logo@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
