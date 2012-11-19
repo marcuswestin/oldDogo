@@ -7,6 +7,7 @@ viewport = require('tags/viewport')
 draggable = require('tags/draggable')
 
 div = tags('div')
+span = tags('span')
 br = tags('br')
 a = tags('a')
 input = tags('input')
