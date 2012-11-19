@@ -3,7 +3,7 @@ var ext = window.devicePixelRatio > 1 ? '@'+window.devicePixelRatio+'x' : ''
 brandGradient = function(pos, amount) {
 	if (!pos) { var where = 'center' }
 	else { var where = (typeof pos == 'string' ? pos : (pos[0]+'px '+pos[1]+'px')) }
-	return style({ background:'-webkit-radial-gradient('+where+', circle cover, #FFF4C4 0%, #FFB714 '+amount+'%)', width:'100%', height:'100%' })
+	return style({ background:'-webkit-radial-gradient('+where+', circle cover, #FFF4C4 0%, #FFA714 '+amount+'%)', width:'100%', height:'100%' })
 }
 
 logoIcon = function(size) {

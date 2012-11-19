@@ -1,1 +1,8 @@
 @import "../../style/website"
+
+bgImgSize(w, h)
+	return '-'+w+'x'+h
+
+bgImg(name, w, h)
+	disable-select(); width (w)px; height (h)px;
+	background url("/graphics/website/"+name+bgImgSize(w,h)+"@2x.png") transparent no-repeat; background-size unit(w, 'px') unit(h, 'px');

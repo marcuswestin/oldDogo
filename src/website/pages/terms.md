@@ -1,3 +1,5 @@
+<div class="logoIcon"></div>
+
 Dogo Terms of Service
 =====================
 

@@ -66,37 +66,41 @@ function renderIcon(size, pos) {
 
 $(function() {
 	
+	var iconGradientAmount = 90
+	var spashGradientAmount = 50
+	
 	$('.sections').append(
 		section('icons', 'Icons',
 			graphic(57, 57,
-				div(brandGradient('center', 120), renderIcon(32, [12, 12]))
+				div(brandGradient('center', iconGradientAmount), renderIcon(34, [11, 11]))
 			),
 			graphic(114, 114,
-				div(brandGradient('center', 120), renderIcon(64, [24, 24]))
+				div(brandGradient('center', iconGradientAmount), renderIcon(68, [23, 24]))
 			),
 			graphic(72, 72,
-				div(brandGradient('center', 120), renderIcon(32, [20, 20]))
+				div(brandGradient('center', iconGradientAmount), renderIcon(32, [20, 20]))
 			),
 			graphic(144, 144,
-				div(brandGradient('center', 120), renderIcon(64, [40, 40]))
+				div(brandGradient('center', iconGradientAmount), renderIcon(96, [24, 24]))
 			),
 			graphic(340, 340,
-				div(brandGradient('center', 120), renderIcon(256, [40, 40]))
+				div(brandGradient('center', iconGradientAmount), renderIcon(256, [40, 40]))
 			),
-			graphic(1024, 1024,
-				div(brandGradient('center', 120), renderIcon(512, [250, 250]))
-			),
-
 
 			div('title', 'Splash Screens'),
 			graphic(320,480,
-				div(brandGradient([160, 150], 110), renderIcon(128, [100, 100]))
+				div(brandGradient([160, 150], spashGradientAmount), renderIcon(128, [100, 100]))
 			),
 			graphic(640,960,
-				div(brandGradient([320, 300], 110), renderIcon(256, [200, 200]))
+				div(brandGradient([320, 300], spashGradientAmount), renderIcon(256, [200, 200]))
 			),
 			graphic(640,1136,
-				div(brandGradient([320, 300], 100), renderIcon(256, [200, 200]))
+				div(brandGradient([320, 300], spashGradientAmount), renderIcon(256, [200, 200]))
+			),
+			
+			div('title', 'App Store'),
+			graphic(1024, 1024,
+				div(brandGradient('center', iconGradientAmount), renderIcon(512, [250, 250]))
 			)
 			
 		),

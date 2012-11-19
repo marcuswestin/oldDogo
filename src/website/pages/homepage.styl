@@ -5,18 +5,6 @@ html
 
 brandGradientBackground()
 
-bgImgSize(w, h)
-	if w == h
-		return '-'+w
-	else
-		return '-'+w+'x'+h
-
-bgImg(name, w, h)
-	disable-select(); width (w)px; height (h)px;
-	background url("/graphics/website/"+name+bgImgSize(w,h)+".png") transparent no-repeat; background-size unit(w, 'px') unit(h, 'px');
-	@media only screen and (-webkit-min-device-pixel-ratio: 2)
-		background url("/graphics/website/"+name+bgImgSize(w,h)+"@2x.png") transparent no-repeat; background-size unit(w, 'px') unit(h, 'px');
-
 .bgImg
 	disable-select(); display inline-block;
 
