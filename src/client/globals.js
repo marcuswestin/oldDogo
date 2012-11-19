@@ -124,7 +124,7 @@ image = (function() {
 	var ratio = (window.devicePixelRatio || 1)
 	var imagePostfix = (ratio == 2 ? '@2x' : '')
 	function imageUrl(name) {
-		return image.base + name + imagePostfix + '.png'
+		return image.base + name + '@2x.png'
 	}
 	function backgroundUrl(name) {
 		return 'url("'+imageUrl(name)+'")'
