@@ -25,6 +25,10 @@ function update(width) {
 			)
 		),
 		div(
+			style({ textAlign:'center', fontStyle:'italic', color:'#ccc', textShadow:'0 1px 0 #666', marginTop:140 }),
+			'Your Memories will show up here'
+		),
+		div(
 			style({ width:'100%', position:'absolute', bottom:10, left:0, textAlign:'center', fontSize:12, color:'#ddd' }),
 			a(linkStyle, { href:'/terms', target:'_blank' }, 'Terms of Service'),
 			mdot().css({ fontSize:18, position:'relative', top:3 }),
