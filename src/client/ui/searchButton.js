@@ -108,7 +108,7 @@ function renderSearchInput() {
 		// 	
 		// })
 	})
-	events.on('textInput.return', function() {
+	var onTextInputReturn = events.on('textInput.return', function() {
 		searchList.selectIndex(0)
 		hideInput()
 	})
@@ -127,7 +127,7 @@ function renderSearchInput() {
 	
 	function hideInput() {
 		hidden = true
-		events.off('textInput.return', hideInput)
+		events.off('textInput.return', onTextInputReturn)
 		$searchResults.remove()
 		bridge.command('textInput.animate', {
 			blur:true,
