@@ -1,13 +1,14 @@
 #import "BTAppDelegate.h"
 #import "FBConnect.h"
+#import "BTResponse.h"
 
 @interface AppDelegate : BTAppDelegate <FBSessionDelegate, FBDialogDelegate>
 
-@property (nonatomic, retain) Facebook *facebook;
-@property (nonatomic, copy) WVJBResponse* facebookResponse;
+@property (nonatomic, strong) Facebook *facebook;
+@property (nonatomic, strong) BTResponse* facebookResponse;
 
 + (AppDelegate*) instance;
 
-- (void) netRequest:(NSDictionary*)params response:(WVJBResponse*)response;
+- (void) netRequest:(NSDictionary*)params response:(BTResponse*)response;
 
 @end

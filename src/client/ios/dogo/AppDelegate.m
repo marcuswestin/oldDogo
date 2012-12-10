@@ -106,34 +106,34 @@
 - (void)setupBridgeHandlers {
     [super setupBridgeHandlers];
     // facebook.*
-    [self.javascriptBridge registerHandler:@"facebook.connect" handler:^(id data, WVJBResponse* response) {
-        _facebookResponse = response;
+    [self registerHandler:@"facebook.connect" handler:^(id data, BTResponseCallback responseCallback) {
+        _facebookResponse = [BTResponse responseWithCallback:responseCallback];
         [_facebook authorize:[data objectForKey:@"permissions"]];
     }];
-    [self.javascriptBridge registerHandler:@"facebook.dialog" handler:^(id data, WVJBResponse* response) {
+    [self registerHandler:@"facebook.dialog" handler:^(id data, BTResponseCallback responseCallback) {
         NSString* dialog = [data objectForKey:@"dialog"]; // oauth, feed, and apprequests
         NSMutableDictionary* params = [NSMutableDictionary dictionaryWithDictionary:[data objectForKey:@"params"]]; // so silly
         [_facebook dialog:dialog andParams:params andDelegate:self];
     }];
-    [self.javascriptBridge registerHandler:@"facebook.setSession" handler:^(id data, WVJBResponse* response) {
+    [self registerHandler:@"facebook.setSession" handler:^(id data, BTResponseCallback responseCallback) {
         _facebook.accessToken = [data objectForKey:@"accessToken"];
         NSDate* expirationDate = [NSDate dateWithTimeIntervalSince1970:[[data objectForKey:@"expirationDate"] doubleValue]];
         _facebook.expirationDate = expirationDate;
     }];
-    [self.javascriptBridge registerHandler:@"facebook.isSessionValid" handler:^(id data, WVJBResponse* response) {
-        [response respondWith:[NSDictionary dictionaryWithObject:jsonBool([_facebook isSessionValid]) forKey:@"isValid"]];
+    [self registerHandler:@"facebook.isSessionValid" handler:^(id data, BTResponseCallback responseCallback) {
+        responseCallback(nil, [NSDictionary dictionaryWithObject:jsonBool([_facebook isSessionValid]) forKey:@"isValid"]);
     }];
-    [self.javascriptBridge registerHandler:@"facebook.extendAccessTokenIfNeeded" handler:^(id data, WVJBResponse* response) {
+    [self registerHandler:@"facebook.extendAccessTokenIfNeeded" handler:^(id data, BTResponseCallback responseCallback) {
         [_facebook extendAccessTokenIfNeeded];
     }];
     
-    [self.javascriptBridge registerHandler:@"net.request" handler:^(id data, WVJBResponse *response) {
-        [self netRequest:data response:response];
+    [self registerHandler:@"net.request" handler:^(id data, BTResponseCallback responseCallback) {
+        [self netRequest:data response:[BTResponse responseWithCallback:responseCallback]];
     }];
 }
 
     
-- (void) netRequest:(NSDictionary *)params response:(WVJBResponse *)response {
+- (void) netRequest:(NSDictionary *)params response:(BTResponse*)response {
     NSDictionary* postParams = [params objectForKey:@"params"];
     NSDictionary* headers = [params objectForKey:@"headers"];
     NSString* method = [params objectForKey:@"method"];

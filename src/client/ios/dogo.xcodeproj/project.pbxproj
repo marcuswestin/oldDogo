@@ -25,6 +25,7 @@
 		2C8A769B162218AC000312FC /* WebViewJavascriptBridge.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2C8A7699162218AC000312FC /* WebViewJavascriptBridge.js.txt */; };
 		2C8A769C162218AC000312FC /* WebViewJavascriptBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C8A769A162218AC000312FC /* WebViewJavascriptBridge.m */; };
 		2C8A76B116271FF8000312FC /* WebViewProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C8A76B016271FF8000312FC /* WebViewProxy.m */; };
+		2CA0A5F1167636A500EFDA7E /* BTResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA0A5F0167636A500EFDA7E /* BTResponse.m */; };
 		2CAE30591556262500742518 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CAE30581556262500742518 /* AudioToolbox.framework */; };
 		2CBA74D2162A2D0000DE2E95 /* BTCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBA74D1162A2D0000DE2E95 /* BTCache.m */; };
 		2CBA74F3162A427600DE2E95 /* UIImage+Alpha.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBA74ED162A427600DE2E95 /* UIImage+Alpha.m */; };
@@ -90,6 +91,8 @@
 		2C8A769A162218AC000312FC /* WebViewJavascriptBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewJavascriptBridge.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		2C8A76AF16271FF8000312FC /* WebViewProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewProxy.h; sourceTree = "<group>"; };
 		2C8A76B016271FF8000312FC /* WebViewProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewProxy.m; sourceTree = "<group>"; };
+		2CA0A5EF167636A500EFDA7E /* BTResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTResponse.h; sourceTree = "<group>"; };
+		2CA0A5F0167636A500EFDA7E /* BTResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTResponse.m; sourceTree = "<group>"; };
 		2CAE30581556262500742518 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		2CBA74D0162A2D0000DE2E95 /* BTCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTCache.h; sourceTree = "<group>"; };
 		2CBA74D1162A2D0000DE2E95 /* BTCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTCache.m; sourceTree = "<group>"; };
@@ -333,6 +336,8 @@
 				2C720C161567C59100AC9BF4 /* BTNet.m */,
 				2CFE18D71580A48100188E06 /* BTIndex.h */,
 				2CFE18D81580A48100188E06 /* BTIndex.m */,
+				2CA0A5EF167636A500EFDA7E /* BTResponse.h */,
+				2CA0A5F0167636A500EFDA7E /* BTResponse.m */,
 				2C45BA871652D0F600F11CED /* Categories */,
 				2CD1A064153FB7B6008949F2 /* Light-Untar */,
 				2C8A7697162218AC000312FC /* WebViewJavascriptBridge */,
@@ -490,6 +495,7 @@
 				2CBA74F4162A427600DE2E95 /* UIImage+Resize.m in Sources */,
 				2CBA74F5162A427600DE2E95 /* UIImage+RoundedCorner.m in Sources */,
 				2C45BA8A1652D0F600F11CED /* NSString+Util.m in Sources */,
+				2CA0A5F1167636A500EFDA7E /* BTResponse.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

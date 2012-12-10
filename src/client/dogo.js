@@ -89,8 +89,6 @@ events.on('push.notification', function onPushNotification(info) {
 	}
 })
 
-bridge.eventHandler = function bridgeEventHandler(name, info) { events.fire(name, info) }
-
 function startApp(info) {
 	gState.load('sessionInfo', function onStateLoaded(sessionInfo) {
 		gState.load('modeInfo', function onModeLoaded(modeInfo) {
