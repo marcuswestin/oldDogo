@@ -18,7 +18,7 @@ function update(width) {
 	var linkStyle = style({ color:'#126EAF' })
 	$bg.empty().css({ width:width, marginTop:top, height:viewport.height()-top, background:'#222' }).append(
 		div('card',
-			div('face', style(face.backgroundStyle(gState.myAccount().facebookId, true))),
+			div('face', style(face.backgroundStyle(gState.myAccount().facebookId, 75))),
 			div('summary',
 				div('name', gState.myAccount().name),
 				div('lastMessage', div(style({ fontStyle:'italic' }), 'This is you'))

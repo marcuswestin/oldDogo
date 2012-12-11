@@ -4,59 +4,42 @@ BT = {
 	}
 }
 
-var face = module.exports = {
+module.exports = {
 
+	backgroundStyle:backgroundStyle,
+	
 	large: function(account, showRibbon, lazyLoad) {
-		return face.facebook(account, showRibbon, lazyLoad, true)
+		return facebookFace(account, showRibbon, lazyLoad, 75)
 	},
 	
 	small:function(person) {
-		return face.facebook(person, null, false, false)
+		return facebookFace(person, null, false, false)
 	},
 	
-	facebook: function(account, showRibbon, lazyLoad, large) {
-		return div('face', showRibbon && account.memberSince && style({ backgroundImage:image.backgroundUrl('badge') }),
-			lazyLoad
-				? [{ facebookId:account.facebookId }, style({ backgroundColor:'#fff' })]
-				: style(face.backgroundStyle(account.facebookId, large))
-		)
-	},
-	
-	backgroundStyle:function(facebookId, large) {
-		var size = large ? 75 : 25
-		var ratio = window.devicePixelRatio || 1
-		var imageUrl = 'http://graph.facebook.com/'+facebookId+'/picture'+(large ? '?type=large' : '')
-		var params = { url:imageUrl, cache:'Yup!', square:size * ratio, mimeType:'image/jpg' }
-		return {
-			background:'url("'+BT.url('BTImage', 'fetchImage', params)+'") transparent no-repeat',
-			width:size, height:size, backgroundSize:size+'px auto'
-		}
-	},
-	
-	loadAccount: function(accountId, showRibbon) {
+	mine:function(size) {
 		return div('face', function($tag) {
-			loadAccount(accountId, null, function(account) {
-				if (showRibbon && account.memberSince) {
-					$tag.append(div(style({ backgroundImage:image.backgroundUrl('badge') })))
-				}
-				$tag.css(face.backgroundStyle(account.facebookId))
+			loadAccount(gState.myAccount().accountId, null, function(account) {
+				$tag.css(backgroundStyle(account.facebookId, size))
 			})
 		})
-	},
-	
-	loadFacebook:function(facebookId, showRibbon) {
-		return div('face', function($tag) {
-			loadFacebook(facebookId, null, function(account) {
-				if (showRibbon && account.memberSince) {
-					$tag.append(div(style({ backgroundImage:image.backgroundUrl('badge') })))
-				}
-				$tag.css(face.backgroundStyle(account.facebookId))
-			})
-		})
-	},
-	
-	mine:function() {
-		return face.loadAccount(gState.myAccount().accountId)
 	}
+}
 
+function backgroundStyle(facebookId, size) {
+	if (!size) { size = 25 }
+	var ratio = window.devicePixelRatio || 1
+	var imageUrl = 'http://graph.facebook.com/'+facebookId+'/picture'+(size * ratio > 50 ? '?type=large' : '')
+	var params = { url:imageUrl, cache:'Yup!', square:size * ratio, mimeType:'image/jpg' }
+	return {
+		background:'url("'+BT.url('BTImage', 'fetchImage', params)+'") rgba(240,240,255,.3) no-repeat',
+		width:size, height:size, backgroundSize:size+'px auto'
+	}
+}
+
+function facebookFace(account, showRibbon, lazyLoad, large) {
+	return div('face', showRibbon && account.memberSince && style({ backgroundImage:image.backgroundUrl('badge') }),
+		lazyLoad
+			? [{ facebookId:account.facebookId }, style({ backgroundColor:'#fff' })]
+			: style(backgroundStyle(account.facebookId, large))
+	)
 }
