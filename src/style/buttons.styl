@@ -1,16 +1,17 @@
 buttonRadius = 4px;
+buttonColor = #1A84BB
 .button
 	display inline-block; text-align center;
 	padding 3px 8px 5px; border-radius buttonRadius;
-	background #1A84BB; color #fff;
-	box-shadow 0 3px 0 #142C71;
+	background buttonColor; color #fff;
+	box-shadow 0 2px 0 #142C71;
 	text-shadow 0 -1px 0 #6993AA;
 	-webkit-transform translate3d(0,0,0);
 .button.active, .button.selected
-	box-shadow 0 0px 0 background #1A84BB; -webkit-transform translate3d(0,3px,0);
+	box-shadow 0 0px 0 background #1A84BB; -webkit-transform translate3d(0,2px,0);
 .button.secondary
 	background #00C6E2;
-	box-shadow 0 3px 0 #0080C0;
+	box-shadow 0 2px 0 #0080C0;
 .button.secondary.active, .button.secondary.selected
 	box-shadow 0 0px 0 #0080C0;
 
