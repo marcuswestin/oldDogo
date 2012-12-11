@@ -2,13 +2,14 @@ var trim = require('std/trim')
 var placeholder = 'Say something :)'
 var drawer = require('./drawer')
 
-var currentConversation
-var $ui
+var currentConversation = null
 var currentTool = null
 
 var selectText = toolSelector(_selectText)
 var selectPhoto = toolSelector(_selectPhoto)
 var selectDraw = toolSelector(_selectDraw)
+
+var toolsHeight = 36
 
 var composer = module.exports = {
 	selectText:selectText,
@@ -18,24 +19,33 @@ var composer = module.exports = {
 	hide:function() {
 		drawer.remove()
 		resetCurrentTool()
-		if (!$ui) { return }
-		delete $ui
+		if (!currentConversation) { return }
+		currentConversation = null
 		bridge.command('textInput.hide')
 	},
 	render: function(view) {
 		currentConversation = view.conversation
-		$ui = {}
-
 		resetCurrentTool()
 		
-		return div('composer', style({ '-webkit-transform': 'translate3d(0,0,0)' }),
+		return div({ id:'composer' }, style({ height:viewport.height() }), style(translate(0, viewport.height()-toolsHeight)),
 			div('tools',
+				style(translate(0,-4)),
+				style({ height:toolsHeight }),
 				div('button tool write', icon(24, 22, 'white/09-chat-2'), button(selectText)),
 				div('button tool photo', icon(24, 18, 'white/86-camera'), button(selectPhoto)),
 				div('button tool draw', icon(24, 20, 'white/98-palette'), button(selectDraw))
-			)
+			),
+			div('inputArea')
 		)
 	}
+}
+
+function setHeight(height, duration) {
+	$('#composer').css(translate.y(viewport.height() - height, duration))
+	setHeight.lastHeight = height
+}
+function addHeight(height, duration) {
+	setHeight(setHeight.lastHeight + height, duration)
 }
 
 function resetCurrentTool() {
@@ -53,13 +63,13 @@ function toolSelector(fn) {
 }
 
 function _selectText() {
-	$('.composer .tools').append(
-		div('closeTextInput', icon(22, 22, 'white/298-circlex'), button(function() {
+	$('#composer .tools').append(
+		div('closeTextInput', icon(22, 22, 'white/298-circlex', 6, 6, 6, 6), style({ position:'absolute', top:6, right:5 }), button(function() {
 			bridge.command('textInput.hide')
 		}))
-	)	
+	)
 	var onReturnHandler = events.on('textInput.return', function(info) {
-		if (!$ui) { return }
+		if (!currentConversation) { return }
 		bridge.command('textInput.set', { text:'' })
 		var body = trim(info.text)
 		if (!body) { return }
@@ -70,7 +80,53 @@ function _selectText() {
 		events.off('textInput.return', onReturnHandler)
 	})
 	
-	events.fire('composer.selectedText')
+	var inputHeight = 36
+	var inputWidth = 268
+	var margin = 5
+	var textComposerMarginTop = 2
+	setHeight(toolsHeight + inputHeight + margin, 200)
+	var textComposer = div(
+		style({ marginTop:textComposerMarginTop }),
+		div(face.mine(35), style({
+			'float':'right', margin:'1px 3px 0 0', borderRadius:1,
+			boxShadow:'0 1px 1px rgba(0, 0, 25, .5)', border:'1px solid rgba(255, 255, 255, .9)'
+		})),
+		div('textInputBackground', style({
+			width:inputWidth, height:inputHeight, marginLeft:margin,
+			background:'#fff', borderRadius:2, boxShadow:'0 1px 2px rgba(38, 151, 210, .8)'
+		}))
+	)
+	
+	$('#composer .inputArea').empty().append(textComposer)
+	
+	bridge.command('textInput.show', {
+		at:{ x:margin, y:viewport.height() - inputHeight - margin + 1, width:inputWidth, height:inputHeight },
+		returnKeyType:'Send',
+		font: { name:'Open Sans', size:16 },
+		backgroundColor:[0,0,0,0],
+		shiftWebview:true
+	})
+	var onChangeHeightHandler = events.on('textInput.changedHeight', function adjustHeight(info) {
+		addHeight(info.heightChange, 50)
+		$('#composer .inputBackground').css({ height:info.height - 2 })
+		var $view = gScroller.getCurrentView()
+		var isAtBottom = Math.abs($view[0].scrollHeight - ($view.scrollTop() + $view.height())) < 40
+		$('.conversationView .messagesList').css({ marginBottom:info.height - inputHeight + 60 })
+		if (isAtBottom) {
+			$view.scrollTop($view[0].scrollHeight)
+		} else {
+			$view.scrollTop($view.scrollTop() + info.heightChange)
+		}
+	})
+	events.once('keyboard.willHide', function(info) {
+		$('#composer .tools .closeTextInput').remove()
+		$('.conversationView .messagesList').css({ marginBottom:0 })
+		events.off('textInput.changedHeight', onChangeHeightHandler)
+		bridge.command('textInput.hide')
+		setHeight(toolsHeight, 200)
+	})
+	
+	// setTimeout(function() { bridge.command('textInput.set', { text:'This is a long string to cause wrap W' }) })// AUTOS automatically resize composer text input
 }
 
 function _selectPhoto() {

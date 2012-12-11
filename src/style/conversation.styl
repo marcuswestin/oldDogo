@@ -70,23 +70,19 @@
 	.close.button
 		absolute top 4px; z-index 1; font-size 14px; padding 5px 7px 25px;
 
-.composer
+#composer
 	absolute bottom 0; width 320px; background #126EAF; z-index 2;
 	.surface
 		bodyRadius = 6px; bodyWidth = 320px;
 
 	.tools
-		margin-top -5px;
-		.closeTextInput
-			absolute bottom 0 right 0; width 40px; height 40px;
-			.icon
-				absolute bottom 6px right 6px;
-		.right
-			float right;
 		.tool
 			display inline-block; margin 2px 0 0 4px; border-radius 4px; height 18px; width 24px; padding 6px 12px 8px;
-		.tool.send
-			float right; margin-right 1px;
+			border 1px solid;
+			border-color lighten(buttonColor, 10%) darken(buttonColor, 20%) darken(buttonColor, 15%) lighten(buttonColor, 5%);
+	.textInputBackground
+		border 1px solid;
+		border-color darken(buttonColor, 20%) lighten(buttonColor, 0%) lighten(buttonColor, 5%) darken(buttonColor, 15%);
 
 .card
 	background #fff; border 1px solid #ddd #bbb #bbb #eee; margin 6px 6px 7px 6px; clear both; position relative; box-shadow 0 1px 1px #333; min-height 78px;

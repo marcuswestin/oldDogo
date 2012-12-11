@@ -83,7 +83,7 @@ function runUsageTests() {
 	describe('Send a text message', function() {
 		var messageBody = 'Hi there '+new Date().getTime()+'!'
 		then('write and send', function(done) {
-			tap('.composer .button.write', function() {
+			tap('#composer .button.write', function() {
 				var release = waitOn({ count:2, checkErrors:false }, done)
 				events.fire('textInput.return', { text:messageBody })
 				events.once('message.sent', release)
@@ -97,7 +97,7 @@ function runUsageTests() {
 			})
 		})
 		then('close the text input', function(done) {
-			tap('.composer .closeTextInput', function() {
+			tap('#composer .closeTextInput', function() {
 				done()
 			})
 		})
@@ -105,7 +105,7 @@ function runUsageTests() {
 	describe('Send a drawing', function() {
 		then('draw something', function(done) {
 			this.timeout = 0
-			tap('.composer .draw.button', function() {
+			tap('#composer .draw.button', function() {
 				draw('.drawer .paint', [[10,10], [40,40], [200,10], [500,300], [100,100], [25,300], [150,50]], done)
 			})
 		})

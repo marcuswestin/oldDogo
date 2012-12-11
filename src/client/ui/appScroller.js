@@ -13,7 +13,7 @@ function createAndRenderScroller() {
 		onViewChange:function onViewChange() { events.fire('view.change') },
 		duration:300
 	})
-	$('#viewport').prepend(div('dogoApp',
+	$('#viewport').prepend(div('dogoApp', style(translate(0,0)),
 		appBackground.render(),
 		div('appForeground',
 			gScroller.renderHead(gHeadHeight, renderScrollerHead),
