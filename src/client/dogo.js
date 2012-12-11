@@ -33,15 +33,16 @@ var connect = require('./ui/connect')
 var appScroller = require('./ui/appScroller')
 var browserModeSetup = require('./browser/setup')
 
-appInfo = {}
+gAppInfo = {}
 
 events.on('app.start', function onAppStart(info) {
-	appInfo = info
-	api.setHeaders({ 'x-dogo-mode':appInfo.config.mode, 'x-dogo-client':appInfo.client })
+	gAppInfo = info
+	api.setHeaders({ 'x-dogo-mode':gAppInfo.config.mode, 'x-dogo-client':gAppInfo.client })
 	startApp(info)
 	
-	if (appInfo.config.mode == 'dev') {
-		$('body').on('touchstart', '.head .title', function() {
+	if (gAppInfo.config.mode == 'dev') {
+		var eventName = tags.isTouch ? 'touchstart' : 'click'
+		$('body').on(eventName, '.head .title', function() {
 			bridge.command('app.restart')
 		})
 	}

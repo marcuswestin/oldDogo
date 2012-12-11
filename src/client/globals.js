@@ -116,7 +116,7 @@ link = function(className, title, path) {
 	if (typeof path == 'function') {
 		return div('link '+className, title, button(path))
 	} else {
-		return a('link '+className, title, { href:(appInfo.config.serverUrl + path), target:'_blank' })
+		return a('link '+className, title, { href:(gAppInfo.config.serverUrl + path), target:'_blank' })
 	}
 }
 
