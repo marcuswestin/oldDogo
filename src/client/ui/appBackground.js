@@ -28,6 +28,7 @@ function update(width) {
 			style({ textAlign:'center', fontStyle:'italic', color:'#ccc', textShadow:'0 1px 0 #666', marginTop:140 }),
 			'Your Memories will show up here'
 		),
+		gAppInfo.config.mode == 'dev' && renderDevTools(),
 		div(
 			style({ width:'100%', position:'absolute', bottom:10, left:0, textAlign:'center', fontSize:12, color:'#ddd' }),
 			a(linkStyle, { href:'/terms', target:'_blank' }, 'Terms of Service'),
@@ -35,5 +36,20 @@ function update(width) {
 			a(linkStyle, { href:'/privacy', target:'_blank' }, 'Privacy Policy'),
 			br(), span(style({ textShadow:'0 1px 0 rgba(255, 255, 255, .3)' }), 'Made with love by Marcus Westin')
 		)
+	)
+}
+
+function renderDevTools() {
+	return div('devTools', style({ textAlign:'center', margin:px(10,0,0,0) }),
+		div('button', 'Reset', button(function() {
+			gState.clear()
+			bridge.command('app.restart')
+		})),
+		div('button', 'Reload', button(function() {
+			bridge.command('app.restart')
+		})),
+		div('button', 'Upgrade App', button(function() {
+			gState.checkNewVersion()
+		}))
 	)
 }

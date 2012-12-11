@@ -38,11 +38,6 @@ function renderScrollerHead(view, opts) {
 		}
 	}
 	return div('head',
-		(appInfo.config.mode == 'dev') && div('devBar',
-			div('button', 'R', button(function() { bridge.command('app.restart') })),
-			div('button', 'X', button(function() { gState.clear(); bridge.command('app.restart') })),
-			div('button', 'U', button(function() { gState.checkNewVersion() }))
-		),
 		showBackButton
 			? div('back', icon(28, 28, 'xtras-white/36-circle-west', 8, 8), button(function() { gScroller.pop() }))
 			: div('logoIcon', logoIcon(32), button(showAppBackground)),

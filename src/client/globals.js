@@ -135,3 +135,9 @@ image = (function() {
 		backgroundUrl: backgroundUrl
 	}
 }())
+
+px = function() {
+	return map(slice(arguments), function(arg) {
+		return arg+'px'
+	}).join(' ')
+}
