@@ -34,7 +34,9 @@ function sendCommandToObjC(command, data, responseHandler) {
 		data = null
 	}
 	webViewJavascriptBridge.callHandler(command, data, function(response) {
-		responseHandler(response.error, response.responseData)
+		if (responseHandler) {
+			responseHandler(response.error, response.responseData)
+		}
 	})
 }
 
