@@ -79,7 +79,8 @@ function setupBrowserDebugMode() {
 			serverUrl:location.host
 		}
 		bridge.eventHandler('app.start', { config:config, client:'0.97.0-browser' })
-		$('#viewport').css({ margin:'0 auto', position:'relative', top:55, height:viewport.height() })
+		gViewportTop = 55
+		$('#viewport').css({ margin:'0 auto', position:'relative', top:gViewportTop, height:viewport.height() })
 		$('body').css({ background:'#222' }).prepend(
 			div(style({ position:'absolute', top:0, left:0, width:'100%' }),
 				img({ src:'/graphics/statusBar.png' }, style({ width:320, display:'block', margin:'0 auto', position:'relative', top:34 })),

@@ -18,10 +18,10 @@ function showTextInput(data) {
 	var at = data.at
 	$input = $(input())
 		.css({ position:'absolute', border:0, margin:0, padding:0, zIndex:3 })
-		.css({ width:at.width, height:at.height, left:at.x, top:at.y - topBarOffset })
-		.appendTo($('.dogoApp'))
+		.css({ width:at.width, height:at.height, left:at.x, top:at.y + gViewportTop })
 		.on('keyup', onChange)
 		.on('keypress', onChange)
+		.appendTo(document.body)
 	
 	if (data.backgroundColor) {
 		$input.css({ backgroundColor:'rgba('+data.backgroundColor.join(',')+')' })
@@ -29,14 +29,20 @@ function showTextInput(data) {
 	
 	var keyboardAnimationDuration = 200
 	setTimeout(function() {
-		if (data.shiftWebview) { $('.dogoApp').css(translate.y(-keyboardHeight, keyboardAnimationDuration)) }
+		if (data.shiftWebview) {
+			$('.dogoApp').css(translate.y(-keyboardHeight, keyboardAnimationDuration))
+			$input.css(translate.y(-keyboardHeight, keyboardAnimationDuration))
+		}
 		events.fire('keyboard.willShow', { keyboardAnimationDuration:keyboardAnimationDuration })
 		setTimeout(function() {
 			$input.focus()
 		}, keyboardAnimationDuration)
 	}, 0)
 	$input.on('blur', function($e) {
-		if (data.shiftWebview) { $('.dogoApp').css(translate.y(0)) }
+		if (data.shiftWebview) {
+			$('.dogoApp').css(translate.y(0))
+			$input.css(translate.y(0))
+		}
 		setTimeout(function() {
 			events.fire('keyboard.willHide', { keyboardAnimationDuration:keyboardAnimationDuration })
 		})
