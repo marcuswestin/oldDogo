@@ -79,7 +79,7 @@ function getMessagesList() {
 }
 
 function selectMessage(message, _, $el) {
-	alert("FINISH selectMessage")
+	// alert("FINISH selectMessage")
 	// if (message.pictureId || message.base64Picture) {
 	// 	composer.selectDraw($el.find('.messageBubble .pictureContent')[0], message)
 	// } else {
