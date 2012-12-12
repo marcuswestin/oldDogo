@@ -3,7 +3,7 @@ var hsvToRgb = require('client/colors/hsvToRgb')
 var basePicker = require('./basePicker')
 
 var colorLists = [
-	['multi1'],
+	// ['multi1'],
 	[[89, 197, 202], [129, 228, 164], [252, 212, 128], [250, 141, 69]],
 	[[110, 33, 81], [39, 118, 184], [185, 163, 133], [20, 16, 50]],
 	[[223, 88, 88], [106, 125, 150], [102, 77, 116], [247, 224, 226]]
@@ -26,7 +26,7 @@ module.exports = proto(basePicker,
 		
 		renderItem: function(color, isCurrent) {
 			var alpha = isCurrent ? 1 : .95
-			var diameter = 51
+			var diameter = 58
 			var styles = {
 				width:diameter, height:diameter,
 				'border-radius':10
@@ -92,8 +92,9 @@ module.exports = proto(basePicker,
 )
 
 function getGridPos(i, j, num) {
-	var x = j * 60 - 50
-	var y = -i * 60
+	var expand = 68
+	var x = j * expand
+	var y = -i * expand - 10 - expand
 	return [x, y]
 }
 
@@ -121,7 +122,7 @@ function getHsv(item) {
 	return rgbToHsv(getRgb(item))
 }
 function rgbaString(rgb, alpha) {
-	return 'rgba('+map(rgb, function(c) { return Math.round(c) }).concat(alpha||0.8).join(',')+')'
+	return 'rgba('+map(rgb, function(c) { return Math.round(c) }).concat(alpha||0.9).join(',')+')'
 }
 function clipArray(arr, min, max) {
 	function clip(val) { return Math.max(Math.min(val, max), min) }

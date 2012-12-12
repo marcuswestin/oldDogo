@@ -75,8 +75,8 @@ function _selectText() {
 		sendMessage({ body:body })
 	})
 	events.once('keyboard.willHide', function(info) {
-		if (currentTool == _selectText) { resetCurrentTool() }
 		events.off('textInput.return', onReturnHandler)
+		if (currentTool == _selectText) { resetCurrentTool() }
 	})
 	
 	var inputHeight = 36
@@ -117,7 +117,9 @@ function _selectText() {
 		$('.conversationView .messagesList').css({ marginBottom:0 })
 		events.off('textInput.changedHeight', onChangeHeightHandler)
 		bridge.command('textInput.hide')
-		setHeight(toolsHeight, 200)
+		if (currentTool == _selectText) {
+			setHeight(toolsHeight, 200)
+		}
 	})
 	
 	// setTimeout(function() { bridge.command('textInput.set', { text:'This is a long string to cause wrap W' }) })// AUTOS automatically resize composer text input
