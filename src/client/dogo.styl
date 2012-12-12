@@ -6,13 +6,16 @@
 @import "../fonts/opensans-all"
 @import "../fonts/yellowtail-regular"
 
+roundedTop()
+	border-radius 6px 6px 0 0
+
 body
 	background #000; overflow hidden;
 
 .dogoApp
 	font-family "Open Sans"; font-weight 300; font-size 14px;
 	color #333;
-	border-radius 6px 6px 0 0;
+	roundedTop()
 	// background -webkit-radial-gradient(center, circle cover, #FFE2AA 0%, #FF9F36 120%);
 	height 100%; overflow hidden;
 	-webkit-touch-callout: none;
@@ -23,9 +26,10 @@ body
 		absolute top 0 left 0;
 
 	.appForeground
-		background -webkit-radial-gradient(center, circle cover, #FFF4C4 0%, #FFA714 200px);
+		// background -webkit-radial-gradient(center, circle cover, #227EBF 0%, lighten(#227EBF, 80%) 200px);
+		gradient(lighten(#227EBF, 25%), lighten(#227EBF, 75%))
 		height 100%;
-		border-radius 6px 6px 0 0;
+		roundedTop()
 	
 	.errorNotice
 		width 100%; color redDark;
@@ -39,12 +43,6 @@ body
 		position relative; overflow hidden;
 		> div
 			absolute top 0 left 0; width 100%; height 100%;
-	
-	.tags-scroller-head
-		z-index 1; box-shadow 0 1px 2px rgba(0, 0, 0, .7);
-	.tags-scroller-head.flat
-		box-shadow none;
-
 
 .connectView
 	text-align center; width 100%; absolute top 0;
@@ -69,7 +67,10 @@ body
 	height 100%; width 100%; overflow hidden;
 	border-radius 5px 5px 0 0;
 	gradient(#227EBF, #025E9F);
-	borderTop 1px solid #E3E9ED;
+	border-top 1px solid rgba(255,255,255, .27);
+	border-bottom 1px solid rgba(0, 0, 0, .25);
+	box-shadow 0 1px 2px rgba(0, 0, 0, .7);
+	
 	.title
 		padding 0 4px; color #fff;
 		font-size 21px; text-align center; padding 7px 0 0 0;

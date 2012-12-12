@@ -7,6 +7,7 @@ buttonColor = #1A84BB
 	box-shadow 0 2px 0 #142C71;
 	text-shadow 0 -1px 0 #6993AA;
 	-webkit-transform translate3d(0,0,0);
+	// -webkit-transition -webkit-transform 1ms; this may be necesary to force button style to update if inside of a parent with transitioned transform on ios...
 .button.active, .button.selected
 	box-shadow 0 0px 0 background #1A84BB; -webkit-transform translate3d(0,2px,0);
 .button.secondary

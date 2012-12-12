@@ -120,9 +120,8 @@ function refreshMessages() {
 
 function arrowImage(name, size) {
 	var url = image.url(name)
-	return div(style({ display:'inline-block', width:size[0], height:size[1],
-		background:'url("'+url+'") transparent no-repeat', backgroundSize:size[0]+'px '+size[1]+'px',
-		'float':'right', margin:'6px -5px 0 0'
+	return div('arrow', style({ width:size[0], height:size[1],
+		background:'url("'+url+'") transparent no-repeat', backgroundSize:size[0]+'px '+size[1]+'px'
 	}))
 }
 
@@ -133,24 +132,32 @@ function renderMessage(message) {
 	var isFirstMessageInGroup = (lastMessageWasFromMe != messageIsFromMe || isVeryFirstMessage)
 	var shouldRenderFace = true || isFirstMessageInGroup
 	var classes = [
-		message.body ? 'text' : 'picture',
-		messageIsFromMe ? 'fromMe' : '',
+		message.body ? 'textMessage' : 'pictureMessage',
+		messageIsFromMe ? 'fromMe' : 'fromThem',
 		isFirstMessageInGroup && !isVeryFirstMessage ? 'newGroup' : ''
 	]
 	
 	// checkScrollBounds()
 	lastMessageWasFromMe = messageIsFromMe
 	
-	return [div(
-		div('messageBubble '+classes.join(' '),
-			shouldRenderFace && face.small(messageIsFromMe ? me : view.conversation.person),
-			(messageIsFromMe && message.body) ? arrowImage('bubbleArrow-right', [5,10]) : arrowImage('bubbleArrow-left', [6,10]),
-			renderContent(message)
-		)),
-		message.wasPushed && !message.questionAnswered && questions.hasYesNoQuestion(message.body) && questions.renderYesNoResponder(function(answer) {
-			message.questionAnswered = true
-			composer.sendMessage({ body:(answer ? 'Yes' : 'No') })
-		}),
+	var showYesNoResponder = (message.wasPushed && !message.questionAnswered && questions.hasYesNoQuestion(message.body))
+	
+	return [
+		div('message',
+			div(classes.join(' '),
+				shouldRenderFace && div(
+					face(messageIsFromMe ? me : view.conversation.person, 34)
+				),
+				div('messageBubble',
+					(messageIsFromMe && message.body) ? arrowImage('bubbleArrow-right', [5,10]) : arrowImage('bubbleArrow-left', [6,10]),
+					renderContent(message)
+				),
+				showYesNoResponder && questions.renderYesNoResponder(function(answer) {
+					message.questionAnswered = true
+					composer.sendMessage({ body:(answer ? 'Yes' : 'No') })
+				})
+			)
+		),
 		div('clear')
 	]
 }

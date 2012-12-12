@@ -3,28 +3,51 @@
 @import "./buttons"
 @import "./common"
 
+blueDropShadow()
+	box-shadow 0 1px 1px rgba(18, 110, 175, 0.74);
+
+conversationFaceStyle()
+	blueDropShadow(); border 1px solid; border-radius 2px;
+	border-color #fff transparent transparent #fff;
+	margin 0 6px;
+
 .conversationView
 	.ghostTown
 		padding 150px 10px;
 	.messagesList
-		padding-bottom 50px;
-	.messageBubble
-		border-radius 3px; word-wrap break-word; box-shadow 0 1px 1px rgba(18, 110, 175, 0.74); background #fff;
-		margin 5px 0 0 36px; display inline-block;
+		padding 4px 0 90px 0;
+	.message
+		.arrow
+			margin-top 10px;
+		.messageBubble
+			margin 3px 2px; display inline-block;
+			border-radius 3px; border 1px solid #fff; border-top none;
+			word-wrap break-word; blueDropShadow();
+			.textContent
+				light(); padding 4px 10px 5px; max-width 200px; text-shadow 0 1px 0px rgba(255, 255, 255, 0.71);
+			.pictureContent
+				border-radius 4px;
 		.face
-			float left;
-		.textContent
-			light(); padding 3px 9px; max-width 200px;
-		.pictureContent
-			border-radius 4px;
-	.messageBubble.fromMe
-		float right; margin-right 40px;
-		.face
-			float right; margin 0 -34px 0 0;
-	.messageBubble.newGroup
-		margin-top 10px;
-	.messageBubble.picture
-		box-shadow 0 0 0;
+			conversationFaceStyle();
+		.fromThem
+			margin 6px 36px 0 0;
+			.face
+				float left;
+			.messageBubble
+				gradient(#FFFAF2, #FFEED2);
+			.arrow
+				float left; margin-left -7px
+		.fromMe
+			margin 6px 0 0 36px;
+			.face
+				float right;
+			.arrow
+				float right; display inline-block; margin-right -6px;
+			.messageBubble
+				float right; gradient(#fff, #def);
+		.pictureMessage
+			.messageBubble
+				box-shadow 0 0 0;
 	.dogo-info
 		blueNotice()
 		width 100%; margin 8px 0; padding 4px 0 10px 0; border-width 1px 0; border-style solid;
@@ -43,7 +66,6 @@
 
 .drawer
 	line-height 0; z-index 2; background #000;
-	position absolute; bottom 0;
 	.loading
 		relative top 150px; font-size 30px;
 	.controls-pos
@@ -71,23 +93,27 @@
 		absolute top 4px; z-index 1; font-size 14px; padding 5px 7px 25px;
 
 #composer
-	absolute bottom 0; width 320px; background #126EAF; z-index 2;
+	absolute bottom 0; width 320px; z-index 2;
 	.surface
 		bodyRadius = 6px; bodyWidth = 320px;
 
 	.tools
 		.tool
-			display inline-block; margin 2px 0 0 4px; border-radius 4px; height 18px; width 24px; padding 6px 12px 8px;
+			display inline-block; margin 0 0 0 6px; border-radius 6px; height 18px; width 24px; padding 6px 12px 8px;
+			box-shadow 0 1px 0px rgba(18, 110, 175, 0.74);
 			border 1px solid;
-			border-color lighten(buttonColor, 10%) darken(buttonColor, 20%) darken(buttonColor, 15%) lighten(buttonColor, 5%);
+			border-color rgba(255,255,255,1) rgba(255,255,255,.75) rgba(255,255,255,.7) rgba(255,255,255,.9);
 	.textInputBackground
-		border 1px solid;
+		border 1px solid; border-radius 2px;
 		border-color darken(buttonColor, 20%) lighten(buttonColor, 0%) lighten(buttonColor, 5%) darken(buttonColor, 15%);
+		background #fff; blueDropShadow();
+	.face
+		conversationFaceStyle(); float right;
 
 .card
 	background #fff; border 1px solid #ddd #bbb #bbb #eee; margin 6px 6px 7px 6px; clear both; position relative; box-shadow 0 1px 1px #333; min-height 78px;
 	.face
-		position relative; top -2px; left -2px; background #ccc; box-shadow 0 1px 2px #333; float left;
+		position relative; top -3px; left -2px; background #ccc; box-shadow 0 1px 1px #444; float left;
 	.summary
 		margin-left 76px;
 		padding 6px;

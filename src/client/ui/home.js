@@ -42,7 +42,9 @@ function renderCard(conversation) {
 	var lastMessage = conversation.lastMessage
 	var hasUnread = lastReceived && (!lastRead || lastReceived.sentTime > lastRead.sentTime)
 	return div('card',
-		face.large(person),
+		$(face.large(person)).css({ border:'1px solid', borderRadius:1,
+			borderColor:['#eef', '#aab', '#99a', '#ccd'].join(' ')
+		}),
 		// http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
 		// style({ background:'rgb('+map(hsvToRgb([(Math.random() + 0.618033988749895) % 1, 0.03, 0.95]), Math.round)+')' }),
 		div('summary',

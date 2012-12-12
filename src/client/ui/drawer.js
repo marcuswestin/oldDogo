@@ -42,7 +42,7 @@ function render(_opts) {
 	
 	p = paint([dim, dim], pixelRatio)
 	
-	$ui = $(div('drawer', style(viewport.getSize()),
+	$ui = $(div('drawer', style(viewport.getSize()), style(translate(0,0)),
 		// div('loading', 'Loading...'),
 		div('close button',
 			icon(20, 20, 'xtras-white/37-circle-x'),

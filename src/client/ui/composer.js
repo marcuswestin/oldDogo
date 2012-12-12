@@ -9,7 +9,7 @@ var selectText = toolSelector(_selectText)
 var selectPhoto = toolSelector(_selectPhoto)
 var selectDraw = toolSelector(_selectDraw)
 
-var toolsHeight = 36
+var toolsHeight = 40
 
 var composer = module.exports = {
 	selectText:selectText,
@@ -29,7 +29,6 @@ var composer = module.exports = {
 		
 		return div({ id:'composer' }, style({ height:viewport.height() }), style(translate(0, viewport.height()-toolsHeight)),
 			div('tools',
-				style(translate(0,-4)),
 				style({ height:toolsHeight }),
 				div('button tool write', icon(24, 22, 'white/09-chat-2'), button(selectText)),
 				div('button tool photo', icon(24, 18, 'white/86-camera'), button(selectPhoto)),
@@ -81,34 +80,29 @@ function _selectText() {
 	})
 	
 	var inputHeight = 36
-	var inputWidth = 268
-	var margin = 5
-	var textComposerMarginTop = 2
-	setHeight(toolsHeight + inputHeight + margin, 200)
+	var inputWidth = 262
+	var margin = 6
+	setHeight(toolsHeight + inputHeight + margin * 2 - 4, 200)
 	var textComposer = div(
-		style({ marginTop:textComposerMarginTop }),
-		div(face.mine(35), style({
-			'float':'right', margin:'1px 3px 0 0', borderRadius:1,
-			boxShadow:'0 1px 1px rgba(0, 0, 25, .5)', border:'1px solid rgba(255, 255, 255, .9)'
-		})),
+		face.mine(inputHeight),
 		div('textInputBackground', style({
-			width:inputWidth, height:inputHeight, marginLeft:margin,
-			background:'#fff', borderRadius:2, boxShadow:'0 1px 2px rgba(38, 151, 210, .8)'
+			width:inputWidth , height:inputHeight, marginLeft:margin
 		}))
 	)
 	
 	$('#composer .inputArea').empty().append(textComposer)
 	
+	var fudgeInputHeight = 3
 	bridge.command('textInput.show', {
-		at:{ x:margin, y:viewport.height() - inputHeight - margin + 1, width:inputWidth, height:inputHeight },
+		at:{ x:margin, y:viewport.height() - inputHeight - margin * 2 + fudgeInputHeight, width:inputWidth, height:inputHeight + fudgeInputHeight },
 		returnKeyType:'Send',
 		font: { name:'Open Sans', size:16 },
 		backgroundColor:[0,0,0,0],
 		shiftWebview:true
 	})
 	var onChangeHeightHandler = events.on('textInput.changedHeight', function adjustHeight(info) {
-		addHeight(info.heightChange, 50)
-		$('#composer .inputBackground').css({ height:info.height - 2 })
+		addHeight(info.heightChange, 0)
+		$('#composer .textInputBackground').css({ height:info.height - 2 })
 		var $view = gScroller.getCurrentView()
 		var isAtBottom = Math.abs($view[0].scrollHeight - ($view.scrollTop() + $view.height())) < 40
 		$('.conversationView .messagesList').css({ marginBottom:info.height - inputHeight + 60 })
@@ -147,19 +141,15 @@ function _selectPhoto() {
 }
 
 function _selectDraw(img, message) {
-	$('.dogoApp').append(
-		drawer.render({ onSend:sendImage, onHide:hideDraw, img:img, message:message }).css(translate.y(viewport.height()))
+	$('#composer .inputArea').empty().append(
+		drawer.render({ onSend:sendImage, onHide:hideDraw, img:img, message:message })
 	)
-	setTimeout(function() {
-		$('.dogoApp .drawer').css(translate.y(0, selectDraw.duration))
-	})
+	setHeight(viewport.height() + toolsHeight, 350)
 }
-selectDraw.duration = 300
+
 function hideDraw() {
-	$('.dogoApp .drawer').css(translate.y(viewport.height(), selectDraw.duration))
-	setTimeout(function() {
-		composer.hide()
-	}, selectDraw.duration)
+	resetCurrentTool()
+	setHeight(toolsHeight, 250)
 }
 
 function sendImage(data, width, height) {
