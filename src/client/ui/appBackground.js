@@ -40,15 +40,16 @@ function update(width) {
 }
 
 function renderDevTools() {
+	var margined = style({ margin:2 })
 	return div('devTools', style({ textAlign:'center', margin:px(10,0,0,0) }),
-		div('button', 'Reset', button(function() {
+		div('button', 'Reset', margined, button(function() {
 			gState.clear()
 			bridge.command('app.restart')
 		})),
-		div('button', 'Reload', button(function() {
+		div('button', 'Reload', margined, button(function() {
 			bridge.command('app.restart')
 		})),
-		div('button', 'Upgrade App', button(function() {
+		div('button', 'Upgrade App', margined, button(function() {
 			gState.checkNewVersion()
 		}))
 	)
