@@ -16,9 +16,10 @@ var keyboardHeight = 216
 function showTextInput(data) {
 	hideTextInput()
 	var at = data.at
+	var padding = 6
 	$input = $(input())
-		.css({ position:'absolute', border:0, margin:0, padding:0, zIndex:3 })
-		.css({ width:at.width, height:at.height, left:at.x, top:at.y + gViewportTop })
+		.css({ position:'absolute', border:0, margin:0, padding:0, zIndex:3, padding:'0 '+padding+'px' })
+		.css({ width:at.width - padding*2, height:at.height, left:at.x + $('.dogoApp').offset().left, top:at.y + gViewportTop })
 		.on('keyup', onChange)
 		.on('keypress', onChange)
 		.appendTo(document.body)
