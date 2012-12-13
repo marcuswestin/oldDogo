@@ -29,59 +29,52 @@ module.exports = proto(null,
 		s3 = aws2js.load('s3', s3conf.accessKeyId, s3conf.secretAccessKey)
 		s3.setBucket(s3conf.bucket)
 	}, {
-		upload: function(accountId, conversationId, base64PictureData, pictureWidth, pictureHeight, callback) {
+		upload: function(accountId, conversationId, base64Data, pictureWidth, pictureHeight, callback) {
 			this._insertPicture(this.db, accountId, pictureWidth, pictureHeight, function(err, pictureId, pictureSecret) {
 				if (err) { return callback(err) }
-				var buf = new Buffer(base64PictureData.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+				var buf = new Buffer(base64Data.replace(/^data:image\/\w+;base64,/, ""), 'base64')
 				var size = buf.length
 				var path = pictures.path(conversationId, pictureSecret)
-				var waitingFor = 2
-				var proceed = bind(this, function(err) {
+				log('Uploading picture', pictureId, pictures.url(conversationId, pictureSecret))
+				s3.putBuffer(path, buf, s3Permission, getHeaders(buf.length), bind(this, function(err, headers) {
+					log('Upload picture DONE', pictureId, err)
 					if (err && callback) {
 						callback(err)
 						callback = null
 						return
 					}
-					waitingFor--
-					if (waitingFor) { return }
-					var meta = { sizes:[pictures.pixels.thumb] }
+					var meta = { sizes:[] }
 					this._updatePictureSent(this.db, pictureId, meta, function(err) {
 						if (err) { return callback(err) }
 						callback(null, pictureId)
 					})
-				})
-				log('Uploading picture', pictureId, pictures.url(conversationId, pictureSecret))
-				s3.putBuffer(path, buf, s3Permission, getHeaders(buf.length), function(err, resHeaders) {
-					log('Upload picture DONE', pictureId, err)
-					proceed(err)
-				})
-				this.uploadThumb(buf, conversationId, pictureSecret, pictures.pixels.thumb, proceed)
+				}))
 			})
 		},
 		
-		uploadThumb: function(buf, conversationId, pictureSecret, thumbSize, callback) {
-			var thumbPath = pictures.path(conversationId, pictureSecret, thumbSize)
-			var customArgs = [
-				"-gravity", "center",
-				"-extent", thumbSize+"x"+thumbSize
-			]
-			
-			imagemagick.resize({
-				srcData : buf,
-				strip : false,
-				width : thumbSize,
-				height : thumbSize+"^",
-				customArgs: customArgs
-			}, function(err, stdout, stderr) {
-				if (err) { return proceed(err) }
-				log('Uploading thumbnail', pictures.url(conversationId, pictureSecret, thumbSize))
-				var thumbBuf = new Buffer(stdout, 'binary')
-				s3.putBuffer(thumbPath, thumbBuf, s3Permission, getHeaders(thumbBuf.length), function(err, resHeaders) {
-					log('Upload thumbnail DONE', err)
-					callback(err, null)
-				})
-			})
-		},
+		// uploadThumb: function(buf, conversationId, pictureSecret, callback) {
+		// 	var thumbPath = pictures.sizedPath(conversationId, pictureSecret, pictures.pixels.thumb)
+		// 	var customArgs = [
+		// 		"-gravity", "center",
+		// 		"-extent", thumbSize+"x"+thumbSize
+		// 	]
+		// 	
+		// 	imagemagick.resize({
+		// 		srcData : buf,
+		// 		strip : false,
+		// 		width : thumbSize,
+		// 		height : thumbSize+"^",
+		// 		customArgs: customArgs
+		// 	}, function(err, stdout, stderr) {
+		// 		if (err) { return proceed(err) }
+		// 		log('Uploading thumbnail', pictures.url(conversationId, pictureSecret, thumbSize))
+		// 		var thumbBuf = new Buffer(stdout, 'binary')
+		// 		s3.putBuffer(thumbPath, thumbBuf, s3Permission, getHeaders(thumbBuf.length), function(err, resHeaders) {
+		// 			log('Upload thumbnail DONE', err)
+		// 			callback(err, null)
+		// 		})
+		// 	})
+		// },
 		
 		getPictureUrl: function(accountId, conversationId, pictureId, pictureSecret, callback) {
 			if (pictureSecret) {

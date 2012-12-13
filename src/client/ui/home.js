@@ -57,7 +57,7 @@ function renderCard(conversation) {
 			div('lastMessage', lastMessage.body
 				? div('body', lastMessage.body)
 				: div('picture', function() {
-					var url = pictures.urlFromMessage(lastMessage, pictures.pixels.thumb)
+					var url = pictures.urlFromMessage(lastMessage)
 					var size = 46
 					var ratio = window.devicePixelRatio || 1
 					var backgroundUrl = BT.url('BTImage', 'fetchImage', { url:url, cache:'yes', square:size * ratio, mimeType:'image/jpg' })

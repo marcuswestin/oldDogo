@@ -80,7 +80,7 @@ function getMessagesList() {
 
 function selectMessage(message, _, $el) {
 	// alert("FINISH selectMessage")
-	// if (message.pictureId || message.base64Picture) {
+	// if (message.pictureId || message.base64Data) {
 	// 	composer.selectDraw($el.find('.messageBubble .pictureContent')[0], message)
 	// } else {
 	// 	// do nothing
@@ -144,18 +144,20 @@ function renderMessage(message) {
 	
 	return [
 		div('message',
-			div(classes.join(' '),
-				shouldRenderFace && div(
-					face(messageIsFromMe ? me : view.conversation.person, 34)
-				),
-				div('messageBubble',
-					(messageIsFromMe && message.body) ? arrowImage('bubbleArrow-right', [5,10]) : arrowImage('bubbleArrow-left', [6,10]),
-					renderContent(message)
-				),
-				showYesNoResponder && questions.renderYesNoResponder(function(answer) {
-					message.questionAnswered = true
-					composer.sendMessage({ body:(answer ? 'Yes' : 'No') })
-				})
+			div(messageIsFromMe ? 'fromMe' : 'fromThem',
+				div(message.body ? 'textMessage' : 'pictureMessage',
+					shouldRenderFace && div(
+						face(messageIsFromMe ? me : view.conversation.person, 34)
+					),
+					div('messageBubble',
+						(messageIsFromMe) ? arrowImage('bubbleArrow-right', [5,10]) : arrowImage('bubbleArrow-left', [6,10]),
+						renderContent(message)
+					),
+					showYesNoResponder && questions.renderYesNoResponder(function(answer) {
+						message.questionAnswered = true
+						composer.sendMessage({ body:(answer ? 'Yes' : 'No') })
+					})
+				)
 			)
 		),
 		div('clear')
@@ -163,38 +165,38 @@ function renderMessage(message) {
 }
 
 gPicSize = function(message) {
-	var size = pictures.display.thumb
+	var size = 200
 	return style({ width:size, height:size, backgroundSize:size+'px '+size+'px' })
 }
 
-function clipPicSize(message) {
-	var maxWidth = pictures.display.thumb
-	var maxHeight = pictures.display.thumb
-	var width = message.pictureWidth
-	var height = message.pictureHeight
-	var ratio = 1
-	if (width > maxWidth) {
-		width = maxWidth
-		ratio = width / message.pictureWidth
-		height = Math.round(message.pictureHeight * ratio)
-	}
-	var offset = height > maxHeight ? -Math.floor((height - maxHeight) / 2) : 0
-	return style({ width:width, height:Math.min(height, maxHeight), backgroundSize:width+'px '+height+'px', backgroundPosition:'0 '+offset+'px' })
-}
+// function clipLocalPicture(message) {
+// 	var maxWidth = 200
+// 	var maxHeight = 200
+// 	var width = message.pictureWidth
+// 	var height = message.pictureHeight
+// 	var ratio = 1
+// 	if (width > maxWidth) {
+// 		ratio = maxWidth / width
+// 		width = maxWidth
+// 		height = Math.round(height * ratio)
+// 	}
+// 	var offset = height > maxHeight ? -Math.floor((height - maxHeight) / 2) : 0
+// 	return style({ width:width, height:Math.min(height, maxHeight), backgroundSize:width+'px '+height+'px', backgroundPosition:'0 '+offset+'px' })
+// }
 
 function renderContent(message) {
 	if (message.body) {
 		return div('textContent', linkify(message.body))
 	} else if (message.pictureId) {
-		var pictureUrl = pictures.urlFromMessage(message, pictures.pixels.thumb)
+		var pictureUrl = pictures.urlFromMessage(message)
 		// var attrs = { pictureUrl:pictureUrl }
 		var attrs = style({ backgroundImage:'url('+pictureUrl+')' })
-		return div('pictureContent', gPicSize(message), attrs)
+		return div('pictureContent', div('gradient'), gPicSize(message), attrs)
 	} else {
-		var pictureUrl = message.base64Picture
+		var pictureUrl = message.picture.base64Data
 		// var attrs = { pictureUrl:pictureUrl }
 		var attrs = style({ backgroundImage:'url('+pictureUrl+')' })
-		return div('pictureContent', clipPicSize(message), attrs)
+		return div('pictureContent', div('gradient'), gPicSize(message), attrs)
 	}
 }
 
