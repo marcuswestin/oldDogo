@@ -16,16 +16,18 @@ var composer = module.exports = {
 	selectDraw:selectDraw,
 	selectPhoto:selectPhoto,
 	sendMessage:sendMessage,
-	hide:function() {
-		drawer.remove()
-		resetCurrentTool()
+	hide:function(hideOnlyIfThisToolIsUsed) {
+		if (hideOnlyIfThisToolIsUsed && currentTool != hideOnlyIfThisToolIsUsed) { return }
+		currentTool = null
+		setHeight(toolsHeight, 250)
+		
 		if (!currentConversation) { return }
 		currentConversation = null
 		bridge.command('textInput.hide')
 	},
 	render: function(view) {
+		currentTool = null
 		currentConversation = view.conversation
-		resetCurrentTool()
 		
 		return div({ id:'composer' }, style({ height:viewport.height() }), style(translate(0, viewport.height()-toolsHeight)),
 			div('tools',
@@ -45,10 +47,6 @@ function setHeight(height, duration) {
 }
 function addHeight(height, duration) {
 	setHeight(setHeight.lastHeight + height, duration)
-}
-
-function resetCurrentTool() {
-	currentTool = null
 }
 
 function toolSelector(fn) {
@@ -74,11 +72,7 @@ function _selectText() {
 		if (!body) { return }
 		sendMessage({ body:body })
 	})
-	events.once('keyboard.willHide', function(info) {
-		events.off('textInput.return', onReturnHandler)
-		if (currentTool == _selectText) { resetCurrentTool() }
-	})
-	
+
 	var inputHeight = 36
 	var inputWidth = 262
 	var margin = 6
@@ -117,9 +111,7 @@ function _selectText() {
 		$('.conversationView .messagesList').css({ marginBottom:0 })
 		events.off('textInput.changedHeight', onChangeHeightHandler)
 		bridge.command('textInput.hide')
-		if (currentTool == _selectText) {
-			setHeight(toolsHeight, 200)
-		}
+		composer.hide(_selectText)
 	})
 	
 	// setTimeout(function() { bridge.command('textInput.set', { text:'This is a long string to cause wrap W' }) })// AUTOS automatically resize composer text input
@@ -135,7 +127,7 @@ function _selectPhoto() {
 		var source = sources[res.index]
 		if (!source) { return }
 		bridge.command('media.pick', { source:source, allowsEditing:true }, function(err, res) {
-			if (currentTool == _selectPhoto) { resetCurrentTool() }
+			composer.hide(_selectPhoto)
 			if (!res.mediaId) { return }
 			selectDraw({ mediaId:res.mediaId }, { pictureWidth:res.width, pictureHeight:res.height })
 		})
@@ -144,20 +136,19 @@ function _selectPhoto() {
 
 function _selectDraw(img, message) {
 	$('#composer .inputArea').empty().append(
-		drawer.render({ onSend:sendImage, onHide:hideDraw, img:img, message:message })
+		drawer.render({
+			img:img,
+			message:message,
+			onHide:composer.hide,
+			onSend:function sendImage(data, width, height) {
+				sendMessage({ picture:{ width:width, height:height, base64Data:data } })
+				composer.hide(_selectDraw)
+			}
+		})
 	)
 	setHeight(viewport.height() + toolsHeight, 350)
 }
 
-function hideDraw() {
-	resetCurrentTool()
-	setHeight(toolsHeight, 250)
-}
-
-function sendImage(data, width, height) {
-	sendMessage({ picture:{ width:width, height:height, base64Data:data } })
-	composer.hide()
-}
 
 function sendMessage(params) {
 	var clientUid = gState.nextClientUid()
