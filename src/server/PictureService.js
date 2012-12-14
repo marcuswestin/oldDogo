@@ -2,7 +2,6 @@ var region = 'us-west-1'
 var aws2js = require('aws2js')
 var knox = require('knox')
 var uuid = require('uuid')
-var imagemagick = require('imagemagick')
 var pictures = require('../data/pictures')
 var s3Permission = 'public-read'
 var s3
@@ -35,7 +34,7 @@ module.exports = proto(null,
 				var buf = new Buffer(base64Data.replace(/^data:image\/\w+;base64,/, ""), 'base64')
 				var size = buf.length
 				var path = pictures.path(conversationId, pictureSecret)
-				log('Uploading picture', pictureId, pictures.url(conversationId, pictureSecret))
+				log('Uploading picture', pictureId, pictures.rawUrl(conversationId, pictureSecret))
 				s3.putBuffer(path, buf, s3Permission, getHeaders(buf.length), bind(this, function(err, headers) {
 					log('Upload picture DONE', pictureId, err)
 					if (err && callback) {
@@ -53,7 +52,7 @@ module.exports = proto(null,
 		},
 		
 		// uploadThumb: function(buf, conversationId, pictureSecret, callback) {
-		// 	var thumbPath = pictures.sizedPath(conversationId, pictureSecret, pictures.pixels.thumb)
+		// 	var thumbPath = pictures.path(conversationId, pictureSecret, pictures.pixels.thumb)
 		// 	var customArgs = [
 		// 		"-gravity", "center",
 		// 		"-extent", thumbSize+"x"+thumbSize
@@ -78,11 +77,11 @@ module.exports = proto(null,
 		
 		getPictureUrl: function(accountId, conversationId, pictureId, pictureSecret, callback) {
 			if (pictureSecret) {
-				callback(null, pictures.url(conversationId, pictureSecret))
+				callback(null, pictures.rawUrl(conversationId, pictureSecret))
 			} else {
 				this._selectSecret(this.db, accountId, conversationId, pictureId, function(err, res) {
 					if (err) { return callback(err) }
-					callback(null, pictures.url(conversationId, res && res.pictureSecret))
+					callback(null, pictures.rawUrl(conversationId, res && res.pictureSecret))
 				})
 			}
 		},

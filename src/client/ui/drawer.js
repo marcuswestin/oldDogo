@@ -91,7 +91,7 @@ function render(_opts) {
 			doDrawBackgroundImage('/'+opts.backgroundPath, opts.width, opts.height)
 		} else if (opts.pictureSecret) {
 			// TODO Show loading indicator
-			var pictureUrl = pictures.url(opts.conversationId, opts.pictureSecret)
+			var pictureUrl = pictures.rawUrl(opts.conversationId, opts.pictureSecret)
 			doDrawBackgroundImage(pictureUrl, opts.width, opts.height)
 		} else if (opts.style) {
 			var underlyingUrl = opts.style.background.match(/url\((.*)\)/)[1]

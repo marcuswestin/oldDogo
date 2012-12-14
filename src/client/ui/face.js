@@ -1,9 +1,3 @@
-BT = {
-	url:function(module, path, params) {
-		return '//blowtorch:9000/'+module+'/'+path+'?'+parseUrl.query.string(params)
-	}
-}
-
 module.exports = face
 
 function face(account, size) {
@@ -28,14 +22,15 @@ face.mine = function myFace(size) {
 	})
 }
 
-function backgroundStyle(facebookId, size) {
-	if (!size) { size = 25 }
+function backgroundStyle(facebookId, displaySize) {
+	if (!displaySize) { displaySize = 25 }
 	var ratio = window.devicePixelRatio || 1
-	var imageUrl = 'http://graph.facebook.com/'+facebookId+'/picture'+(size * ratio > 50 ? '?type=large' : '')
-	var params = { url:imageUrl, cache:'Yup!', square:size * ratio, mimeType:'image/jpg' }
+	var size = displaySize*ratio
+	var imageUrl = 'http://graph.facebook.com/'+facebookId+'/picture'+(size > 50 ? '?type=large' : '')
+	var params = { url:imageUrl, cache:'Yup!', resize:size+'x'+size, mimeType:'image/jpg' }
 	return {
 		background:'url("'+BT.url('BTImage', 'fetchImage', params)+'") rgba(240,240,255,.3) no-repeat',
-		width:size, height:size, backgroundSize:size+'px auto'
+		width:displaySize, height:displaySize, backgroundSize:px(displaySize, displaySize)
 	}
 }
 

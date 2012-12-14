@@ -164,11 +164,6 @@ function renderMessage(message) {
 	]
 }
 
-gPicSize = function(message) {
-	var size = 200
-	return style({ width:size, height:size, backgroundSize:size+'px '+size+'px' })
-}
-
 // function clipLocalPicture(message) {
 // 	var maxWidth = 200
 // 	var maxHeight = 200
@@ -184,19 +179,42 @@ gPicSize = function(message) {
 // 	return style({ width:width, height:Math.min(height, maxHeight), backgroundSize:width+'px '+height+'px', backgroundPosition:'0 '+offset+'px' })
 // }
 
+function scaleSize(size) {
+	var ratio = (window.devicePixelRatio || 1)
+	return map(size, function(size) { return size * ratio })
+}
+function styleSize(size) {
+	return style({ width:size[0], height:size[1] })
+}
+
 function renderContent(message) {
 	if (message.body) {
 		return div('textContent', linkify(message.body))
-	} else if (message.pictureId) {
-		var pictureUrl = pictures.urlFromMessage(message)
-		// var attrs = { pictureUrl:pictureUrl }
-		var attrs = style({ backgroundImage:'url('+pictureUrl+')' })
-		return div('pictureContent', div('gradient'), gPicSize(message), attrs)
 	} else {
-		var pictureUrl = message.picture.base64Data
-		// var attrs = { pictureUrl:pictureUrl }
-		var attrs = style({ backgroundImage:'url('+pictureUrl+')' })
-		return div('pictureContent', div('gradient'), gPicSize(message), attrs)
+		var displaySize = [218, 150]
+		var pixelSize = scaleSize(displaySize)
+		if (message.pictureId) {
+			var pictureUrl = pictures.displayUrl(message, pixelSize)
+			// var attrs = { pictureUrl:pictureUrl }
+			var attrs = style({ backgroundImage:'url('+pictureUrl+')' })
+			return div('pictureContent', div('gradient'), styleSize(displaySize), style({ backgroundSize:px(displaySize) }), attrs)
+		} else {
+			var pictureUrl = message.picture.base64Data
+			// var attrs = { pictureUrl:pictureUrl }
+			var attrs = style({ backgroundImage:'url('+pictureUrl+')' })
+			
+			var picSize = [message.picture.width, message.picture.height]
+			var widthRatio = displaySize[0] / picSize[0]
+			var heightRatio = displaySize[1] / picSize[1]
+			var ratio = Math.max(widthRatio, heightRatio) // Math.min for "fit" instead of "fill" into displaySize
+			var scaledSize = map(picSize, function(size) { return size * ratio })
+			var scaledOffset = map([(displaySize[0]-scaledSize[0]) / 2, (displaySize[1]-scaledSize[1]) / 2], Math.round)
+			
+			return div('pictureContent', div('gradient'), styleSize(displaySize), attrs, style({
+				backgroundSize: px(scaledSize),
+				backgroundPosition: px(scaledOffset)
+			}))
+		}
 	}
 }
 

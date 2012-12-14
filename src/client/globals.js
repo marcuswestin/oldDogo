@@ -24,6 +24,8 @@ parseUrl = require('std/url')
 
 getId = function getId(d) { return d.id }
 
+isArray = _.isArray
+
 accountKnown = function(accountId) { return !!gState.cache['contactsByAccountId'][accountId] }
 loadFacebookId = function loadFacebookId(facebookId, callback) { return loadAccount(null, facebookId, callback) }
 loadFacebookId.queue = {}
@@ -136,8 +138,15 @@ image = (function() {
 	}
 }())
 
-px = function() {
-	return map(slice(arguments), function(arg) {
+px = function(pixels) {
+	if (!isArray(pixels)) { pixels = slice(arguments) }
+	return map(pixels, function(arg) {
 		return arg+'px'
 	}).join(' ')
+}
+
+BT = {
+	url:function(module, path, params) {
+		return '//blowtorch:9000/'+module+'/'+path+'?'+parseUrl.query.string(params)
+	}
 }

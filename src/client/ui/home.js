@@ -42,9 +42,7 @@ function renderCard(conversation) {
 	var lastMessage = conversation.lastMessage
 	var hasUnread = lastReceived && (!lastRead || lastReceived.sentTime > lastRead.sentTime)
 	return div('card',
-		$(face.large(person)).css({ border:'1px solid', borderRadius:1,
-			borderColor:['#eef', '#aab', '#99a', '#ccd'].join(' ')
-		}),
+		face.large(person),
 		// http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
 		// style({ background:'rgb('+map(hsvToRgb([(Math.random() + 0.618033988749895) % 1, 0.03, 0.95]), Math.round)+')' }),
 		div('summary',
@@ -57,12 +55,11 @@ function renderCard(conversation) {
 			div('lastMessage', lastMessage.body
 				? div('body', lastMessage.body)
 				: div('picture', function() {
-					var url = pictures.urlFromMessage(lastMessage)
 					var size = 46
+					var url = pictures.displayUrl(lastMessage, size)
 					var ratio = window.devicePixelRatio || 1
-					var backgroundUrl = BT.url('BTImage', 'fetchImage', { url:url, cache:'yes', square:size * ratio, mimeType:'image/jpg' })
 					return style({
-						background:'url('+backgroundUrl+') transparent no-repeat',
+						background:'url('+url+') transparent no-repeat',
 						width:size, height:size, backgroundSize:size+'px '+size+'px'
 					})
 				})
