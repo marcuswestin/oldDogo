@@ -17,6 +17,7 @@ events.on('view.change', function resetView() {
 	$ui = null
 	lastMessageWasFromMe = null
 	getMessagesList._list = null
+	gScroller.getCurrentView().off('scroll', checkScrollBounds)
 })
 
 function renderConversation(_view) {
@@ -30,19 +31,18 @@ function renderConversation(_view) {
 	lastMessageWasFromMe = null
 
 	var messages = []
+	
+	gScroller.getCurrentView().on('scroll', checkScrollBounds)
+	
 	return div('conversationView',
-		// function($el) { setTimeout(function() { $el.append(
 		getMessagesList(),
-		// )).on('scroll', checkScrollBounds),
 		
 		function() {
 			setTimeout(function() {
 				events.fire('conversation.rendered', view.conversation)
-			}, 100)
-			// checkScrollBounds()
+			}, 100),
+			checkScrollBounds()
 		}
-		
-		// ) }, 75) }
 	)
 }
 
@@ -100,23 +100,23 @@ function refreshMessages() {
 	})
 }
 
-// var checkScrollBounds = once(function checkScrollBounds() {
-// 	if (!view) { return }
-//	var $view = gScroller.getCurrentView()
-// 	var pics = $view.find('.messageBubble .pictureContent')
-// 	var viewHeight = $view.height()
-// 	var viewTop = $view.scrollTop() - (viewHeight * 3/4) // preload 3/4 of a view above
-// 	var viewBottom = viewTop + viewHeight + (viewHeight * 1/2) // prelado 1/2 of a view below
-// 	for (var i=pics.length - 1; i >= 0; i--) { // loop in reverse order since you're likelier to be viewing the bottom of the conversation
-// 		var pic = pics[i]
-// 		var picTop = pic.offsetTop
-// 		var picBottom = picTop + pic.offsetHeight
-// 		if (picBottom > viewTop && picTop < viewBottom && pic.getAttribute('pictureUrl')) {
-// 			pic.style.backgroundImage = 'url('+pic.getAttribute('pictureUrl')+')'
-// 			pic.removeAttribute('pictureUrl')
-// 		}
-// 	}
-// })
+var checkScrollBounds = once(function checkScrollBounds() {
+	if (!view) { return }
+	var $view = gScroller.getCurrentView()
+	var pics = $view.find('.messageBubble .pictureContent')
+	var viewHeight = $view.height()
+	var viewTop = $view.scrollTop() - (viewHeight * 3/4) // preload 3/4 of a view above
+	var viewBottom = viewTop + viewHeight + (viewHeight * 1/2) // prelado 1/2 of a view below
+	for (var i=pics.length - 1; i >= 0; i--) { // loop in reverse order since you're likelier to be viewing the bottom of the conversation
+		var pic = pics[i]
+		var picTop = pic.offsetTop
+		var picBottom = picTop + pic.offsetHeight
+		if (picBottom > viewTop && picTop < viewBottom && pic.getAttribute('pictureUrl')) {
+			pic.style.backgroundImage = 'url('+pic.getAttribute('pictureUrl')+')'
+			pic.removeAttribute('pictureUrl')
+		}
+	}
+})
 
 function arrowImage(name, size) {
 	var url = image.url(name)
@@ -137,7 +137,7 @@ function renderMessage(message) {
 		isFirstMessageInGroup && !isVeryFirstMessage ? 'newGroup' : ''
 	]
 	
-	// checkScrollBounds()
+	checkScrollBounds()
 	lastMessageWasFromMe = messageIsFromMe
 	
 	var showYesNoResponder = (message.wasPushed && !message.questionAnswered && questions.hasYesNoQuestion(message.body))
@@ -194,15 +194,10 @@ function renderContent(message) {
 		var displaySize = [218, 150]
 		var pixelSize = scaleSize(displaySize)
 		if (message.pictureId) {
-			var pictureUrl = pictures.displayUrl(message, pixelSize)
-			// var attrs = { pictureUrl:pictureUrl }
-			var attrs = style({ backgroundImage:'url('+pictureUrl+')' })
+			var attrs = { pictureUrl:pictures.displayUrl(message, pixelSize) }
+			// var attrs = style({ backgroundImage:'url('+pictures.displayUrl(message, pixelSize)+')' })
 			return div('pictureContent', div('gradient'), styleSize(displaySize), style({ backgroundSize:px(displaySize) }), attrs)
 		} else {
-			var pictureUrl = message.picture.base64Data
-			// var attrs = { pictureUrl:pictureUrl }
-			var attrs = style({ backgroundImage:'url('+pictureUrl+')' })
-			
 			var picSize = [message.picture.width, message.picture.height]
 			var widthRatio = displaySize[0] / picSize[0]
 			var heightRatio = displaySize[1] / picSize[1]
@@ -211,6 +206,7 @@ function renderContent(message) {
 			var scaledOffset = map([(displaySize[0]-scaledSize[0]) / 2, (displaySize[1]-scaledSize[1]) / 2], Math.round)
 			
 			return div('pictureContent', div('gradient'), styleSize(displaySize), attrs, style({
+				backgroundImage:'url('+message.picture.base64Data+')',
 				backgroundSize: px(scaledSize),
 				backgroundPosition: px(scaledOffset)
 			}))
