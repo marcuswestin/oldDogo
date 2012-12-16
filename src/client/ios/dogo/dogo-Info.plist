@@ -24,11 +24,11 @@
 		</dict>
 	</dict>
 	<key>CFBundleIdentifier</key>
-	<string>com.flutterbylabs.dogo</string>
+	<string>com.flutterbylabs.dogoapp</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>com.flutterbylabs.dogo</string>
+	<string>com.flutterbylabs.dogoapp</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

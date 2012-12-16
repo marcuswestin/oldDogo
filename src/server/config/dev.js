@@ -18,7 +18,7 @@ module.exports = {
 	push: {
 		certData:fs.readFileSync(__dirname + '/dev/cert.pem'),
 		keyData:fs.readFileSync(__dirname + '/dev/key.pem'),
-		passphrase:'dogopass9'
+		passphrase:'dogopass3'
 	},
 	twilio: {
 		disabled: true,
