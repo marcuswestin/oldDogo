@@ -64,7 +64,7 @@ function render(_opts) {
 		)
 	))
 	
-	$ui.append($paint = $(p.el).addClass('paint').css({ top:gScroller.$head.height() + 10 }))
+	$ui.append($paint = $(p.el).addClass('paint'))
 	
 	p.withBackground(function(bg) {
 		bg.fillStyle('#FFFFFF').fillRect([0,0], canvasDensity)
