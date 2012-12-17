@@ -37,12 +37,18 @@ function renderScrollerHead(view, opts) {
 			title += ' ' + names[names.length-1][0] // first name plus first letter of last name
 		}
 	}
-	return div('head',
-		showBackButton
-			? div('back', icon(28, 28, 'xtras-white/36-circle-west', 8, 8), button(function() { gScroller.pop() }))
-			: div('logoIcon', logoIcon(32), button(showAppBackground)),
-		div('title', title || div('logo', logoName(60, 26, 'white'))),
-		searchButton.render()
+	return div('head', style(translate(0,0)),
+		div('shadow', button(function() {
+			gScroller.getCurrentView().animate({ scrollTop:0 }, 300)
+		})),
+		div('corner left',
+			showBackButton
+				? div('back', glyphish('xtras-white/36-circle-west', 28, 28, 6, 13, 9, 11), button(function() { gScroller.pop() }))
+				: div('logoIcon', icon('logoIcon-32x32', 32, 32, 3, 10, 8, 10), button(showAppBackground))
+		),
+		div('corner right',
+			searchButton.render()
+		)
 	)
 }
 

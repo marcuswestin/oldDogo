@@ -32,9 +32,9 @@ var composer = module.exports = {
 		return div({ id:'composer' }, style({ height:viewport.height() }), style(translate(0, viewport.height()-toolsHeight)),
 			div('tools',
 				style({ height:toolsHeight }),
-				div('button tool write', icon(24, 22, 'white/09-chat-2'), button(selectText)),
-				div('button tool photo', icon(24, 18, 'white/86-camera'), button(selectPhoto)),
-				div('button tool draw', icon(24, 20, 'white/98-palette'), button(selectDraw))
+				div('button tool write', glyphish('white/09-chat-2', 24, 22), button(selectText)),
+				div('button tool photo', glyphish('white/86-camera', 24, 18), button(selectPhoto)),
+				div('button tool draw', glyphish('white/98-palette', 24, 20), button(selectDraw))
 			),
 			div('inputArea')
 		)
@@ -61,7 +61,7 @@ function toolSelector(fn) {
 
 function _selectText() {
 	$('#composer .tools').append(
-		div('closeTextInput', icon(22, 22, 'white/298-circlex', 6, 6, 6, 6), style({ position:'absolute', top:6, right:5 }), button(function() {
+		div('closeTextInput', glyphish('white/298-circlex', 22, 22, 6, 6, 6, 6), style({ position:'absolute', top:6, right:5 }), button(function() {
 			bridge.command('textInput.hide')
 		}))
 	)

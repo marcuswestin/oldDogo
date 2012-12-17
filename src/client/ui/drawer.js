@@ -45,7 +45,7 @@ function render(_opts) {
 	$ui = $(div('drawer', style(viewport.getSize()), style(translate(0,0)),
 		// div('loading', 'Loading...'),
 		div('close button',
-			icon(20, 20, 'xtras-white/37-circle-x'),
+			glyphish('xtras-white/37-circle-x', 20, 20),
 			style({ bottom:viewport.height() - 30, right:3 }, transition('-webkit-transform')),
 			button(function() { opts.onHide() })
 		),
@@ -55,7 +55,7 @@ function render(_opts) {
 					div('tools',
 						state.toolPicker = makeToolPicker({ paint:p, width:dim, height:dim }),
 						div('right',
-							div('button undo secondary', icon(19, 23, 'white/215-subscription'), button(undoDraw)),
+							div('button undo secondary', glyphish('white/215-subscription', 19, 23), button(undoDraw)),
 							div('button send', 'Send', button(sendImage))
 						)
 					)

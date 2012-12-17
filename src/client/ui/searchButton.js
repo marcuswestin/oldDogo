@@ -7,7 +7,7 @@ module.exports = {
 
 function renderSearchButton() {
 	return div('search-control',
-		div('search', icon(32, 21, 'white/112-group', 12, 8), button(renderSearchInput))
+		div('search', glyphish('white/112-group', 32, 21, 10, 8, 12, 11), button(renderSearchInput))
 	)
 }
 

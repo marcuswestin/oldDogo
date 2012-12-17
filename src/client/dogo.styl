@@ -6,8 +6,9 @@
 @import "../fonts/opensans-all"
 @import "../fonts/yellowtail-regular"
 
+appCornerRadius = 6px
 roundedTop()
-	border-radius 6px 6px 0 0
+	border-radius appCornerRadius appCornerRadius 0 0
 
 body
 	background #000; overflow hidden;
@@ -64,12 +65,26 @@ body
 			color #DD4421;
 
 .head
-	height 100%; width 100%; overflow hidden;
-	border-radius 5px 5px 0 0;
-	gradient(#227EBF, #025E9F);
-	border-top 1px solid rgba(255,255,255, .27);
-	border-bottom 1px solid rgba(0, 0, 0, .25);
-	box-shadow 0 1px 2px rgba(0, 0, 0, .7);
+	.corner
+		height 40px; width 50px; overflow hidden;
+		gradient(#227EBF, #025E9F);
+		border-top 1px solid rgba(255,255,255, .27);
+		border-bottom 1px solid rgba(0, 0, 0, .25);
+		box-shadow 0 1px 2px rgba(0, 0, 0, .7);
+	.shadow
+		width 100%; height 20px; absolute top 0 left 0;
+		gradient(rgba(25,25,50,.25), rgba(25,25,25,0))
+	.corner.left
+		absolute top 0 left 0;
+		border-right 1px solid rgba(255,255,255, .05);
+		border-radius appCornerRadius 0 appCornerRadius 0;
+		.logoIcon, .back
+			absolute top 0 left 0;
+	.corner.right
+		absolute top 0 right 0;
+		border-left 1px solid rgba(255,255,255, .05);
+		border-radius 0 appCornerRadius 0 appCornerRadius;
+		
 	
 	.title
 		padding 0 4px; color #fff;
@@ -77,10 +92,6 @@ body
 		max-width 225px; text-overflow ellipsis; white-space nowrap; overflow hidden; margin 0 auto;
 		.logo
 			margin-top 4px;
-	.logoIcon
-		absolute top 6px left 6px;
-	.back
-		absolute top left;
 	.search-control
 		.search, .search.active
 			absolute top right;
@@ -101,8 +112,11 @@ body
 			margin 4px 2px 0;
 	
 .homeView
+	.logoName .icon
+		display block; margin 0 auto;
 	.loading
 		relative top 120px;
+		text-align center; text-shadow 0 1px 0 #333;
 	.ghostTown
 		position relative; top 10px; margin-left 20px;
 	.conversations
