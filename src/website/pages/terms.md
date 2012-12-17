@@ -1,3 +1,4 @@
+<script>setTimeout(function(){ window.scrollTo(0, 1) })</script>
 <div class="logoIcon"></div>
 
 Dogo Terms of Service
