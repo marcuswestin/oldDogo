@@ -46,6 +46,10 @@ function renderScrollerHead(view, opts) {
 	)
 }
 
+events.on('statusBar.wasTapped', function() {
+	gScroller.getCurrentView().animate({ scrollTop:0 }, 300)
+})
+
 function showAppBackground() {
 	var logoIconSize = (32 + 6*2) // icon size + 6px margin on either side
 	var xOffset = viewport.width() - logoIconSize
