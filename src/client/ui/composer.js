@@ -33,7 +33,7 @@ var composer = module.exports = {
 			div('tools',
 				style({ height:toolsHeight }),
 				div('button tool write', glyphish('white/09-chat-2', 24, 22), button(selectText)),
-				div('button tool photo', glyphish('white/86-camera', 24, 18), button(selectPhoto)),
+				div('button tool photo', glyphish('white/86-camera', 24, 18, 0, 0, 1), button(selectPhoto)),
 				div('button tool draw', glyphish('white/98-palette', 24, 20), button(selectDraw))
 			),
 			div('inputArea')
