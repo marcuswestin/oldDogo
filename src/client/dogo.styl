@@ -70,7 +70,7 @@ body
 
 .head
 	.corner
-		height 40px; width 50px; overflow hidden;
+		height 44px; width 50px; overflow hidden;
 		gradient(#227EBF, #025E9F);
 		border-top 1px solid rgba(255,255,255, .37);
 		border-bottom 1px solid rgba(0, 0, 0, .25);
@@ -84,12 +84,13 @@ body
 		border-right 1px solid rgba(255,255,255, .05);
 		border-radius appCornerRadius 0 appCornerRadius 0;
 		.logoIcon, .back
-			absolute top 0 left 0;
+			absolute top 0 right -2px;
 	.corner.right
 		absolute top 0 right 0;
 		border-left 1px solid rgba(255,255,255, .05);
 		border-radius 0 appCornerRadius 0 appCornerRadius;
-		
+		.search
+			absolute top 0 left -2px;
 	
 	.title
 		padding 0 4px; color #fff;

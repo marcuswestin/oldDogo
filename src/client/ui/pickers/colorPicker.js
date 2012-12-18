@@ -108,7 +108,7 @@ function getCirclePos(i, j, num) {
 }
 
 function rgbFromPos(hsvBase, pos) {
-	var saturationRatio = 1 + (-pos.dx / 100)
+	var saturationRatio = 1 + (-pos.distance.x / 100)
 	var valueRatio = 1 + (pos.dy / 100)
 	var hsv = [hsvBase[0], hsvBase[1] * saturationRatio, hsvBase[2] * valueRatio]
 	return hsvToRgb(clipArray(hsv, 0, 1))

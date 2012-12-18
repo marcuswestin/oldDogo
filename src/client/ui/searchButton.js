@@ -2,12 +2,12 @@ var trim = require('std/trim')
 
 module.exports = {
 	render:renderSearchButton,
-	renderSearchInput:renderSearchInput
+	showSearchInput:showSearchInput
 }
 
 function renderSearchButton() {
 	return div('search-control',
-		div('search', glyphish('white/112-group', 32, 21, 10, 8, 12, 10), button(renderSearchInput))
+		div('search', glyphish('white/112-group', 32, 21, 10, 8, 12, 10), button(showSearchInput))
 	)
 }
 
@@ -29,7 +29,7 @@ function renderSearchResult(result) {
 	)
 }
 
-function renderSearchInput() {
+function showSearchInput() {
 	var margin = 4
 	var width = viewport.width() - margin*2
 	var height = 37
