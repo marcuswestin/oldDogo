@@ -103,7 +103,7 @@ function startApp(info) {
 		})
 		
 		if (info.config.mode == 'dev') {
-			if (isPhantom) {
+			if (gIsPhantom) {
 				// do nothing
 			} else if (tags.isTouch) {
 				window.onerror = function windowOnError(e) { alert('ERROR ' + e) }
@@ -119,7 +119,7 @@ function startApp(info) {
 		
 		viewport.fit($('#viewport'))
 		
-		if (isPhantom) {
+		if (gIsPhantom) {
 			// api.refresh('fa48a930-5e94-4f18-b180-998728a5fe85', onConnected)
 			bridge.command('app.show')
 		} else if (gState.getSessionInfo('authToken')) {
@@ -155,7 +155,7 @@ function startApp(info) {
 			buildContactsIndex()
 		}
 		
-		if (isPhantom) {
+		if (gIsPhantom) {
 			var readyEvent = document.createEvent('Events')
 			readyEvent.initEvent('PhantomStartTest')
 			document.dispatchEvent(readyEvent)
@@ -175,13 +175,8 @@ function buildContactsIndex() {
 	bridge.command('index.build', { name:'facebookIdByName', payloadToStrings:facebookIdToNames })
 }
 
-isPhantom = navigator.userAgent.match(/PhantomJS/)
-if (isPhantom) {
-	delete localStorage['dogo-browser-state']
-}
-if (isPhantom || !tags.isTouch) {
-	browserModeSetup.setup()
-}
+if (gIsPhantom) { delete localStorage['dogo-browser-state'] }
+if (gIsPhantom || !tags.isTouch) { browserModeSetup.setup() }
 
 bridge.init()
 

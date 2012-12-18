@@ -1,4 +1,6 @@
 require('lib/jquery-1.8.1')
+
+require('globals/environment')
 require('globals/tags')
 require('globals/brand')
 

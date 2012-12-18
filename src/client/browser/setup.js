@@ -66,10 +66,6 @@ function setupBrowserDebugMode() {
 		try { return JSON.parse(localStorage['dogo-browser-state']) } catch(e) { return {} }
 	}
 	
-	// Fake the viewport width and height to be an iPhone
-	viewport.height = function() { return 460 }
-	viewport.width = function() { return 320 }
-	
 	$(function() {
 		var config = {
 			mode:'dev',
@@ -89,7 +85,7 @@ function setupBrowserDebugMode() {
 		)
 	})
 	
-	if (!isPhantom) {
+	if (!gIsPhantom) {
 		// Load the FB SDK Asynchronously
 		setTimeout(loadFbSdk, 400)
 	}
