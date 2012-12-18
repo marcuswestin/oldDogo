@@ -24,13 +24,17 @@ body
 	-webkit-transition -webkit-transform .3s;
 	
 	.appBackground
-		absolute top 0 left 0;
-
+		overflow-y scroll; -webkit-overflow-scrolling touch; absolute top 0 left 0; background #222;
+		.link
+			color #126EAF;
+	
 	.appForeground
 		// background -webkit-radial-gradient(center, circle cover, #227EBF 0%, lighten(#227EBF, 80%) 200px);
 		gradient(lighten(#227EBF, 25%), lighten(#227EBF, 75%))
 		height 100%;
 		roundedTop()
+		.foregroundOverlay
+			box-shadow -2px 0 2px rgba(0,0,0,.75);
 	
 	.errorNotice
 		width 100%; color redDark;

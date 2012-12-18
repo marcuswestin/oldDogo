@@ -3,6 +3,7 @@ var home = require('./home')
 var conversation = require('./conversation')
 var composer = require('./composer')
 var appBackground = require('./appBackground')
+var clip = require('std/clip')
 
 module.exports = {
 	createAndRender:createAndRenderScroller
@@ -15,14 +16,14 @@ function createAndRenderScroller() {
 	})
 	$('#viewport').prepend(div('dogoApp', style(translate(0,0)),
 		appBackground.render(),
-		div('appForeground',
+		div('appForeground', style(translate(0,0)),
 			gScroller.renderHead(gHeadHeight, renderScrollerHead),
 			gScroller.renderBody(3, renderScrollerView),
 			gScroller.renderFoot(renderScrollerFoot)
 		)
 	))
 	
-	// setTimeout(showAppBackground, 0) // AUTOS
+	// setTimeout(function() { updateAppBackground(); showAppBackground() }, 0) // AUTOS
 }
 
 function renderScrollerHead(view, opts) {
@@ -44,7 +45,27 @@ function renderScrollerHead(view, opts) {
 		div('corner left',
 			showBackButton
 				? div('back', glyphish('xtras-white/36-circle-west', 28, 28, 6, 13, 9, 11), button(function() { gScroller.pop() }))
-				: div('logoIcon', icon('logoIcon-32x32', 32, 32, 3, 10, 8, 10), button(showAppBackground))
+				: div('logoIcon', icon('logoIcon-32x32', 32, 32, 3, 10, 8, 10), draggable({
+					threshold:1,
+					tap:function() {
+						updateAppBackground()
+						showAppBackground()
+					},
+					start:function() {
+						updateAppBackground()
+					},
+					move:function(pos) {
+						var offset = clip(pos.dx, 0, appForegroundOffset)
+						$('.appForeground').css(translate.x(offset, 0))
+					},
+					end:function(pos) {
+						if (lastMoveWasToTheRight(pos)) {
+							showAppBackground()
+						} else {
+							$('.appForeground').css(translate.x(0, 200))
+						}
+					}
+				}))
 		),
 		div('corner right',
 			searchButton.render()
@@ -56,20 +77,56 @@ events.on('statusBar.wasTapped', function() {
 	gScroller.getCurrentView().animate({ scrollTop:0 }, 300)
 })
 
+function lastMoveWasToTheRight(pos) {
+	var lastHorizontalMove
+	for (var testPos, i=pos.history.length-1; testPos=pos.history[i]; i--) {
+		if (testPos.x == pos.x) { continue }
+		lastHorizontalMove = testPos
+		break
+	}
+	return (lastHorizontalMove && (lastHorizontalMove.x < pos.x))
+}
+
+var appForegroundSliceWidth = 50
+var appForegroundOffset = viewport.width() - appForegroundSliceWidth
+function updateAppBackground() {
+	appBackground.update(viewport.width() - appForegroundSliceWidth)
+}
+
 function showAppBackground() {
-	var logoIconSize = (32 + 6*2) // icon size + 6px margin on either side
-	var xOffset = viewport.width() - logoIconSize
-	$('.appForeground').css(style.translate.x(xOffset, 200))
-	appBackground.update(viewport.width()-logoIconSize)
-	$('#viewport').append(
+	$('.appForeground').css(style.translate.x(appForegroundOffset, 200)).append(
 		div('foregroundOverlay',
-			style({ position:'absolute', top:0, right:0, width:logoIconSize, height:viewport.height() }),
-			button(function() {
-				$('.appForeground').css(style.translate.x(0, 200))
-				$(this).remove()
+			style({
+				position:'absolute', top:0, left:0,
+				width:appForegroundSliceWidth, height:viewport.height()
+			}),
+			draggable({
+				threshold:1,
+				start:function(pos) {},
+				move:function(pos) {
+					var offset = clip(appForegroundOffset + pos.dx, 0, appForegroundOffset)
+					$('.appForeground').css(translate.x(offset, 0))
+				},
+				end:function(pos) {
+					if (lastMoveWasToTheRight(pos)) {
+						$('.appForeground').css(translate.x(appForegroundOffset, 200))
+					} else {
+						hideAppBackground()
+					}
+				},
+				tap:function(pos) {
+					hideAppBackground()
+				}
 			})
 		)
 	)
+}
+
+function hideAppBackground() {
+	$('.appForeground').css(style.translate.x(0, 200))
+	setTimeout(function() {
+		$('.foregroundOverlay').remove()
+	}, 200)
 }
 
 function renderScrollerView(view, opts) {
