@@ -276,7 +276,7 @@ function promptInvite(message) {
 	composer.hide()
 	var conversation = view.conversation
 	// loadAccountId(accountId, function(account) {
-		var $infoBar = $(div(style(transition('height', 500)), div('dogo-info',
+		var $infoBar = $(div(style(transition({ height:500 })), div('dogo-info',
 			div('invite',
 				div('encouragement', 'Very Expressive!'),
 				div('personal', account.name.split(' ')[0], " doesn't have Dogo yet."),

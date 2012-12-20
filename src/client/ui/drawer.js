@@ -46,7 +46,7 @@ function render(_opts) {
 		// div('loading', 'Loading...'),
 		div('close button',
 			glyphish('xtras-white/37-circle-x', 20, 20),
-			style({ bottom:viewport.height() - 30, right:3 }, transition('-webkit-transform')),
+			style({ bottom:viewport.height() - 30, right:3 }, transition('-webkit-transform', controlsDuration)),
 			button(function() { opts.onHide() })
 		),
 		div('controls-pos', style(transition('-webkit-transform', controlsDuration)),

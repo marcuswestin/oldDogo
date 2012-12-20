@@ -6,9 +6,8 @@
 @import "../fonts/opensans-all"
 @import "../fonts/yellowtail-regular"
 
-appCornerRadius = 6px
 roundedTop()
-	border-radius appCornerRadius appCornerRadius 0 0
+	border-radius 6px 6px 0 0
 
 body
 	background #000; overflow hidden;
@@ -75,6 +74,8 @@ body
 		border-top 1px solid rgba(255,255,255, .37);
 		border-bottom 1px solid rgba(0, 0, 0, .25);
 		box-shadow 0 1px 2px rgba(0, 0, 0, .7);
+	.corner.active
+		background #227EBF;
 	.shadow
 		width 100%; height 20px; absolute top 0 left 0;
 		gradient(rgba(240,240,250,.5), rgba(240,240,250,0));
@@ -82,13 +83,10 @@ body
 	.corner.left
 		absolute top 0 left 0;
 		border-right 1px solid rgba(255,255,255, .05);
-		border-radius appCornerRadius 0 appCornerRadius 0;
 		.logoIcon, .back
 			absolute top 0 right -2px;
 	.corner.right
-		absolute top 0 right 0;
 		border-left 1px solid rgba(255,255,255, .05);
-		border-radius 0 appCornerRadius 0 appCornerRadius;
 		.search
 			absolute top 0 left -2px;
 	
@@ -142,7 +140,12 @@ body
 	.face
 		float left; margin-right 4px;
 
-.searchResults
-	absolute top 0 left 0; background #fff; width 100%; box-shadow 0 1px 4px #333;
+.searchUI .resultsBox
+	absolute top 0 left 0; width 100%; box-shadow 0 -1px 2px #333;
+	gradient(lighten(#227EBF, 75%), lighten(#227EBF, 25%))
 	overflow-y scroll; -webkit-overflow-scrolling touch; overflow-x hidden;
+	.result
+		gradient(#eee, #ccc); float left; overflow hidden;
+		.names
+			margin -22px 0 10px 4px; color #fff; text-shadow 0 -1px 1px rgba(0,0,0,.5); max-width 100px; overflow hidden;
 
