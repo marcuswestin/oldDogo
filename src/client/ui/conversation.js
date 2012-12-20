@@ -35,14 +35,6 @@ function renderConversation(_view) {
 	gScroller.getCurrentView().on('scroll', checkScrollBounds)
 
 	return div('conversationView',
-		div('personName', function() {
-			var names = view.conversation.person.fullName.split(' ')
-			if (names.length > 1) {
-				return names[0] + ' ' + names[names.length-1][0] // first name plus first letter of last name
-			} else {
-				return names[0]
-			}
-		}),
 		getMessagesList(),
 		
 		function() {

@@ -64,7 +64,7 @@ loadAccount = function loadAccount(accountId, facebookId, callback) {
 	}
 }
 
-gHeadHeight = 0
+gHeadHeight = 46
 gKeyboardHeight = 216
 
 eventEmitter = function(dataClass, data) {

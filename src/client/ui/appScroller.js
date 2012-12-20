@@ -36,23 +36,27 @@ function createAndRenderScroller() {
 			if (names.length > 1) {
 				title += ' ' + names[names.length-1][0] // first name plus first letter of last name
 			}
+		} else {
+			title = div('logoName', icon('logoName', 65, 21, 10, 0, 8, 0))
 		}
 		return div('head', style(translate(0,0)),
-			div('shadow', button(function() {
-				gScroller.getCurrentView().animate({ scrollTop:0 }, 300)
-			})),
-			div('corner left', style({ borderRadius:leftCornerRadius }),
+			div('left', style({ borderRadius:leftCornerRadius }),
 				showBackButton
-					? div('back', glyphish('xtras-white/36-circle-west', 28, 28, 8, 13, 9, 13), backIconDragger)
-					: div('logoIcon', icon('logoIcon-32x32', 32, 32, 5, 10, 8, 10), logoIconDragger)
+					? div('back', glyphish('xtras-white/36-circle-west', 28, 28, 8, 13, 9, 13), button(function() {
+						gScroller.pop()
+					}))
+					: div('logoIcon', glyphish('xtras-white/14-gear', 19, 19, 12, 14, 14, 14), logoIconDragger)
 			),
-			div('corner right', style({ borderRadius:rightCornerRadius }),
-				style(translate.x(viewport.width() - cornerSize.width), 0),
-				style(cornerSize),
-				div('search', glyphish('white/112-group', 32, 21, 11, 8, 13, 12), searchIconDragger)
-			)
+			div('title',
+				title
+			),
+			div('right', glyphish('xtras-white/40-dialpad', 22, 22, 11, 16, 12, 16), showCompanies)
 		)
 	}
+}
+
+function showCompanies() {
+	
 }
 
 events.on('statusBar.wasTapped', function() {
@@ -71,7 +75,7 @@ var backIconDragger = (function makeBackIconDragger() {
 	return draggable({
 		threshold:0,
 		tap:function() {
-			gScroller.pop()
+			
 		},
 		start:function() {
 			$('.corner.left').css(transition.none())
