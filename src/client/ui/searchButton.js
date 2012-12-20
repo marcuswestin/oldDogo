@@ -12,7 +12,7 @@ function render() {
 		return { names:names, conversation:conversation }
 	})
 	
-	var defaultResults = searchItems.slice(0, 12) // default to the five top conversations
+	var defaultResults = searchItems.slice(0, 16) // default to the five top conversations
 
 	var searchList = list({
 		items:defaultResults,
