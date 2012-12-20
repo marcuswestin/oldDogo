@@ -48,6 +48,12 @@ function showTextInput(data) {
 			events.fire('keyboard.willHide', { keyboardAnimationDuration:keyboardAnimationDuration })
 		})
 	})
+	
+	$(div('fakeIPhoneKeyboard', style({
+		background:'url(/graphics/iphoneKeyboard.png) white',
+		backgroundSize:px(320,216), height:gKeyboardHeight, width:viewport.width(),
+		position:'absolute', bottom:0
+	}))).appendTo('#viewport').on('mousedown', function($e) { $e.preventDefault() })
 }
 
 function animateTextInput(data) {
@@ -60,6 +66,7 @@ function hideTextInput() {
 	if (!$input) { return }
 	$input.off('keyup').off('keypress').blur().remove()
 	delete $input
+	$('#viewport .fakeIPhoneKeyboard').remove()
 }
 
 var onChange = function($e) {
