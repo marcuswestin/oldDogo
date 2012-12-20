@@ -86,13 +86,12 @@ function getMessagesList() {
 	return getMessagesList._list
 }
 
-function selectMessage(message, _, $el) {
-	// alert("FINISH selectMessage")
-	// if (message.pictureId || message.base64Data) {
-	// 	composer.selectDraw($el.find('.messageBubble .pictureContent')[0], message)
-	// } else {
-	// 	// do nothing
-	// }
+function selectMessage(message) {
+	if (message.pictureId || message.base64Data) {
+		composer.selectDraw($(this).find('.messageBubble .pictureContent')[0], message)
+	} else {
+		// do nothing
+	}
 }
 
 function refreshMessages() {

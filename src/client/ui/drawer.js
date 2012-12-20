@@ -71,7 +71,14 @@ function render(_opts) {
 	})
 	if (opts.img) {
 		// TODO this call is way overloaded
-		loadBackgroundImage({ mediaId:opts.img.mediaId, style:opts.img.style, width:opts.message.pictureWidth, height:opts.message.pictureHeight, pictureSecret:opts.message.pictureSecret, conversationId:opts.message.conversationId })
+		loadBackgroundImage({
+			mediaId:opts.img.mediaId,
+			style:opts.img.style,
+			width:opts.message.pictureWidth,
+			height:opts.message.pictureHeight,
+			pictureSecret:opts.message.pictureSecret,
+			conversationId:opts.message.conversationId
+		})
 	}
 	
 	if (tags.isTouch) {
@@ -91,7 +98,7 @@ function render(_opts) {
 			doDrawBackgroundImage('/'+opts.backgroundPath, opts.width, opts.height)
 		} else if (opts.pictureSecret) {
 			// TODO Show loading indicator
-			var pictureUrl = pictures.rawUrl(opts.conversationId, opts.pictureSecret)
+			var pictureUrl = pictures.displayUrl(opts)
 			doDrawBackgroundImage(pictureUrl, opts.width, opts.height)
 		} else if (opts.style) {
 			var underlyingUrl = opts.style.background.match(/url\((.*)\)/)[1]
