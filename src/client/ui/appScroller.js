@@ -68,6 +68,10 @@ var backIconDragger = (function makeBackIconDragger() {
 		return Math.round(dx * dx / 900) // gets stronger and stronger the larger dx is. Will need proper clamping for larger screens
 	}
 	
+	function cancel() {
+		$('.corner.left').css(transition('width', 50)).css({ width:cornerSize.width })
+	}
+	
 	return draggable({
 		threshold:0,
 		tap:function() {
@@ -101,12 +105,15 @@ var backIconDragger = (function makeBackIconDragger() {
 				$('.corner.left .releaseUI').css(transition('opacity', 200)).css({ opacity:0 })
 			}
 		},
+		cancel:function() {
+			cancel()
+		},
 		end:function(pos, history) {
 			$('.corner.left .releaseUI').remove()
 			if (lastMoveWasToTheRight(history) && pos.distance.x > 15) {
 				gScroller.pop()
 			} else {
-				$('.corner.left').css(transition('width', 50)).css({ width:cornerSize.width })
+				cancel()
 			}
 		}
 	})
