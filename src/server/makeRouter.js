@@ -99,6 +99,7 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 	app.post('/api/session', filter.oldClients, function postSession(req, res) {
 		var params = getParams(req, 'facebookAccessToken', 'facebookRequestId')
 		if (params.facebookRequestId) { return respond(req, res, "Sessions for facebook requests is not ready yet. Sorry!") }
+		console.log("CREATE SESSION")
 		sessionService.createSession(req, params.facebookAccessToken, curry(respond, req, res))
 	})
 	// app.get('/api/session', filter.oldClients, function getSession(req, res) {
