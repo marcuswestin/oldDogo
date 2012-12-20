@@ -3,6 +3,7 @@ var redis = require('redis')
 var time = require('std/time')
 var facebook = require('./util/facebook')
 var log = makeLog('SessionService')
+var pictures = require('../data/pictures')
 
 module.exports = proto(null,
 	function(db, accountService) {
@@ -28,7 +29,13 @@ module.exports = proto(null,
 							req.timer.start('bumpClientUidBlock')
 							this.accountService.bumpClientUidBlock(account.id, bind(this, function(err, clientUidBlock) {
 								req.timer.stop('bumpClientUidBlock').report()
-								callback(null, { authToken:authToken, account:account, clientUidBlock:clientUidBlock })
+								var sessionInfo = {
+									authToken:authToken,
+									account:account,
+									clientUidBlock:clientUidBlock,
+									picturesBucket:pictures.bucket
+								}
+								callback(null, sessionInfo)
 							}))
 						}))
 					}))
