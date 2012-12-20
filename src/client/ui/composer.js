@@ -127,7 +127,6 @@ function _selectPhoto() {
 		var source = sources[res.index]
 		if (!source) { return }
 		bridge.command('media.pick', { source:source, allowsEditing:true }, function(err, res) {
-			composer.hide(_selectPhoto)
 			if (!res.mediaId) { return }
 			selectDraw({ mediaId:res.mediaId }, { pictureWidth:res.width, pictureHeight:res.height })
 		})
