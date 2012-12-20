@@ -44,7 +44,6 @@ module.exports = function makeRouter(database, accountService, messageService, s
 function setupRoutes(app, database, accountService, messageService, sessionService, pictureService, opts) {
 	var filter = {
 		oldClients: function filterOldClient(req, res, next) {
-			console.log("IN OLD CLIENT")
 			var client = req.headers['x-dogo-client']
 			if (semver.lt(client, '0.96.0-_')) {
 				log('refuse old client', client)
@@ -102,7 +101,6 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 		res.end('"Dogo!"')
 	})
 	app.post('/api/session', filter.oldClients, function postSession(req, res) {
-		console.log("IN API SESSION")
 		var params = getParams(req, 'facebookAccessToken', 'facebookRequestId')
 		if (params.facebookRequestId) { return respond(req, res, "Sessions for facebook requests is not ready yet. Sorry!") }
 		sessionService.createSession(req, params.facebookAccessToken, curry(respond, req, res))
@@ -268,7 +266,6 @@ function respondCss(req, res, err, content) {
 }
 
 function respond(req, res, err, content, contentType) {
-	console.log("RESPOND", req.url)
 	try {
 	var code = 200, headers = {}
 	if (err) {
