@@ -68,11 +68,11 @@ function setupBrowserDebugMode() {
 	
 	$(function() {
 		var config = {
-			mode:'dev',
 			device: {
 				platform:'Chrome'
 			},
-			serverUrl:location.host
+			serverHost:location.hostname,
+			serverUrl:'http://'+location.host
 		}
 		bridge.eventHandler('app.start', { config:config, client:'0.97.0-browser' })
 		gViewportTop = 55

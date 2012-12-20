@@ -15,23 +15,27 @@ require('color')
 module.exports = function makeRouter(database, accountService, messageService, sessionService, pictureService, opts) {
 	
 	var app = express()
+	
+	respond.log = (opts.log || opts.dev)
+
+	// opts.proxyProd = true
+	if (opts.proxyProd) { setupProdProxy(app) }
+	
 	app.use(function(req, res, next) {
-		console.log("USE MAKE TIMER", req.url)
 		req.timer = makeTimer(req.url)
 		next()
 	})
 	app.use(express.bodyParser({ limit:'8mb' }))
-	app.use(function(req, res, next) {
-		console.log("USE AFTER BODY PARSER", req.url)
-		next()
-	})
+	
 	var server = http.createServer(app)
 	
-	respond.log = (opts.log || opts.dev)
-	
-	setupRoutes(app, database, accountService, messageService, sessionService, pictureService, opts)
 	if (opts.dev) { setupDev(app) }
-	app.all('*', function onError(req, res, next) { console.log("ALL *"); respond(req, res, 404) })
+	
+	if (!opts.proxyProd) {
+		setupRoutes(app, database, accountService, messageService, sessionService, pictureService, opts)
+	}
+	
+	app.all('*', function onError(req, res, next) { respond(req, res, 404) })
 	
 	return {
 		listen:function(port) {
@@ -39,6 +43,39 @@ module.exports = function makeRouter(database, accountService, messageService, s
 			log("dogo-web listening on :"+port)
 		}
 	}
+}
+
+function setupProdProxy(app) {
+	var https = require('https')
+	
+	app.all('/api/*', function(req, res) {
+		delete req.headers['host']
+		log("Proxy to prod", req.method, req.url)
+		var options = {
+			host:   'dogoapp.com',
+			port:   443,
+			path:   req.url,
+			method: req.method,
+			headers: req.headers
+		}
+
+		var creq = https.request(options, function(cres) {
+			log(req.url, 'Proxy got', cres.statusCode)
+			res.writeHead(cres.statusCode, cres.headers);
+			cres.setEncoding('utf8');
+			cres.on('data', function(chunk) { res.write(chunk) })
+			cres.on('end', function(){ res.end() })
+		})
+		
+		creq.on('error', function(e) {
+			log.error(e.message)
+			res.writeHead(500)
+			res.end()
+		})
+		
+		req.on('data', function(chunk) { creq.write(chunk) })
+		req.on('end', function() { creq.end() })
+	})
 }
 
 function setupRoutes(app, database, accountService, messageService, sessionService, pictureService, opts) {
@@ -327,5 +364,5 @@ function respond(req, res, err, content, contentType) {
 		try { res.end("Error sending message") }
 		catch(e) { log.error("COULD NOT RESPOND") }
 	}
-	log(req.method, req.url, req.meta, req.timer.report())
+	log(req.method, req.url, req.meta, req.timer && req.timer.report())
 }

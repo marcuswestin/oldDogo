@@ -28,12 +28,13 @@ function rawUrl(conversationId, pictureSecret, size) {
 function displayUrl(message, size) {
 	size = fixSize(size)
 	var url = rawUrl(message.conversationId, message.pictureSecret)
-	return BT.url('BTImage', 'fetchImage', {
+	var params = {
 		url:url,
 		cache:'yes',
-		mimeType:'image/jpg',
-		resize:size.join('x') // '200x300'
-	})
+		mimeType:'image/jpg'
+	}
+	if (size) { params.resize = size.join('x') } // e.g '200x300'
+	return BT.url('BTImage', 'fetchImage', params)
 }
 
 function path(conversationId, pictureSecret, size) {

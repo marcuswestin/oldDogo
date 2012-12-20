@@ -26,7 +26,7 @@ function update(width) {
 			style({ textAlign:'center', fontStyle:'italic', color:'#ccc', textShadow:'0 1px 0 #666', marginTop:140 }),
 			'Your Memories will show up here'
 		),
-		gAppInfo.config.mode == 'dev' && renderDevTools(),
+		gIsDev && renderDevTools(),
 		div(
 			style({ width:'100%', position:'absolute', bottom:10, left:0, textAlign:'center', fontSize:12, color:'#ddd' }),
 			a('link', { href:'/terms', target:'_blank' }, 'Terms of Service'),

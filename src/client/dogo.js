@@ -40,7 +40,7 @@ events.on('app.start', function onAppStart(info) {
 	api.setHeaders({ 'x-dogo-mode':gAppInfo.config.mode, 'x-dogo-client':gAppInfo.client })
 	startApp(info)
 	
-	if (gAppInfo.config.mode == 'dev') {
+	if (gIsDev) {
 		var eventName = tags.isTouch ? 'touchstart' : 'click'
 		$('body').on(eventName, '.head .title', function() {
 			bridge.command('app.restart')
@@ -91,18 +91,19 @@ events.on('push.notification', function onPushNotification(info) {
 })
 
 function startApp(info) {
+	gIsDev = info.config.serverHost != 'dogoapp.com'
 	gState.load('sessionInfo', function onStateLoaded(sessionInfo) {
-		gState.load('modeInfo', function onModeLoaded(modeInfo) {
-			if (!modeInfo || !modeInfo.mode) {
-				gState.set('modeInfo', { mode:info.config.mode })
-			} else if (info.config.mode != modeInfo.mode) {
+		gState.load('isDevInfo2', function onModeLoaded(isDevInfo) {
+			if (!isDevInfo || isDevInfo.isDev == null) {
+				gState.set('isDevInfo2', { isDev:gIsDev })
+			} else if (isDevInfo.isDev != gIsDev) {
 				gState.clear(function() {
 					bridge.command('app.restart')
 				})
 			}
 		})
 		
-		if (info.config.mode == 'dev') {
+		if (gIsDev) {
 			if (gIsPhantom) {
 				// do nothing
 			} else if (tags.isTouch) {
@@ -111,10 +112,8 @@ function startApp(info) {
 					bridge.command('console.log', JSON.stringify(slice(arguments)))
 				}
 			}
-			pictures.bucket = 'dogo-dev-conv'
 		} else {
 			window.onerror = function windowOnError(e) { console.log("ERROR", e) }
-			pictures.bucket = 'dogo-prod-conv'
 		}
 		
 		viewport.fit($('#viewport'))
@@ -150,6 +149,7 @@ function startApp(info) {
 		}
 		
 		function onConnected() {
+			pictures.bucket = gState.cache['sessionInfo'].picturesBucket || 'dogo-prod-conv' // default to prod for old prod clients
 			migrateNewClientUidBlock()
 			appScroller.createAndRender()
 			buildContactsIndex()

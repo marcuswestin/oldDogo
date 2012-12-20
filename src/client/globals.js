@@ -149,6 +149,6 @@ px = function(pixels) {
 
 BT = {
 	url:function(module, path, params) {
-		return '//blowtorch:9000/'+module+'/'+path+'?'+parseUrl.query.string(params)
+		return gAppInfo.config.serverUrl+'/'+module+'/'+path+'?'+parseUrl.query.string(params)
 	}
 }

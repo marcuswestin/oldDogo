@@ -14,28 +14,21 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
         
-        NSString* mode;
-        mode = @"testflight";
-        NSString* scheme = @"https:";
-        NSString* host = @"dogoapp.com";
-        NSString* port = nil;
-#ifdef TESTFLIGHT
-        mode = @"testflight";
-#endif
-#ifdef APPSTORE
-        mode = @"appstore";
-#endif
         
+//#define DEV
+#ifdef DEV
+        NSString* scheme = @"http:";
+        NSString* port = @"9000";
+        NSString* devHostFile = [[NSBundle mainBundle] pathForResource:@"dev-hostname" ofType:@"txt"];
+        NSString* host = [NSString stringWithContentsOfFile:devHostFile encoding:NSUTF8StringEncoding error:nil];
+        host = [host stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+        [WebViewJavascriptBridge enableLogging];
+#else
+        NSString* scheme = @"https:";
+        NSString* port = nil;
+        NSString* host = @"dogoapp.com";
 //        [WebViewJavascriptBridge enableLogging];
-        if (!mode) {
-            mode = @"dev";
-            [WebViewJavascriptBridge enableLogging];
-            NSString* hostnameFile = [[NSBundle mainBundle] pathForResource:@"dev-hostname" ofType:@"txt"];
-            host = [NSString stringWithContentsOfFile:hostnameFile encoding:NSUTF8StringEncoding error:nil];
-            host = [host stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-            scheme = @"http:";
-            port = @"9000";
-        }
+#endif
         
         NSDictionary* device = [NSDictionary dictionaryWithObjectsAndKeys:
                                 [[UIDevice currentDevice] systemVersion], @"systemVersion",
@@ -44,12 +37,11 @@
                                 [UIDeviceHardware platformString], @"platform",
                                 nil];
         
-        BOOL devMode = [mode isEqualToString:@"dev"];
         [self setServerScheme:scheme host:host port:port];
         
-        [self.config setValue:mode forKey:@"mode"];
         [self.config setValue:[self getCurrentVersion] forKey:@"currentVersion"];
         [self.config setValue:device forKey:@"device"];
+        [self.config setValue:self.serverHost forKey:@"serverHost"];
         [self.config setValue:self.serverUrl forKey:@"serverUrl"];
 
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque];
@@ -59,7 +51,8 @@
         [[self.webView scrollView] setBounces:NO];
         self.webView.dataDetectorTypes = UIDataDetectorTypeNone;
         
-        [self setupApp:devMode];
+        BOOL isDev = [scheme isEqualToString:@"http:"];
+        [self setupApp:!isDev];
         [self startApp];
         
         return YES;
