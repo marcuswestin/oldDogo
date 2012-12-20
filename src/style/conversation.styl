@@ -23,26 +23,32 @@ conversationFaceStyle()
 			margin-top 10px;
 		.messageBubble
 			margin 3px 2px; display inline-block;
-			border-radius 4px; border 1px solid #fff; border-top none;
+			border-radius 4px; border 1px solid #fff;
 			word-wrap break-word; blueDropShadow();
 			.textContent
-				light(); padding 4px 10px 5px; max-width 198px; text-shadow 0 1px 0px rgba(255, 255, 255, 0.71);
+				light(); padding 4px 10px 5px; max-width 198px; text-shadow 0 2px 1px rgba(255, 255, 255, 0.81);
 			.pictureContent
 				border-radius 4px;
+		.textMessage
+			.messageBubble
+				border-top none;
 		.face
 			conversationFaceStyle();
+		.pictureMessage
+			.gradient
+				border-radius 4px;
 		.fromThem
 			margin 6px 36px 0 0;
 			.face
 				float left;
-			.textMessage
-				.messageBubble
-					gradient(#FFFAF2, #FFEED2);
-			.pictureMessage
-				.gradient
-					width 100%; height 100%; gradient(rgba(255,255,255,0), rgba(255,238,210,.6));
 			.arrow
 				float left; margin-left -7px
+			.messageBubble
+				gradient(rgba(242, 254, 255, 1), rgba(211, 243, 255, 1));
+		.fromThem.pictureMessage
+			margin 0 4px 0 0;
+			.gradient
+				gradient(rgba(242, 254, 255, 0), rgba(211, 243, 255, .5));
 		.fromMe
 			margin 6px 0 0 36px;
 			.face
@@ -50,10 +56,11 @@ conversationFaceStyle()
 			.arrow
 				float right; display inline-block; margin-right -6px;
 			.messageBubble
-				float right; gradient(#fff, #def);
-			.pictureMessage
-				.gradient
-					width 100%; height 100%; gradient(rgba(255,255,255,0), rgba(221,238,255,.6));
+				float right; gradient(rgba(255, 255, 255, 1), rgba(221, 238, 255, 1));
+		.fromMe.pictureMessage
+			margin 0 0 0 4px;
+			.gradient
+				gradient(rgba(255, 255, 255, 0), rgba(221, 238, 255, .5));
 	.dogo-info
 		blueNotice()
 		width 100%; margin 8px 0; padding 4px 0 10px 0; border-width 1px 0; border-style solid;

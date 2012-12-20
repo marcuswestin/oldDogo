@@ -151,8 +151,7 @@ function renderMessage(message) {
 	
 	return [
 		div('message',
-			div(messageIsFromMe ? 'fromMe' : 'fromThem',
-				div(message.body ? 'textMessage' : 'pictureMessage',
+			div(classes.join(' '),
 					shouldRenderFace && div(
 						face(messageIsFromMe ? me : view.conversation.person, 34)
 					),
@@ -165,7 +164,6 @@ function renderMessage(message) {
 						composer.sendMessage({ body:(answer ? 'Yes' : 'No') })
 					})
 				)
-			)
 		),
 		div('clear')
 	]
@@ -198,12 +196,14 @@ function renderContent(message) {
 	if (message.body) {
 		return div('textContent', linkify(message.body))
 	} else {
-		var displaySize = [218, 150]
+		var displaySize = [262, 180]
 		var pixelSize = scaleSize(displaySize)
+		var gradientSize = [displaySize[0], Math.round(displaySize[1] / 3)]
+		var gradient = div('gradient', styleSize(gradientSize), style({ position:'relative', top:displaySize[1]-gradientSize[1] }))
 		if (message.pictureId) {
 			var attrs = { pictureUrl:pictures.displayUrl(message, pixelSize) }
 			// var attrs = style({ backgroundImage:'url('+pictures.displayUrl(message, pixelSize)+')' })
-			return div('pictureContent', div('gradient'), styleSize(displaySize), style({ backgroundSize:px(displaySize) }), attrs)
+			return div('pictureContent', gradient, styleSize(displaySize), style({ backgroundSize:px(displaySize) }), attrs)
 		} else {
 			var picSize = [message.picture.width, message.picture.height]
 			var widthRatio = displaySize[0] / picSize[0]
@@ -212,7 +212,7 @@ function renderContent(message) {
 			var scaledSize = map(picSize, function(size) { return size * ratio })
 			var scaledOffset = map([(displaySize[0]-scaledSize[0]) / 2, (displaySize[1]-scaledSize[1]) / 2], Math.round)
 			
-			return div('pictureContent', div('gradient'), styleSize(displaySize), attrs, style({
+			return div('pictureContent', gradient, styleSize(displaySize), attrs, style({
 				backgroundImage:'url('+message.picture.base64Data+')',
 				backgroundSize: px(scaledSize),
 				backgroundPosition: px(scaledOffset)
