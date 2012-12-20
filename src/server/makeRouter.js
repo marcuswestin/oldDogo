@@ -16,13 +16,14 @@ module.exports = function makeRouter(database, accountService, messageService, s
 	
 	var app = express()
 	app.use(function(req, res, next) {
-		console.log("USE MAKE TIMER")
+		console.log("USE MAKE TIMER", req.url)
 		req.timer = makeTimer(req.url)
 		next()
 	})
 	app.use(express.bodyParser({ limit:'8mb' }))
 	app.use(function(req, res, next) {
-		console.log("USE AFTER BODY PARSER")
+		console.log("USE AFTER BODY PARSER", req.url)
+		next()
 	})
 	var server = http.createServer(app)
 	
