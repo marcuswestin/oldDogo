@@ -74,4 +74,9 @@ function registerTextInputEventListeners(searchItems, defaultResults, searchList
 	var onTextInputReturn = events.on('textInput.return', function() {
 		searchList.selectIndex(0)
 	})
+	
+	events.once('keyboard.willHide', function() {
+		events.off('textInput.return', onTextInputReturn)
+		events.off('textInput.didChange', onTextChange)
+	})
 }
