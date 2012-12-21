@@ -14,6 +14,9 @@ function setupBrowserDebugMode() {
 		}
 		console.log('fake bridge', command, data)
 		switch(command) {
+			case 'push.register':
+				callback(null)
+				break
 			case 'facebook.connect':
 				FB.login(function(response) {
 					callback(null, response.authResponse)
