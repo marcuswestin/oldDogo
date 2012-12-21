@@ -43,6 +43,11 @@ function render(_opts) {
 	p = paint([dim, dim], pixelRatio)
 	
 	$ui = $(div('drawer', style(viewport.getSize()), style(translate(0,0)),
+	
+		gIsDev && div('button', style({ position:'absolute', top:10, left:10, padding:15 }), 'Reload', button(function() {
+			bridge.command('app.restart')
+		})),
+		
 		// div('loading', 'Loading...'),
 		div('close button',
 			glyphish('xtras-white/37-circle-x', 20, 20),

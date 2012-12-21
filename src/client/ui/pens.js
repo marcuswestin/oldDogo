@@ -105,12 +105,12 @@ var fillIn = proto(collectPointsPen, initPen, {
 })
 
 var fillSmooth = proto(basePen, initPen, {
-	u:1/2,
-	dt:0.08,
+	u:0.6,
+	dt:0.10,
 	rate:10,
 	down:function(point) {
-		this.nextPoint = point
-		this.thickness = 3
+		this.p0 = point
+		this.thickness = 6
 		// this.paint.style(this.rgba(.05)) // - watercolor
 		this.paint.style(this.rgba(1)).lineWidth(this.thickness).globalCompositeOperation('source-over')
 		this.interval = setInterval(bind(this, this.onInterval), this.rate)
@@ -126,14 +126,12 @@ var fillSmooth = proto(basePen, initPen, {
 		if (this.drew) {
 			this.completeLine()
 		} else {
-			this.dot(this.nextPoint, this.thickness)
+			this.dot(point, this.thickness * 2)
 		}
 		this.p0 = this.f = this.nextPoint = this.drew = null
 	},
 	onInterval:function() {
-		if (!this.p0) { return this.p0 = this.nextPoint }
 		if (!this.f) { return this.f = this.nextPoint }
-		this.drew = true
 		var res = this.draw(this.p0, this.f, this.nextPoint)
 		this.p0 = res.p0_delta
 		this.f = res.f_delta
@@ -151,6 +149,11 @@ var fillSmooth = proto(basePen, initPen, {
 		
 		// var pixel = this.paint.createImageData(onePixel)
 		
+		if (!this.drew) {
+			this.drew = true
+			var firstPoint = bez(p0, p1, p2, this.u)
+			this.line(this.p0, firstPoint, this.thickness * 2)
+		}
 		for (var i=0; i<=distance; i++) {
 			var point = bez(p0, p1, p2, this.u + i*tStep)
 			this.dot(point, this.thickness)
@@ -168,10 +171,11 @@ var fillSmooth = proto(basePen, initPen, {
 		var f = this.f
 		var p2 = this.nextPoint
 		while (p0 && p2 && this.distance(p0, p2) > .5) {
-			var res = this.draw(p0, f, p2)
+			var res = this.draw(p0, f, p2, true)
 			p0 = res.p0_delta
 			f = res.f_delta
 		}
+		this.paint.style(this.rgba(.5))
 	}
 })
 
