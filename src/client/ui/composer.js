@@ -186,6 +186,7 @@ function sendMessage(params) {
 }
 
 events.on('view.change', function onViewRenderEvent() {
+	if (!currentConversation) { return }
 	composer.hide()
 	$('#composer').remove()
 })
