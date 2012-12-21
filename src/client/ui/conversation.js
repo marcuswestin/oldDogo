@@ -3,6 +3,7 @@ var once = require('std/once')
 var pictures = require('../../data/pictures')
 var linkify = require('lib/linkify')
 var questions = require('./questions')
+var time = require('std/time')
 
 module.exports = {
 	render:renderConversation
@@ -48,8 +49,7 @@ function renderConversation(_view) {
 		function() {
 			setTimeout(function() {
 				events.fire('conversation.rendered', view.conversation)
-			}, 100),
-			checkScrollBounds()
+			}, 100)
 		}
 	)
 }
@@ -81,6 +81,7 @@ function getMessagesList() {
 			if (!messages || !messages.length) { return }
 			getMessagesList._list.append(messages)
 			scrollToBottom()
+			checkScrollBounds()
 		})
 	}, 100)
 	return getMessagesList._list
@@ -103,16 +104,24 @@ function refreshMessages() {
 		var messagesList = getMessagesList()
 		messagesList.append(res.messages)
 		scrollToBottom()
+		checkScrollBounds()
 		gState.set(getMessagesCacheId(), res.messages)
 	})
 }
 
+var lastScroll = 0
+var lastTime = 0
 var checkScrollBounds = once(function checkScrollBounds() {
 	if (!view) { return }
+	if (Math.abs(lastTime - time.now()) < 200) { return }
+	lastTime = time.now()
 	var $view = gScroller.getCurrentView()
+	var scroll = $view.scrollTop()
+	if (Math.abs(scroll - lastScroll) < viewHeight) { return }
+	lastScroll = scroll
 	var pics = $view.find('.messageBubble .pictureContent')
 	var viewHeight = $view.height()
-	var viewTop = $view.scrollTop() - (viewHeight * 3/4) // preload 3/4 of a view above
+	var viewTop = scroll - (viewHeight * 3/4) // preload 3/4 of a view above
 	var viewBottom = viewTop + viewHeight + (viewHeight * 1/2) // prelado 1/2 of a view below
 	for (var i=pics.length - 1; i >= 0; i--) { // loop in reverse order since you're likelier to be viewing the bottom of the conversation
 		var pic = pics[i]
@@ -144,7 +153,6 @@ function renderMessage(message) {
 		isFirstMessageInGroup && !isVeryFirstMessage ? 'newGroup' : ''
 	]
 	
-	checkScrollBounds()
 	lastMessageWasFromMe = messageIsFromMe
 	
 	var showYesNoResponder = (message.wasPushed && !message.questionAnswered && questions.hasYesNoQuestion(message.body))
@@ -237,6 +245,7 @@ function onNewMessage(message) {
 		}, 50)
 	}
 	messagesList.append(message)
+	checkScrollBounds()
 }
 
 // function cacheMessage(message) {
