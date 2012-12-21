@@ -23,13 +23,16 @@ var composer = module.exports = {
 	selectDraw:selectDraw,
 	selectPhoto:selectPhoto,
 	sendMessage:sendMessage,
+	remove:function() {
+		if (!currentConversation) { return }
+		composer.hide()
+		$('#composer').remove()
+		currentConversation = null
+	},
 	hide:function(hideOnlyIfThisToolIsUsed) {
 		if (hideOnlyIfThisToolIsUsed && currentTool != hideOnlyIfThisToolIsUsed) { return }
 		currentTool = null
 		setHeight(toolsHeight, 250)
-		
-		if (!currentConversation) { return }
-		currentConversation = null
 		bridge.command('textInput.hide')
 	},
 	render: function(view) {
@@ -119,7 +122,7 @@ function _selectText() {
 		$('#composer .tools .closeTextInput').remove()
 		$('.conversationView .messagesList').css({ marginBottom:0 })
 		events.off('textInput.changedHeight', onChangeHeightHandler)
-		bridge.command('textInput.hide')
+		events.off('textInput.return', onReturnHandler)
 		composer.hide(_selectText)
 	})
 	
@@ -187,6 +190,5 @@ function sendMessage(params) {
 
 events.on('view.change', function onViewRenderEvent() {
 	if (!currentConversation) { return }
-	composer.hide()
-	$('#composer').remove()
+	composer.remove()
 })
