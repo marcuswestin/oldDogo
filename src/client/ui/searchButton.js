@@ -12,7 +12,7 @@ function render() {
 		return { names:names, conversation:conversation }
 	})
 	
-	var defaultResults = searchItems.slice(0, 16) // default to the five top conversations
+	var defaultResults = searchItems.slice(0, 20) // default to the top conversations
 
 	var searchList = list({
 		items:defaultResults,
@@ -64,7 +64,7 @@ function registerTextInputEventListeners(searchItems, defaultResults, searchList
 				return false
 			})
 		}
-		var maxResults = 8 * 4
+		var maxResults = 8 * 5
 		if (results.length > maxResults) {
 			results = results.slice(0, maxResults)
 		}
