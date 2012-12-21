@@ -40,6 +40,7 @@ function showTextInput(data) {
 		}, keyboardAnimationDuration)
 	}, 0)
 	$input.on('blur', function($e) {
+		// return
 		if (data.shiftWebview) {
 			$('.dogoApp').css(translate.y(0))
 			$input.css(translate.y(0))
