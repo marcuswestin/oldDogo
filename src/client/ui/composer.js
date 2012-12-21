@@ -178,4 +178,5 @@ function sendMessage(params) {
 
 events.on('view.change', function onViewRenderEvent() {
 	composer.hide()
+	$('#composer').remove()
 })
