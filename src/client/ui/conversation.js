@@ -128,7 +128,7 @@ function checkScrollBounds() {
 	var viewBottom = viewTop + viewHeight + (viewHeight * 1/2) // prelado 1/2 of a view below
 	for (var i=pics.length - 1; i >= 0; i--) { // loop in reverse order since you're likelier to be viewing the bottom of the conversation
 		var pic = pics[i]
-		var picTop = pic.offsetTop
+		var picTop = pic.parentNode.offsetTop
 		var picBottom = picTop + pic.offsetHeight
 		if (picBottom > viewTop && picTop < viewBottom && pic.getAttribute('pictureUrl')) {
 			pic.style.backgroundImage = 'url('+pic.getAttribute('pictureUrl')+')'
