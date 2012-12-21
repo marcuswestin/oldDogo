@@ -1,4 +1,5 @@
 var each = require('std/each')
+var onlyCallOnce = require('std/once')
 
 // global
 module.exports = {
@@ -36,14 +37,16 @@ function on(name, handler) {
 		each(name, function(name) { on(name, handler) })
 	} else {
 		if (!_handlers[name]) { _handlers[name] = [] }
+		if (name == 'textInput.return') {
+			handler = onlyCallOnce(handler)
+		}
 		_handlers[name].push(handler)
 	}
 	return handler
 }
 
 function once(name, handler) {
-	var fn
-	on(name, fn=function() {
+	var fn = on(name, function() {
 		off(name, fn)
 		handler.apply(this, arguments)
 	})
