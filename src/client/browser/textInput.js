@@ -46,7 +46,7 @@ function showTextInput(data) {
 		}
 		setTimeout(function() {
 			events.fire('keyboard.willHide', { keyboardAnimationDuration:keyboardAnimationDuration })
-		})
+		}, 100)
 	})
 	
 	$(div('fakeIPhoneKeyboard', style({
