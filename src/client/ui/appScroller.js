@@ -120,7 +120,7 @@ var backIconDragger = (function makeBackIconDragger() {
 }())
 
 var searchIconDragger = (function makeSearchIconDragger() {
-	var margin = 6
+	var margin = 5
 	var textInputHeight = 36
 	var maxCornerSize = { width:viewport.width(), height:viewport.height() - gKeyboardHeight }
 	var maxTextInputWidth = maxCornerSize.width - cornerSize.width - margin * 2
@@ -134,6 +134,7 @@ var searchIconDragger = (function makeSearchIconDragger() {
 	var duration = 250
 	var animate = transition({ height:duration, '-webkit-transform':duration })
 	var noAnimation = transition({ height:0, '-webkit-transform':0 })
+	var fade = transition('opacity', duration)
 	
 	function renderSearchUI() {
 		$('.corner.right').css(noAnimation)
@@ -141,7 +142,7 @@ var searchIconDragger = (function makeSearchIconDragger() {
 		$('.corner.right').append(
 			div('searchUI', //style({ width:viewport.width(), height:viewport.height() - gKeyboardHeight, position:'absolute', top:0, right:0 }),
 				div('textInput', style({
-					position:'absolute', background:'white', height:textInputHeight, opacity:0,
+					position:'absolute', background:'white', height:textInputHeight,
 					top:margin, left:textInputLeftOffset, borderRadius:px(3,3,3,3), width:maxTextInputWidth
 				})),
 				div('resultsBox', style(style.scrollable.y), style({
@@ -159,21 +160,18 @@ var searchIconDragger = (function makeSearchIconDragger() {
 			'-webkit-transform':'translate3d(-1px,0,0)',
 			borderRadius:0
 		})
+		$('.corner.right .textInput').css({ width:maxTextInputWidth })
 		setTimeout(function() {
-			var fade = transition('opacity', duration)
-			$('.corner.right .textInput').css(fade).css({ opacity:1 })
+			bridge.command('textInput.show', {
+				at:{ x:textInputLeftOffset, y:margin+2, width:maxTextInputWidth, height:textInputHeight },
+				returnKeyType:'Go',
+				font: { name:'Open Sans', size:16 },
+				backgroundColor:[0,0,0,0]
+			})
 			setTimeout(function() {
 				$('.corner.right .resultsBox').append(searchResults.render())
 				$('.corner.right .resultsBox').css(fade).css({ opacity:1 })
 			}, duration)
-			setTimeout(function() {
-				bridge.command('textInput.show', {
-					at:{ x:textInputLeftOffset, y:margin+2, width:maxTextInputWidth, height:textInputHeight },
-					returnKeyType:'Go',
-					font: { name:'Open Sans', size:16 },
-					backgroundColor:[0,0,0,0]
-				})
-			})
 		}, duration)
 		currentCornerSize = maxCornerSize
 		
@@ -181,7 +179,7 @@ var searchIconDragger = (function makeSearchIconDragger() {
 	}
 	
 	function hideSearchUI() {
-		$('.corner.right .textInput').css({ opacity:0 })
+		$('.corner.right .textInput').css(fade).css({ opacity:0 })
 		// $('.corner.right .resultsBox').css({ opacity:0 })
 		$('.corner.right').css(animate).css({
 			height:cornerSize.height,
@@ -211,13 +209,19 @@ var searchIconDragger = (function makeSearchIconDragger() {
 			renderSearchUI()
 		},
 		move:function(pos) {
-			var offset = clip(viewport.width() - cornerSize.width + pos.distance.x, 0, viewport.width() - cornerSize.width)
+			var offset = clip(viewport.width() - currentCornerSize.width + pos.distance.x, 0, viewport.width() - cornerSize.width)
 			var width = clip(currentCornerSize.width - pos.distance.x, cornerSize.width, viewport.width())
 			$('.corner.right').css(translate.x(offset, 0)).css({ width:width })
-			$('.corner.right .textInput').css({ width:clip(-pos.distance.x - margin * 2, 0, maxTextInputWidth) })
+			// $('.corner.right .textInput').css({ width:clip(-pos.distance.x - margin * 2, 0, maxTextInputWidth) })
 			// $('.corner.right .resultsBox').css({ width:clip(-pos.distance.x + cornerSize.width - margin * 2, cornerSize.width - margin * 2, maxResultsBoxWidth) })
 		},
-		end:showSearchUI
+		end:function(pos, history, $e) {
+			if (lastMoveWasToTheRight(history)) {
+				hideSearchUI()
+			} else {
+				showSearchUI()
+			}
+		}
 	})
 }())
 
