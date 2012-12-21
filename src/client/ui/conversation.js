@@ -14,11 +14,12 @@ var $ui
 var lastMessageWasFromMe = null;
 
 events.on('view.change', function resetView() {
+	if (!view) { return }
 	view = null
 	$ui = null
 	lastMessageWasFromMe = null
 	getMessagesList._list = null
-	gScroller.getCurrentView().off('scroll', checkScrollBounds)
+	gScroller.getCurrentView().off('scroll', onScroll)
 })
 
 function renderConversation(_view) {
@@ -33,7 +34,7 @@ function renderConversation(_view) {
 
 	var messages = []
 	
-	gScroller.getCurrentView().on('scroll', checkScrollBounds)
+	gScroller.getCurrentView().on('scroll', onScroll)
 
 	return div('conversationView',
 		div('personName', function() {
@@ -109,16 +110,18 @@ function refreshMessages() {
 	})
 }
 
-var lastScroll = 0
 var lastTime = 0
-var checkScrollBounds = once(function checkScrollBounds() {
+function onScroll() {
 	if (!view) { return }
 	if (Math.abs(lastTime - time.now()) < 200) { return }
 	lastTime = time.now()
+	checkScrollBounds()
+}
+
+function checkScrollBounds() {
+	// return
 	var $view = gScroller.getCurrentView()
 	var scroll = $view.scrollTop()
-	if (Math.abs(scroll - lastScroll) < viewHeight) { return }
-	lastScroll = scroll
 	var pics = $view.find('.messageBubble .pictureContent')
 	var viewHeight = $view.height()
 	var viewTop = scroll - (viewHeight * 3/4) // preload 3/4 of a view above
@@ -132,7 +135,7 @@ var checkScrollBounds = once(function checkScrollBounds() {
 			pic.removeAttribute('pictureUrl')
 		}
 	}
-})
+}
 
 function arrowImage(name, size) {
 	var url = image.url(name)
