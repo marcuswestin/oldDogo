@@ -37,9 +37,6 @@ function on(name, handler) {
 		each(name, function(name) { on(name, handler) })
 	} else {
 		if (!_handlers[name]) { _handlers[name] = [] }
-		if (name == 'textInput.return') {
-			handler = onlyCallOnce(handler)
-		}
 		_handlers[name].push(handler)
 	}
 	return handler
