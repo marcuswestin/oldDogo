@@ -124,21 +124,6 @@ link = function(className, title, path) {
 	}
 }
 
-image = (function() {
-	var ratio = (window.devicePixelRatio || 1)
-	function imageUrl(name) {
-		return image.base + name + '@2x.png'
-	}
-	function backgroundUrl(name) {
-		return 'url("'+imageUrl(name)+'")'
-	}
-	return {
-		base: '/graphics/',
-		url: imageUrl,
-		backgroundUrl: backgroundUrl
-	}
-}())
-
 px = function(pixels) {
 	if (!isArray(pixels)) { pixels = slice(arguments) }
 	return map(pixels, function(arg) {

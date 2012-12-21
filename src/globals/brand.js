@@ -24,3 +24,17 @@ icon = function(name, width, height, paddingTop, paddingRight, paddingBottom, pa
 		padding:paddingTop+'px '+paddingRight+'px '+paddingBottom+'px '+paddingLeft+'px'
 	}))
 }
+
+image = (function() {
+	function imageUrl(name) {
+		return image.base + name + '@2x.png'
+	}
+	function backgroundUrl(name) {
+		return 'url("'+imageUrl(name)+'")'
+	}
+	return {
+		base: '/graphics/',
+		url: imageUrl,
+		backgroundUrl: backgroundUrl
+	}
+}())

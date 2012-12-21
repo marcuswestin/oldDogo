@@ -25,6 +25,13 @@ function createAndRenderScroller() {
 	
 	// setTimeout(function() { updateAppBackground(); showAppBackground() }, 0) // AUTOS
 	
+	// preload
+	var icons = {
+		back: glyphish('xtras-white/36-circle-west', 28, 28, 8, 13, 9, 13).__render(),
+		logoIcon: icon('logoIcon-32x32', 32, 32, 5, 10, 8, 10).__render(),
+		search: glyphish('white/112-group', 32, 21, 11, 8, 13, 12).__render()
+	}
+	
 	function renderScrollerHead(view, opts) {
 		var isHome = (gScroller.stack.length == 1)
 		var stackIsAboveHome = (gScroller.stack.length > 1)
@@ -43,13 +50,13 @@ function createAndRenderScroller() {
 			})),
 			div('corner left', style({ borderRadius:leftCornerRadius }),
 				showBackButton
-					? div('back', glyphish('xtras-white/36-circle-west', 28, 28, 8, 13, 9, 13), backIconDragger)
-					: div('logoIcon', icon('logoIcon-32x32', 32, 32, 5, 10, 8, 10), logoIconDragger)
+					? div('back', icons.back, backIconDragger)
+					: div('logoIcon', icons.logoIcon, logoIconDragger)
 			),
 			div('corner right', style({ borderRadius:rightCornerRadius }),
 				style(translate.x(viewport.width() - cornerSize.width), 0),
 				style(cornerSize),
-				div('search', glyphish('white/112-group', 32, 21, 11, 8, 13, 12), searchIconDragger)
+				div('search', icons.search, searchIconDragger)
 			)
 		)
 	}
