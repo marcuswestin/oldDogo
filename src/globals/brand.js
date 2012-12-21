@@ -25,6 +25,21 @@ icon = function(name, width, height, paddingTop, paddingRight, paddingBottom, pa
 	}))
 }
 
+icon.preload = function(icons) {
+	var result = {}
+	events.on('app.start', function() {
+		if (!$('#preloadDiv')[0]) {
+			$('.dogoApp').append(div({ id:'preloadDiv' }, style({ position:'absolute', top:-9999, left:-9999 })))
+		}
+		for (var name in icons) {
+			var args = icons[name]
+			result[name] = icon.apply(this, args).__render()
+			$('#preloadDiv').append(result[name])
+		}
+	})
+	return result
+}
+
 image = (function() {
 	function imageUrl(name) {
 		return image.base + name + '@2x.png'
