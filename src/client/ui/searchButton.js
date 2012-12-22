@@ -12,8 +12,8 @@ function render() {
 		return { names:names, conversation:conversation }
 	})
 	
-	var defaultResults = searchItems.slice(0, 20) // default to the top conversations
-
+	var defaultResults = getDefaultResults(searchItems)
+	
 	var searchList = list({
 		items:defaultResults,
 		renderItem:renderResult,
@@ -24,6 +24,27 @@ function render() {
 	registerTextInputEventListeners(searchItems, defaultResults, searchList)
 	
 	return div('searchResults', searchList)
+
+	function getDefaultResults(searchItems) {
+		// First fill with up to 4 recent convos.
+		// Then pack with 20 - (# recent convos) random convos, by starting at a random index
+		// in the list of convos and avoiding the first N convos (N == baseIndex).
+		var defaultResults = []
+		var numDefaultResults = clip(searchItems.length, 0, 20)
+		var baseIndex = 0
+		while (baseIndex < 4 && baseIndex < numDefaultResults) { // select up to 4 recent convos
+			if (!searchItems[baseIndex].conversation.lastMessage) { break }
+			defaultResults.push(searchItems[baseIndex])
+			baseIndex += 1
+		}
+		var randIndex = Math.floor(Math.random() * (searchItems.length - baseIndex)) + baseIndex
+		while (defaultResults.length < numDefaultResults) {
+			defaultResults.push(searchItems[randIndex])
+			randIndex = ((randIndex + 1) % (searchItems.length - baseIndex)) + baseIndex
+		}
+		
+		return defaultResults
+	}
 
 	function renderResult(result, i) {
 		if (!result.face) {

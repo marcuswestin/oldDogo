@@ -3,7 +3,6 @@ var home = require('./home')
 var conversation = require('./conversation')
 var composer = require('./composer')
 var appBackground = require('./appBackground')
-var clip = require('std/clip')
 
 module.exports = {
 	createAndRender:createAndRenderScroller

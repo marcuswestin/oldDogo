@@ -23,6 +23,7 @@ flatten = require('std/flatten')
 paint = require('client/ui/paint')
 _ = require('underscore')
 parseUrl = require('std/url')
+clip = require('std/clip')
 
 getId = function getId(d) { return d.id }
 

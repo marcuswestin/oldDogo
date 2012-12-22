@@ -46,8 +46,13 @@ function renderCard(conversation) {
 		face.large(person),
 		// http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
 		// style({ background:'rgb('+map(hsvToRgb([(Math.random() + 0.618033988749895) % 1, 0.03, 0.95]), Math.round)+')' }),
-		div('summary',
-			div('time', function($time) {
+		div('summary', renderSummary(lastMessage)),
+		div('highlights')
+	)
+	
+	function renderSummary(lastMessage) {
+		if (lastMessage) {
+			return [div('time', function($time) {
 				time.ago.brief(lastMessage.sentTime * time.seconds, function(timeStr) {
 					$time.text(timeStr)
 				})
@@ -64,10 +69,14 @@ function renderCard(conversation) {
 						width:size, height:size, backgroundSize:size+'px '+size+'px'
 					})
 				})
-			)
-		),
-		div('highlights')
-	)
+			)]
+		} else {
+			return [
+				div('name', person.fullName),
+				div(style({ color:'#666', margin:px(11, 0, 0, 10), fontStyle:'italic' }), 'Start the conversation')
+			]
+		}
+	}
 }
 
 function conversationFromPush(pushMessage) {
@@ -84,7 +93,25 @@ function conversationFromPush(pushMessage) {
 }
 
 function filterConversations(conversations) {
-	return _.filter(conversations, function(conv) { return !!conv.lastMessage })
+	var notStarted = []
+	var started = []
+	
+	each(conversations, function(conv) {
+		if (conv.lastMessage) {
+			started.push(conv)
+		} else {
+			notStarted.push(conv)
+		}
+	})
+	
+	var fillWithNum = clip(20 - started.length, 0, notStarted.length)
+	var i = Math.floor(Math.random() * notStarted.length) // start at random pos
+	while (fillWithNum > 0) {
+		started.push(notStarted[i])
+		i = (i + 1) % notStarted.length
+		fillWithNum--
+	}
+	return started
 }
 
 function reloadConversations() {
