@@ -80,6 +80,7 @@ var backIconDragger = (function makeBackIconDragger() {
 	return draggable({
 		threshold:0,
 		tap:function() {
+			home.reload() // this is a bit silly, but for now it's a fine way to get the home screan to reload its data
 			gScroller.pop()
 		},
 		start:function() {

@@ -20,7 +20,7 @@ module.exports = {
 					$conversations.empty().append(
 						div('info'),
 						conversationsList = list({
-							items:filterConversations(conversations),
+							items:getInitialConversations(conversations),
 							onSelect:selectConversation,
 							getItemId:getConversationId,
 							renderItem:renderCard,
@@ -33,30 +33,47 @@ module.exports = {
 				})
 			})
 		)
+	},
+	reload:function() {
+		reloadConversations()
 	}
 }
 
+var faces = {}
+function getFace(conversation) {
+	return faces[conversation.id] = faces[conversation.id] || face.large(conversation.person).__render()
+}
+
+var unreadDots = {}
+function getUnreadDot(conversation) {
+	return unreadDots[conversation.id] = unreadDots[conversation.id] || div('unreadDot', icon('unreadDot', 14, 14)).__render()
+}
+
 function renderCard(conversation) {
-	var person = conversation.person
-	var lastReceived = conversation.lastReceivedMessage
-	var lastRead = conversation.lastReadMessage
-	var lastMessage = conversation.lastMessage
-	var hasUnread = lastReceived && (!lastRead || lastReceived.sentTime > lastRead.sentTime)
+	
 	return div('card',
-		face.large(person),
+		getFace(conversation),
 		// http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
 		// style({ background:'rgb('+map(hsvToRgb([(Math.random() + 0.618033988749895) % 1, 0.03, 0.95]), Math.round)+')' }),
-		div('summary', renderSummary(lastMessage)),
+		div('summary', renderSummary(conversation)),
 		div('highlights')
 	)
 	
-	function renderSummary(lastMessage) {
+	function renderSummary(conversation) {
+		var person = conversation.person
+		var lastMessage = conversation.lastMessage
+		var lastReceived = conversation.lastReceivedMessage
+		var lastRead = conversation.lastReadMessage
+		var hasUnread = (lastReceived && (!lastRead || lastReceived.sentTime > lastRead.sentTime))
+		
 		if (lastMessage) {
-			return [div('time', function($time) {
+			return [
+			div('time', function($time) {
 				time.ago.brief(lastMessage.sentTime * time.seconds, function(timeStr) {
 					$time.text(timeStr)
 				})
 			}),
+			hasUnread && getUnreadDot(conversation),
 			div('name', person.fullName),
 			div('lastMessage', lastMessage.body
 				? div('body', lastMessage.body)
@@ -79,20 +96,7 @@ function renderCard(conversation) {
 	}
 }
 
-function conversationFromPush(pushMessage) {
-	var currentConvo = gScroller.current().conversation
-	var isCurrent = (currentConvo && (currentConvo.accountId == pushMessage.senderAccountId)) // TODO also check facebookId
-	return {
-		accountId: pushMessage.senderAccountId,
-		hasUnread: !isCurrent,
-		body: pushMessage.body,
-		lastReceivedMessageId: pushMessage.id,
-		pictureId: pushMessage.pictureId,
-		conversationId: pushMessage.conversationId
-	}
-}
-
-function filterConversations(conversations) {
+function getInitialConversations(conversations) {
 	var notStarted = []
 	var started = []
 	
@@ -114,11 +118,15 @@ function filterConversations(conversations) {
 	return started
 }
 
-function reloadConversations() {
+function reloadConversations(fillWith) {
 	api.get('conversations', function getConversations(err, res) {
 		if (err) { return error(err) }
-		var displayConversations = filterConversations(res.conversations)
-		conversationsList.append(displayConversations)
+		var displayConversations = filter(res.conversations, function(convo) { return !!convo.lastMessage })
+		// this is arcane - we have a bunch of un-started convos and want the convos from server to appear first
+		// so we prepend them to conversationsList. However, they need to appear in correct order so we reverse them.
+		displayConversations.reverse()
+		conversationsList.prepend(displayConversations, { updateItems:true })
+		
 		gState.set('conversations', res.conversations)
 	})
 }
@@ -128,16 +136,20 @@ function selectConversation(conversation) {
 }
 
 function markRead(conversationId) {
-	conversationsList.find('#'+getConversationId(conversationId)+' .unreadDot').removeClass('hasUnread')
+	conversationsList.find('#'+conversationsList.getItemId(conversationId)+' .unreadDot').remove()
 }
 
 events.on('push.message', function(pushMessage) {
-	// if (!conversationsList) { return }
-	// if (!conversationsList.find('#'+getConversationId(conversationId))) {
-	// 	return alert("TODO add conversation to home conversation list from push")
-	// }
-	// markRead(pushMessage.conversationId)
-	// conversationsList.prepend({ id:pushMessage.conversationId }) // put the conversation at the top of the conversations list
+	if (!conversationsList) { return }
+	if (!conversationsList.find('#'+getConversationId(pushMessage.conversationId))) {
+		return // TODO add conversation to home conversation list from push
+	}
+	
+	var convo = find(gState.cache['conversations'], function(convo) { return convo.id == pushMessage.conversationId })
+	convo.lastMessage = convo.lastReceivedMessage = pushMessage
+	if (!pushMessage.sentTime) { pushMessage.sentTime = time.now() }
+	
+	conversationsList.prepend(convo, { updateItems:true }) // put the conversation at the top of the conversations list
 })
 
 events.on('app.willEnterForeground', function() {

@@ -24,6 +24,7 @@ paint = require('client/ui/paint')
 _ = require('underscore')
 parseUrl = require('std/url')
 clip = require('std/clip')
+find = require('std/find')
 
 getId = function getId(d) { return d.id }
 
