@@ -75,6 +75,7 @@ var backIconDragger = (function makeBackIconDragger() {
 	
 	function cancel() {
 		$('.corner.left').css(transition('width', 50)).css({ width:cornerSize.width })
+		$('.corner.left .releaseUI').css({ opacity:0 })
 	}
 	
 	return draggable({
