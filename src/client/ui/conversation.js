@@ -21,7 +21,7 @@ events.on('view.changing', function resetView() {
 })
 
 function renderConversation(_view) {
-	// setTimeout(function() { onNewMessage({ wasPushed:true, body:'R u?' }) }, 1000) // AUTOS
+	// setTimeout(function() { onNewMessage({ _wasPushed:true, body:'R u?' }) }, 1000) // AUTOS
 	// setTimeout(function() { composer.selectText() }) // AUTOS
 	// setTimeout(function() { composer.selectDraw() }) // AUTOS
 	// setTimeout(function() { composer.selectPhoto() }) // AUTOS
@@ -86,7 +86,7 @@ function getMessagesList() {
 }
 
 function selectMessage(message) {
-	if (message.pictureId || message.base64Data) {
+	if (message.pictureSecret || message.base64Data) {
 		composer.selectDraw($(this).find('.messageBubble .pictureContent')[0], message)
 	} else {
 		// do nothing
@@ -175,9 +175,9 @@ gRenderMessageBubble = function(message, conversation, opts) {
 	}
 	
 	function renderDynamics() {
-		var showYesNoResponder = (message.wasPushed && !message.questionAnswered && questions.hasYesNoQuestion(message.body))
+		var showYesNoResponder = (message._wasPushed && !message._questionAnswered && questions.hasYesNoQuestion(message.body))
 		return showYesNoResponder && questions.renderYesNoResponder(function(answer) {
-			message.questionAnswered = true
+			message._questionAnswered = true
 			composer.sendMessage({ body:(answer ? 'Yes' : 'No') })
 		})
 	}
@@ -218,7 +218,7 @@ function renderContent(message) {
 			style(translate(displaySize[0] / 2 - 25/2, displaySize[1] / 2 - 25/2)),
 			style({ width:0, height:0 })
 		)
-		if (message.pictureId) {
+		if (message.pictureSecret) {
 			var attrs = { pictureUrl:pictures.displayUrl(message, pixelSize) }
 			// var attrs = style({ backgroundImage:'url('+pictures.displayUrl(message, pixelSize)+')' })
 			return [
@@ -254,7 +254,7 @@ function renderContent(message) {
 function onNewMessage(message) {
 	$('.conversationView .ghostTown').remove()
 	var messagesList = getMessagesList()
-	if (message.isSending || (message.wasPushed && !gIsTouching)) {
+	if (message.isSending || (message._wasPushed && !gIsTouching)) {
 		// If this message was sent by me, or if I just received it and I'm not currently touching the screen, then scroll the new message into view
 		var heightBefore = messagesList.height()
 		setTimeout(function() {

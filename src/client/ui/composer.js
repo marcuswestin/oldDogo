@@ -169,9 +169,8 @@ function sendMessage(params) {
 		toConversationId:conversation.id,
 		toPersonId:conversation.person.id,
 		senderAccountId:gState.myAccount().accountId,
-		localId:unique(),
 		clientUid:clientUid,
-		isSending:true
+		_isSending:true
 	})
 	
 	each(params, function(val, key) { message[key] = val })
@@ -181,7 +180,7 @@ function sendMessage(params) {
 		conversation.lastMessage = res.message
 		conversation.lastSentMessage = res.message
 		events.fire('message.sent', res, conversation)
-		message.isSending = false
+		message._isSending = false
 		message.events.fire('sent', res.message)
 	})
 	

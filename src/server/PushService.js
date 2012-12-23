@@ -1,6 +1,7 @@
 var apns = require('apn')
 var sql = require('./util/sql')
 var log = makeLog('PushService')
+var push = require('../data/push')
 
 module.exports = proto(null,
 	function(database, dev, prod) {
@@ -45,34 +46,18 @@ module.exports = proto(null,
 				
 				this.db.selectOne(this, this.sql.selectAccountFirstName+'WHERE id=?', [fromAccountId], function(err, fromAccountInfo) {
 					if (err) { return log.error("ERROR this.sql.selectAccountFirstName", fromAccountId) }
+					
 					var notification = new apns.Notification()
-					notification.payload = {
-						id:message.id,
-						senderAccountId:message.senderAccountId,
-						conversationId:message.conversationId,
-						toDogoId:toAccountId,
-						clientUid:message.clientUid
-					}
-					notification.badge = 1
-					notification.sound = "vibrate.wav"
-					if (message.pictureId) {
-						notification.payload.pictureId = message.pictureId
-						notification.payload.pictureSecret = message.pictureSecret
-						notification.payload.pictureWidth = message.pictureWidth
-						notification.payload.pictureHeight = message.pictureHeight
-						notification.alert = fromAccountInfo.firstName + ' sent you a drawing' // NOTE Clients depend on "\w+ sent you a drawing"
-					} else {
-						notification.alert = fromAccountInfo.firstName + ' says: "'+message.body+'"'
-					}
 					notification.device = new apns.Device(data.pushToken, ascii=true)
-
-					if (prodPush) {
-						log("Send distribution push notification", JSON.stringify(notification).length)
-						this.prodApnsConnection.sendNotification(notification)
-					} else {
-						log("Send sandbox push notification", JSON.stringify(notification).length)
-						this.devApnsConnection.sendNotification(notification)
-					}
+					notification.payload = push.encodeMessage({
+						message:message,
+						toDogoId:toAccountId,
+						fromFirstName:fromAccountInfo.firstName
+					})
+					
+					log("Send push notification to account ID", toAccountId)
+					var connection = prodPush ? this.prodApnsConnection : this.devApnsConnection
+					connection.sendNotification(notification)
 				})
 			})
 		},

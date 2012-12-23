@@ -75,17 +75,6 @@ module.exports = proto(null,
 		// 	})
 		// },
 		
-		getPictureUrl: function(accountId, conversationId, pictureId, pictureSecret, callback) {
-			if (pictureSecret) {
-				callback(null, pictures.rawUrl(conversationId, pictureSecret))
-			} else {
-				this._selectSecret(this.db, accountId, conversationId, pictureId, function(err, res) {
-					if (err) { return callback(err) }
-					callback(null, pictures.rawUrl(conversationId, res && res.pictureSecret))
-				})
-			}
-		},
-		
 		_insertPicture: function(conn, accountId, pictureWidth, pictureHeight, callback) {
 			var secret = uuid.v4()
 			conn.insert(this,
@@ -98,11 +87,6 @@ module.exports = proto(null,
 			conn.updateOne(this,
 				'UPDATE picture SET uploaded_time=?, meta_json=? WHERE id=?',
 				[conn.time(), JSON.stringify(meta), pictureId], callback)
-		},
-		_selectSecret: function(conn, accountId, conversationId, pictureId, callback) {
-			conn.selectOne(this,
-				'SELECT pic.secret as pictureSecret FROM picture pic INNER JOIN message msg on msg.picture_id=pic.id INNER JOIN conversation conv ON msg.conversation_id=conv.id INNER JOIN conversation_participation cp ON cp.conversation_id=conv.id WHERE cp.account_id=? AND conv.id=? AND pic.id=?',
-				[accountId, conversationId, pictureId], callback)
 		}
 	}
 )

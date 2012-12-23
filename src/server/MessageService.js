@@ -222,7 +222,6 @@ module.exports = proto(null,
 				conversationId:'message.conversation_id',
 				sentTime:'message.sent_time',
 				body:'message.body',
-				pictureId:'picture.id',
 				pictureSecret:'picture.secret',
 				pictureWidth:'picture.width',
 				pictureHeight:'picture.height'

@@ -57,36 +57,34 @@ events.on('app.didBecomeActive', function onAppDidBecomeActive() {
 })
 
 events.on('push.notification', function onPushNotification(info) {
-	var data = info.data
-	var alert = data.aps && data.aps.alert
-	if (data.toDogoId != gState.myAccount().accountId) {
+	var payload = push.decodePayload(info.data)
+	if (!payload) {
+		// could not decode...
+		return
+	}
+	if (payload.toDogoId && payload.toDogoId != gState.myAccount().accountId) {
 		// This can happen if a single device has been used to register multiple dogo accounts
 		return
 	}
 	
-	if (alert) {
-		var match
-		if (match=alert.match(/^\w+ says: "(.*)"/i)) {
-			data.body = match[1]
-		} else if (alert.match(/^\w+ sent you a \w+/i)) {
-			// No body for drawings/pictures/etc
-		} else {
-			data.body = alert
-			// backcompat
-		}
+	if (payload.truncated) {
+		// It will have to be fetched from the server
+		return
 	}
 	
-	data.wasPushed = true
-	if (info.didBringAppIntoForeground) {
-		loadAccountId(data.senderAccountId, function(account) {
-			var conversation = { accountId:account.accountId }
-			var view = { title:account.name, conversation:conversation }
-			gScroller.set({ view:view, index:1, render:true, animate:false })
+	var message = payload.message
+	if (message) {
+		if (info.didBringAppIntoForeground) {
+			loadAccountId(message.senderAccountId, function(account) {
+				var conversation = { accountId:account.accountId } // hmm... this should load from gState by message.conversationId
+				var view = { title:account.name, conversation:conversation } // Hmm.. This should 
+				gScroller.set({ view:view, index:1, render:true, animate:false })
+				events.fire('push.message', data, info)
+			})
+		} else {
 			events.fire('push.message', data, info)
-		})
-	} else {
-		events.fire('push.message', data, info)
-		bridge.command('device.vibrate')
+			bridge.command('device.vibrate')
+		}
 	}
 })
 

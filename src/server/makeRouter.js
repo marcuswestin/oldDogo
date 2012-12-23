@@ -82,7 +82,7 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 	var filter = {
 		oldClients: function filterOldClient(req, res, next) {
 			var client = req.headers['x-dogo-client']
-			if (semver.lt(client, '0.96.0-_')) {
+			if (semver.lt(client, '0.97.2-_')) {
 				log('refuse old client', client)
 				res.writeHead(400, {
 					'x-dogo-process': 'alert("You have an outdated client. Please upgrade to the most recent version.")'
@@ -178,13 +178,6 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 	app.get('/api/account_info', filter.oldClientsAndSession, function getAccountInfo(req, res) {
 		var params = getParams(req, 'accountId', 'facebookId')
 		accountService.getAccount(params.accountId, params.facebookId, wrapRespond(req, res, 'account'))
-	})
-	app.get('/api/image', filter.oldClientsAndSession, function getPicture(req, res) {
-		var params = getParams(req, 'conversationId', 'pictureId', 'pictureSecret')
-		pictureService.getPictureUrl(req.session.accountId, params.conversationId, params.pictureId, params.pictureSecret, function(err, url) {
-			if (err) { return respond(req, res, err) }
-			res.redirect(url)
-		})
 	})
 	app.get('/api/version/info', filter.oldClientsAndSession, function getVersionInfo(req, res) {
 		var url = null // 'http://marcus.local:9000/api/version/download/latest.tar'

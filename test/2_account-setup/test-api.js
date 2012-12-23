@@ -100,9 +100,10 @@ describe('Setup with Facebook Connect', function() {
 			})
 		})
 		it('should let you send a first message', function(done) {
-			api.post('message', { toConversationId:convId, toAccountId:accId, body:'Hi', clientUid:u.clientUid() }, function(err, res) {
+			var clientUid = u.clientUid()
+			api.post('message', { toConversationId:convId, toAccountId:accId, body:'Hi', clientUid:clientUid }, function(err, res) {
 				check(err)
-				is(res.message.id)
+				is(res.message.clientUid)
 				is(res.message.body, 'Hi')
 				done()
 			})
