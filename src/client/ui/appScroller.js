@@ -79,11 +79,15 @@ var backIconDragger = (function makeBackIconDragger() {
 		$('.corner.left .releaseUI').css({ opacity:0 })
 	}
 	
+	function goBack() {
+		home.reload() // this is a bit silly, but for now it's a fine way to get the home screan to reload its data
+		gScroller.pop()
+	}
+	
 	return draggable({
 		threshold:0,
 		tap:function() {
-			home.reload() // this is a bit silly, but for now it's a fine way to get the home screan to reload its data
-			gScroller.pop()
+			goBack()
 		},
 		start:function() {
 			$('.corner.left').css(transition.none())
@@ -119,7 +123,7 @@ var backIconDragger = (function makeBackIconDragger() {
 		end:function(pos, history) {
 			$('.corner.left .releaseUI').remove()
 			if (lastMoveWasToTheRight(history) && pos.distance.x > 15) {
-				gScroller.pop()
+				goBack()
 			} else {
 				cancel()
 			}
