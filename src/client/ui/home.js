@@ -66,6 +66,11 @@ function renderCard(conversation) {
 		var lastRead = conversation.lastReadMessage
 		var hasUnread = (lastReceived && (!lastRead || lastReceived.sentTime > lastRead.sentTime))
 		
+		var currentConvo = gScroller.current().conversation
+		if (currentConvo && currentConvo.id == conversation.id) {
+			hasUnread = false
+		}
+		
 		if (lastMessage) {
 			return [
 			div('right',
@@ -147,7 +152,7 @@ function markRead(conversationId) {
 events.on('push.message', function(payload) {
 	var pushMessage = payload.message
 	if (!conversationsList) { return }
-	if (!conversationsList.find('#'+getConversationId(pushMessage.conversationId))) {
+	if (!conversationsList.find('#'+conversationsList.getItemId(pushMessage.conversationId))[0]) {
 		return // TODO add conversation to home conversation list from push
 	}
 	
