@@ -276,7 +276,8 @@ function onNewMessage(message) {
 // 	cache.unshift(message)
 // }
 
-events.on('push.message', function(message) {
+events.on('push.message', function(payload) {
+	var message = payload.message
 	if (!view || view.conversation.id != message.conversationId) { return }
 	// cacheMessage(message)
 	onNewMessage(message)

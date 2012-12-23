@@ -80,10 +80,10 @@ events.on('push.notification', function onPushNotification(info) {
 				var conversation = { accountId:account.accountId } // hmm... this should load from gState by message.conversationId
 				var view = { title:account.name, conversation:conversation } // Hmm.. This should 
 				gScroller.set({ view:view, index:1, render:true, animate:false })
-				events.fire('push.message', data, info)
+				events.fire('push.message', payload, info)
 			})
 		} else {
-			events.fire('push.message', data, info)
+			events.fire('push.message', payload, info)
 			bridge.command('device.vibrate')
 		}
 	}

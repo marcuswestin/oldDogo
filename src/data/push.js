@@ -47,9 +47,7 @@ function encodeMessage(data) {
 		payload.aps.alert = data.fromFirstName+': '+message.body // NOTE Clients depend on \w+: (\w*)
 		payload[encodingMap.type] = types.text
 		var overflowLength = Buffer.byteLength(JSON.stringify(payload), 'utf8') - 256
-		if (overflowLength <= 0) {
-			return payload
-		} else {
+		if (overflowLength > 0) {
 			var truncationLength = '"T":1,'.length
 			var removeLength = overflowLength + truncationLength
 			if (removeLength > message.body) {
@@ -59,9 +57,9 @@ function encodeMessage(data) {
 			var newLength = message.body.length - removeLength
 			payload.aps.alert = data.fromFirstName+': '+message.body.substr(0, newLength)
 			payload[encodingMap.truncated] = 1
-			return payload
 		}
 	}
+	return payload
 }
 
 function decodePayload(payload) {

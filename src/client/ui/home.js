@@ -68,12 +68,14 @@ function renderCard(conversation) {
 		
 		if (lastMessage) {
 			return [
-			div('time', function($time) {
-				time.ago.brief(lastMessage.sentTime * time.seconds, function(timeStr) {
-					$time.text(timeStr)
-				})
-			}),
-			hasUnread && getUnreadDot(conversation),
+			div('right',
+				div('time', function($time) {
+					time.ago.brief(lastMessage.sentTime * time.seconds, function(timeStr) {
+						$time.text(timeStr)
+					})
+				}),
+				hasUnread && getUnreadDot(conversation)
+			),
 			div('name', function() {
 				var names = person.fullName.split(' ')
 				return [div('first', names.shift()), div('rest', names.pop())]
@@ -142,7 +144,8 @@ function markRead(conversationId) {
 	conversationsList.find('#'+conversationsList.getItemId(conversationId)+' .unreadDot').remove()
 }
 
-events.on('push.message', function(pushMessage) {
+events.on('push.message', function(payload) {
+	var pushMessage = payload.message
 	if (!conversationsList) { return }
 	if (!conversationsList.find('#'+getConversationId(pushMessage.conversationId))) {
 		return // TODO add conversation to home conversation list from push
