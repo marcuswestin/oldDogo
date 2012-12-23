@@ -51,7 +51,7 @@ function encodeMessage(data) {
 			return payload
 		} else {
 			var truncationLength = '"T":1,'.length
-			var removeLength = overflow + truncationLength
+			var removeLength = overflowLength + truncationLength
 			if (removeLength > message.body) {
 				log.warn('Could not encode message into 256 character!', message)
 				return null
