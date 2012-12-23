@@ -254,7 +254,7 @@ function renderContent(message) {
 function onNewMessage(message) {
 	$('.conversationView .ghostTown').remove()
 	var messagesList = getMessagesList()
-	if (message.isSending || (message._wasPushed && !gIsTouching)) {
+	if (message._isSending || (message._wasPushed && !gIsTouching)) {
 		// If this message was sent by me, or if I just received it and I'm not currently touching the screen, then scroll the new message into view
 		var heightBefore = messagesList.height()
 		setTimeout(function() {
