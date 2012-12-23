@@ -140,11 +140,8 @@ fromMeGradient(alpha1, alpha2)
 
 .card
 	background #fff; border 1px solid #ddd #bbb #bbb #eee; margin 8px 4px; clear both;
-	position relative; min-height 78px;
-	border-radius 1px;
+	min-height 78px; border-radius 1px;
 	blueDropShadow();
-	.unreadDot
-		absolute top 34px right 8px;
 	.face.large
 		box-shadow 0 1px 1px rgba(0, 50, 100, 0.50)
 		margin 4px 4px 0 4px; background #ccc; float left; border-radius 1px;
@@ -157,9 +154,13 @@ fromMeGradient(alpha1, alpha2)
 				max-width 150px; white-space nowrap;
 			.rest
 				max-width 220px; white-space nowrap;
-		.time
-			color #126EAF; font-size 12px; font-weight bold; absolute top 8px right 8px;
-			text-shadow 0 1px 0 #ddd;
+		.right
+			float right; 
+			.time
+				color #126EAF; font-size 12px; font-weight bold; margin 4px 4px 0 0;
+				text-shadow 0 1px 0 #ddd;
+			.unreadDot
+				float right; margin 8px 8px 0 0;
 		.lastMessage
 			clear both; padding-top 4px;
 			.face
