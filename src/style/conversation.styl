@@ -9,7 +9,60 @@ blueDropShadow()
 conversationFaceStyle()
 	blueDropShadow(); border 1px solid; border-radius 2px;
 	border-color #fff transparent transparent #fff;
-	margin 0 6px;
+
+fromThemGradient(alpha1, alpha2)
+	gradient(rgba(242, 254, 255, alpha1), rgba(211, 243, 255, alpha2))
+fromMeGradient(alpha1, alpha2)
+	gradient(rgba(255, 255, 255, alpha1), rgba(221, 238, 255, alpha2))
+
+.messageContainer
+	margin-top 4px;
+	.messageBubble
+		margin 3px 0; display inline-block;
+		.arrow
+			margin-top 10px;
+		.textContent
+			max-width 198px;
+		.pictureContent
+			border-radius 4px;
+	.textMessage
+		.messageBubble
+			border-top none;
+	.face
+		conversationFaceStyle();
+	.pictureMessage
+		.gradient
+			border-radius 4px;
+	.fromThem
+		margin-right 36px;
+		.face
+			float left;
+		.arrow
+			float left; margin-left -7px
+		.messageBubble
+			fromThemGradient(1, 1); margin-left 8px;
+	.fromThem.pictureMessage
+		margin 0 4px 0 0;
+		.gradient
+			fromThemGradient(0, 0.5);
+	.fromMe
+		margin-left 36px;
+		.face
+			float right;
+		.arrow
+			float right; display inline-block; margin-right -6px;
+		.messageBubble
+			float right; fromMeGradient(1, 1); margin-right 8px;
+	.fromMe.pictureMessage
+		margin 0 0 0 4px;
+		.gradient
+			fromMeGradient(0, 0.5);
+
+.messageBubble
+	border-radius 4px; blueDropShadow();
+	border 1px solid #fff; word-wrap break-word;
+	.textContent
+		light(); padding 4px 10px 5px; text-shadow 0 2px 1px rgba(255, 255, 255, 0.81);
 
 .conversationView
 	.personName
@@ -17,50 +70,7 @@ conversationFaceStyle()
 	.ghostTown
 		padding 130px 10px;
 	.messagesList
-		padding 4px 0 90px 0;
-	.message
-		.arrow
-			margin-top 10px;
-		.messageBubble
-			margin 3px 2px; display inline-block;
-			border-radius 4px; border 1px solid #fff;
-			word-wrap break-word; blueDropShadow();
-			.textContent
-				light(); padding 4px 10px 5px; max-width 198px; text-shadow 0 2px 1px rgba(255, 255, 255, 0.81);
-			.pictureContent
-				border-radius 4px;
-		.textMessage
-			.messageBubble
-				border-top none;
-		.face
-			conversationFaceStyle();
-		.pictureMessage
-			.gradient
-				border-radius 4px;
-		.fromThem
-			margin 6px 36px 0 0;
-			.face
-				float left;
-			.arrow
-				float left; margin-left -7px
-			.messageBubble
-				gradient(rgba(242, 254, 255, 1), rgba(211, 243, 255, 1));
-		.fromThem.pictureMessage
-			margin 0 4px 0 0;
-			.gradient
-				gradient(rgba(242, 254, 255, 0), rgba(211, 243, 255, .5));
-		.fromMe
-			margin 6px 0 0 36px;
-			.face
-				float right;
-			.arrow
-				float right; display inline-block; margin-right -6px;
-			.messageBubble
-				float right; gradient(rgba(255, 255, 255, 1), rgba(221, 238, 255, 1));
-		.fromMe.pictureMessage
-			margin 0 0 0 4px;
-			.gradient
-				gradient(rgba(255, 255, 255, 0), rgba(221, 238, 255, .5));
+		padding 4px 4px 90px 4px;
 	.dogo-info
 		blueNotice()
 		width 100%; margin 8px 0; padding 4px 0 10px 0; border-width 1px 0; border-style solid;
@@ -129,18 +139,30 @@ conversationFaceStyle()
 		top 55px;
 
 .card
-	background #fff; border 1px solid #ddd #bbb #bbb #eee; margin 4px 4px 4px 4px; clear both; position relative; box-shadow 0 1px 1px #333; min-height 78px;
+	background #fff; border 1px solid #ddd #bbb #bbb #eee; margin 8px 4px; clear both;
+	position relative; min-height 78px;
+	border-radius 1px;
+	blueDropShadow();
 	.unreadDot
-		float left; margin 3px 3px 0px 0px;
-	.face
-		background #ccc; box-shadow 0 1px 1px #444; float left;
+		absolute top 34px right 8px;
+	.face.large
+		box-shadow 0 1px 1px rgba(0, 50, 100, 0.50)
+		margin 4px 4px 0 4px; background #ccc; float left; border-radius 1px;
 	.summary
-		margin-left 76px;
-		padding 6px;
+		padding 4px;
 		.name
-			font-weight bold; font-size 15px; text-shadow 0 1px 0 #ddd; max-width 165px;
+			font-size 32px; line-height 30px; float left; margin 6px 0 0 4px;
+			color #393949; text-shadow 0px 1px 0px rgba(0,0,120,0.1);
+			.first
+				max-width 150px; white-space nowrap;
+			.rest
+				max-width 220px; white-space nowrap;
 		.time
-			color #126EAF; font-size 12px; float right; margin 3px 3px 0 2px; font-weight bold;
-			text-shadow 0 1px 0 #ddd; max-width 70px; text-align right;
+			color #126EAF; font-size 12px; font-weight bold; absolute top 8px right 8px;
+			text-shadow 0 1px 0 #ddd;
 		.lastMessage
-			//
+			clear both; padding-top 4px;
+			.face
+				margin
+		.info
+			clear both; font-style italic; font-size 18px; padding 16px 0; text-align center;

@@ -11,13 +11,11 @@ module.exports = {
 
 var view
 var $ui
-var lastMessageWasFromMe = null;
 
-events.on('view.change', function resetView() {
+events.on('view.changing', function resetView() {
 	if (!view) { return }
 	view = null
 	$ui = null
-	lastMessageWasFromMe = null
 	getMessagesList._list = null
 	gScroller.getCurrentView().off('scroll', onScroll)
 })
@@ -30,7 +28,6 @@ function renderConversation(_view) {
 	
 	view = _view
 	$ui = {}
-	lastMessageWasFromMe = null
 
 	var messages = []
 	
@@ -145,39 +142,45 @@ function arrowImage(name, size) {
 }
 
 function renderMessage(message) {
-	var isVeryFirstMessage = (lastMessageWasFromMe === null)
+	return gRenderMessageBubble(message, view.conversation, { dynamics:true, face:true, arrow:true })
+}
+
+gRenderMessageBubble = function(message, conversation, opts) {
+	opts = options(opts, { dynamics:true, face:true, arrow:true })
 	var me = gState.myAccount()
 	var messageIsFromMe = (message.senderAccountId == me.id)
-	var isFirstMessageInGroup = (lastMessageWasFromMe != messageIsFromMe || isVeryFirstMessage)
-	var shouldRenderFace = true || isFirstMessageInGroup
 	var classes = [
 		message.body ? 'textMessage' : 'pictureMessage',
-		messageIsFromMe ? 'fromMe' : 'fromThem',
-		isFirstMessageInGroup && !isVeryFirstMessage ? 'newGroup' : ''
+		messageIsFromMe ? 'fromMe' : 'fromThem'
 	]
 	
-	lastMessageWasFromMe = messageIsFromMe
-	
-	var showYesNoResponder = (message.wasPushed && !message.questionAnswered && questions.hasYesNoQuestion(message.body))
-	
 	return [
-		div('message',
+		div('messageContainer',
 			div(classes.join(' '),
-					shouldRenderFace && div(
-						face(messageIsFromMe ? me : view.conversation.person, 34)
+					opts.face && div(
+						face(messageIsFromMe ? me : conversation.person, 34)
 					),
 					div('messageBubble',
-						(messageIsFromMe) ? arrowImage('bubbleArrow-right', [5,10]) : arrowImage('bubbleArrow-left', [6,10]),
+						opts.arrow && renderArrow(),
 						renderContent(message)
 					),
-					showYesNoResponder && questions.renderYesNoResponder(function(answer) {
-						message.questionAnswered = true
-						composer.sendMessage({ body:(answer ? 'Yes' : 'No') })
-					})
+					opts.dynamics && renderDynamics()
 				)
 		),
 		div('clear')
 	]
+	
+	function renderArrow() {
+		return messageIsFromMe ? arrowImage('bubbleArrow-right', [5,10]) : arrowImage('bubbleArrow-left', [6,10])
+	}
+	
+	function renderDynamics() {
+		var showYesNoResponder = (message.wasPushed && !message.questionAnswered && questions.hasYesNoQuestion(message.body))
+		return showYesNoResponder && questions.renderYesNoResponder(function(answer) {
+			message.questionAnswered = true
+			composer.sendMessage({ body:(answer ? 'Yes' : 'No') })
+		})
+	}
 }
 
 // function clipLocalPicture(message) {
@@ -274,7 +277,7 @@ function onNewMessage(message) {
 // }
 
 events.on('push.message', function(message) {
-	if (!view || !view.accountId || view.accountId != message.senderAccountId) { return }
+	if (!view || view.conversation.id != message.conversationId) { return }
 	// cacheMessage(message)
 	onNewMessage(message)
 })

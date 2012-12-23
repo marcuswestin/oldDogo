@@ -1,6 +1,4 @@
-module.exports = face
-
-function face(account, size) {
+var face = module.exports = function face(account, size) {
 	return facebookFace(account, null, false, size)
 }
 

@@ -41,7 +41,7 @@ module.exports = {
 
 var faces = {}
 function getFace(conversation) {
-	return faces[conversation.id] = faces[conversation.id] || face.large(conversation.person).__render()
+	return faces[conversation.id] = faces[conversation.id] || $(face.large(conversation.person).__render()).addClass('large')
 }
 
 var unreadDots = {}
@@ -74,23 +74,26 @@ function renderCard(conversation) {
 				})
 			}),
 			hasUnread && getUnreadDot(conversation),
-			div('name', person.fullName),
+			div('name', function() {
+				var names = person.fullName.split(' ')
+				return [div('first', names.shift()), div('rest', names.pop())]
+			}),
 			div('lastMessage', lastMessage.body
-				? div('body', lastMessage.body)
+				? div('body', gRenderMessageBubble(lastMessage, conversation, { dynamics:false, face:true, arrow:true }))
 				: div('picture', function() {
-					var size = 46
+					var size = [304, 188]
 					var url = pictures.displayUrl(lastMessage, size)
 					var ratio = window.devicePixelRatio || 1
 					return style({
 						background:'url('+url+') transparent no-repeat',
-						width:size, height:size, backgroundSize:size+'px '+size+'px'
+						width:size[0], height:size[1], backgroundSize:size+'px '+size+'px'
 					})
 				})
 			)]
 		} else {
 			return [
 				div('name', person.fullName),
-				div(style({ color:'#666', margin:px(11, 0, 0, 10), fontStyle:'italic' }), 'Start the conversation')
+				div('info', 'Start the conversation')
 			]
 		}
 	}

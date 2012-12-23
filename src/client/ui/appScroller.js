@@ -10,13 +10,14 @@ module.exports = {
 
 var icons = icon.preload({
 	back: ['glyphish/xtras-white/36-circle-west', 28, 28, 8, 13, 9, 13],
+	menu: ['menu', 28, 28, 8, 11, 8, 11],
 	logoIcon: ['logoIcon-32x32', 32, 32, 5, 10, 8, 10],
 	search: ['glyphish/white/112-group', 32, 21, 11, 8, 13, 12]
 })
 
 function createAndRenderScroller() {
 	gScroller = makeScroller({
-		onViewChange:function onViewChange() { events.fire('view.change') },
+		onViewChanging:function onViewChanging() { events.fire('view.changing') },
 		duration:300
 	})
 	$('#viewport').prepend(div('dogoApp', style(translate(0,0)),
@@ -49,7 +50,7 @@ function createAndRenderScroller() {
 			div('corner left', style({ borderRadius:leftCornerRadius }),
 				showBackButton
 					? div('back', icons.back, backIconDragger)
-					: div('logoIcon', icons.logoIcon, logoIconDragger)
+					: div('menu', icons.menu, logoIconDragger)
 			),
 			div('corner right', style({ borderRadius:rightCornerRadius }),
 				style(translate.x(viewport.width() - cornerSize.width), 0),
@@ -70,7 +71,7 @@ var rightCornerRadius = px(0,6,0,3)
 
 var backIconDragger = (function makeBackIconDragger() {
 	function getDampening(dx) {
-		return Math.round(dx * dx / 900) // gets stronger and stronger the larger dx is. Will need proper clamping for larger screens
+		return Math.round(dx * dx / 650) // gets stronger and stronger the larger dx is. Will need proper clamping for larger screens
 	}
 	
 	function cancel() {
@@ -89,7 +90,7 @@ var backIconDragger = (function makeBackIconDragger() {
 			$('.corner.left .releaseUI').remove()
 			$('.corner.left').append(
 				div('releaseUI', 'Release to return', style({
-					opacity:0,
+					opacity:0, whiteSpace:'nowrap', fontWeight:'normal',
 					position:'absolute', top:9, left:8, color:'#fff', fontSize:16, textShadow:'0 1px 1px rgba(50,50,50,.5)'
 				}))
 			)
@@ -100,14 +101,14 @@ var backIconDragger = (function makeBackIconDragger() {
 			var width = cornerSize.width + pos.distance.x - getDampening(pos.distance.x)
 			$('.corner.left').css({ width:clip(width, cornerSize.width, maxWidth) })
 			var portion = width / maxWidth
-			var startShowingAtPortion = .5
+			var startShowingAtPortion = .45
 			
 			if (lastMoveWasToTheRight(history) && portion > startShowingAtPortion) {
 				var portionOfPortion = (portion - startShowingAtPortion) / startShowingAtPortion
 				$('.corner.left .releaseUI')
 					.css({ opacity:portionOfPortion })
 					.css(transition.none())
-					.css(translate.x(35 * portionOfPortion))
+					.css(translate.x(30 * portionOfPortion))
 			} else {
 				$('.corner.left .releaseUI').css(transition('opacity', 200)).css({ opacity:0 })
 			}

@@ -188,7 +188,7 @@ function sendMessage(params) {
 	events.fire('message.sending', message)
 }
 
-events.on('view.change', function onViewRenderEvent() {
+events.on('view.changing', function onViewRenderEvent() {
 	if (!currentConversation) { return }
 	composer.remove()
 })

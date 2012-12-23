@@ -9,10 +9,13 @@ function render() {
 	var top = 10
 	return div('appBackground', style({ marginTop:top, height:viewport.height()-top }),
 		div('card',
-			div('face', style(face.backgroundStyle(gState.myAccount().facebookId, 75))),
+			div('face large', style(face.backgroundStyle(gState.myAccount().facebookId, 75))),
 			div('summary',
-				div('name', gState.myAccount().name),
-				div('lastMessage', div(style({ fontStyle:'italic' }), 'This is you'))
+				div('name', function() {
+					var names = gState.myAccount().name.split(' ')
+					return [div('first', names.shift()), div('rest', names.pop())]
+				}),
+				div('clear')
 			)
 		),
 		div('backgroundContent')
