@@ -12,6 +12,7 @@ var encodingMap = {
 	pictureSecret: 'P',
 	pictureWidth: 'W',
 	pictureHeight: 'H',
+	sentTime: 'S',
 	type:'T',
 	truncated:'_'
 }
@@ -34,6 +35,7 @@ function encodeMessage(data) {
 	payload[encodingMap.senderAccountId] = message.senderAccountId
 	payload[encodingMap.conversationId] = message.conversationId
 	payload[encodingMap.clientUid] = message.clientUid
+	payload[encodingMap.sentTime] = message.sentTime
 
 	if (message.pictureSecret) {
 		payload[encodingMap.pictureSecret] = message.pictureSecret
@@ -71,6 +73,7 @@ function decodePayload(payload) {
 			senderAccountId: payload[encodingMap.senderAccountId],
 			conversationId: payload[encodingMap.conversationId],
 			clientUid: payload[encodingMap.clientUid],
+			sentTime: payload[encodingMap.sentTime],
 			_wasPushed: true
 		}
 	}

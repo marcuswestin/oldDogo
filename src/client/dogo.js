@@ -4,6 +4,7 @@ image.base += 'mobileApp/'
 
 var time = require('std/time')
 var pictures = require('../data/pictures')
+var push = require('../data/push')
 
 error = function error(err) {
 	var message = api.error(err)
