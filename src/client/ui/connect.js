@@ -11,8 +11,9 @@ module.exports = {
 						div('button connect', 'Connect to Dogo', button(function() {
 							var $el = $(this).text('Loading...')
 							var connecting = false
-							bridge.command('facebook.connect', { permissions:['email'] }, function(err, facebookSession) {
-								if (err || !facebookSession) {
+							bridge.command('facebook.connect', { permissions:['email'] }, function(err, data) {
+								var facebookSession = data.facebookSession
+								if (err || !facebookSession || !facebookSession.accessToken) {
 									$el.text('Try again')
 									return
 								}

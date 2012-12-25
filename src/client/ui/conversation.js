@@ -310,15 +310,11 @@ function promptInvite(message) {
 		var $infoBar = $(div(style(transition({ height:500 })), div('dogo-info',
 			div('invite',
 				div('encouragement', 'Very Expressive!'),
-				div('personal', account.name.split(' ')[0], " doesn't have Dogo yet."),
+				div('personal', view.conversation.person.fullName.split(' ')[0], " doesn't have Dogo yet."),
 				div('button', 'Send on Facebook', button(function() {
 					// TODO events.on('facebook.dialogDidComplete', function() { ... })
 					// https://developers.facebook.com/docs/reference/dialogs/requests/
 					// https://developers.facebook.com/docs/mobile/ios/build/
-					
-					if (gState.facebookSession()) {
-						bridge.command('facebook.setSession', gState.facebookSession())
-					}
 					
 					var myAccount = gState.myAccount()
 					var name = myAccount.firstName || myAccount.name
@@ -327,11 +323,12 @@ function promptInvite(message) {
 					} else {
 						var text = 'sent you a drawing. Reply in style with Dogo!'
 					}
+					
 					bridge.command('facebook.dialog', {
 						dialog: 'apprequests',
 						params: {
 							message: text,
-							to: account.facebookId.toString()
+							to: view.conversation.person.facebookId.toString()
 							// title: name+' sent you a...',
 							// data: JSON.stringify({ conversationId:message.conversationId }),
 							// frictionless:'1'

@@ -1,11 +1,7 @@
 #import "BTAppDelegate.h"
-#import "FBConnect.h"
 #import "BTResponse.h"
 
-@interface AppDelegate : BTAppDelegate <FBSessionDelegate, FBDialogDelegate>
-
-@property (nonatomic, strong) Facebook *facebook;
-@property (nonatomic, strong) BTResponse* facebookResponse;
+@interface AppDelegate : BTAppDelegate
 
 + (AppDelegate*) instance;
 

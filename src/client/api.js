@@ -96,9 +96,13 @@ function handleResponse(jqXhr, url, callback, err, res) {
 }
 
 function connect(opts, callback) {
-	var facebookAccessToken = opts.facebookSession && opts.facebookSession.accessToken
-	var params = { facebookAccessToken:facebookAccessToken, facebookRequestId:opts.facebookRequestId }
-	api.post('session', params, curry(handleSession, opts.facebookSession, callback))
+	var facebookSession = opts.facebookSession || {}
+	var params = {
+		facebookAccessToken:facebookSession.accessToken,
+		facebookExpirationDate:facebookSession.expirationDate,
+		facebookRequestId:opts.facebookRequestId
+	}
+	api.post('session', params, curry(handleSession, facebookSession, callback))
 }
 
 // function refresh(authToken, callback) {

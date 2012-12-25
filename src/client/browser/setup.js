@@ -19,7 +19,7 @@ function setupBrowserDebugMode() {
 				break
 			case 'facebook.connect':
 				FB.login(function(response) {
-					callback(null, response.authResponse)
+					callback(null, { facebookSession:response.authResponse })
 				}, { scope:data.permissions.join(',') })
 				break
 			case 'facebook.dialog':
