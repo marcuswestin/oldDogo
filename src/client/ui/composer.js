@@ -111,7 +111,7 @@ function _selectText() {
 		$('#composer .textInputBackground').css({ height:info.height - 2 })
 		var $view = gScroller.getCurrentView()
 		var isAtBottom = Math.abs($view[0].scrollHeight - ($view.scrollTop() + $view.height())) < 40
-		$('.conversationView .messagesList').css({ marginBottom:info.height - inputHeight + 60 })
+		$('#conversationView .messagesList').css({ marginBottom:info.height - inputHeight + 60 })
 		if (isAtBottom) {
 			$view.scrollTop($view[0].scrollHeight)
 		} else {
@@ -120,7 +120,7 @@ function _selectText() {
 	})
 	events.once('keyboard.willHide', function(info) {
 		$('#composer .tools .closeTextInput').remove()
-		$('.conversationView .messagesList').css({ marginBottom:0 })
+		$('#conversationView .messagesList').css({ marginBottom:0 })
 		events.off('textInput.changedHeight', onChangeHeightHandler)
 		events.off('textInput.return', onReturnHandler)
 		composer.hide(_selectText)

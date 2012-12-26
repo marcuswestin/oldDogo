@@ -33,7 +33,7 @@ function renderConversation(_view) {
 	
 	gScroller.getCurrentView().on('scroll', onScroll)
 
-	return div('conversationView',
+	return div({ id:'conversationView' },
 		div('personName', function() {
 			var names = view.conversation.person.fullName.split(' ')
 			if (names.length > 1) {
@@ -56,8 +56,18 @@ function getMessagesCacheId() {
 	return 'convo-'+view.conversation.id+'-messages'
 }
 
-function scrollToBottom() {
-	gScroller.getCurrentView().scrollTop(getMessagesList().height())
+function scrollDown(duration, amount) {
+	var $view = gScroller.getCurrentView()
+	if (!amount) {
+		// default to the bottom of the view
+		amount = getMessagesList().height() - $view.scrollTop()
+	}
+	var scrollTop = $view.scrollTop() + amount
+	if (duration) {
+		$view.animate({ scrollTop:scrollTop, duration:duration })
+	} else {
+		$view.scrollTop(scrollTop)
+	}
 }
 
 function getMessagesList() {
@@ -78,7 +88,7 @@ function getMessagesList() {
 			refreshMessages()
 			if (!messages || !messages.length) { return }
 			getMessagesList._list.append(messages)
-			scrollToBottom()
+			scrollDown()
 			checkScrollBounds()
 		})
 	}, 100)
@@ -101,7 +111,7 @@ function refreshMessages() {
 		if (err) { return error(err) }
 		var messagesList = getMessagesList()
 		messagesList.append(res.messages)
-		scrollToBottom()
+		scrollDown()
 		checkScrollBounds()
 		gState.set(getMessagesCacheId(), res.messages)
 	})
@@ -252,18 +262,14 @@ function renderContent(message) {
 }
 
 function onNewMessage(message) {
-	$('.conversationView .ghostTown').remove()
+	$('#conversationView .ghostTown').remove()
 	var messagesList = getMessagesList()
 	if (message._isSending || (message._wasPushed && !gIsTouching)) {
 		// If this message was sent by me, or if I just received it and I'm not currently touching the screen, then scroll the new message into view
 		var heightBefore = messagesList.height()
 		setTimeout(function() {
-			var dHeight = heightBefore - messagesList.height()
-			var $view = gScroller.getCurrentView()
-			$view.animate({
-				scrollTop: $view.scrollTop() - dHeight,
-				duration: 50
-			})
+			var dHeight = messagesList.height() - heightBefore
+			scrollDown(50, dHeight)
 		}, 50)
 	}
 	messagesList.append(message)
@@ -306,12 +312,17 @@ events.on('app.willEnterForeground', function() {
 function promptInvite(message) {
 	composer.hide()
 	var conversation = view.conversation
-	// loadAccountId(accountId, function(account) {
-		var $infoBar = $(div(style(transition({ height:500 })), div('dogo-info',
+		var height = 140
+		var faceSize = 34
+		var $infoBar = $(div(style({ height:height }), div('dogo-info',
 			div('invite',
-				div('encouragement', 'Very Expressive!'),
-				div('personal', view.conversation.person.fullName.split(' ')[0], " doesn't have Dogo yet."),
-				div('button', 'Send on Facebook', button(function() {
+				div('encouragement', message.body ? 'Nice Message!' : 'Very Expressive!'),
+				div('personal', view.conversation.person.fullName.split(' ')[0], " has not installed Dogo"),
+				div('button',
+					// face.mine(faceSize, { 'float':'left' }),
+					'Send via Facebook',
+					face(view.conversation.person, faceSize, { 'float':'right' }),
+					button(function() {
 					// TODO events.on('facebook.dialogDidComplete', function() { ... })
 					// https://developers.facebook.com/docs/reference/dialogs/requests/
 					// https://developers.facebook.com/docs/mobile/ios/build/
@@ -342,12 +353,13 @@ function promptInvite(message) {
 				}))
 			)
 		)))
-		var messageBubbles = getMessagesList().find('.messageBubble')
-		$infoBar.css({ height:0, overflowY:'hidden' }).appendTo(messageBubbles[messageBubbles.length - 1].parentNode)
+		$infoBar.css(translate(-viewport.width(), 0)).appendTo($('.messagesList'))
 		setTimeout(function() {
-			$infoBar.css({ height:$infoBar.find('.dogo-info').height() + 30 })
-		}, 500)
-	// })
+			scrollDown(50, 350)
+			setTimeout(function() {
+				$infoBar.css(translate(0, 0, 350))
+			}, 50)
+		}, 350)
 }
 
 gIsTouching = false

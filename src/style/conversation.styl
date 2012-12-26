@@ -64,13 +64,14 @@ fromMeGradient(alpha1, alpha2)
 	.textContent
 		light(); padding 4px 10px 5px; text-shadow 0 2px 1px rgba(255, 255, 255, 0.81);
 
-.conversationView
+#conversationView
+	padding 0 0 80px 0;
 	.personName
 		padding 12px 0 14px; font-size 18px; font-weight bold; color #fff; text-shadow 0 1px 0 rgba(25,25,50,.76); text-align center;
 	.ghostTown
 		padding 130px 10px;
 	.messagesList
-		padding 4px 4px 90px 4px;
+		padding 4px;
 	.dogo-info
 		blueNotice()
 		width 100%; margin 8px 0; padding 4px 0 10px 0; border-width 1px 0; border-style solid;
@@ -83,9 +84,12 @@ fromMeGradient(alpha1, alpha2)
 	.loading
 		margin-top 100px; text-shadow none; color #fff; font-style italic;
 	.invite
-		text-align center; width 100%;
+		text-align center; width 100%; text-shadow 0 1px 1px rgba(255,255,255,.75);
 		.button
-			font-size 22px; text-shadow rgba(0,0,0,.3); margin 0 auto; padding 6px 8px 8px; width 210px;
+			font-size 22px; text-shadow rgba(0,0,0,.3); margin 4px auto; padding 8px 8px 8px; width 250px;
+			.face
+				display inline-block; blueDropShadow(); border-radius 2px; margin-bottom -1px;
+				box-shadow 0 0 15px rgba(255, 255, 255, 0.3);
 
 .drawer
 	line-height 0; z-index 2; background #000;

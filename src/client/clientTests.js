@@ -74,7 +74,7 @@ function runUsageTests() {
 			})
 		})
 		then('count the number of messages', function(done) {
-			count('.conversationView .messageBubble', function(_numMessages) {
+			count('#conversationView .messageBubble', function(_numMessages) {
 				numMessages = _numMessages
 				done()
 			})
@@ -87,8 +87,8 @@ function runUsageTests() {
 				var release = waitOn({ count:2, checkErrors:false }, done)
 				events.fire('textInput.return', { text:messageBody })
 				events.once('message.sent', release)
-				waitFor('.conversationView .messageBubble .textContent:text("'+messageBody+'")', function() {
-					count('.conversationView .messageBubble', function(newNumMessages) {
+				waitFor('#conversationView .messageBubble .textContent:text("'+messageBody+'")', function() {
+					count('#conversationView .messageBubble', function(newNumMessages) {
 						is(numMessages + 1, newNumMessages)
 						numMessages = newNumMessages
 						release()
@@ -111,10 +111,10 @@ function runUsageTests() {
 		})
 		then('send it', function(done) {
 			tap('.drawer .controls .send.button', function() {
-				count('.conversationView .messageBubble', function(newNumMessages) {
+				count('#conversationView .messageBubble', function(newNumMessages) {
 					is(numMessages + 1, newNumMessages)
 					numMessages = newNumMessages
-					var size = getSize('.conversationView .messageBubble .pictureContent:last')
+					var size = getSize('#conversationView .messageBubble .pictureContent:last')
 					is(size[0] > 100)
 					is(size[1] > 100)
 					done()
