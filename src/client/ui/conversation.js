@@ -312,54 +312,54 @@ events.on('app.willEnterForeground', function() {
 function promptInvite(message) {
 	composer.hide()
 	var conversation = view.conversation
-		var height = 140
-		var faceSize = 34
-		var $infoBar = $(div(style({ height:height }), div('dogo-info',
-			div('invite',
-				div('encouragement', message.body ? 'Nice Message!' : 'Very Expressive!'),
-				div('personal', view.conversation.person.fullName.split(' ')[0], " has not installed Dogo"),
-				div('button',
-					// face.mine(faceSize, { 'float':'left' }),
-					'Send via Facebook',
-					face(view.conversation.person, faceSize, { 'float':'right' }),
-					button(function() {
-					// TODO events.on('facebook.dialogDidComplete', function() { ... })
-					// https://developers.facebook.com/docs/reference/dialogs/requests/
-					// https://developers.facebook.com/docs/mobile/ios/build/
-					
-					var myAccount = gState.myAccount()
-					var name = myAccount.firstName || myAccount.name
-					if (message.body) {
-						var text = name+' says: "'+message.body+'". Reply in style with Dogo!'
-					} else {
-						var text = 'sent you a drawing. Reply in style with Dogo!'
+	var height = 140
+	var faceSize = 34
+	var $infoBar = $(div(style({ height:height }), div('dogo-info',
+		div('invite',
+			div('encouragement', message.body ? 'Nice Message!' : 'Very Expressive!'),
+			div('personal', view.conversation.person.fullName.split(' ')[0], " has not installed Dogo"),
+			div('button',
+				// face.mine(faceSize, { 'float':'left' }),
+				'Send via Facebook',
+				face(view.conversation.person, faceSize, { 'float':'right' }),
+				button(function() {
+				// TODO events.on('facebook.dialogDidComplete', function() { ... })
+				// https://developers.facebook.com/docs/reference/dialogs/requests/
+				// https://developers.facebook.com/docs/mobile/ios/build/
+				
+				var myAccount = gState.myAccount()
+				var name = myAccount.firstName || myAccount.name
+				if (message.body) {
+					var text = name+' says: "'+message.body+'". Reply in style with Dogo!'
+				} else {
+					var text = 'sent you a drawing. Reply in style with Dogo!'
+				}
+				
+				bridge.command('facebook.dialog', {
+					dialog: 'apprequests',
+					params: {
+						message: text,
+						to: view.conversation.person.facebookId.toString()
+						// title: name+' sent you a...',
+						// data: JSON.stringify({ conversationId:message.conversationId }),
+						// frictionless:'1'
 					}
-					
-					bridge.command('facebook.dialog', {
-						dialog: 'apprequests',
-						params: {
-							message: text,
-							to: view.conversation.person.facebookId.toString()
-							// title: name+' sent you a...',
-							// data: JSON.stringify({ conversationId:message.conversationId }),
-							// frictionless:'1'
-						}
-					})
-					events.once('facebook.dialogCompleteWithUrl', function(info) {
-						var url = parseUrl(info.url)
-						var params = { conversationId:conversation.id, personId:conversation.person.id, facebookRequestId:url.getSearchParam('request') }
-						api.post('facebook_requests', params, error.handler)
-					})
-				}))
-			)
-		)))
-		$infoBar.css(translate(-viewport.width(), 0)).appendTo($('.messagesList'))
+				})
+				events.once('facebook.dialogCompleteWithUrl', function(info) {
+					var url = parseUrl(info.url)
+					var params = { conversationId:conversation.id, personId:conversation.person.id, facebookRequestId:url.getSearchParam('request') }
+					api.post('facebook_requests', params, error.handler)
+				})
+			}))
+		)
+	)))
+	$infoBar.css(translate(-viewport.width(), 0)).appendTo($('.messagesList'))
+	setTimeout(function() {
+		scrollDown(50, 350)
 		setTimeout(function() {
-			scrollDown(50, 350)
-			setTimeout(function() {
-				$infoBar.css(translate(0, 0, 350))
-			}, 50)
-		}, 350)
+			$infoBar.css(translate(0, 0, 350))
+		}, 50)
+	}, 350)
 }
 
 gIsTouching = false
