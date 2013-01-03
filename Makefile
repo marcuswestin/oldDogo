@@ -39,13 +39,7 @@ icons:
 
 # Create a new iOS build and deliver it to all developers via testflight
 fly-dev: fly-build
-	curl http://testflightapp.com/api/builds.json \
-	-F file=@/Users/marcus/Desktop/dogo.ipa \
-	-F api_token='fa8a4a8d04599e74e456e4968117ad25_NDE5NDk0MjAxMi0wNC0yOSAyMzoxNTo0MC4zMzk0Njk' \
-	-F team_token='ac1087f484666207583bb7c62daf1fa2_ODU2NTUyMDEyLTA0LTI5IDIzOjQ1OjIwLjQ2Nzg2Ng' \
-	-F notes='fly-dev build' \
-	-F notify=True \
-	-F distribution_lists='dev'
+	bash src/scripts/testFly.sh "fly-dev build" "dev"
 
 # Less common commands
 ######################
@@ -126,31 +120,15 @@ fly-build: ios-client
 	${NODE} src/scripts/save-ipa.js
 
 fly-nightly: bump-ios-patch fly-build
-	curl http://testflightapp.com/api/builds.json \
-	-F file=@/Users/marcus/Desktop/dogo.ipa \
-	-F api_token='fa8a4a8d04599e74e456e4968117ad25_NDE5NDk0MjAxMi0wNC0yOSAyMzoxNTo0MC4zMzk0Njk' \
-	-F team_token='ac1087f484666207583bb7c62daf1fa2_ODU2NTUyMDEyLTA0LTI5IDIzOjQ1OjIwLjQ2Nzg2Ng' \
-	-F notes="Nightly build" \
-	-F notify=True \
-	-F distribution_lists='nightly'
+	src/scripts/testFly.sh 'Nightly build' 'nightly'
 
 fly-alpha: bump-ios-patch fly-build
 	echo "Enter alpha release notes:\n"; read commitMessage; echo "\nOK! Uploading..."; curl http://testflightapp.com/api/builds.json \
-	-F file=@/Users/marcus/Desktop/dogo.ipa \
-	-F api_token='fa8a4a8d04599e74e456e4968117ad25_NDE5NDk0MjAxMi0wNC0yOSAyMzoxNTo0MC4zMzk0Njk' \
-	-F team_token='ac1087f484666207583bb7c62daf1fa2_ODU2NTUyMDEyLTA0LTI5IDIzOjQ1OjIwLjQ2Nzg2Ng' \
-	-F notes="$$commitMessage" \
-	-F notify=True \
-	-F distribution_lists='alpha'
+	bash src/scripts/testFly.sh "$$commitMessage" "alpha"
 
 fly-all: bump-ios-minor fly-build
 	echo "Enter release notes:\n"; read commitMessage; echo "\nOK! Uploading..."; curl http://testflightapp.com/api/builds.json \
-	-F file=@/Users/marcus/Desktop/dogo.ipa \
-	-F api_token='fa8a4a8d04599e74e456e4968117ad25_NDE5NDk0MjAxMi0wNC0yOSAyMzoxNTo0MC4zMzk0Njk' \
-	-F team_token='ac1087f484666207583bb7c62daf1fa2_ODU2NTUyMDEyLTA0LTI5IDIzOjQ1OjIwLjQ2Nzg2Ng' \
-	-F notes="$$commitMessage" \
-	-F notify=True \
-	-F distribution_lists='dogo'
+	bash src/scripts/testFly.sh "$$commitMessage" "dogo"
 
 # Misc
 ######
