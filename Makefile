@@ -24,6 +24,7 @@ icons:
 	convert src/graphics/logoIcon-blank.png -resize 256x256 src/graphics/mobileApp/logoIcon-blank-128x128@2x.png
 	convert src/graphics/logoName.png -resize 332x144 src/graphics/mobileApp/logoName-166x72@2x.png
 	convert src/graphics/logoName.png -resize 112x48 src/graphics/mobileApp/logoName-56x24@2x.png
+	cp src/graphics/logoName-header-70x30@2x.png src/graphics/mobileApp/
 	# /identity
 	convert src/graphics/logoIcon-blank.png -resize 128x128 src/graphics/identity/logoIcon-blank-128x128.png
 	convert src/graphics/logoIcon-blank.png -resize 256x256 src/graphics/identity/logoIcon-blank-256x256.png

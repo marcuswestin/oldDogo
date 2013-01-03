@@ -13,7 +13,7 @@ var conversationsList
 module.exports = {
 	render:function() {
 		return div('homeView',
-			div('logoName', icon('logoName', 260, 125, 12, 0, 8, 0)),
+			div('logoName', icon('logoName-header', 70, 30, 10,0,6,0)),
 			div('conversations', div('info', 'Loading...'), function($conversations) {
 				gState.load('conversations', function(conversations) {
 					// setTimeout(function() { selectConversation(conversations[0]) }) // AUTOS
@@ -41,7 +41,7 @@ module.exports = {
 
 var faces = {}
 function getFace(conversation) {
-	return faces[conversation.id] = faces[conversation.id] || $(face.large(conversation.person).__render()).addClass('large')
+	return faces[conversation.id] = faces[conversation.id] || $(face(conversation.person, 68).__render()).addClass('large')
 }
 
 var unreadDots = {}
@@ -71,6 +71,13 @@ function renderCard(conversation) {
 			hasUnread = false
 		}
 		
+		function renderName(person) {
+			return div('name', function() {
+				var names = person.fullName.split(' ')
+				return [div('first', names.shift()), div('rest', names.pop())]
+			})
+		}
+		
 		if (lastMessage) {
 			return [
 			div('right',
@@ -81,10 +88,7 @@ function renderCard(conversation) {
 				}),
 				hasUnread && getUnreadDot(conversation)
 			),
-			div('name', function() {
-				var names = person.fullName.split(' ')
-				return [div('first', names.shift()), div('rest', names.pop())]
-			}),
+			renderName(person),
 			div('lastMessage', lastMessage.body
 				? div('body', gRenderMessageBubble(lastMessage, conversation, { dynamics:false, face:true, arrow:true }))
 				: div('picture', function() {
@@ -99,7 +103,7 @@ function renderCard(conversation) {
 			)]
 		} else {
 			return [
-				div('name', person.fullName),
+				renderName(person),
 				div('info', 'Start the conversation')
 			]
 		}
