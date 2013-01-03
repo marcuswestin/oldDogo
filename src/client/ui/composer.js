@@ -131,14 +131,16 @@ function _selectText() {
 
 function _selectPhoto() {
 	bridge.command('menu.show', {
-		titles:['Pick from Library', 'Take Photo']
+		title:"Pick a Photo",
+		cancelTitle:'Cancel',
+		titles:['Pick from Library', 'Take new Photo']
 	}, function(err, res) {
+		composer.hide(_selectPhoto)
 		if (err) { return error(err) }
 		if (!res) { return }
-		var sources = ['libraryPhotos', 'camera']
-		var source = sources[res.index]
-		if (!source) { return }
-		bridge.command('media.pick', { source:source, allowsEditing:true }, function(err, res) {
+		var sources = ['libraryPhotos', 'camera'] // ,'cancel'
+		if (!sources[res.index]) { return }
+		bridge.command('media.pick', { source:sources[res.index], allowsEditing:true }, function(err, res) {
 			if (!res.mediaId) { return }
 			selectDraw({ mediaId:res.mediaId }, { pictureWidth:res.width, pictureHeight:res.height })
 		})
