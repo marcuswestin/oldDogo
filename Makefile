@@ -120,7 +120,7 @@ fly-build: ios-client
 	${NODE} src/scripts/save-ipa.js
 
 fly-nightly: bump-ios-patch fly-build
-	src/scripts/testFly.sh 'Nightly build' 'nightly'
+	bash src/scripts/testFly.sh 'Nightly build' 'nightly'
 
 fly-alpha: bump-ios-patch fly-build
 	echo "Enter alpha release notes:\n"; read commitMessage; echo "\nOK! Uploading..."; curl http://testflightapp.com/api/builds.json \
