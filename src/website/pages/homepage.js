@@ -1,5 +1,6 @@
-require('../template/websiteTemplate')
+require('globals/environment')
 require('globals/tags')
+require('../template/websiteTemplate')
 var trim = require('std/trim')
 var api = require('client/api')
 var time = require('std/time')

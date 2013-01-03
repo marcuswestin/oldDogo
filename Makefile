@@ -32,6 +32,10 @@ icons:
 	cp src/graphics/pixelmator/logoIcon-letter.png src/graphics/identity/logoIcon-letter-512x512.png
 	convert src/graphics/pixelmator/logoName.png -resize 332x144 src/graphics/identity/logoName-332x144.png
 	convert src/graphics/pixelmator/logoName.png -resize 166x72 src/graphics/identity/logoName-166x72.png
+	# website
+	convert src/graphics/pixelmator/logoIcon-letter.png -resize 192x192 src/graphics/website/logoIcon-letter-96x96@2x.png
+	convert src/graphics/pixelmator/logoIcon-blank.png -resize 192x192 src/graphics/website/logoIcon-blank-96x96@2x.png
+	convert src/graphics/pixelmator/logoName.png -resize 332x144 src/graphics/website/logoName-166x72@2x.png
 
 # Create a new iOS build and deliver it to all developers via testflight
 fly-dev: fly-build
