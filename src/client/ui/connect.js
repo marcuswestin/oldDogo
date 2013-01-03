@@ -78,5 +78,5 @@ module.exports = {
 }
 
 events.on('push.registerFailed', function(info) {
-	alert("Oh no! Notifications weren't enabled. Go to your phone's settings and enable notifications for Dogo.")
+	alert("Oh no! Notifications were not enabled. Go to your settings app and enable notifications for Dogo.")
 })
