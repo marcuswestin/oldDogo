@@ -3,8 +3,11 @@
 @import "./buttons"
 @import "./common"
 
+blueShadowColor(alpha=0.74)
+	rgba(18, 110, 175, alpha);
+
 blueDropShadow()
-	box-shadow 0 1px 1px rgba(18, 110, 175, 0.74);
+	box-shadow 0 1px 1px blueShadowColor();
 
 conversationFaceStyle()
 	blueDropShadow(); border 1px solid; border-radius 2px;
@@ -67,7 +70,7 @@ fromMeGradient(alpha1, alpha2)
 #conversationView
 	padding 0 0 80px 0;
 	.personName
-		padding 12px 0 14px; font-size 18px; font-weight bold; color #fff; text-shadow 0 1px 0 rgba(25,25,50,.76); text-align center;
+		padding 8px 0 6px; font-weight normal; font-size 22px; color #fff; text-shadow 0 1px 1px blueShadowColor(.5); text-align center;
 	.ghostTown
 		padding 130px 10px;
 	.messagesList
