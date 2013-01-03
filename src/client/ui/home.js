@@ -122,7 +122,8 @@ function getInitialConversations(conversations) {
 		}
 	})
 	
-	var fillWithNum = clip(20 - started.length, 0, notStarted.length)
+	var minFillNum = clip(notStarted.length, 0, 3)
+	var fillWithNum = clip(20 - started.length, minFillNum, notStarted.length)
 	var i = Math.floor(Math.random() * notStarted.length) // start at random pos
 	while (fillWithNum > 0) {
 		started.push(notStarted[i])
