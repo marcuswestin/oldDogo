@@ -84,8 +84,7 @@ var backIconDragger = (function makeBackIconDragger() {
 		gScroller.pop()
 	}
 	
-	return draggable({
-		threshold:0,
+	return cornerDrager('left', {
 		tap:function() {
 			goBack()
 		},
@@ -207,8 +206,7 @@ var searchIconDragger = (function makeSearchIconDragger() {
 	
 	// setTimeout(function() { renderSearchUI(); showSearchUI() }, 200) // AUTOS
 	
-	return draggable({
-		threshold:0,
+	return cornerDrager('right', {
 		tap:function() {
 			if (currentCornerSize == maxCornerSize) {
 				hideSearchUI()
@@ -237,10 +235,14 @@ var searchIconDragger = (function makeSearchIconDragger() {
 	})
 }())
 
-var logoIconDragger = draggable({
-	threshold:0,
-	down:function() { $('.corner.left').addClass('active') },
-	up:function() { $('.corner.left').removeClass('active') },
+function cornerDrager(corner, opts) {
+	opts.threshold = 0
+	opts.down = function() { $('.corner.'+corner).addClass('active') }
+	opts.up = function() { $('.corner.'+corner).removeClass('active') }
+	return draggable(opts)
+}
+
+var logoIconDragger = cornerDrager('left', {
 	tap:function() {
 		updateAppBackground()
 		showAppBackground()
@@ -264,8 +266,7 @@ var logoIconDragger = draggable({
 	}
 })
 
-var foregroundOverlayDragger = draggable({
-	threshold:0,
+var foregroundOverlayDragger = cornerDrager('left', {
 	start:function(pos) {
 		$('.appBackground').css(transition.none())
 	},
