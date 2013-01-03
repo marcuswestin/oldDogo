@@ -6,10 +6,6 @@ brandGradient = function(pos, amount) {
 	return style({ background:'-webkit-radial-gradient('+where+', circle cover, #FFF 0%, #30A4FF '+amount+'%)', width:'100%', height:'100%' })
 }
 
-glyphish = function(name, width, height, paddingTop, paddingRight, paddingBottom, paddingLeft) {
-	return icon('glyphish/'+name, width, height, paddingTop, paddingRight, paddingBottom, paddingLeft)
-}
-
 icon = function(name, width, height, paddingTop, paddingRight, paddingBottom, paddingLeft) {
 	if (paddingTop == null) { paddingTop = 0 }
 	if (paddingRight == null) { paddingRight = 0 }

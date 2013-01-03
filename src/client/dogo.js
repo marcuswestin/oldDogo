@@ -11,7 +11,7 @@ error = function error(err) {
 	if (!error.$tag) {
 		error.$tag = $(div('errorNotice',
 			div('content',
-				div('close', icon('circlex', 22, 23), button(function() { error.hide() })),
+				div('close', icon('icon-circlex', 22, 23), button(function() { error.hide() })),
 				div('message')
 			)
 		)).appendTo('.tags-scroller-body')

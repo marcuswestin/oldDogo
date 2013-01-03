@@ -46,7 +46,7 @@ function getFace(conversation) {
 
 var unreadDots = {}
 function getUnreadDot(conversation) {
-	return unreadDots[conversation.id] = unreadDots[conversation.id] || div('unreadDot', icon('unreadDot', 14, 14)).__render()
+	return unreadDots[conversation.id] = unreadDots[conversation.id] || div('unreadDot', icon('icon-unreadDot', 14, 14)).__render()
 }
 
 function renderCard(conversation) {

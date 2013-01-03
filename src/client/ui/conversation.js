@@ -224,7 +224,7 @@ function renderContent(message) {
 		var pixelSize = scaleSize(displaySize)
 		var gradientSize = [displaySize[0], Math.round(displaySize[1] / 3)]
 		var gradient = div('gradient', styleSize(gradientSize), style(translate.y(displaySize[1]-gradientSize[1])))
-		var loadingClock = div('loadingClock', icon('clock', 25, 25),
+		var loadingClock = div('loadingClock', icon('icon-clock', 25, 25),
 			style(translate(displaySize[0] / 2 - 25/2, displaySize[1] / 2 - 25/2)),
 			style({ width:0, height:0 })
 		)
