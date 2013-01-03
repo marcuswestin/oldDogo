@@ -16,9 +16,20 @@ t:
 	make test online=false verbose=true time=false
 
 icons:
-	node src/scripts/createLogoIcons.js
-	cp src/graphics/logoIcon/logoIcon-32* src/graphics/mobileApp/
-	cp src/graphics/logoIcon/logoIcon-96* src/graphics/website/
+	# app meta resources
+	cp src/graphics/App-Icon.png src/client/ios/logo@2x.png && convert src/client/ios/logo@2x.png -resize 57x57 src/client/ios/logo.png
+	# /mobileApp
+	convert src/graphics/logoIcon-blank.png -resize 64x64 src/graphics/mobileApp/logoIcon-blank-32x32@2x.png
+	convert src/graphics/logoIcon-blank.png -resize 192x192 src/graphics/mobileApp/logoIcon-blank-96x96@2x.png
+	convert src/graphics/logoIcon-blank.png -resize 256x256 src/graphics/mobileApp/logoIcon-blank-128x128@2x.png
+	convert src/graphics/logoName.png -resize 332x144 src/graphics/mobileApp/logoName-166x72@2x.png
+	convert src/graphics/logoName.png -resize 112x48 src/graphics/mobileApp/logoName-56x24@2x.png
+	# /identity
+	convert src/graphics/logoIcon-blank.png -resize 128x128 src/graphics/identity/logoIcon-blank-128x128.png
+	convert src/graphics/logoIcon-blank.png -resize 256x256 src/graphics/identity/logoIcon-blank-256x256.png
+	cp src/graphics/logoIcon-letter.png src/graphics/identity/logoIcon-letter-512x512.png
+	convert src/graphics/logoName.png -resize 332x144 src/graphics/identity/logoName-332x144.png
+	convert src/graphics/logoName.png -resize 166x72 src/graphics/identity/logoName-166x72.png
 
 # Create a new iOS build and deliver it to all developers via testflight
 fly-dev: fly-build

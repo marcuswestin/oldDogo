@@ -51,7 +51,7 @@ function showTextInput(data) {
 	})
 	
 	$(div('fakeIPhoneKeyboard', style({
-		background:'url(/graphics/iphoneKeyboard.png) white',
+		background:'url(/graphics/mockPhone/iphoneKeyboard.png) white',
 		backgroundSize:px(320,216), height:gKeyboardHeight, width:viewport.width(),
 		position:'absolute', bottom:0
 	}))).appendTo('#viewport').on('mousedown', function($e) { $e.preventDefault() })

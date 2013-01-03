@@ -50,7 +50,7 @@ function render(_opts) {
 		
 		// div('loading', 'Loading...'),
 		div('close button',
-			glyphish('xtras-white/37-circle-x', 20, 20),
+			glyphish('xtras-white/37-circle-x', 28, 28),
 			style({ bottom:viewport.height() - 30, right:3 }, transition('-webkit-transform', controlsDuration)),
 			button(function() { opts.onHide() })
 		),
@@ -60,7 +60,7 @@ function render(_opts) {
 					div('tools',
 						state.toolPicker = makeToolPicker({ paint:p, width:dim, height:dim }),
 						div('right',
-							div('button undo secondary', glyphish('white/215-subscription', 19, 23), button(undoDraw)),
+							div('button undo secondary', glyphish('white/213-reply', 23, 17), button(undoDraw)),
 							div('button send', 'Send', button(sendImage))
 						)
 					)

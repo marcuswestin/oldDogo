@@ -44,6 +44,8 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>0.97.2</string>
+	<key>FacebookAppID</key>
+	<string>219049001532833</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIAppFonts</key>
@@ -65,7 +67,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>FacebookAppID</key>
-	<string>219049001532833</string>
 </dict>
 </plist>

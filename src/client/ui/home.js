@@ -13,7 +13,7 @@ var conversationsList
 module.exports = {
 	render:function() {
 		return div('homeView',
-			div('logoName', icon('logoName', 60, 26, 12, 0, 8, 0)),
+			div('logoName', icon('logoName', 260, 125, 12, 0, 8, 0)),
 			div('conversations', div('info', 'Loading...'), function($conversations) {
 				gState.load('conversations', function(conversations) {
 					// setTimeout(function() { selectConversation(conversations[0]) }) // AUTOS

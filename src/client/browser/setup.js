@@ -82,8 +82,8 @@ function setupBrowserDebugMode() {
 		$('#viewport').css({ margin:'0 auto', position:'relative', top:gViewportTop, height:viewport.height() })
 		$('body').css({ background:'#222' }).prepend(
 			div(style({ position:'absolute', top:0, left:0, width:'100%' }),
-				img({ src:'/graphics/statusBar.png' }, style({ width:320, display:'block', margin:'0 auto', position:'relative', top:34 })),
-				img({ src:'/graphics/iphone4.png' }, style({ margin:'-120px auto', display:'block' }))
+				img({ src:'/graphics/mockPhone/iphoneStatusBar.png' }, style({ width:320, display:'block', margin:'0 auto', position:'relative', top:34 })),
+				img({ src:'/graphics/mockPhone/iphone4.png' }, style({ margin:'-120px auto', display:'block' }))
 			)
 		)
 	})
@@ -113,6 +113,23 @@ function setupBrowserDebugMode() {
 	$buttons.append(div(padded, 'Run Connect tests', button(function() {
 		var clientTests = require('../clientTests')
 		clientTests.runConnectTests()
+	})))
+	var splashShowing = false
+	$buttons.append(div(padded, 'Toggle Splash Screen', button(function() {
+		var duration = 500
+		if (splashShowing) {
+			$('#splashScreen').css({ opacity:0 })
+			setTimeout(function() { $('#splashScreen').remove() }, duration)
+		} else {
+			$('#viewport').append(
+				img({ id:'splashScreen', src:'/client/ios/Default.png' },
+					style({ position:'absolute', top:-20, left:0, opacity:0, zIndex:2, width:viewport.width(), height:viewport.height()+20 }),
+					style(transition({ opacity:500 }))
+				)
+			)
+			setTimeout(function() { $('#splashScreen').css({ opacity:1 }) })
+		}
+		splashShowing = !splashShowing
 	})))
 	$('body').append($buttons)
 }

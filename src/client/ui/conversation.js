@@ -224,7 +224,7 @@ function renderContent(message) {
 		var pixelSize = scaleSize(displaySize)
 		var gradientSize = [displaySize[0], Math.round(displaySize[1] / 3)]
 		var gradient = div('gradient', styleSize(gradientSize), style(translate.y(displaySize[1]-gradientSize[1])))
-		var loadingClock = div('loadingClock', glyphish('custom/11-clock', 25, 25),
+		var loadingClock = div('loadingClock', icon('clock', 25, 25),
 			style(translate(displaySize[0] / 2 - 25/2, displaySize[1] / 2 - 25/2)),
 			style({ width:0, height:0 })
 		)
@@ -314,7 +314,7 @@ function promptInvite(message) {
 	var conversation = view.conversation
 	var height = 140
 	var faceSize = 34
-	var $infoBar = $(div(style({ height:height }), div('dogo-info',
+	var $infoBar = $(div(style({ height:height, width:viewport.width() }), div('dogo-info',
 		div('invite',
 			div('encouragement', message.body ? 'Nice Message!' : 'Very Expressive!'),
 			div('personal', view.conversation.person.fullName.split(' ')[0], " has not installed Dogo"),

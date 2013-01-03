@@ -46,24 +46,24 @@ body
 		> div
 			absolute top 0 left 0; width 100%; height 100%;
 
-.connectView
+#connectView
 	text-align center; width 100%; absolute top 0;
-	background -webkit-radial-gradient(center, ellipse cover, #F7EBB7 0%, #F8BB4D 110%);
+	gradient(lighten(#227EBF, 25%), lighten(#227EBF, 75%));
 	z-index 2;
-	.logo
-		font-size 60px; padding-top 140px; font-weight bold;
-	.slogan
-		font-size 20px; color #1A84BB; font-weight 100;
-		margin 215px 0 90px 0; -webkit-transform rotate(-7deg) translateX(30px);
+	.logoIcon
+		margin 32px 0 0 0;
+	.logoName
+		// margin 20px 0 0 0;
 	.button
-		background #1A84BB; font-size 22px; text-shadow rgba(0,0,0,.3); margin 0 auto; padding 10px 8px 12px;
-		margin 0 auto 25px; width 200px; box-shadow 0 5px 0 #143075; border none; font-weight 100; border-radius 8px;
+		font-size 22px; text-shadow rgba(0,0,0,.3); padding 10px 8px 12px;
+		margin 0 auto; width 200px; border-radius 8px;
+		margin-bottom 20px;
 	.button.active
-		box-shadow 0 5px 0 rgba(20, 48, 117, 0); -webkit-transform translateY(5px);
+		box-shadow 0 0 0;
 	.notice
-		width 240px; margin 0 auto; color #F89246; font-size 13px;
-		.link
-			color #DD4421;
+		width 240px; margin 0 auto; color #fff; font-size 13px;
+	.link
+		text-decoration underline;
 
 .head
 	.corner

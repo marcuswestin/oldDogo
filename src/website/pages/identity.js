@@ -5,6 +5,7 @@ slice = require('std/slice')
 tags = require('tags')
 
 div = tags('div')
+img = tags('img')
 
 Raphael.fn.colorPickerIcon = function (x, y, r) {
 	var pi = Math.PI;
@@ -34,7 +35,8 @@ function abs(left, top) {
 	return style({ position:'absolute', top:top, left:left })
 }
 
-function graphic(w, h, content) {
+function graphic(w, h) {
+	var content = slice(arguments, 2)
 	return div(
 		div('subtitle', w,'x',h),
 		div(style({ position:'relative', width:w, height:h, margin:10 }),
@@ -58,49 +60,51 @@ function svg(w, h, callback) {
 	})
 }
 
-function renderIcon(size, pos) {
-	return div(abs(pos[0], pos[1]),
-		style({ background:'url(/graphics/logoIcon/logoIcon-'+size+'x'+size+'.png) transparent no-repeat', backgroundSize:size+'px '+size+'px', width:size, height:size })
+function logoIcon(size, top, postfix) {
+	if (!postfix) { postfix = 'blank' }
+	return div(style({ margin:top+'px auto 0', display:'inline-block', textAlign:'center', width:'100%' }),
+		img({ src:'/graphics/identity/logoIcon-'+postfix+'-'+size+'x'+size+'.png' })
+	)
+}
+
+function logoName(width, height, marginTop) {
+	return div(
+		style({ marginTop:marginTop, width:'100%', textAlign:'center' }),
+		img({ src:'/graphics/identity/logoName-'+width+'x'+height+'.png' })
 	)
 }
 
 $(function() {
 	
-	var iconGradientAmount = 90
+	var iconGradientAmount = 70
 	var spashGradientAmount = 50
 	
 	$('.sections').append(
-		section('icons', 'Icons',
-			graphic(57, 57,
-				div(brandGradient('center', iconGradientAmount), renderIcon(34, [11, 11]))
-			),
-			graphic(114, 114,
-				div(brandGradient('center', iconGradientAmount), renderIcon(68, [23, 24]))
-			),
-			graphic(72, 72,
-				div(brandGradient('center', iconGradientAmount), renderIcon(32, [20, 20]))
-			),
-			graphic(144, 144,
-				div(brandGradient('center', iconGradientAmount), renderIcon(96, [24, 24]))
-			),
-			graphic(340, 340,
-				div(brandGradient('center', iconGradientAmount), renderIcon(256, [40, 40]))
-			),
-
-			div('title', 'Splash Screens'),
+		section('splashScreens', 'Splash Screens',
 			graphic(320,480,
-				div(brandGradient([160, 150], spashGradientAmount), renderIcon(128, [100, 100]))
+				div(brandGradient([160, 170], spashGradientAmount),
+					logoIcon(128, 100),
+					logoName(166, 72, 74)
+				)
 			),
 			graphic(640,960,
-				div(brandGradient([320, 300], spashGradientAmount), renderIcon(256, [200, 200]))
+				div(brandGradient([320, 330], spashGradientAmount),
+					logoIcon(256, 200),
+					logoName(332, 144, 130)
+				)
 			),
 			graphic(640,1136,
-				div(brandGradient([320, 300], spashGradientAmount), renderIcon(256, [200, 200]))
+				div(brandGradient([320, 330], spashGradientAmount),
+					logoIcon(256, 200),
+					logoName(332, 144, 130)
+				)
 			),
 			
 			div('title', 'App Store'),
 			graphic(1024, 1024,
-				div(brandGradient('center', iconGradientAmount), renderIcon(512, [250, 250]))
+				div(brandGradient([512, 512], iconGradientAmount),
+					logoIcon(512, 250, 'letter')
+				)
 			)
 			
 		),

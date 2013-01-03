@@ -106,6 +106,11 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 				req.session = { accountId:accountId }
 				next()
 			})
+		},
+		delay: function delayRequest(amount) {
+			return function(req, res, next) {
+				setTimeout(function() { next() }, amount)
+			}
 		}
 	}
 	filter.oldClientsAndSession = [filter.oldClients, filter.session]
@@ -221,6 +226,7 @@ function setupDev(app) {
 	app.get('/fonts/*', sendStatic('src'))
 	app.get('/lib/*', sendStatic('src'))
 	app.get('/graphics/*', sendStatic('src'))
+	app.get('/client/*', sendStatic('src'))
 	
 	app.get('/stylus/*', function(req, res) {
 		combine.compileStylusPath(req.path, {}, curry(respondCss, req, res))
