@@ -2,14 +2,6 @@ var face = module.exports = function face(account, size, styles) {
 	return facebookFace(account, size, styles)
 }
 
-face.large = function(account) {
-	return facebookFace(account, 75)
-}
-
-face.small = function(account) {
-	return facebookFace(account, false, 25)
-}
-
 face.backgroundStyle = backgroundStyle
 
 face.mine = function myFace(size, styles) {
