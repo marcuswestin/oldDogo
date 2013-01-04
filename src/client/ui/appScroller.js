@@ -46,7 +46,7 @@ function createAndRenderScroller() {
 			}
 		}
 		return div('head', style(translate(0,0)),
-			renderCornerBlocks()
+			renderCornerBlocks(),
 			div('corner left', style({ borderRadius:leftCornerRadius }),
 				showBackButton
 					? div('back', icons.back, backIconDragger)
