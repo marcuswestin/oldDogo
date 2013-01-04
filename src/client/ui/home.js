@@ -14,18 +14,23 @@ module.exports = {
 	render:function() {
 		return div('homeView',
 			div('logoName', icon('logoName-header', 70, 30, 10,0,6,0)),
-			div('conversations', div('info', 'Loading...'), function($conversations) {
+			div('conversations', div('ghostTown', 'Fetching friends...'), function($conversations) {
 				gState.load('conversations', function(conversations) {
 					// setTimeout(function() { selectConversation(conversations[0]) }) // AUTOS
+					var drewLoading = false
 					$conversations.empty().append(
-						div('info'),
 						conversationsList = list({
 							items:getInitialConversations(conversations),
 							onSelect:selectConversation,
 							getItemId:getConversationId,
 							renderItem:renderCard,
 							renderEmpty:function() {
-								return div('ghostTown', "Make some friends on Facebook, then come back to Dogo")
+								if (drewLoading) {
+									return div('ghostTown', "Make some friends on Facebook, then come back to Dogo")
+								} else {
+									drewLoading = true
+									return div('ghostTown', "Fetching friends...")
+								}
 							}
 						})
 					)
