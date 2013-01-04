@@ -34,14 +34,20 @@ function setupBrowserDebugMode() {
 				location.reload()
 				break
 			case 'state.set':
-				var state = _getState(); state[data.key] = data.value;
-				localStorage['dogo-browser-state'] = JSON.stringify(state)
+				setTimeout(function() {
+					var state = _getState(); state[data.key] = data.value;
+					localStorage['dogo-browser-state'] = JSON.stringify(state)
+				})
 				break
 			case 'state.clear':
-				localStorage.clear()
+				setTimeout(function() {
+					localStorage.clear()
+				})
 				break
 			case 'state.load':
-				callback(null, _getState()[data.key])
+				setTimeout(function() {
+					callback(null, _getState()[data.key])
+				})
 				break
 			case 'index.build':
 				index.build(data)
