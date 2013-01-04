@@ -74,16 +74,8 @@ function render(_opts) {
 	p.withBackground(function(bg) {
 		bg.fillStyle('#FFFFFF').fillRect([0,0], canvasDensity)
 	})
-	if (opts.img) {
-		// TODO this call is way overloaded
-		loadBackgroundImage({
-			mediaId:opts.img.mediaId,
-			style:opts.img.style,
-			width:opts.message.pictureWidth,
-			height:opts.message.pictureHeight,
-			pictureSecret:opts.message.pictureSecret,
-			conversationId:opts.message.conversationId
-		})
+	if (opts.background) {
+		drawBackgroundImage(opts.background.url, opts.background.size[0], opts.background.size[1])
 	}
 	
 	if (tags.isTouch) {
@@ -96,24 +88,7 @@ function render(_opts) {
 	
 	function undoDraw() { p.popLayer() }
 	
-	function loadBackgroundImage(opts) {
-		if (opts.mediaId) {
-			doDrawBackgroundImage('/blowtorch/media/'+opts.mediaId+'.jpg', opts.width, opts.height)
-		} else if (opts.backgroundPath) {
-			doDrawBackgroundImage('/'+opts.backgroundPath, opts.width, opts.height)
-		} else if (opts.pictureSecret) {
-			// TODO Show loading indicator
-			var pictureUrl = pictures.displayUrl(opts)
-			doDrawBackgroundImage(pictureUrl, opts.width, opts.height)
-		} else if (opts.style) {
-			var underlyingUrl = opts.style.background.match(/url\((.*)\)/)[1]
-			if (underlyingUrl.match(/^data/) || !tags.isTouch) {
-				doDrawBackgroundImage(underlyingUrl, opts.width, opts.height)
-			}
-		}
-	}
-	
-	function doDrawBackgroundImage(url, picWidth, picHeight) {
+	function drawBackgroundImage(url, picWidth, picHeight) {
 		var drawImg = new Image()
 		drawImg.onload = function() {
 			p.withBackground(function(bg) {
@@ -164,7 +139,7 @@ function render(_opts) {
 }
 
 function sendImage() {
-	var data = p.snapshot().toDataURL('image/jpg')
+	var data = p.snapshot().toDataURL('image/jpeg')
 	opts.onSend(data, canvasDensity[0], canvasDensity[1])
 }
 

@@ -28,6 +28,8 @@ function setupBrowserDebugMode() {
 					events.fire('facebook.dialogCompleteWithUrl', { url:'fake_fbconnect://success?request='+res.request })
 				})
 				break
+			case 'facebook.clear':
+				callback(null)
 			case 'app.restart':
 				location.reload()
 				break
@@ -105,7 +107,6 @@ function setupBrowserDebugMode() {
 	})
 	$buttons.append(div(padded, 'Clear state', button(function() {
 		gState.clear()
-		bridge.command('app.restart')
 	})))
 	$buttons.append(div(padded, 'Run Usage tests', button(function() {
 		var clientTests = require('../clientTests')

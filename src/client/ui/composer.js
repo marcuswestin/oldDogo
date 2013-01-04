@@ -142,16 +142,20 @@ function _selectPhoto() {
 		if (!sources[res.index]) { return }
 		bridge.command('media.pick', { source:sources[res.index], allowsEditing:true }, function(err, res) {
 			if (!res.mediaId) { return }
-			selectDraw({ mediaId:res.mediaId }, { pictureWidth:res.width, pictureHeight:res.height })
+			selectDraw({
+				background: {
+					url: '/blowtorch/media/'+opts.mediaId+'.jpg',
+					size: [res.width, res.height]
+				}
+			})
 		})
 	})
 }
 
-function _selectDraw(img, message) {
+function _selectDraw(background) {
 	$('#composer .inputArea').empty().append(
 		drawer.render({
-			img:img,
-			message:message,
+			background:background,
 			onHide:composer.hide,
 			onSend:function sendImage(data, width, height) {
 				sendMessage({ picture:{ width:width, height:height, base64Data:data } })

@@ -51,9 +51,6 @@
 
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackOpaque];
         
-        [[self.webView scrollView] setBounces:NO];
-        self.webView.dataDetectorTypes = UIDataDetectorTypeNone;
-        
         BOOL isDev = [scheme isEqualToString:@"http:"];
         [self setupApp:!isDev];
         [self startApp];

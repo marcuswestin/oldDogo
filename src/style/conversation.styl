@@ -95,31 +95,15 @@ fromMeGradient(alpha1, alpha2)
 				box-shadow 0 0 15px rgba(255, 255, 255, 0.3);
 
 .drawer
-	line-height 0; z-index 2; background #000;
+	z-index 2; background #000;
 	.loading
 		relative top 150px; font-size 30px;
-	.controls-pos
-		position absolute; bottom 0; z-index 1;
-	.controls
-		line-height 20px;
-		.picker
-			position absolute;
-		.toolPicker
-			bottom 75px; left 3px;
-			.secondary
-				absolute bottom 0 left 5px; box-shadow 0 0 1px #ccc;
-		.right
-			float right; position relative; bottom 1px;
-			.button
-				margin 0 2px; padding 4px 10px 6px;
-				.icon
-					display inline-block;
-			.button.undo
-				padding-bottom 0px; margin-top 1px;
-			.button.send
-				relative bottom 6px;
-	.close.button
-		absolute top 4px; z-index 1; font-size 14px; padding 5px 7px 25px;
+	.buttons
+		float right;
+		.button
+			display block; margin 0 6px 6px; padding 5px 14px 7px
+	.drawTools
+		margin 8px 6px;
 
 #composer
 	absolute bottom 0; width 320px; z-index 2;

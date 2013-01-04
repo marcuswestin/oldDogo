@@ -80,7 +80,7 @@ function getMessagesList() {
 		renderEmpty:function() {
 			if (drewLoading) { return div('ghostTown', 'Start the conversation', br(), 'Draw something!') }
 			drewLoading = true
-			return div('loading', 'Loading...')
+			return div('ghostTown', 'Fetching messages...')
 		}
 	})
 	setTimeout(function() {
@@ -96,8 +96,16 @@ function getMessagesList() {
 }
 
 function selectMessage(message) {
-	if (message.pictureSecret || message.base64Data) {
-		composer.selectDraw($(this).find('.messageBubble .pictureContent')[0], message)
+	if (message.pictureSecret) {
+		composer.selectDraw({
+			url: pictures.displayUrl(message),
+			size: [message.pictureWidth, message.pictureHeight]
+		})
+	} else if (message.picture) {
+		composer.selectDraw({
+			url: message.picture.base64Data,
+			size: [message.picture.width, message.picture.height]
+		})
 	} else {
 		// do nothing
 	}

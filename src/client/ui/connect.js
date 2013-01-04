@@ -6,14 +6,14 @@ module.exports = {
 		var scroller = makeScroller({ duration:400, alwaysBounce:false })
 		return div({ id:'connectView' }, viewport.fit, brandGradient([viewport.width() / 2, 150], 50),
 			div('logoIcon', icon('logoIcon-blank', 128, 128, 48, 0, 0, 0)),
-			div({ id:'logoName' }, icon('logoName', 166, 72, 75, 0, 0, 0), style(translate(0, 0, 1000))),
+			div({ id:'logoName' }, icon('logoName', 166, 72, 64, 0, 0, 0), style(translate(0, 0, 1000))),
 			scroller.renderBody(2, function(view, info) {
 				switch (info.index) {
 					case 0: return function() {
 						var duration = 400
 						return div(
 							delayed(duration * 2, function($el) {
-								$('#logoName').css(translate(0, -180, duration * 1.25))
+								$('#logoName').css(translate(0, -169, duration * 1.25))
 								$el.append(div(style({ opacity:0, marginTop:300 }), style(transition('opacity', duration)),
 									div('button connect',
 										'Connect to ',
@@ -72,7 +72,12 @@ module.exports = {
 		)
 	},
 	slideOut: function() {
-		$('#connectView').css(translate.y(-viewport.height()-100, 650))
+		var duration = 750
+		$('#connectView')
+			.css(transition('opacity', duration)).css('opacity', 0)
+		setTimeout(function() {
+			$('#connectView').css(translate.y(-viewport.height()-100, 0))
+		}, duration)
 		// Warning: Actually removing the conenct view after the transition has completed causes an error where the screen becomes unresponsive. ¿Que?
 	}
 }

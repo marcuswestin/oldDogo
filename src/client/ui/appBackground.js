@@ -44,7 +44,6 @@ function renderDevTools() {
 	var styles = style({ margin:2, padding:px(6,8), fontSize:16 })
 	return div('devTools', style({ textAlign:'center', margin:px(10,0,0,0) }),
 		div('button', 'Reset', styles, button(function() {
-			gState.clear()
 			bridge.command('app.restart')
 		})),
 		div('button', 'Reload', styles, button(function() {

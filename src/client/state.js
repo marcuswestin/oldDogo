@@ -4,9 +4,13 @@ var state = module.exports = {
 		state.cache[key] = value
 		bridge.command('state.set', { key:key, value:value })
 	},
-	clear: function(callback) {
+	clear: function() {
 		state.cache = {}
-		bridge.command('state.clear', callback)
+		bridge.command('facebook.clear', function() {
+			bridge.command('state.clear', function() {
+				bridge.command('app.restart')
+			})
+		})
 	},
 	get:function(key) {
 		return state.cache[key]

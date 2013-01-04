@@ -96,9 +96,7 @@ function startApp(info) {
 			if (!isDevInfo || isDevInfo.isDev == null) {
 				gState.set('isDevInfo2', { isDev:gIsDev })
 			} else if (isDevInfo.isDev != gIsDev) {
-				gState.clear(function() {
-					bridge.command('app.restart')
-				})
+				gState.clear()
 			}
 		})
 		
@@ -119,8 +117,9 @@ function startApp(info) {
 		
 		if (gIsPhantom) {
 			// api.refresh('fa48a930-5e94-4f18-b180-998728a5fe85', onConnected)
-			bridge.command('app.show')
+			bridge.command('app.show', { fade:0 })
 		} else if (gState.getSessionInfo('authToken')) {
+			bridge.command('app.show', { fade:.75 })
 			onConnected()
 		} else {
 			$('#viewport').append(
@@ -129,11 +128,10 @@ function startApp(info) {
 					connect.slideOut()
 				})
 			)
+			setTimeout(function() {
+				bridge.command('app.show')
+			}, 250)
 		}
-		
-		setTimeout(function() {
-			bridge.command('app.show')
-		}, 750)
 		
 		function migrateNewClientUidBlock() {
 			var sessionInfo = gState.cache['sessionInfo']
