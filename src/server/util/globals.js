@@ -9,8 +9,6 @@ _ = require('underscore')
 
 ListPromise = require('std/ListPromise')
 
-nop = noop = function() { return this }
-
 makeTimer = require('./makeTimer')
 makeLog = require('./log').makeLog
 log = makeLog('Global')

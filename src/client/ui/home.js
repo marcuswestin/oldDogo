@@ -137,9 +137,6 @@ function reloadConversations(fillWith) {
 	api.get('conversations', function getConversations(err, res) {
 		if (err) { return error(err) }
 		var displayConversations = filter(res.conversations, function(convo) { return !!convo.lastMessage })
-		// this is arcane - we have a bunch of un-started convos and want the convos from server to appear first
-		// so we prepend them to conversationsList. However, they need to appear in correct order so we reverse them.
-		displayConversations.reverse()
 		conversationsList.prepend(displayConversations, { updateItems:true })
 		
 		gState.set('conversations', res.conversations)

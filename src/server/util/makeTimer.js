@@ -1,5 +1,3 @@
-require('color')
-
 module.exports = makeTimer
 
 function makeTimer(name) { return doMakeTimer(name) }

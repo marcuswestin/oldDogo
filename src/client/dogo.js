@@ -176,18 +176,3 @@ if (gIsPhantom) { delete localStorage['dogo-browser-state'] }
 if (gIsPhantom || !tags.isTouch) { browserModeSetup.setup() }
 
 bridge.init()
-
-// setTimeout(function() {
-// 	gScroller.$head.hide()
-// 	var drawer = require('./ui/drawer')
-// 
-// 	// var fake = { url:'http://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Dogo_Hot_Spring5%28Matsuyama_City%29.JPG/800px-Dogo_Hot_Spring5%28Matsuyama_City%29.JPG', w:800, h:600 }
-// 	// var fake = { w:640, h:480, url:'http://2.bp.blogspot.com/_YGZsB8JQLfQ/S9BqXfYSzPI/AAAAAAAAAsc/MObWJOghDlk/s1600/Argentine_Dogo_puppy.jpg' }
-// 	// var fake = { w:259, h:194, url:'https://encrypted-tbn3.google.com/images?q=tbn:ANd9GcTYALbWFAHdAbZOQifkFJDsbvHi_neQuh7Zrxbq3uE35uF0UrdUlA' }
-// 	// var fake = { w:1585, h:980, url:'http://www.free-pet-wallpapers.com/free-pet-wallpapers/free-pet-desktop-backgrounds/109844941.jpg'}
-// 	// var fake = { w:800, h:1132, url:'http://ourworldofdogs.com/wp-content/uploads/2012/02/dogo_argentino_2.jpg' }
-// 	var fake = { w:335, h:870, url:'http://xboxoz360.files.wordpress.com/2008/06/rez-side-banner.jpg' }
-// 	$('body > .app').append(QWEdrawer=drawer.render({ onSend:null, onHide:null, img:{style:{background:'url('+fake.url+')'}}, message:{ pictureWidth:fake.w, pictureHeight:fake.h } }))
-// 	
-// 	$('.controls-pos').remove()
-// }, 400)

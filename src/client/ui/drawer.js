@@ -142,31 +142,3 @@ function sendImage() {
 	var data = p.snapshot().toDataURL('image/jpeg')
 	opts.onSend(data, canvasDensity[0], canvasDensity[1])
 }
-
-// var rotationDeg
-// events.on('device.rotated', function(info) {
-// 	if (!$ui) { return }
-// 	var deg = rotationDeg = info.deg
-// 	var $pos = $ui.find('.controls-pos')
-// 	var $rot = $ui.find('.controls-rot')
-// 	var $controls = $ui.find('.controls')
-// 	var $close = $ui.find('.close.button')
-// 	if (Math.abs(deg) == 180) { return }
-// 	if (deg == 0) {
-// 		$close.css({ '-webkit-transform':'none' })
-// 		$controls.css({ width:width })
-// 		$pos.css({ '-webkit-transform':'none' })
-// 		$rot.css({ '-webkit-transform':'none' })
-// 	} else if (Math.abs(deg) == 90) {
-// 		$controls.css({ width:'100%' })
-// 		setTimeout(function() {
-// 			$controls.css({ width:height })
-// 			var closeOffset = deg < 0 ? [0, height - 35] : [width - 35, 0]
-// 			$close.css({ '-webkit-transform':'translate('+closeOffset[0]+'px, '+closeOffset[1]+'px)' })
-// 
-// 			var offset = deg < 0 ? [72, -211] : [-212, -211]
-// 			$pos.css({ '-webkit-transform':'translate('+offset[0]+'px, '+offset[1]+'px)' })
-// 			$rot.css({ '-webkit-transform':'rotate('+deg+'deg)' })
-// 		})
-// 	}
-// })
