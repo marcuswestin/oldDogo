@@ -13,6 +13,8 @@ var doMakeTimer = function(name) {
 	}
 }
 
+function nop() { return this }
+
 makeTimer.dummy = { start:nop, stop:nop, report:nop }
 
 makeTimer.disable = function() {
