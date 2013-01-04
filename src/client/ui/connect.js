@@ -54,13 +54,14 @@ module.exports = {
 					}
 					case 1: return div(style({ marginTop:300 }),
 						div('button', 'Enable Notifications', button(function() {
+							$(this).text('Enabling...').addClass('active')
 							bridge.command('push.register', function(err) {
 								onConnected()
 							})
 						})),
 						link('noNotifications', 'no thanks', function() {
 							setTimeout(function() {
-								var warning = "Without notifications your friends' messages won't arrive when they should o_O"
+								var warning = "You must enable notifications for Dogo to work properly"
 								return alert(warning)
 								// if (!confirm(warning)) { return }
 								onConnected()
