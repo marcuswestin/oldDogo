@@ -119,7 +119,7 @@ function startApp(info) {
 			// api.refresh('fa48a930-5e94-4f18-b180-998728a5fe85', onConnected)
 			bridge.command('app.show', { fade:0 })
 		} else if (gState.getSessionInfo('authToken')) {
-			bridge.command('app.show', { fade:.75 })
+			bridge.command('app.show', { fade:.95 })
 			onConnected()
 		} else {
 			$('#viewport').append(
