@@ -2,6 +2,7 @@ node_modules
 ._*
 .DS_Store
 xcuserdata
+project.xcworkspace
 build
 *.pyc
 dump.rdb
