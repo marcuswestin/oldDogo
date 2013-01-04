@@ -44,9 +44,6 @@ function createAndRenderScroller() {
 			}
 		}
 		return div('head', style(translate(0,0)),
-			div('shadow', button(function() {
-				gScroller.getCurrentView().animate({ scrollTop:0 }, 300)
-			})),
 			div('corner left', style({ borderRadius:leftCornerRadius }),
 				showBackButton
 					? div('back', icons.back, backIconDragger)

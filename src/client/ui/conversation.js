@@ -230,8 +230,6 @@ function renderContent(message) {
 	} else {
 		var displaySize = [262, 180]
 		var pixelSize = scaleSize(displaySize)
-		var gradientSize = [displaySize[0], Math.round(displaySize[1] / 3)]
-		var gradient = div('gradient', styleSize(gradientSize), style(translate.y(displaySize[1]-gradientSize[1])))
 		var loadingClock = div('loadingClock', icon('icon-clock', 25, 25),
 			style(translate(displaySize[0] / 2 - 25/2, displaySize[1] / 2 - 25/2)),
 			style({ width:0, height:0 })
@@ -241,7 +239,7 @@ function renderContent(message) {
 			// var attrs = style({ backgroundImage:'url('+pictures.displayUrl(message, pixelSize)+')' })
 			return [
 				loadingClock,
-				div('pictureContent', gradient, attrs,
+				div('pictureContent', attrs,
 					styleSize(displaySize), style(translate(0,0)),
 					style({ backgroundSize:px(displaySize) })
 				)
@@ -255,8 +253,7 @@ function renderContent(message) {
 			var scaledOffset = map([(displaySize[0]-scaledSize[0]) / 2, (displaySize[1]-scaledSize[1]) / 2], Math.round)
 			return [
 				loadingClock,
-				div('pictureContent',
-					gradient, attrs,
+				div('pictureContent', attrs,
 					styleSize(displaySize), style(translate(0,0)),
 					style({
 						backgroundImage:'url('+message.picture.base64Data+')',
