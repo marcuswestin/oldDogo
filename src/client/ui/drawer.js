@@ -20,8 +20,6 @@ var $ui
 
 var opts
 
-var controlsDuration = 350
-
 var p
 var $paint
 
@@ -33,43 +31,39 @@ function remove() {
 
 var pixelRatio = 2 // Always 2, to make the resulting image from normal 320 display be 640 dense for retina displays as well
 
+var icons = icon.preload({
+	close: ['glyphish/xtras-white/37-circle-x', 28, 28, 8, 13, 9, 13]
+})
+
 function render(_opts) {
 	
 	var dim = Math.min(viewport.width(), viewport.height())
 	canvasDensity = [dim * pixelRatio, dim * pixelRatio]
 	
-	opts = options(_opts, { onHide:null, onSend:null, img:null, message:null })
+	opts = options(_opts, { onHide:null, onSend:null, background:null })
 	
 	p = paint([dim, dim], pixelRatio)
 	
 	$ui = $(div('drawer', style(viewport.getSize()), style(translate(0,0)),
 	
-		gIsDev && div('button', style({ position:'absolute', top:10, left:10, padding:15 }), 'Reload', button(function() {
+		gIsDev && div('button', style({ position:'absolute', top:10, right:10 }), 'Reload', button(function() {
 			bridge.command('app.restart')
 		})),
 		
 		// div('loading', 'Loading...'),
-		div('close button',
-			icon('glyphish/xtras-white/37-circle-x', 28, 28),
-			style({ bottom:viewport.height() - 30, right:3 }, transition('-webkit-transform', controlsDuration)),
+		div('close', style({ display:'inline-block' }),
+			icons.close,
 			button(function() { opts.onHide() })
 		),
-		div('controls-pos', style(transition('-webkit-transform', controlsDuration)),
-			div('controls-rot', style(transition('-webkit-transform', controlsDuration)),
-				div('controls', style({ width:dim }, transition('width', controlsDuration)),
-					div('tools',
-						state.toolPicker = makeToolPicker({ paint:p, width:dim, height:dim }),
-						div('right',
-							div('button undo secondary', icon('glyphish/white/213-reply', 23, 17), button(undoDraw)),
-							div('button send', 'Send', button(sendImage))
-						)
-					)
-				)
-			)
+		$paint = $(p.el).addClass('paint'),
+		div('drawTools',
+			state.toolPicker = makeToolPicker({ paint:p, width:dim, height:dim })
+		),
+		div('buttons',
+			div('button undo secondary', 'Undo', button(undoDraw)),
+			div('button send', 'Send', button(sendImage))
 		)
 	))
-	
-	$ui.append($paint = $(p.el).addClass('paint'))
 	
 	p.withBackground(function(bg) {
 		bg.fillStyle('#FFFFFF').fillRect([0,0], canvasDensity)

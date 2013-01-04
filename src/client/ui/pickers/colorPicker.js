@@ -4,6 +4,7 @@ var basePicker = require('./basePicker')
 
 var colorLists = [
 	// ['multi1'],
+	[[236,172,68], [242,0,0], [203,121,124], [230,223,216]],
 	[[89, 197, 202], [129, 228, 164], [252, 212, 128], [250, 141, 69]],
 	[[110, 33, 81], [39, 118, 184], [185, 163, 133], [20, 16, 50]],
 	[[223, 88, 88], [106, 125, 150], [102, 77, 116], [247, 224, 226]]
@@ -29,7 +30,7 @@ module.exports = proto(basePicker,
 			var diameter = 58
 			var styles = {
 				width:diameter, height:diameter,
-				'border-radius':10
+				'border-radius': 40
 			}
 			var content
 			if (typeof color == 'string') {
@@ -92,7 +93,7 @@ module.exports = proto(basePicker,
 )
 
 function getGridPos(i, j, num) {
-	var expand = 68
+	var expand = 62
 	var x = j * expand
 	var y = -i * expand - 10 - expand
 	return [x, y]
