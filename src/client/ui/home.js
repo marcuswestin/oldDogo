@@ -118,10 +118,14 @@ function renderCard(conversation) {
 function getInitialConversations(conversations) {
 	var notStarted = []
 	var started = []
+	var family = []
+	var myLastName = gState.myAccount().lastName
 	
 	each(conversations, function(conv) {
 		if (conv.lastMessage) {
 			started.push(conv)
+		} else if (conv.person.fullName.split(' ').pop() == myLastName) {
+			family.push(conv)
 		} else {
 			notStarted.push(conv)
 		}
@@ -131,8 +135,12 @@ function getInitialConversations(conversations) {
 	var fillWithNum = clip(20 - started.length, minFillNum, notStarted.length)
 	var i = Math.floor(Math.random() * notStarted.length) // start at random pos
 	while (fillWithNum > 0) {
-		started.push(notStarted[i])
-		i = (i + 1) % notStarted.length
+		if (family.length) {
+			started.push(family.pop())
+		} else {
+			started.push(notStarted[i])
+			i = (i + 1) % notStarted.length
+		}
 		fillWithNum--
 	}
 	return started
@@ -141,9 +149,13 @@ function getInitialConversations(conversations) {
 function reloadConversations(fillWith) {
 	api.get('conversations', function getConversations(err, res) {
 		if (err) { return error(err) }
-		var displayConversations = filter(res.conversations, function(convo) { return !!convo.lastMessage })
+		if (conversationsList.isEmpty()) {
+			// first time load
+			var displayConversations = getInitialConversations(res.conversations)
+		} else {
+			var displayConversations = filter(res.conversations, function(convo) { return !!convo.lastMessage })
+		}
 		conversationsList.prepend(displayConversations, { updateItems:true })
-		
 		gState.set('conversations', res.conversations)
 	})
 }
