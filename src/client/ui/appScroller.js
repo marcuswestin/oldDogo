@@ -11,7 +11,7 @@ module.exports = {
 var icons = icon.preload({
 	back: ['glyphish/xtras-white/36-circle-west', 28, 28, 8, 13, 9, 13],
 	menu: ['icon-menu', 28, 28, 8, 11, 8, 11],
-	logoIcon: ['logoIcon-32x32', 32, 32, 5, 10, 8, 10],
+	logoIcon: ['logoIcon', 32, 32, 5, 10, 8, 10],
 	search: ['glyphish/white/112-group', 32, 21, 11, 8, 13, 12]
 })
 
@@ -30,6 +30,8 @@ function createAndRenderScroller() {
 	))
 	
 	// setTimeout(function() { updateAppBackground(); showAppBackground() }, 0) // AUTOS
+	
+	events.fire('appScroller.rendered')
 	
 	function renderScrollerHead(view, opts) {
 		var isHome = (gScroller.stack.length == 1)

@@ -84,7 +84,7 @@ $(function() {
 			graphic(320,480,
 				div(brandGradient([160, 170], spashGradientAmount),
 					logoIcon(128, 100),
-					logoName(166, 72, 74)
+					logoName(166, 72, 63)
 				)
 			),
 			graphic(640,960,

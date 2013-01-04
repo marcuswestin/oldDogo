@@ -15,7 +15,7 @@ var icons = icon.preload({
 	chat: ['glyphish/white/09-chat-2', 24, 22],
 	camera: ['glyphish/white/86-camera', 24, 18, 0, 0, 1],
 	palette: ['glyphish/white/98-palette', 24, 20],
-	close: ['circlex', 22, 23, 6, 6, 6, 6]
+	close: ['icon-circlex', 22, 23, 6, 6, 6, 6]
 })
 
 var composer = module.exports = {
