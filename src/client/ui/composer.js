@@ -73,7 +73,7 @@ function _selectText() {
 	$('#composer .tools').append(
 		div('closeTextInput',
 			icons.close,
-			style({ position:'absolute', top:6, right:8 }),
+			style({ position:'absolute', top:6, right:6 }),
 			button(function() { bridge.command('textInput.hide') })
 		)
 	)
@@ -86,7 +86,7 @@ function _selectText() {
 	})
 
 	var inputHeight = 36
-	var inputWidth = 262
+	var inputWidth = 265
 	var margin = 6
 	setHeight(toolsHeight + inputHeight + margin * 2 - 4, 200)
 	var textComposer = div(
