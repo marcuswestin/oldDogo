@@ -108,7 +108,7 @@ module.exports = proto(null,
 				if (err) { return callback(err) }
 				if (!res) { return callback('Unknown conversation') }
 				var participationId = res.id
-				this.db.select(this, this.sql.selectMessage+'WHERE conversation_id=? ORDER BY id DESC LIMIT 100', [conversationId], function(err, messages) {
+				this._selectMessages(this.db, conversationId, function(err, messages) {
 					if (err) { return callback(err) }
 					messages.reverse()
 					callback(null, messages)
@@ -133,11 +133,10 @@ module.exports = proto(null,
 				this.sql.selectFacebookRequest+'WHERE facebook_request_id=?', [facebookRequestId], function(err, facebookRequest) {
 					if (err) { return callback(err) }
 					if (!facebookRequest) { return callback('Unknown facebook request') }
-					this._selectMessages(this.db, facebookRequest.conversationId, bind(this, function(err, messages) {
+					this._selectMessages(this.db, facebookRequest.conversationId, function(err, messages) {
 						if (err) { return logErr(err, callback, 'loadFacebookRequestId._selectMessages', facebookRequest.conversationId) }
 						callback(null, { messages:messages, facebookRequest:facebookRequest })
-					}))
-					
+					})
 				})
 		},
 		// _withContactAccountId: function(accountId, contactAccountId, contactFacebookId, callback) {
