@@ -1,4 +1,5 @@
 var delayed = require('std/delayed')
+var conversations = require('../conversations')
 
 module.exports = {
 	render: function(onConnected) {
@@ -37,8 +38,9 @@ module.exports = {
 													return
 												}
 												$button.text('Connected!')
-												scroller.push()
+												scroller.push({})
 												events.fire('app.connected')
+												conversations.refresh(function(){ /* do nothing - just preload them */ })
 											})
 										})
 									})),

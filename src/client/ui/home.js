@@ -1,4 +1,5 @@
 var conversation = require('./conversation')
+var conversations = require('../conversations')
 var time = require('std/time')
 var hsvToRgb = require('client/colors/hsvToRgb')
 var pictures = require('data/pictures')
@@ -15,7 +16,7 @@ module.exports = {
 		return div('homeView',
 			div('logoName', icon('logoName-header', 70, 30, 10,0,6,0)),
 			div('conversations', div('ghostTown', 'Fetching friends...'), function($conversations) {
-				gState.load('conversations', function(conversations) {
+				conversations.load(function(conversations) {
 					// setTimeout(function() { selectConversation(conversations[0]) }) // AUTOS
 					var drewLoading = false
 					$conversations.empty().append(
@@ -146,17 +147,16 @@ function getInitialConversations(conversations) {
 	return started
 }
 
-function reloadConversations(fillWith) {
-	api.get('conversations', function getConversations(err, res) {
+function reloadConversations() {
+	conversations.refresh(function(err, conversations) {
 		if (err) { return error(err) }
 		if (conversationsList.isEmpty()) {
 			// first time load
-			var displayConversations = getInitialConversations(res.conversations)
+			var displayConversations = getInitialConversations(conversations)
 		} else {
-			var displayConversations = filter(res.conversations, function(convo) { return !!convo.lastMessage })
+			var displayConversations = filter(conversations, function(convo) { return !!convo.lastMessage })
 		}
 		conversationsList.prepend(displayConversations, { updateItems:true })
-		gState.set('conversations', res.conversations)
 	})
 }
 
