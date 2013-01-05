@@ -26,6 +26,7 @@ module.exports = function makeRouter(database, accountService, messageService, s
 		next()
 	})
 	app.use(express.bodyParser({ limit:'8mb' }))
+	// addApiLatency(app, 2000)
 	
 	var server = http.createServer(app)
 	
@@ -43,6 +44,16 @@ module.exports = function makeRouter(database, accountService, messageService, s
 			log("dogo-web listening on :"+port)
 		}
 	}
+}
+
+function addApiLatency(app, amount) {
+	app.use(function(req, res, next) {
+		if (req.url.match(/^\/api/)) {
+			setTimeout(function(){ next() }, amount)
+		} else {
+			next()
+		}
+	})
 }
 
 function setupProdProxy(app) {
