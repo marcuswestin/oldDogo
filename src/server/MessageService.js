@@ -201,7 +201,7 @@ module.exports = proto(null,
 		_selectMessages: function(conn, convoId, callback) {
 			conn.select(this, this.sql.selectMessage+' WHERE conversation_id=? ORDER BY id DESC LIMIT 50', [convoId], function(err, messages) {
 				messages.reverse()
-				callback(err, messages)
+				callback.call(this, err, messages)
 			})
 		},
 		_updateConversationLastMessage: function(conn, convoId, messageId, callback) {
