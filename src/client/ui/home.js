@@ -96,9 +96,13 @@ function renderCard(conversation) {
 			return [
 			div('right',
 				div('time', function() {
-					// time.ago.brief(lastMessage.sentTime * time.seconds, function(timeStr) {
-					// 	$time.text(timeStr)
-					// })
+					var id = tags.id()
+					setTimeout(function() {
+						time.ago.brief(lastMessage.sentTime * time.seconds, function(timeStr) {
+							$('#'+id).text(timeStr)
+						})
+					})
+					return { id:id }
 				}),
 				hasUnread && getUnreadDot(conversation)
 			),
