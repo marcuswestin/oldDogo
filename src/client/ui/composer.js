@@ -144,10 +144,8 @@ function _selectPhoto() {
 		bridge.command('media.pick', { source:sources[res.index], allowsEditing:true }, function(err, res) {
 			if (!res.mediaId) { return }
 			selectDraw({
-				background: {
-					url: '/blowtorch/media/'+opts.mediaId+'.jpg',
-					size: [res.width, res.height]
-				}
+				url: '/blowtorch/media/'+res.mediaId+'.jpg',
+				size: [res.width, res.height]
 			})
 		})
 	})
