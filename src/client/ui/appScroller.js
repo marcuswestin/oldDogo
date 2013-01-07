@@ -213,6 +213,7 @@ var searchIconDragger = (function makeSearchIconDragger() {
 		})
 		setTimeout(function(duration) {
 			$('.corner.right').css({ width:cornerSize.width })
+			$('.corner.right .searchUI').remove()
 		}, duration)
 		currentCornerSize = cornerSize
 		bridge.command('textInput.hide')
@@ -231,7 +232,9 @@ var searchIconDragger = (function makeSearchIconDragger() {
 			}
 		},
 		start:function() {
-			renderSearchUI()
+			if (currentCornerSize == cornerSize) {
+				renderSearchUI()
+			}
 		},
 		move:function(pos) {
 			var offset = clip(viewport.width() - currentCornerSize.width + pos.distance.x, 0, viewport.width() - cornerSize.width)
