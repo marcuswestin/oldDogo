@@ -23,3 +23,4 @@ canvas = tags('canvas')
 
 translate = style.translate
 transition = style.transition
+scrollable = style.scrollable
