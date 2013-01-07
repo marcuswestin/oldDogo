@@ -150,7 +150,7 @@ var searchIconDragger = (function makeSearchIconDragger() {
 	var maxCornerSize = { width:viewport.width(), height:viewport.height() - gKeyboardHeight }
 	var maxTextInputWidth = maxCornerSize.width - cornerSize.width - margin * 2
 	var textInputLeftOffset = cornerSize.width + margin
-	var resultsBoxTop = textInputHeight + margin * 2
+	var resultsBoxTop = textInputHeight + margin * 2 + 2
 	var maxResultsBoxWidth = maxCornerSize.width
 	var maxResultsBoxHeight = viewport.height() - gKeyboardHeight - resultsBoxTop
 	
