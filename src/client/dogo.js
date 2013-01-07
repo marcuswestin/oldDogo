@@ -10,19 +10,32 @@ error = function error(err) {
 	var message = api.error(err)
 	if (!error.$tag) {
 		error.$tag = $(div('errorNotice',
+			style({ position:'absolute', top:0, left:0 }),
 			div('content',
-				div('close', icon('icon-circlex', 22, 23), button(function() { error.hide() })),
+				style({ maxHeight:240 }), style(scrollable.y),
+				div('header',
+					span('title', 'Woops!'),
+					div('close', icon('icon-circlex', 22, 23), button(function() { error.hide() }), style(translate(6, 4)))
+				),
 				div('message')
 			)
 		)).appendTo('.tags-scroller-body')
-			.css({ position:'absolute', top:0, left:0 })
-			.css(translate.y(-150))
 	}
 	setTimeout(function() {
-		error.$tag.css(translate.y(0, 600)).find('.message').text(message)
+		error.$tag
+			.css({ visibility:'hidden' })
+			.find('.message').text(message)
+		setTimeout(function() {
+			error.$tag
+				.css(translate.y(-error.$tag.height(), 0))
+				.css({ visibility:'visible' })
+			setTimeout(function() {
+				error.$tag.css(translate.y(0, 600))
+			})
+		})
 	})
 	error.hide = function() {
-		error.$tag.css(translate.y(-150))
+		error.$tag.css(translate.y(-error.$tag.height()))
 	}
 }
 error.hide = function() {}
