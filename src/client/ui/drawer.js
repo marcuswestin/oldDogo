@@ -43,6 +43,7 @@ function render(_opts) {
 	opts = options(_opts, { onHide:null, onSend:null, background:null })
 	
 	p = paint([dim, dim], pixelRatio)
+	var $paint = $(p.el)
 	
 	$ui = $(div('drawer', style(viewport.getSize()), style(translate(0,0)),
 	
@@ -55,7 +56,7 @@ function render(_opts) {
 			icons.close,
 			button(function() { opts.onHide() })
 		),
-		$paint = $(p.el).addClass('paint'),
+		div('paint'),
 		div('drawTools',
 			state.toolPicker = makeToolPicker({ paint:p, width:dim, height:dim })
 		),
@@ -64,6 +65,8 @@ function render(_opts) {
 			div('button send', 'Send', button(sendImage))
 		)
 	))
+	
+	$ui.find('.paint').append(p.el)
 	
 	p.withBackground(function(bg) {
 		bg.fillStyle('#FFFFFF').fillRect([0,0], canvasDensity)

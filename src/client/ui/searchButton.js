@@ -47,14 +47,11 @@ function render() {
 	}
 
 	function renderResult(result, i) {
-		if (!result.face) {
-			result.face = face(result.conversation.person, resultSize).__render()
-		}
 		var classNames = 'result'
 		if (i == 0) { classNames += ' topLeft' }
 		if (i == 3) { classNames += ' topRight' }
 		return div(classNames, style({ width:resultSize, height:resultSize }),
-			result.face,
+			face(result.conversation.person, resultSize),
 			div('names', result.conversation.person.fullName)
 		)
 	}
@@ -89,7 +86,7 @@ function registerTextInputEventListeners(searchItems, defaultResults, searchList
 		if (results.length > maxResults) {
 			results = results.slice(0, maxResults)
 		}
-		searchList.empty().append(results)
+		searchList.empty().append(results, { updateItems:false })
 	})
 	
 	var onTextInputReturn = events.on('textInput.return', function() {

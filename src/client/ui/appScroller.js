@@ -19,14 +19,17 @@ function createAndRenderScroller() {
 		onViewChanging:function onViewChanging() { events.fire('view.changing') },
 		duration:300
 	})
-	$('#viewport').prepend(div('dogoApp', style(translate(0,0)),
+	
+	var res = div('dogoApp', style(translate(0,0)),
 		appBackground.render(),
 		div('appForeground', style(translate(0,0)),
 			gScroller.renderHead(gHeadHeight, renderScrollerHead),
 			gScroller.renderBody(3, renderScrollerView),
 			gScroller.renderFoot(renderScrollerFoot)
 		)
-	))
+	)
+	
+	$('#viewport').prepend(res)
 	
 	// setTimeout(function() { updateAppBackground(); showAppBackground() }, 0) // AUTOS
 	
@@ -72,7 +75,7 @@ function createAndRenderScroller() {
 }
 
 events.on('statusBar.wasTapped', function() {
-	gScroller.getCurrentView().animate({ scrollTop:0 }, 300)
+	$(gScroller.getCurrentView()).animate({ scrollTop:0 }, 300)
 })
 
 var cornerSize = { width:50, height:44 }
@@ -94,7 +97,8 @@ var backIconDragger = (function makeBackIconDragger() {
 		gScroller.pop()
 	}
 	
-	return cornerDrager('left', {
+	return cornerDragger('left', {
+		threshold:2,
 		tap:function() {
 			goBack()
 		},
@@ -216,7 +220,8 @@ var searchIconDragger = (function makeSearchIconDragger() {
 	
 	// setTimeout(function() { renderSearchUI(); showSearchUI() }, 200) // AUTOS
 	
-	return cornerDrager('right', {
+	return cornerDragger('right', {
+		threshold:2,
 		tap:function() {
 			if (currentCornerSize == maxCornerSize) {
 				hideSearchUI()
@@ -245,14 +250,14 @@ var searchIconDragger = (function makeSearchIconDragger() {
 	})
 }())
 
-function cornerDrager(corner, opts) {
-	opts.threshold = 0
+function cornerDragger(corner, opts) {
 	opts.down = function() { $('.corner.'+corner).addClass('active') }
 	opts.up = function() { $('.corner.'+corner).removeClass('active') }
 	return draggable(opts)
 }
 
-var logoIconDragger = cornerDrager('left', {
+var logoIconDragger = cornerDragger('left', {
+	threshold:2,
 	tap:function() {
 		updateAppBackground()
 		showAppBackground()
@@ -276,7 +281,8 @@ var logoIconDragger = cornerDrager('left', {
 	}
 })
 
-var foregroundOverlayDragger = cornerDrager('left', {
+var foregroundOverlayDragger = cornerDragger('left', {
+	threshold:2,
 	start:function(pos) {
 		$('.appBackground').css(transition.none())
 	},

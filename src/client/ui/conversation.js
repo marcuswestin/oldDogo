@@ -87,7 +87,7 @@ function getMessagesList() {
 		gState.load(getMessagesCacheId(), function(messages) {
 			refreshMessages()
 			if (!messages || !messages.length) { return }
-			getMessagesList._list.append(messages)
+			getMessagesList._list.append(messages, { updateItems:false })
 			scrollDown()
 			checkScrollBounds()
 		})
@@ -118,7 +118,7 @@ function refreshMessages() {
 		if (wasCurrentView != view) { return }
 		if (err) { return error(err) }
 		var messagesList = getMessagesList()
-		messagesList.append(res.messages)
+		messagesList.append(res.messages, { updateItems:false })
 		scrollDown()
 		checkScrollBounds()
 		gState.set(getMessagesCacheId(), res.messages)
@@ -155,7 +155,7 @@ function checkScrollBounds() {
 function arrowImage(name, size) {
 	var url = image.url(name)
 	return div('arrow', style({ width:size[0], height:size[1],
-		background:'url("'+url+'") transparent no-repeat', backgroundSize:size[0]+'px '+size[1]+'px'
+		background:'url('+url+') transparent no-repeat', backgroundSize:size[0]+'px '+size[1]+'px'
 	}))
 }
 
@@ -171,22 +171,15 @@ gRenderMessageBubble = function(message, conversation, opts) {
 		message.body ? 'textMessage' : 'pictureMessage',
 		messageIsFromMe ? 'fromMe' : 'fromThem'
 	]
-	
-	return [
-		div('messageContainer',
-			div(classes.join(' '),
-					opts.face && div(
-						face(messageIsFromMe ? me : conversation.person, 34)
-					),
-					div('messageBubble',
-						opts.arrow && renderArrow(),
-						renderContent(message)
-					),
-					opts.dynamics && renderDynamics()
-				)
-		),
-		div('clear')
-	]
+	return [div('messageContainer',
+		div(classes.join(' '),
+			opts.face ? div(null, face(messageIsFromMe ? me : conversation.person, 34)) : null,
+			div('messageBubble',
+				div('arrow', { style:'width:5px; height:10px; background:url('+image.url('bubbleArrow-right')+'); background-size:5px 10px"' }),
+				renderContent(message)
+			)
+		)
+	), div('clear')]
 	
 	function renderArrow() {
 		return messageIsFromMe ? arrowImage('bubbleArrow-right', [5,10]) : arrowImage('bubbleArrow-left', [6,10])
@@ -201,21 +194,6 @@ gRenderMessageBubble = function(message, conversation, opts) {
 	}
 }
 
-// function clipLocalPicture(message) {
-// 	var maxWidth = 200
-// 	var maxHeight = 200
-// 	var width = message.pictureWidth
-// 	var height = message.pictureHeight
-// 	var ratio = 1
-// 	if (width > maxWidth) {
-// 		ratio = maxWidth / width
-// 		width = maxWidth
-// 		height = Math.round(height * ratio)
-// 	}
-// 	var offset = height > maxHeight ? -Math.floor((height - maxHeight) / 2) : 0
-// 	return style({ width:width, height:Math.min(height, maxHeight), backgroundSize:width+'px '+height+'px', backgroundPosition:'0 '+offset+'px' })
-// }
-
 function scaleSize(size) {
 	var ratio = (window.devicePixelRatio || 1)
 	return map(size, function(size) { return size * ratio })
@@ -226,43 +204,42 @@ function styleSize(size) {
 
 function renderContent(message) {
 	if (message.body) {
-		return div('textContent', linkify(message.body))
-	} else {
-		var displaySize = [262, 180]
+		return div('textContent', linkify(message.body).join(''))
+	}
+	
+	var displaySize = [262, 180]
+	var loadingClock = div('loadingClock', icon('icon-clock', 25, 25),
+		style(translate(displaySize[0] / 2 - 25/2, displaySize[1] / 2 - 25/2)),
+		style({ width:0, height:0 })
+	)
+	if (message.pictureSecret) {
 		var pixelSize = scaleSize(displaySize)
-		var loadingClock = div('loadingClock', icon('icon-clock', 25, 25),
-			style(translate(displaySize[0] / 2 - 25/2, displaySize[1] / 2 - 25/2)),
-			style({ width:0, height:0 })
-		)
-		if (message.pictureSecret) {
-			var attrs = { pictureUrl:pictures.displayUrl(message, pixelSize) }
-			// var attrs = style({ backgroundImage:'url('+pictures.displayUrl(message, pixelSize)+')' })
-			return [
-				loadingClock,
-				div('pictureContent', attrs,
-					styleSize(displaySize), style(translate(0,0)),
-					style({ backgroundSize:px(displaySize) })
-				)
-			]
-		} else {
-			var picSize = [message.picture.width, message.picture.height]
-			var widthRatio = displaySize[0] / picSize[0]
-			var heightRatio = displaySize[1] / picSize[1]
-			var ratio = Math.max(widthRatio, heightRatio) // Math.min for "fit" instead of "fill" into displaySize
-			var scaledSize = map(picSize, function(size) { return size * ratio })
-			var scaledOffset = map([(displaySize[0]-scaledSize[0]) / 2, (displaySize[1]-scaledSize[1]) / 2], Math.round)
-			return [
-				loadingClock,
-				div('pictureContent', attrs,
-					styleSize(displaySize), style(translate(0,0)),
-					style({
-						backgroundImage:'url('+message.picture.base64Data+')',
-						backgroundSize: px(scaledSize),
-						backgroundPosition: px(scaledOffset)
-					})
-				)
-			]
-		}
+		return [
+			loadingClock,
+			div('pictureContent',
+				{ pictureUrl:pictures.displayUrl(message, [262*2, 180*2]) },
+				style(translate(0,0)),
+				style({ width:displaySize[0], height:displaySize[1], backgroundSize:px(displaySize[0], displaySize[1]) })
+			)
+		]
+	} else {
+		var picSize = [message.picture.width, message.picture.height]
+		var widthRatio = displaySize[0] / picSize[0]
+		var heightRatio = displaySize[1] / picSize[1]
+		var ratio = Math.max(widthRatio, heightRatio) // Math.min for "fit" instead of "fill" into displaySize
+		var scaledSize = map(picSize, function(size) { return size * ratio })
+		var scaledOffset = map([(displaySize[0]-scaledSize[0]) / 2, (displaySize[1]-scaledSize[1]) / 2], Math.round)
+		return [
+			loadingClock,
+			div('pictureContent',
+				styleSize(displaySize), style(translate(0,0)),
+				style({
+					backgroundImage:'url('+message.picture.base64Data+')',
+					backgroundSize: px(scaledSize),
+					backgroundPosition: px(scaledOffset)
+				})
+			)
+		]
 	}
 }
 
@@ -274,24 +251,22 @@ function onNewMessage(message) {
 		var heightBefore = messagesList.height()
 		setTimeout(function() {
 			var dHeight = messagesList.height() - heightBefore
-			scrollDown(50, dHeight)
-		}, 50)
+			scrollDown(25, dHeight)
+		}, 25)
 	}
-	messagesList.append(message)
+	messagesList.append(message, { updateItems:false })
 	checkScrollBounds()
 }
-
-// function cacheMessage(message) {
-// 	var cache = gState.cache[conversation.id(view, 'messages')]
-// 	if (!cache) { return }
-// 	cache.unshift(message)
-// }
 
 events.on('push.message', function(payload) {
 	var message = payload.message
 	if (!view || view.conversation.id != message.conversationId) { return }
 	// cacheMessage(message)
 	onNewMessage(message)
+})
+
+events.on('composer.textInputSelected', function() {
+	scrollDown(250)
 })
 
 events.on('message.sending', function(message) {

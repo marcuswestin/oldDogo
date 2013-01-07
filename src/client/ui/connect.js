@@ -5,17 +5,17 @@ module.exports = {
 	render: function(onConnected) {
 		
 		var scroller = makeScroller({ duration:400, alwaysBounce:false })
-		return div({ id:'connectView' }, viewport.fit, brandGradient([viewport.width() / 2, 150], 50),
+		return div({ id:'connectView' }, brandGradient([viewport.width() / 2, 150], 50),
 			div('logoIcon', icon('logoIcon-blank', 128, 128, 48, 0, 0, 0)),
 			div({ id:'logoName' }, icon('logoName', 166, 72, 64, 0, 0, 0), style(translate(0, 0, 1000))),
 			scroller.renderBody(2, function(view, info) {
 				switch (info.index) {
 					case 0: return function() {
 						var duration = 400
-						return div(
+						return div({ id:'connectUI1' },
 							delayed(duration * 2, function($el) {
 								$('#logoName').css(translate(0, -169, duration * 1.25))
-								$el.append(div(style({ opacity:0, marginTop:300 }), style(transition('opacity', duration)),
+								$('#connectUI1').append(div(style({ opacity:0, marginTop:300 }), style(transition('opacity', duration)),
 									div('button connect',
 										'Connect to ',
 										div(icon('logoName', 56, 24), style({ display:'inline-block', marginTop:-6 }), style(translate.y(7))),
@@ -47,8 +47,9 @@ module.exports = {
 									div('notice',
 										'When you connect, you agree to our ', link('Privacy Policy', '/privacy'), ' & ', link('Terms of Service', '/terms')
 									),
-									delayed(duration, function($register) {
-										$register.css({ opacity:1 })
+									{ id:'registerUI' },
+									delayed(duration, function() {
+										$('#registerUI').css({ opacity:1 })
 									})
 								))
 							})

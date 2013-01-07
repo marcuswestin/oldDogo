@@ -3,13 +3,15 @@ module.exports = {
 	update:update
 }
 
-var mdot = function() { return $('<span> &middot; </span>') }
+var mdot = { __tagHTML:'&middot;' }
 
 function render() {
 	var top = 10
 	return div('appBackground', style({ marginTop:top, height:viewport.height()-top }),
 		div('card',
-			div('face large', style(face.backgroundStyle(gState.myAccount().facebookId, 75))),
+			div('person',
+				div('face large', style(face.backgroundStyle(gState.myAccount().facebookId, 75)))
+			),
 			div('summary',
 				div('name', function() {
 					var names = gState.myAccount().name.split(' ')
@@ -33,7 +35,7 @@ function update(width) {
 		div(
 			style({ width:'100%', position:'absolute', bottom:10, left:0, textAlign:'center', fontSize:12, color:'#ddd' }),
 			a('link', { href:'/terms', target:'_blank' }, 'Terms of Service'),
-			mdot().css({ fontSize:18, position:'relative', top:3 }),
+			span('mdot', mdot, style({ fontSize:18, position:'relative', top:3, padding:'0 3px' })),
 			a('link', { href:'/privacy', target:'_blank' }, 'Privacy Policy'),
 			br(), span(style({ textShadow:'0 1px 0 rgba(255, 255, 255, .3)' }), 'Made with love by Marcus Westin')
 		)

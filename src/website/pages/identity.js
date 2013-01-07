@@ -27,10 +27,6 @@ Raphael.fn.colorPickerIcon = function (x, y, r) {
     });
 };
 
-function fontSize(size) {
-	return style({ fontSize:size })
-}
-
 function abs(left, top) {
 	return style({ position:'absolute', top:top, left:left })
 }

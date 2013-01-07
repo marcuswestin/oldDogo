@@ -161,7 +161,7 @@ module.exports = (function(){
 		// Process the array items.
 		for ( i = 0; i < parts.length; i++ ) {
 			if (parts[i].href) {
-				parts[i] = $('<a href="' + parts[i].href + '" target="_blank">' + parts[i].link + '<\/a>')
+				parts[i] = '<a href="' + parts[i].href + '" target="_blank">' + parts[i].link + '<\/a>'
 			} else {
 				parts[i] = parts[i].text
 			}

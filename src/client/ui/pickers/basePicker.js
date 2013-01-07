@@ -17,7 +17,7 @@ module.exports = {
 		}
 		currentPicker = this
 		var self = this
-		this.$primary.css({ 'z-index':zIndex++ }).find('.list').each(function(i) {
+		$('#'+this.id+' .primary').css({ zIndex:zIndex++ }).find('.list').each(function(i) {
 			$(this).find('.item').each(function(j) {
 				var $el = $(this)
 				var pos = wasOpen ? [0,0] : self.getPos(i, j, self.itemLists[i].length - 1)
@@ -30,33 +30,34 @@ module.exports = {
 				}, self.delay(i,j))
 			})
 		})
-		this.$primary.find('.current').css({ 'z-index':zIndex++ })
+		$('#'+this.id+' .primary').find('.current').css({ zIndex:zIndex++ })
 		this.isOpen = !this.isOpen
 	},
 	onClose:function(i,j){},
 	onOpen:function(i,j){},
-	renderTag: function($tag) {
-		return $(div('picker '+this.className,
-			this.$primary=$(div('primary',
+	__renderTag: function($tag) {
+		this.id = tags.id()
+		return div('picker '+this.className, { id:this.id },
+			div('primary',
 				div('lists', this.renderLists()),
 				div('current', this._renderItem(this.current, true, bind(this, this.toggle)))
-			)),
-			this.$secondary=$(div('secondary',
+			),
+			div('secondary',
 				this.getSecondary(this.current)
-			))
-		))
+			)
+		)
 	},
 	_renderItem:function(item, isCurrent, onSelect) {
 		var touchHandler = isCurrent ? button(curry(onSelect, item)) : this.touchHandler(onSelect, item)
-		return div('item', touchHandler, style({ position:'absolute' }, translate(0, 0, duration)),
+		return div('item', touchHandler, style({ position:'absolute' }), style(translate(0, 0, duration)),
 			this.renderItem(isCurrent ? this.current : item, isCurrent)
 		)
 	},
 	renderLists:function() {
 		var selectItem = bind(this, function(payload) {
 			this.current = payload
-			this.$primary.find('.current').empty().append(this._renderItem(payload, true, bind(this, this.toggle)))
-			this.$secondary.empty().append(this.getSecondary(this.current))
+			$('#'+this.id+' .primary').find('.current').empty().append(this._renderItem(payload, true, bind(this, this.toggle)))
+			$('#'+this.id+' .secondary').empty().append(this.getSecondary(this.current))
 			this.toggle()
 		})
 		

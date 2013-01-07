@@ -29,8 +29,8 @@ icon.preload = function(icons) {
 		}
 		for (var name in icons) {
 			var args = icons[name]
-			result[name] = icon.apply(this, args).__render()
-			$('#preloadDiv').append(result[name])
+			result[name] = icon.apply(this, args)
+			$('#preloadDiv').append($(result[name]))
 		}
 	})
 	return result
@@ -43,7 +43,7 @@ image = (function() {
 		return image.base + name + size + '@2x.png'
 	}
 	function backgroundUrl(name, width, height) {
-		return 'url("'+imageUrl(name, width, height)+'")'
+		return 'url('+imageUrl(name, width, height)+')'
 	}
 	return {
 		base: '/graphics/',

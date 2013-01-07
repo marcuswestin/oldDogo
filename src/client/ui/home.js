@@ -13,31 +13,28 @@ var conversationsList
 
 module.exports = {
 	render:function() {
+		var drewLoading = false
+		setTimeout(function() {
+			conversations.load(function(conversations) {
+				conversationsList.append(getInitialConversations(conversations))
+			})
+		})
+		setTimeout(reloadConversations)
 		return div('homeView',
 			div('logoName', icon('logoName-header', 70, 30, 10,0,6,0)),
-			div('conversations', div('ghostTown', 'Fetching friends...'), function($conversations) {
-				conversations.load(function(conversations) {
-					// setTimeout(function() { selectConversation(conversations[0]) }) // AUTOS
-					var drewLoading = false
-					$conversations.empty().append(
-						conversationsList = list({
-							items:getInitialConversations(conversations),
-							onSelect:selectConversation,
-							getItemId:getConversationId,
-							renderItem:renderCard,
-							renderEmpty:function() {
-								if (drewLoading) {
-									return div('ghostTown', "Make some friends on Facebook, then come back to Dogo")
-								} else {
-									drewLoading = true
-									return div('ghostTown', "Fetching friends...")
-								}
-							}
-						})
-					)
-					reloadConversations()
-				})
-			})
+			div('conversations', conversationsList = list({
+				onSelect:selectConversation,
+				getItemId:getConversationId,
+				renderItem:renderCard,
+				renderEmpty:function() {
+					if (drewLoading) {
+						return div('ghostTown', "Make some friends on Facebook, then come back to Dogo")
+					} else {
+						drewLoading = true
+						return div('ghostTown', "Fetching friends...")
+					}
+				}
+			}))
 		)
 	},
 	reload:function() {
@@ -45,10 +42,10 @@ module.exports = {
 	}
 }
 
-var faces = {}
-function getFace(conversation) {
-	return faces[conversation.id] = faces[conversation.id] || $(face(conversation.person, 68).__render()).addClass('large')
-}
+// var faces = {}
+// function getFace(conversation) {
+// 	return faces[conversation.id] = faces[conversation.id] || $(face(conversation.person, 68).__render()).addClass('large')
+// }
 
 var unreadDots = {}
 function getUnreadDot(conversation) {
@@ -58,7 +55,9 @@ function getUnreadDot(conversation) {
 function renderCard(conversation) {
 	
 	return div('card',
-		getFace(conversation),
+		div('person',
+			face(conversation.person, 68)
+		),
 		// http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
 		// style({ background:'rgb('+map(hsvToRgb([(Math.random() + 0.618033988749895) % 1, 0.03, 0.95]), Math.round)+')' }),
 		div('summary', renderSummary(conversation)),
@@ -87,10 +86,10 @@ function renderCard(conversation) {
 		if (lastMessage) {
 			return [
 			div('right',
-				div('time', function($time) {
-					time.ago.brief(lastMessage.sentTime * time.seconds, function(timeStr) {
-						$time.text(timeStr)
-					})
+				div('time', function() {
+					// time.ago.brief(lastMessage.sentTime * time.seconds, function(timeStr) {
+					// 	$time.text(timeStr)
+					// })
 				}),
 				hasUnread && getUnreadDot(conversation)
 			),
@@ -154,7 +153,13 @@ function reloadConversations() {
 			// first time load
 			var displayConversations = getInitialConversations(conversations)
 		} else {
-			var displayConversations = filter(conversations, function(convo) { return !!convo.lastMessage })
+			var displayConversations = filter(conversations, function(convo) {
+				if (!convo.lastMessage) { return false }
+				var currentKnownConvo = conversationsList._getItem(conversationsList.getItemId(convo))
+				var lastKnownMessage = currentKnownConvo && currentKnownConvo.lastMessage
+				if (lastKnownMessage && lastKnownMessage.id == convo.lastMessage.id) { return false }
+				return true
+			})
 		}
 		conversationsList.prepend(displayConversations, { updateItems:true })
 	})

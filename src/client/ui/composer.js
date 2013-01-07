@@ -109,7 +109,7 @@ function _selectText() {
 	var onChangeHeightHandler = events.on('textInput.changedHeight', function adjustHeight(info) {
 		addHeight(info.heightChange, 0)
 		$('#composer .textInputBackground').css({ height:info.height - 2 })
-		var $view = gScroller.getCurrentView()
+		var $view = $(gScroller.getCurrentView())
 		var isAtBottom = Math.abs($view[0].scrollHeight - ($view.scrollTop() + $view.height())) < 40
 		$('#conversationView .messagesList').css({ marginBottom:info.height - inputHeight + 60 })
 		if (isAtBottom) {
@@ -126,6 +126,7 @@ function _selectText() {
 		composer.hide(_selectText)
 	})
 	
+	events.fire('composer.textInputSelected')
 	// setTimeout(function() { bridge.command('textInput.set', { text:'This is a long string to cause wrap W' }) })// AUTOS automatically resize composer text input
 }
 
