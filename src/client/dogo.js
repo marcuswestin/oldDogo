@@ -30,7 +30,7 @@ error = function error(err) {
 				.css(translate.y(-error.$tag.height(), 0))
 				.css({ visibility:'visible' })
 			setTimeout(function() {
-				error.$tag.css(translate.y(0, 600))
+				error.$tag.css(translate.y(0, 400))
 			})
 		})
 	})
