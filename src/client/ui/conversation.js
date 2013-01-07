@@ -84,8 +84,8 @@ function getMessagesList() {
 		}
 	})
 	setTimeout(function() {
+		refreshMessages(true)
 		gState.load(getMessagesCacheId(), function(messages) {
-			refreshMessages()
 			if (!messages || !messages.length) { return }
 			getMessagesList._list.append(messages, { updateItems:false })
 			scrollDown()
@@ -111,7 +111,7 @@ function selectMessage(message) {
 	}
 }
 
-function refreshMessages() {
+function refreshMessages(scrollToBottom) {
 	if (!view) { return }
 	var wasCurrentView = view
 	api.get('messages', { conversationId:view.conversation.id }, function refreshRenderMessages(err, res) {
@@ -119,7 +119,9 @@ function refreshMessages() {
 		if (err) { return error(err) }
 		var messagesList = getMessagesList()
 		messagesList.append(res.messages, { updateItems:false })
-		scrollDown()
+		if (scrollToBottom) {
+			scrollDown()
+		}
 		checkScrollBounds()
 		gState.set(getMessagesCacheId(), res.messages)
 	})
