@@ -25,15 +25,23 @@ function rawUrl(conversationId, pictureSecret, size) {
 	return base() + pictures.path(conversationId, pictureSecret, size)
 }
 
-function displayUrl(message, size) {
-	size = fixSize(size)
+function displayUrl(message, opts) {
+	opts = tags.options(opts, {
+		resize:null,
+		crop:null
+	})
 	var url = rawUrl(message.conversationId, message.pictureSecret)
 	var params = {
 		url:url,
 		cache:'yes',
 		mimeType:'image/jpg'
 	}
-	if (size) { params.resize = size.join('x') } // e.g '200x300'
+	if (opts.resize) {
+		params.resize = fixSize(opts.resize).join('x') // e.g '200x300'
+	}
+	if (opts.crop) {
+		params.crop = fixSize(opts.crop).join('x')
+	}
 	return BT.url('BTImage', 'fetchImage', params)
 }
 

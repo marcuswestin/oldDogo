@@ -55,6 +55,15 @@ function getUnreadDot(conversation) {
 function renderCard(conversation) {
 	
 	return div('card',
+		conversation.lastMessage && conversation.lastMessage.pictureSecret && function() {
+			var size = [308, 200]
+			var url = pictures.displayUrl(conversation.lastMessage, { crop:[size[0]*2, size[1]*2] })
+			var ratio = window.devicePixelRatio || 1
+			return style({
+				background:'url('+url+') transparent no-repeat',
+				height:size[1], backgroundSize:px(size)
+			})
+		},
 		div('person',
 			face(conversation.person, 68)
 		),
@@ -96,15 +105,7 @@ function renderCard(conversation) {
 			renderName(person),
 			div('lastMessage', lastMessage.body
 				? div('body', gRenderMessageBubble(lastMessage, conversation, { dynamics:false, face:true, arrow:true }))
-				: div('picture', function() {
-					var size = [304, 188]
-					var url = pictures.displayUrl(lastMessage, size)
-					var ratio = window.devicePixelRatio || 1
-					return style({
-						background:'url('+url+') transparent no-repeat',
-						width:size[0], height:size[1], backgroundSize:size+'px '+size+'px'
-					})
-				})
+				: null // background image has already rendered over entire conversationc card
 			)]
 		} else {
 			return [

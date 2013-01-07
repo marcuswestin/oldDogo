@@ -217,7 +217,7 @@ function renderContent(message) {
 		return [
 			loadingClock,
 			div('pictureContent',
-				{ pictureUrl:pictures.displayUrl(message, [262*2, 180*2]) },
+				{ pictureUrl:pictures.displayUrl(message, { resize:[262*2, 180*2] }) },
 				style(translate(0,0)),
 				style({ width:displaySize[0], height:displaySize[1], backgroundSize:px(displaySize[0], displaySize[1]) })
 			)
