@@ -31,7 +31,7 @@ body
 		// gradient(#0073FF, lighten(#0073FF, 50%))
 		// gradient(#0073FF, lighten(#0073FF, 75%))
 		// gradient(lighten(#0073FF, 10%), lighten(#0073FF, 75%))
-		gradient(lighten(#0073FF, 10%), #BBE4FF)
+		gradient(appBackgroundFrom, appBackgroundTo)
 		// gradient(#00A3FF, lighten(#30A4FF, 75%))
 		// gradient(#0070FF, lighten(#30A4FF, 75%))
 		// gradient(lighten(#227EBF, 25%), lighten(#025E9F, 75%))
@@ -76,12 +76,12 @@ body
 	height 0;
 	.corner
 		height 44px; width 50px; overflow hidden;
-		gradient(#227EBF, #025E9F);
+		gradient(buttonFrom, buttonTo);
 		border-top 1px solid rgba(255,255,255, .37);
 		border-bottom 1px solid rgba(0, 0, 0, .25);
 		box-shadow 0 1px 2px rgba(0, 0, 0, .7);
 	.corner.active
-		background #227EBF;
+		cornerActive()
 	.corner.left
 		absolute top 0 left 0;
 		border-right 1px solid rgba(255,255,255, .05);
