@@ -42,10 +42,6 @@ module.exports = {
 	}
 }
 
-// var faces = {}
-// function getFace(conversation) {
-// 	return faces[conversation.id] = faces[conversation.id] || $(face(conversation.person, 68).__render()).addClass('large')
-// }
 
 var unreadDots = {}
 function getUnreadDot(conversation) {
@@ -65,7 +61,7 @@ function renderCard(conversation) {
 			})
 		},
 		div('person',
-			face(conversation.person, 68)
+			face(conversation.person, { size:80 })
 		),
 		// http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
 		// style({ background:'rgb('+map(hsvToRgb([(Math.random() + 0.618033988749895) % 1, 0.03, 0.95]), Math.round)+')' }),

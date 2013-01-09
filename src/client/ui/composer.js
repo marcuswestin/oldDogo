@@ -90,7 +90,7 @@ function _selectText() {
 	var margin = 6
 	setHeight(toolsHeight + inputHeight + margin * 2 - 4, 200)
 	var textComposer = div(
-		face.mine(inputHeight),
+		face.mine({ size:inputHeight }),
 		div('textInputBackground', style({
 			width:inputWidth , height:inputHeight, marginLeft:margin
 		}))

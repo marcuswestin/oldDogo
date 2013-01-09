@@ -175,7 +175,7 @@ gRenderMessageBubble = function(message, conversation, opts) {
 	]
 	return [div('messageContainer',
 		div(classes.join(' '),
-			opts.face ? div(null, face(messageIsFromMe ? me : conversation.person, 34)) : null,
+			opts.face ? face(messageIsFromMe ? me : conversation.person, { size:34 }) : null,
 			div('messageBubble',
 				div('arrow', { style:'width:5px; height:10px; background:url('+image.url('bubbleArrow-right')+'); background-size:5px 10px"' }),
 				renderContent(message)
@@ -301,9 +301,9 @@ function promptInvite(message) {
 			div('encouragement', message.body ? 'Nice Message!' : 'Very Expressive!'),
 			div('personal', view.conversation.person.fullName.split(' ')[0], " has not installed Dogo"),
 			div('button',
-				// face.mine(faceSize, { 'float':'left' }),
+				// face.mine({ size:faceSize, style:{ 'float':'left' } }),
 				'Send via Facebook',
-				face(view.conversation.person, faceSize, { 'float':'right' }),
+				face(view.conversation.person, { size:faceSize, style:{ 'float':'right' } }),
 				button(function() {
 				// TODO events.on('facebook.dialogDidComplete', function() { ... })
 				// https://developers.facebook.com/docs/reference/dialogs/requests/

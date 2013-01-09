@@ -4,9 +4,19 @@ module.exports = {
 	render:render
 }
 
-function render() {
-	var resultSize = 80
+var resultSize = 106
 
+var getFace = (function() {
+	var faces = {}
+	return function(facebookId) {
+		if (!faces[facebookId]) {
+			faces[facebookId] = $(face(facebookId, { size:resultSize }))[0]
+		}
+		return faces[facebookId]
+	}
+}())
+
+function render() {
 	var searchItems = map(gState.get('conversations'), function(conversation) {
 		var names = conversation.person.fullName.split(' ')
 		return { names:names, conversation:conversation }
@@ -18,7 +28,12 @@ function render() {
 		items:defaultResults,
 		renderItem:renderResult,
 		onSelect:selectResult,
-		renderEmpty:renderEmpty
+		renderEmpty:renderEmpty,
+		onUpdated:function() {
+			searchList.find('.faceHolder').replaceWith(function() {
+				return getFace($(this).attr('facebookId'))
+			})
+		}
 	})
 	
 	registerTextInputEventListeners(searchItems, defaultResults, searchList)
@@ -48,10 +63,8 @@ function render() {
 
 	function renderResult(result, i) {
 		var classNames = 'result'
-		if (i == 0) { classNames += ' topLeft' }
-		if (i == 3) { classNames += ' topRight' }
 		return div(classNames, style({ width:resultSize, height:resultSize }),
-			face(result.conversation.person, resultSize),
+			div('faceHolder', { facebookId:result.conversation.person.facebookId }),
 			div('names', result.conversation.person.fullName)
 		)
 	}
@@ -82,7 +95,7 @@ function registerTextInputEventListeners(searchItems, defaultResults, searchList
 				return false
 			})
 		}
-		var maxResults = 8 * 5
+		var maxResults = 8 * 10
 		if (results.length > maxResults) {
 			results = results.slice(0, maxResults)
 		}

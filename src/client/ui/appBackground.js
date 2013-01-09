@@ -10,7 +10,7 @@ function render() {
 	return div('appBackground', style({ marginTop:top, height:viewport.height()-top }),
 		div('card',
 			div('person',
-				div('face large', style(face.backgroundStyle(gState.myAccount().facebookId, 75)))
+				face.mine({ size:75 })
 			),
 			div('summary',
 				div('name', function() {
@@ -29,7 +29,7 @@ function update(width) {
 	$('.appBackground .backgroundContent').empty().append(
 		div(
 			style({ textAlign:'center', fontStyle:'italic', color:'#ccc', textShadow:'0 1px 0 #666', marginTop:140 }),
-			'Your Memories will show up here'
+			'I will think of something to put here'
 		),
 		gIsDev && renderDevTools(),
 		div(
