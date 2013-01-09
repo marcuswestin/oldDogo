@@ -91,7 +91,7 @@ function getMessagesList() {
 			scrollDown()
 			checkScrollBounds()
 		})
-	}, 100)
+	}, 150)
 	return getMessagesList._list
 }
 
