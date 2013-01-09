@@ -168,16 +168,20 @@ function renderMessage(message) {
 gRenderMessageBubble = function(message, conversation, opts) {
 	opts = options(opts, { dynamics:true, face:true, arrow:true })
 	var me = gState.myAccount()
-	var messageIsFromMe = (message.senderAccountId == me.id)
+	var fromMe = (message.senderAccountId == me.id)
 	var classes = [
 		message.body ? 'textMessage' : 'pictureMessage',
-		messageIsFromMe ? 'fromMe' : 'fromThem'
+		fromMe ? 'fromMe' : 'fromThem'
 	]
 	return [div('messageContainer',
 		div(classes.join(' '),
-			opts.face ? face(messageIsFromMe ? me : conversation.person, { size:34 }) : null,
+			opts.face ? face(fromMe ? me : conversation.person, { size:34 }) : null,
 			div('messageBubble',
-				div('arrow', { style:'width:5px; height:10px; background:url('+image.url('bubbleArrow-right')+'); background-size:5px 10px"' }),
+				opts.arrow && div('arrow', style({
+					background:image.backgroundUrl(fromMe ? 'bubbleArrow-right' : 'bubbleArrow-left', 5, 10),
+					width:5, height:10,
+					backgroundSize:px(5, 10)
+				})),
 				renderContent(message)
 			)
 		)
