@@ -110,7 +110,7 @@ var fillSmooth = proto(basePen, initPen, {
 	rate:10,
 	down:function(point) {
 		this.p0 = point
-		this.thickness = 6
+		this.thickness = 4
 		// this.paint.style(this.rgba(.05)) // - watercolor
 		this.paint.style(this.rgba(1)).lineWidth(this.thickness).globalCompositeOperation('source-over')
 		this.interval = setInterval(bind(this, this.onInterval), this.rate)
@@ -126,7 +126,7 @@ var fillSmooth = proto(basePen, initPen, {
 		if (this.drew) {
 			this.completeLine()
 		} else {
-			this.dot(point, this.thickness * 2)
+			this.dot(point, this.thickness * 2.5)
 		}
 		this.p0 = this.f = this.nextPoint = this.drew = null
 	},
@@ -175,7 +175,6 @@ var fillSmooth = proto(basePen, initPen, {
 			p0 = res.p0_delta
 			f = res.f_delta
 		}
-		this.paint.style(this.rgba(.5))
 	}
 })
 
