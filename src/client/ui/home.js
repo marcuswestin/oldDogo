@@ -21,7 +21,7 @@ module.exports = {
 		})
 		setTimeout(reloadConversations)
 		return div('homeView',
-			div('logoName', icon('logoName-header', 70, 30, 10,0,6,0)),
+			div('logoName', icon('logoName-header', 70, 30, 12,0,4,0)),
 			div('conversations', conversationsList = list({
 				onSelect:selectConversation,
 				getItemId:getConversationId,
