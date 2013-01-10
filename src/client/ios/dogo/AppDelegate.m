@@ -1,5 +1,4 @@
 #import "AppDelegate.h"
-#import <QuartzCore/QuartzCore.h>
 #import "UIDeviceHardware.h"
 #import "BTTextInput.h"
 #import "BTImage.h"
