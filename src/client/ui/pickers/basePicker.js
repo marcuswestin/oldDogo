@@ -20,7 +20,8 @@ module.exports = {
 		$('#'+this.id+' .primary').css({ zIndex:zIndex++ }).find('.list').each(function(i) {
 			$(this).find('.item').each(function(j) {
 				var $el = $(this)
-				var pos = wasOpen ? [0,0] : self.getPos(i, j, self.itemLists[i].length - 1)
+				var getPos = wasOpen ? self.getClosedPos : self.getPos
+				var pos = getPos.call(self, i, j, self.itemLists[i].length - 1)
 				
 				if (wasOpen) { self.onClose(i,j,$el) }
 				else { self.onOpen(i,j,$el) }
@@ -33,6 +34,7 @@ module.exports = {
 		$('#'+this.id+' .primary').find('.current').css({ zIndex:zIndex++ })
 		this.isOpen = !this.isOpen
 	},
+	getClosedPos:function(i,j) { return [0,0] },
 	onClose:function(i,j){},
 	onOpen:function(i,j){},
 	__renderTag: function($tag) {

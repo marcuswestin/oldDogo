@@ -3,11 +3,19 @@ var hsvToRgb = require('client/colors/hsvToRgb')
 var basePicker = require('./basePicker')
 
 var colorLists = [
-	// ['multi1'],
-	[[236,172,68], [242,0,0], [203,121,124], [230,223,216]],
-	[[89, 197, 202], [129, 228, 164], [252, 212, 128], [250, 141, 69]],
-	[[110, 33, 81], [39, 118, 184], [185, 163, 133], [20, 16, 50]],
-	[[223, 88, 88], [106, 125, 150], [102, 77, 116], [247, 224, 226]]
+	['multi1', 'multi2', 'multi3', 'multi4', 'multi5'],
+	// blues
+	[[81,214,255], [128,185,230], [0,112,255], [106,202,252], [22,131,25]], // [63,97,183]],
+	// greens
+	[[179,253,145], [165,233,48], [98,205,9], [98,155,27], [16,73,29]],// [63,140,120], [66,137,56], [6,127,7], [166,212,201]]
+	// reds
+	[[216,0,0], [133,0,54], [192,0,78], [236,0,96], [255,0,108]], //[224,0,108], [76,27,27]]
+	// misc
+	[[236,172,68], [242,0,0], [203,121,124], [230,223,216], [129, 228, 164]]
+	
+	// [[89, 197, 202], [129, 228, 164], [252, 212, 128], [250, 141, 69]],
+	// [[110, 33, 81], [39, 118, 184], [185, 163, 133], [20, 16, 50]],
+	// [[223, 88, 88], [106, 125, 150], [102, 77, 116], [247, 224, 226]]
 	// Old colors
 	// [[15,10,10], [100,90,90], [255,245,245]],
 	// [[210,0,0],[210,210,0],[100,210,50],[0,0,210],[125,10,210]],
@@ -21,25 +29,33 @@ module.exports = proto(basePicker,
 		className:'colorPicker',
 		itemLists:colorLists,
 		
-		multiColors: {
-			'multi1':colorLists[2]
-		},
-		
 		renderItem: function(color, isCurrent) {
 			var alpha = isCurrent ? 1 : .95
 			var diameter = 58
-			var styles = {
-				width:diameter, height:diameter,
-				borderRadius: 40
-			}
-			var content
+			var round = 40
 			if (typeof color == 'string') {
-				styles.backgroundImage = image.backgroundUrl('color-'+color)
-				styles.backgroundSize = diameter+'px '+diameter+'px'
+				var index = parseInt(color.match(/\w+(\d)/)[1])
+				var size = { width:diameter/2, height:diameter/2 }
+				return div('dot',
+					map(new Array(4), function(_, i) {
+						var color = colorLists[i + 1][index - 1]
+						var radia = map(new Array(4), function() { return 0 })
+						radia[i] = round
+						var top = i >= 2 ? diameter / 2 : 0
+						var left = i == 1 || i == 2 ? diameter / 2 : 0
+						return div(style(size), style({
+							background:rgbaString(color, alpha), borderRadius:px(radia),
+							position:'absolute', top:top, left:left
+						}))
+					})
+				)
+				// styles.backgroundImage = image.backgroundUrl('color-'+color)
+				// styles.backgroundSize = diameter+'px '+diameter+'px'
 			} else {
-				styles.background = rgbaString(color, alpha)
+				return div('dot', style({
+					width:diameter, height:diameter, borderRadius:round, background:rgbaString(color, alpha)
+				}))
 			}
-			return div('dot', style(styles), content)
 		},
 		
 		touchHandler: function(onSelect, item) {
@@ -74,9 +90,9 @@ module.exports = proto(basePicker,
 			var color = this.getCurrent()
 			alpha = alpha || 0.8
 			if (typeof color == 'string') {
-				var colors = this.multiColors[color]
+				var index = parseInt(color.match(/\w+(\d)/)[1])
 				do {
-					var color = colors[Math.floor(Math.random() * colors.length)]
+					color = colorLists[Math.floor(Math.random() * 4 + 1)][index - 1]
 				} while (color == this.lastMultiColor)
 				this.lastMultiColor = color
 				return rgbaString(color, alpha)
@@ -88,6 +104,12 @@ module.exports = proto(basePicker,
 		getPos: function(i, j, num) {
 			// return getCirclePos(i, j, num)
 			return getGridPos(i, j, num)
+		},
+		
+		getClosedPos: function(i, j) {
+			return [0,0]
+			var mult = 8
+			return [175 - (i * 5 * mult + j * mult), 0]
 		}
 	}
 )
