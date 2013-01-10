@@ -45,15 +45,15 @@ function render() {
 	
 	var padding1 = Math.floor(sizes.padding / 2)
 	var padding2 = sizes.padding - padding1
-	return div('searchResults', style({ padding:px(padding1, padding2, padding1, padding1) }), searchList)
+	return div('searchResults', style({ padding:px(padding1, padding2, padding1, padding1) }), searchList, div('clear', style({ paddingBottom:1 })))
 
 	function getDefaultResults(searchItems) {
-		// First fill with up to 4 recent convos.
-		// Then pack with 20 - (# recent convos) random convos, by starting at a random index
+		// First fill with up to N recent convos.
+		// Then pack with X - (# recent convos) random convos, by starting at a random index
 		// in the list of convos and avoiding the first N convos (N == baseIndex).
 		var defaultResults = []
 		var numRecentConvos = numCols * 3
-		var numDefaultResults = clip(searchItems.length, 0, 40)
+		var numDefaultResults = clip(searchItems.length, 0, numCols * 16)
 		var baseIndex = 0
 		while (baseIndex < numRecentConvos && baseIndex < numDefaultResults) { // select up to 4 recent convos
 			if (!searchItems[baseIndex].conversation.lastMessage) { break }
@@ -103,7 +103,7 @@ function registerTextInputEventListeners(searchItems, defaultResults, searchList
 				return false
 			})
 		}
-		var maxResults = 8 * 10
+		var maxResults = 3 * 40
 		if (results.length > maxResults) {
 			results = results.slice(0, maxResults)
 		}
