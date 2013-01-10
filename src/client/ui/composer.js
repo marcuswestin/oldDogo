@@ -43,14 +43,6 @@ var composer = module.exports = {
 }
 
 function selectText() {
-	var onReturnHandler = events.on('textInput.return', function(info) {
-		if (!currentConversation) { return }
-		bridge.command('textInput.set', { text:'' })
-		var body = trim(info.text)
-		if (!body) { return }
-		sendMessage({ body:body })
-	})
-	
 	var inputWidth = viewport.width() - 122
 	var margin = 6
 	
@@ -68,7 +60,9 @@ function selectText() {
 				})
 			),
 			div('send button', 'Send', style({ position:'absolute', bottom:9, right:4, padding:px(6,8,7) }), button(function() {
-				var message = $('#textInput').text()
+				if (!currentConversation) { return }
+				var message = trim($('#textInput').text())
+				if (!message) { return }
 				$('#textInput').html('')
 				sendMessage({ body:message })
 			})),
