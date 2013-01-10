@@ -271,10 +271,6 @@ events.on('push.message', function(payload) {
 	onNewMessage(message)
 })
 
-events.on('composer.textInputSelected', function() {
-	scrollDown(250)
-})
-
 events.on('message.sending', function(message) {
 	onNewMessage(message)
 	message.events.on('sent', function(response) {
@@ -296,7 +292,6 @@ events.on('app.willEnterForeground', function() {
 })
 
 function promptInvite(message) {
-	composer.hide()
 	var conversation = view.conversation
 	var height = 140
 	var faceSize = 34
@@ -318,7 +313,7 @@ function promptInvite(message) {
 				if (message.body) {
 					var text = name+' says: "'+message.body+'". Reply in style with Dogo!'
 				} else {
-					var text = 'sent you a drawing. Reply in style with Dogo!'
+					var text = name+' sent you a drawing. Reply in style with Dogo!'
 				}
 				
 				bridge.command('facebook.dialog', {

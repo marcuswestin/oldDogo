@@ -70,6 +70,8 @@ function setupBrowserDebugMode() {
 			case 'net.request':
 				api.sendRequest({ url:data.path, params:data.params, method:data.method, headers:data.headers, callback:callback })
 				break
+			case 'textInput.hideKeyboard':
+				textInput.hideKeyboard()
 		}
 	}
 	
@@ -88,14 +90,23 @@ function setupBrowserDebugMode() {
 		bridge.eventHandler('app.start', { config:config, client:'0.97.0-browser' })
 		gViewportTop = 55
 		$('#viewport').css({ margin:'0 auto', position:'relative', top:gViewportTop, height:viewport.height() })
-		$('body').css({ background:'#222' }).prepend(
-			div(style({ position:'absolute', top:0, left:0, width:'100%' }),
-				button(function(){}),
-				img({ src:'/graphics/mockPhone/iphoneStatusBar.png' }, style({ width:320, display:'block', margin:'0 auto', position:'relative', top:34 })),
-				img({ src:'/graphics/mockPhone/iphone4.png' }, style({ margin:'-120px auto', display:'block' }))
+		$('body').css({ background:'#222' })
+			.prepend(
+				div(style({ position:'absolute', top:0, left:0, width:'100%' }),
+					button(function(){}),
+					img({ src:'/graphics/mockPhone/iphoneStatusBar.png' }, style({ width:320, display:'block', margin:'0 auto', position:'relative', top:34 })),
+					img({ src:'/graphics/mockPhone/iphone4.png' }, style({ margin:'-120px auto', display:'block' }))
+				)
 			)
-		)
+			.append(
+				div(style({ position:'absolute', top:gViewportTop + viewport.height(), left:0, width:'100%' }),
+					button(function(){}),
+					img({ src:'/graphics/mockPhone/iphone4-bottom.png' }, style({ margin:'0 auto', display:'block' }))
+				)
+			)
 	})
+	
+	textInput.setup()
 	
 	if (!gIsPhantom) {
 		// Load the FB SDK Asynchronously

@@ -20,12 +20,12 @@ module.exports = {
 										'Connect to ',
 										div(icon('logoName', 56, 24), style({ display:'inline-block', marginTop:-6 }), style(translate.y(7))),
 										button(function() {
-										var $button = $(this).text('Connecting...').addClass('active')
+										var $button = $(this).text('Connecting...').addClass('active disabled')
 										var connecting = false
 										bridge.command('facebook.connect', { permissions:['email'] }, function(err, data) {
 											var facebookSession = data.facebookSession
 											if (err || !facebookSession || !facebookSession.accessToken) {
-												$button.text('Try again').removeClass('active')
+												$button.text('Try again').removeClass('active disabled')
 												return
 											}
 											if (connecting) { return }

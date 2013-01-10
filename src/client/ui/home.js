@@ -51,12 +51,13 @@ function getUnreadDot(conversation) {
 function renderCard(conversation) {
 	
 	return div('card',
+		div('gradient'),
 		conversation.lastMessage && conversation.lastMessage.pictureSecret && function() {
-			var size = [308, 200]
+			var size = [310, 200]
 			var url = pictures.displayUrl(conversation.lastMessage, { crop:[size[0]*2, size[1]*2] })
 			var ratio = window.devicePixelRatio || 1
 			return style({
-				background:'url('+url+') transparent no-repeat',
+				background:'url('+url+') #fff no-repeat',
 				height:size[1], backgroundSize:px(size)
 			})
 		},

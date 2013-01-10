@@ -32,7 +32,7 @@ function remove() {
 var pixelRatio = 2 // Always 2, to make the resulting image from normal 320 display be 640 dense for retina displays as well
 
 var icons = icon.preload({
-	close: ['glyphish/xtras-white/37-circle-x', 28, 28, 8, 13, 9, 13]
+	close: ['glyphish/xtras-white/37-circle-x', 28, 28, 8, 13, 8, 13]
 })
 
 function render(_opts) {
@@ -52,7 +52,7 @@ function render(_opts) {
 		})),
 		
 		// div('loading', 'Loading...'),
-		div('close', style({ display:'inline-block' }),
+		div('close', style({ display:'inline-block' }), style(translate.x(viewport.width() - 52)),
 			icons.close,
 			button(function() { opts.onHide() })
 		),

@@ -3,11 +3,6 @@ var placeholder = 'Say something :)'
 var drawer = require('./drawer')
 
 var currentConversation = null
-var currentTool = null
-
-var selectText = toolSelector(_selectText)
-var selectPhoto = toolSelector(_selectPhoto)
-var selectDraw = toolSelector(_selectDraw)
 
 var toolsHeight = 40
 
@@ -15,7 +10,7 @@ var icons = icon.preload({
 	chat: ['glyphish/white/09-chat-2', 24, 22],
 	camera: ['glyphish/white/86-camera', 24, 18, 0, 0, 1],
 	palette: ['glyphish/white/98-palette', 24, 20],
-	close: ['icon-circlex', 22, 23, 6, 6, 6, 6]
+	close: ['icon-circlex', 22, 23, 10, 16, 10, 16]
 })
 
 var composer = module.exports = {
@@ -25,58 +20,29 @@ var composer = module.exports = {
 	sendMessage:sendMessage,
 	remove:function() {
 		if (!currentConversation) { return }
-		composer.hide()
-		$('#composer').remove()
 		currentConversation = null
 	},
-	hide:function(hideOnlyIfThisToolIsUsed) {
-		if (hideOnlyIfThisToolIsUsed && currentTool != hideOnlyIfThisToolIsUsed) { return }
-		currentTool = null
-		setHeight(toolsHeight, 250)
-		bridge.command('textInput.hide')
-	},
 	render: function(view) {
-		currentTool = null
 		currentConversation = view.conversation
 		
-		return div({ id:'composer' }, style({ height:viewport.height() }), style(translate(0, viewport.height()-toolsHeight)),
+		return div({ id:'composer' }, style({ height:toolsHeight }),
 			div('tools',
-				style({ height:toolsHeight }),
-				div('button tool write', icons.chat, button(selectText)),
-				div('button tool photo', icons.camera, button(selectPhoto)),
-				div('button tool draw', icons.palette, button(selectDraw))
-			),
-			div('inputArea')
+				style({ height:toolsHeight }), style(translate.y(-6)),
+				div('button tool write', icons.chat, button(function() {
+					selectText()
+				})),
+				div('button tool photo', icons.camera, button(function() {
+					selectPhoto()
+				})),
+				div('button tool draw', icons.palette, button(function() {
+					selectDraw()
+				}))
+			)
 		)
 	}
 }
 
-function setHeight(height, duration) {
-	$('#composer').css(translate.y(viewport.height() - height, duration))
-	setHeight.lastHeight = height
-}
-function addHeight(height, duration) {
-	setHeight(setHeight.lastHeight + height, duration)
-}
-
-function toolSelector(fn) {
-	return function() {
-		if (currentTool == fn) { return }
-		var args = (arguments[0] && arguments[0].preventDefault) ? [] : arguments // don't pass through event objects as arguments
-		bridge.command('textInput.hide')
-		fn.apply(this, args)
-		currentTool = fn
-	}
-}
-
-function _selectText() {
-	$('#composer .tools').append(
-		div('closeTextInput',
-			icons.close,
-			style({ position:'absolute', top:6, right:6 }),
-			button(function() { bridge.command('textInput.hide') })
-		)
-	)
+function selectText() {
 	var onReturnHandler = events.on('textInput.return', function(info) {
 		if (!currentConversation) { return }
 		bridge.command('textInput.set', { text:'' })
@@ -84,59 +50,57 @@ function _selectText() {
 		if (!body) { return }
 		sendMessage({ body:body })
 	})
-
-	var inputHeight = 36
-	var inputWidth = 265
+	
+	var inputWidth = viewport.width() - 122
 	var margin = 6
-	setHeight(toolsHeight + inputHeight + margin * 2 - 4, 200)
-	var textComposer = div(
-		face.mine({ size:inputHeight }),
-		div('textInputBackground', style({
-			width:inputWidth , height:inputHeight, marginLeft:margin
-		}))
+	
+	var fadeDuration = 150
+	var id = tags.id()
+	$('.dogoApp').append(
+		div({ id:id },
+			style({ opacity:0, position:'absolute', bottom:0, left:0, height:0, width:viewport.width() }),
+			style(transition('opacity', fadeDuration)),
+			div('textInputBackground', { id:'textInput' }, { contenteditable:'true' },
+				style({
+					padding:px(8, 6),
+					width:inputWidth, margin:margin,
+					position:'absolute', bottom:0, '-webkit-user-select':'auto', left:40
+				})
+			),
+			div('send button', 'Send', style({ position:'absolute', bottom:9, right:4, padding:px(6,8,7) }), button(function() {
+				var message = $('#textInput').text()
+				$('#textInput').html('')
+				sendMessage({ body:message })
+			})),
+			div('closeTextInput',
+				icons.close,
+				style({ position:'absolute', bottom:0, left:0 }),
+				button(function() {
+					bridge.command('textInput.hideKeyboard')
+					$('#'+id).css({ opacity:0 })
+					setTimeout(function() {
+						// Removing the element before command('textInput.hideKeyboard') has actually found the input
+						// causes the entire screen to go black. Just move it out of the way instead of removing it
+						$('#'+id).css(translate(-9999,-9999))
+						setTimeout(function() { $('#'+id).remove() }, 5000)
+					}, fadeDuration)
+				})
+			)
+		)
 	)
+	$('#'+id+' .textInputBackground').focus()
 	
-	$('#composer .inputArea').empty().append(textComposer)
-	
-	var fudgeInputHeight = 3
-	bridge.command('textInput.show', {
-		at:{ x:margin, y:viewport.height() - inputHeight - margin * 2 + fudgeInputHeight, width:inputWidth, height:inputHeight + fudgeInputHeight },
-		returnKeyType:'Send',
-		font: { name:'Open Sans', size:16 },
-		backgroundColor:[0,0,0,0],
-		shiftWebview:true
-	})
-	var onChangeHeightHandler = events.on('textInput.changedHeight', function adjustHeight(info) {
-		addHeight(info.heightChange, 0)
-		$('#composer .textInputBackground').css({ height:info.height - 2 })
-		var $view = $(gScroller.getCurrentView())
-		var isAtBottom = Math.abs($view[0].scrollHeight - ($view.scrollTop() + $view.height())) < 40
-		$('#conversationView .messagesList').css({ marginBottom:info.height - inputHeight + 60 })
-		if (isAtBottom) {
-			$view.scrollTop($view[0].scrollHeight)
-		} else {
-			$view.scrollTop($view.scrollTop() + info.heightChange)
-		}
-	})
-	events.once('keyboard.willHide', function(info) {
-		$('#composer .tools .closeTextInput').remove()
-		$('#conversationView .messagesList').css({ marginBottom:0 })
-		events.off('textInput.changedHeight', onChangeHeightHandler)
-		events.off('textInput.return', onReturnHandler)
-		composer.hide(_selectText)
-	})
-	
-	events.fire('composer.textInputSelected')
-	// setTimeout(function() { bridge.command('textInput.set', { text:'This is a long string to cause wrap W' }) })// AUTOS automatically resize composer text input
+	setTimeout(function() {
+		$('#'+id).css({ opacity:1 })
+	}, 350)
 }
 
-function _selectPhoto() {
+function selectPhoto() {
 	bridge.command('menu.show', {
 		title:"Pick a Photo",
 		cancelTitle:'Cancel',
 		titles:['Pick from Library', 'Take new Photo']
 	}, function(err, res) {
-		composer.hide(_selectPhoto)
 		if (err) { return error(err) }
 		if (!res) { return }
 		var sources = ['libraryPhotos', 'camera'] // ,'cancel'
@@ -151,18 +115,23 @@ function _selectPhoto() {
 	})
 }
 
-function _selectDraw(background) {
-	$('#composer .inputArea').empty().append(
+function selectDraw(background) {
+	var $drawComposer = $(
 		drawer.render({
 			background:background,
-			onHide:composer.hide,
+			onHide:function() {
+				$drawComposer.css(translate.y(viewport.height()))
+			},
 			onSend:function sendImage(data, width, height) {
 				sendMessage({ picture:{ width:width, height:height, base64Data:data } })
-				composer.hide(_selectDraw)
+				$drawComposer.css(translate.y(-viewport.height()))
 			}
 		})
-	)
-	setHeight(viewport.height() + toolsHeight, 350)
+	).css({ position:'absolute', top:0 }).css(translate.y(viewport.height()))
+	$drawComposer.appendTo('.dogoApp')
+	setTimeout(function() {
+		$drawComposer.css(translate.y(0, 350))
+	})
 }
 
 

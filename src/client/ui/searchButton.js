@@ -4,13 +4,18 @@ module.exports = {
 	render:render
 }
 
-var resultSize = 106
+var sizes = {}
+var numCols = 3
+events.on('app.start', function() {
+	sizes.result = Math.floor(viewport.width() / numCols)
+	sizes.padding = viewport.width() - sizes.result*numCols
+})
 
 var getFace = (function() {
 	var faces = {}
 	return function(facebookId) {
 		if (!faces[facebookId]) {
-			faces[facebookId] = $(face(facebookId, { size:resultSize }))[0]
+			faces[facebookId] = $(face(facebookId, { size:sizes.result }))[0]
 		}
 		return faces[facebookId]
 	}
@@ -38,16 +43,19 @@ function render() {
 	
 	registerTextInputEventListeners(searchItems, defaultResults, searchList)
 	
-	return div('searchResults', searchList)
+	var padding1 = Math.floor(sizes.padding / 2)
+	var padding2 = sizes.padding - padding1
+	return div('searchResults', style({ padding:px(padding1, padding2, padding1, padding1) }), searchList)
 
 	function getDefaultResults(searchItems) {
 		// First fill with up to 4 recent convos.
 		// Then pack with 20 - (# recent convos) random convos, by starting at a random index
 		// in the list of convos and avoiding the first N convos (N == baseIndex).
 		var defaultResults = []
-		var numDefaultResults = clip(searchItems.length, 0, 20)
+		var numRecentConvos = numCols * 3
+		var numDefaultResults = clip(searchItems.length, 0, 40)
 		var baseIndex = 0
-		while (baseIndex < 4 && baseIndex < numDefaultResults) { // select up to 4 recent convos
+		while (baseIndex < numRecentConvos && baseIndex < numDefaultResults) { // select up to 4 recent convos
 			if (!searchItems[baseIndex].conversation.lastMessage) { break }
 			defaultResults.push(searchItems[baseIndex])
 			baseIndex += 1
@@ -63,7 +71,7 @@ function render() {
 
 	function renderResult(result, i) {
 		var classNames = 'result'
-		return div(classNames, style({ width:resultSize, height:resultSize }),
+		return div(classNames, style({ width:sizes.result, height:sizes.result }),
 			div('faceHolder', { facebookId:result.conversation.person.facebookId }),
 			div('names', result.conversation.person.fullName)
 		)

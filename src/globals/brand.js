@@ -14,24 +14,31 @@ icon = function(name, width, height, paddingTop, paddingRight, paddingBottom, pa
 	return div('icon', style({
 		width:width,
 		height:height,
-		background:'transparent '+paddingLeft+'px '+paddingTop+'px no-repeat',
+		background:'transparent '+px(paddingLeft, paddingTop)+' no-repeat',
 		backgroundImage:image.backgroundUrl(name, width, height),
-		backgroundSize:width+'px '+height+'px',
-		padding:paddingTop+'px '+paddingRight+'px '+paddingBottom+'px '+paddingLeft+'px'
+		backgroundSize:px(width, height),
+		padding:px(paddingTop, paddingRight, paddingBottom, paddingLeft)
 	}))
 }
 
 icon.preload = function(icons) {
 	var result = {}
+	var cache = {}
 	events.on('appScroller.rendered', function() {
 		if (!$('#preloadDiv')[0]) {
 			$('.dogoApp').append(div({ id:'preloadDiv' }, style({ position:'absolute', top:-9999, left:-9999 })))
 		}
-		for (var name in icons) {
-			var args = icons[name]
-			result[name] = icon.apply(this, args)
-			$('#preloadDiv').append($(result[name]))
-		}
+		each(icons, function(iconArgs, name) {
+			cache[name] = icon.apply(this, iconArgs)
+			$('#preloadDiv').append(cache[name])
+			result[name] = function() {
+				var id = tags.id()
+				setTimeout(function() {
+					$('#'+id).replaceWith(cache[name])
+				})
+				return div('icon', { id:id })
+			}
+		})
 	})
 	return result
 }

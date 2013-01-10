@@ -1,12 +1,31 @@
 module.exports = {
+	setup:setup,
 	show:showTextInput,
 	animate:animateTextInput,
 	hide:hideTextInput,
-	set:setTextInput
+	set:setTextInput,
+	hideKeyboard:hideKeyboard
 }
 
 var $input
 var topBarOffset = 0
+
+function setup() {
+	$(document)
+		.on('focus', '[contentEditable=true]', function() {
+			shiftWebView(-keyboardHeight)
+			showFakeKeyboard()
+		})
+		.on('blur', '[contentEditable=true]', function() {
+			// return
+			shiftWebView(0)
+			hideFakeKeyboard()
+		})
+}
+
+function hideKeyboard() {
+	$('[contentEditable=true]').blur()
+}
 
 function setTextInput(data) {
 	$input.val(data.text)
@@ -14,7 +33,6 @@ function setTextInput(data) {
 
 var keyboardHeight = 216
 function showTextInput(data) {
-	hideTextInput()
 	var at = data.at
 	var padding = 6
 	$input = $(input())
@@ -30,9 +48,9 @@ function showTextInput(data) {
 	
 	var keyboardAnimationDuration = 200
 	setTimeout(function() {
-		if (data.shiftWebview) {
-			$('.dogoApp').css(translate.y(-keyboardHeight, keyboardAnimationDuration))
-			$input.css(translate.y(-keyboardHeight, keyboardAnimationDuration))
+		if (!data.preventWebviewShift) {
+			shiftWebView(-keyboardHeight)
+			// $input.css(translate.y(-keyboardHeight, keyboardAnimationDuration))
 		}
 		events.fire('keyboard.willShow', { keyboardAnimationDuration:keyboardAnimationDuration })
 		setTimeout(function() {
@@ -41,20 +59,38 @@ function showTextInput(data) {
 	}, 0)
 	$input.on('blur', function($e) {
 		// return
-		if (data.shiftWebview) {
-			$('.dogoApp').css(translate.y(0))
-			$input.css(translate.y(0))
+		if (!data.preventWebviewShift) {
+			shiftWebView(0)
 		}
 		setTimeout(function() {
 			events.fire('keyboard.willHide', { keyboardAnimationDuration:keyboardAnimationDuration })
 		}, 100)
 	})
 	
-	$(div('fakeIPhoneKeyboard', style({
+	showFakeKeyboard()
+}
+
+var keyboardAnimationDuration = 200
+function showFakeKeyboard() {
+	$(div({ id:'fakeIPhoneKeyboard' }, style(translate.y(viewport.height())), style({
 		background:'url(/graphics/mockPhone/iphoneKeyboard.png) white',
 		backgroundSize:px(320,216), height:gKeyboardHeight, width:viewport.width(),
-		position:'absolute', bottom:0
+		position:'absolute', top:0
 	}))).appendTo('#viewport').on('mousedown', function($e) { $e.preventDefault() })
+	setTimeout(function() {
+		$('#fakeIPhoneKeyboard').css(translate.y(viewport.height() - keyboardHeight, keyboardAnimationDuration))
+	})
+}
+
+function shiftWebView(to) {
+	$('.dogoApp').css(translate.y(to), keyboardAnimationDuration)
+}
+
+function hideFakeKeyboard() {
+	$('#fakeIPhoneKeyboard').css(translate.y(viewport.height(), keyboardAnimationDuration))
+	setTimeout(function() {
+		$('#fakeIPhoneKeyboard').remove()
+	}, keyboardAnimationDuration)
 }
 
 function animateTextInput(data) {
@@ -67,7 +103,7 @@ function hideTextInput() {
 	if (!$input) { return }
 	$input.off('keyup').off('keypress').blur().remove()
 	delete $input
-	$('#viewport .fakeIPhoneKeyboard').remove()
+	hideFakeKeyboard()
 }
 
 var onChange = function($e) {

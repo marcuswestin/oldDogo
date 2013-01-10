@@ -148,12 +148,12 @@ var backIconDragger = (function makeBackIconDragger() {
 var searchIconDragger = (function makeSearchIconDragger() {
 	var margin = 5
 	var textInputHeight = 36
-	var maxCornerSize = { width:viewport.width(), height:viewport.height() - gKeyboardHeight }
-	var maxTextInputWidth = maxCornerSize.width - cornerSize.width - margin * 2
+	var maxCornerSize = { width:viewport.width(), height:viewport.height() }
+	var maxTextInputWidth = maxCornerSize.width - cornerSize.width * 2 - margin * 2
 	var textInputLeftOffset = cornerSize.width + margin
 	var resultsBoxTop = textInputHeight + margin * 2 + 2
 	var maxResultsBoxWidth = maxCornerSize.width
-	var maxResultsBoxHeight = viewport.height() - gKeyboardHeight - resultsBoxTop
+	var maxResultsBoxHeight = viewport.height() - resultsBoxTop
 	
 	var currentCornerSize = cornerSize
 
@@ -167,9 +167,23 @@ var searchIconDragger = (function makeSearchIconDragger() {
 		$('.corner.right .searchUI').remove()
 		$('.corner.right').append(
 			div('searchUI', //style({ width:viewport.width(), height:viewport.height() - gKeyboardHeight, position:'absolute', top:0, right:0 }),
-				div('textInput', style({
-					position:'absolute', background:'white', height:textInputHeight,
-					top:margin, left:textInputLeftOffset, borderRadius:px(3,3,3,3), width:maxTextInputWidth
+				div('textInput',
+					style({
+						position:'absolute', background:'white', height:textInputHeight,
+						top:margin, left:textInputLeftOffset, borderRadius:px(3,3,3,3), width:maxTextInputWidth
+					}),
+					button(function() {
+						bridge.command('textInput.show', {
+							at:{ x:textInputLeftOffset, y:margin+2, width:maxTextInputWidth, height:textInputHeight },
+							returnKeyType:'Go',
+							font: { name:'Open Sans', size:16 },
+							backgroundColor:[0,0,0,0],
+							preventWebviewShift:true
+						})
+					})
+				),
+				div('closeButton', icon('icon-circlex', 22, 23, 12, 16, 10, 16), style(translate.x(viewport.width() - 54)), button(function() {
+					hideSearchUI()
 				})),
 				div('resultsBox', style(style.scrollable.y), style({
 					position:'absolute', height:maxResultsBoxHeight, opacity:0,
@@ -188,12 +202,6 @@ var searchIconDragger = (function makeSearchIconDragger() {
 		})
 		$('.corner.right .textInput').css({ width:maxTextInputWidth })
 		setTimeout(function() {
-			bridge.command('textInput.show', {
-				at:{ x:textInputLeftOffset, y:margin+2, width:maxTextInputWidth, height:textInputHeight },
-				returnKeyType:'Go',
-				font: { name:'Open Sans', size:16 },
-				backgroundColor:[0,0,0,0]
-			})
 			setTimeout(function() {
 				$('.corner.right .resultsBox').append(searchResults.render())
 				$('.corner.right .resultsBox').css(fade).css({ opacity:1 })
@@ -219,8 +227,6 @@ var searchIconDragger = (function makeSearchIconDragger() {
 		currentCornerSize = cornerSize
 		bridge.command('textInput.hide')
 	}
-	
-	// setTimeout(function() { renderSearchUI(); showSearchUI() }, 200) // AUTOS
 	
 	return cornerDragger('right', {
 		threshold:2,
