@@ -42,6 +42,7 @@ var composer = module.exports = {
 	}
 }
 
+var hideTextInput = function() {}
 function selectText() {
 	var inputWidth = viewport.width() - 122
 	var margin = 6
@@ -69,16 +70,7 @@ function selectText() {
 			div('closeTextInput',
 				icons.close,
 				style({ position:'absolute', bottom:0, left:0 }),
-				button(function() {
-					bridge.command('textInput.hideKeyboard')
-					$('#'+id).css({ opacity:0 })
-					setTimeout(function() {
-						// Removing the element before command('textInput.hideKeyboard') has actually found the input
-						// causes the entire screen to go black. Just move it out of the way instead of removing it
-						$('#'+id).css(translate(-9999,-9999))
-						setTimeout(function() { $('#'+id).remove() }, 5000)
-					}, fadeDuration)
-				})
+				button(function() { hideTextInput() })
 			)
 		)
 	)
@@ -87,7 +79,38 @@ function selectText() {
 	setTimeout(function() {
 		$('#'+id).css({ opacity:1 })
 	}, 350)
+	
+	hideTextInput = function() {
+		hideTextInput = function() {}
+		$('#emoticons').remove()
+		bridge.command('textInput.hideKeyboard')
+		$('#'+id).css({ opacity:0 })
+		setTimeout(function() {
+			// Removing the element before command('textInput.hideKeyboard') has actually found the input
+			// causes the entire screen to go black. Just move it out of the way instead of removing it
+			$('#'+id).css(translate(-9999,-9999))
+			setTimeout(function() { $('#'+id).remove() }, 5000)
+		}, fadeDuration)
+	}
 }
+
+function showEmoticons() {
+	bridge.command('viewport.expand', { height:gKeyboardHeight })
+	if (!$('#emoticons')[0]) {
+		$('.dogoApp').append(div({ id:'emoticons' },
+			style({ position:'absolute', bottom:-gKeyboardHeight, left:0, width:viewport.width(), height:gKeyboardHeight, background:'red' }),
+			button(function() {
+				// hide emoticons
+				bridge.command('viewport.putUnderChrome')
+			})
+		))
+	}
+	bridge.command('viewport.putOverKeyboard')
+}
+
+events.on('message.selected', function() {
+	hideTextInput()
+})
 
 function selectPhoto() {
 	bridge.command('menu.show', {

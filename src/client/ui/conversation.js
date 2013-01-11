@@ -109,6 +109,7 @@ function selectMessage(message) {
 	} else {
 		// do nothing
 	}
+	events.fire('message.selected')
 }
 
 function refreshMessages(scrollToBottom) {
