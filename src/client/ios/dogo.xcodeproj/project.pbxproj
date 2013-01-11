@@ -37,6 +37,8 @@
 		2CBA74F3162A427600DE2E95 /* UIImage+Alpha.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBA74ED162A427600DE2E95 /* UIImage+Alpha.m */; };
 		2CBA74F4162A427600DE2E95 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBA74EF162A427600DE2E95 /* UIImage+Resize.m */; };
 		2CBA74F5162A427600DE2E95 /* UIImage+RoundedCorner.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBA74F1162A427600DE2E95 /* UIImage+RoundedCorner.m */; };
+		2CC5C23B169FB207005050DB /* BTAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC5C23A169FB207005050DB /* BTAudio.m */; };
+		2CC5C23E169FB874005050DB /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CC5C23D169FB874005050DB /* AVFoundation.framework */; };
 		2CCAFE691569EC1C002766A1 /* vibrate.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2CCAFE681569EC1C002766A1 /* vibrate.wav */; };
 		2CD13242156783CA002386F3 /* DebugUIWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD13241156783CA002386F3 /* DebugUIWebView.m */; };
 		2CD132781567B639002386F3 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD132771567B639002386F3 /* CFNetwork.framework */; };
@@ -144,6 +146,9 @@
 		2CBA74EF162A427600DE2E95 /* UIImage+Resize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Resize.m"; sourceTree = "<group>"; };
 		2CBA74F0162A427600DE2E95 /* UIImage+RoundedCorner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+RoundedCorner.h"; sourceTree = "<group>"; };
 		2CBA74F1162A427600DE2E95 /* UIImage+RoundedCorner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+RoundedCorner.m"; sourceTree = "<group>"; };
+		2CC5C239169FB207005050DB /* BTAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTAudio.h; sourceTree = "<group>"; };
+		2CC5C23A169FB207005050DB /* BTAudio.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTAudio.m; sourceTree = "<group>"; };
+		2CC5C23D169FB874005050DB /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		2CCAFE681569EC1C002766A1 /* vibrate.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = vibrate.wav; sourceTree = "<group>"; };
 		2CD13240156783CA002386F3 /* DebugUIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIWebView.h; sourceTree = "<group>"; };
 		2CD13241156783CA002386F3 /* DebugUIWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIWebView.m; sourceTree = "<group>"; };
@@ -179,6 +184,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2CC5C23E169FB874005050DB /* AVFoundation.framework in Frameworks */,
 				2C18849A1687C2950071A3CE /* Social.framework in Frameworks */,
 				2C1884981687C28D0071A3CE /* Accounts.framework in Frameworks */,
 				2C1884961687C2830071A3CE /* AdSupport.framework in Frameworks */,
@@ -205,6 +211,8 @@
 				2C45667C162A286B004CD78B /* BTImage.m */,
 				2C0AF7B1168903BF00E35CEA /* BTFacebook.h */,
 				2C0AF7B2168903BF00E35CEA /* BTFacebook.m */,
+				2CC5C239169FB207005050DB /* BTAudio.h */,
+				2CC5C23A169FB207005050DB /* BTAudio.m */,
 			);
 			name = "blowtorch-ios-modules";
 			path = "../../../../dependencies/blowtorch/sdk/blowtorch-ios-modules";
@@ -324,9 +332,7 @@
 		2CD1A01E153FB6B0008949F2 = {
 			isa = PBXGroup;
 			children = (
-				2C1884991687C2950071A3CE /* Social.framework */,
-				2C1884971687C28D0071A3CE /* Accounts.framework */,
-				2C1884951687C2830071A3CE /* AdSupport.framework */,
+				2CC5C23D169FB874005050DB /* AVFoundation.framework */,
 				2C709427165A87F5007DDECD /* fonts */,
 				2C709423165A865D007DDECD /* graphics */,
 				2CCAFE671569EC1C002766A1 /* sounds */,
@@ -352,6 +358,9 @@
 		2CD1A02C153FB6B0008949F2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2C1884991687C2950071A3CE /* Social.framework */,
+				2C1884971687C28D0071A3CE /* Accounts.framework */,
+				2C1884951687C2830071A3CE /* AdSupport.framework */,
 				2CD133E61567C2C0002386F3 /* Security.framework */,
 				2CD1327B1567B645002386F3 /* MobileCoreServices.framework */,
 				2CD132791567B63F002386F3 /* SystemConfiguration.framework */,
@@ -478,7 +487,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0450;
-				ORGANIZATIONNAME = Meebo;
+				ORGANIZATIONNAME = Flutterby;
 			};
 			buildConfigurationList = 2CD1A023153FB6B0008949F2 /* Build configuration list for PBXProject "dogo" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -550,6 +559,7 @@
 				2C45BA8A1652D0F600F11CED /* NSString+Util.m in Sources */,
 				2CA0A5F1167636A500EFDA7E /* BTResponse.m in Sources */,
 				2C0AF7B3168903BF00E35CEA /* BTFacebook.m in Sources */,
+				2CC5C23B169FB207005050DB /* BTAudio.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
