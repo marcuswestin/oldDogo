@@ -9,6 +9,8 @@ var semver = require('semver')
 var log = require('./util/log').makeLog('Router')
 var time = require('std/time')
 var sms = require('./sms')
+var filter = require('std/filter')
+var map = require('std/map')
 
 require('color')
 
@@ -238,6 +240,7 @@ function setupDev(app) {
 	app.get('/lib/*', sendStatic('src'))
 	app.get('/graphics/*', sendStatic('src'))
 	app.get('/client/*', sendStatic('src'))
+	app.get('/experiments*', sendExperiment)
 	
 	app.get('/stylus/*', function(req, res) {
 		combine.compileStylusPath(req.path, {}, curry(respondCss, req, res))
@@ -250,6 +253,17 @@ function setupDev(app) {
 	each(['BTImage'], function(btModule) {
 		require('../../dependencies/blowtorch/sdk/blowtorch-node-sdk/'+btModule).setup(app)
 	})
+	
+	function sendExperiment(req, res) {
+		var experiment = req.url.replace(/\/experiments\/?/, '')
+		var html = experiment
+			? fs.readFileSync('src/experiments/experiment.html').toString().replace(/EXPERIMENT_NAME/g, experiment)
+			: map(filter(fs.readdirSync('src/experiments'), function(dir) { return !!dir.match(/\.js$/) }), function(dir) {
+				return '<a href="/experiments/'+dir+'">'+dir+'</a>'
+			}).join('<br />')
+		res.writeHead(200, { 'Content-Type':'text/html' })
+		res.end(html)
+	}
 	
 	function sendPage(name) {
 		return function(req, res) {
