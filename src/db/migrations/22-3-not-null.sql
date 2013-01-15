@@ -1,0 +1,2 @@
+ALTER TABLE message CHANGE COLUMN payloadJson payloadJson VARCHAR(2048) NOT NULL;
+ALTER TABLE message CHANGE COLUMN type type INT NOT NULL;

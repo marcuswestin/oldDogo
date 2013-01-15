@@ -1,18 +1,5 @@
 set foreign_key_checks = 0;
 
-CREATE TABLE picture (
-	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-	created_by_account_id BIGINT UNSIGNED DEFAULT NULL,
-	created_time INT UNSIGNED NOT NULL,
-	uploaded_time INT UNSIGNED DEFAULT NULL,
-	width SMALLINT UNSIGNED NOT NULL,
-	height SMALLINT UNSIGNED NOT NULL,
-	secret CHAR(36) NOT NULL,
-	meta_json VARCHAR(1024) DEFAULT NULL,
-	FOREIGN KEY (created_by_account_id) REFERENCES account(id),
-	PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 CREATE TABLE account (
 	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 	facebook_id BIGINT UNSIGNED DEFAULT NULL,
@@ -23,14 +10,12 @@ CREATE TABLE account (
 	full_name VARCHAR(255) DEFAULT NULL,
 	first_name VARCHAR(63) DEFAULT NULL,
 	last_name VARCHAR(63) DEFAULT NULL,
-	image_picture_id BIGINT UNSIGNED DEFAULT NULL,
 	gender ENUM('male','female') DEFAULT NULL,
 	push_token VARCHAR(255) DEFAULT NULL,
 	push_system ENUM('ios','android') DEFAULT NULL,
 	created_time INT UNSIGNED NOT NULL,
 	claimed_time INT UNSIGNED DEFAULT NULL,
 	waitlisted_time INT UNSIGNED DEFAULT NULL,
-	FOREIGN KEY (image_picture_id) REFERENCES picture(id),
 	UNIQUE KEY index_facebook_id (facebook_id),
 	PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -97,10 +82,10 @@ CREATE TABLE message (
 	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 	sender_account_id BIGINT UNSIGNED NOT NULL,
 	conversation_id BIGINT UNSIGNED NOT NULL,
-	body VARCHAR(1024) DEFAULT NULL,
-	picture_id BIGINT UNSIGNED DEFAULT NULL,
 	sent_time INT UNSIGNED NOT NULL,
 	client_uid BIGINT UNSIGNED NOT NULL,
+	type INT UNSIGNED NOT NULL,
+	payloadJson VARCHAR(2048) NOT NULL,
 	UNIQUE KEY index_sender_account_id_client_uid (sender_account_id, client_uid),
 	FOREIGN KEY (sender_account_id) REFERENCES account(id),
 	PRIMARY KEY (id)
