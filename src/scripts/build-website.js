@@ -3,7 +3,7 @@ var path = require('path')
 var each = require('std/each')
 var map = require('std/map')
 var exec = require('child_process').exec
-var buildPage = require('../website/build-page')
+var buildPage = require('website/build-page')
 
 var dstDir = 'build/website'
 var buildDir = '/tmp/dogo-build-website'
@@ -18,7 +18,7 @@ var copyCommands = map(['graphics','fonts','lib'], function(dir) {
 exec('rm -rf '+buildDir+' && mkdir -p '+buildDir+'/pages && '+copyCommands, function(err, stderr, stdout) {
 	if (err) { throw err }
 	if (stdout) { throw stdout }
-	var pages = fs.readdirSync('src/website/pages')
+	var pages = fs.readdirSync('src/node_modules/website/pages')
 	;(function next() {
 		if (!pages.length) {
 			return exec('mkdir -p '+dstDir+' && rm -rf '+dstDir+' && mv '+buildDir+' '+dstDir, function(err) {

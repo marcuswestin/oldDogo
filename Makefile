@@ -5,7 +5,7 @@ setup: setup-server setup-client reset-db
 
 # Run local server
 run: run-databases
-	${NODE} src/server/run.js --config=dev
+	${NODE} src/node_modules/server/run.js --config=dev
 
 # Run all tests
 online = true
@@ -17,7 +17,7 @@ t:
 
 icons:
 	# app meta resources
-	cp src/graphics/pixelmator/App-Icon.png src/client/ios/logo@2x.png && convert src/client/ios/logo@2x.png -resize 57x57 src/client/ios/logo.png
+	cp src/graphics/pixelmator/App-Icon.png src/ios/logo@2x.png && convert src/ios/logo@2x.png -resize 57x57 src/ios/logo.png
 	# /mobileApp
 	convert src/graphics/pixelmator/logoIcon-blank.png -resize 64x64 src/graphics/mobileApp/logoIcon-blank-32x32@2x.png
 	convert src/graphics/pixelmator/logoIcon-blank.png -resize 192x192 src/graphics/mobileApp/logoIcon-blank-96x96@2x.png
@@ -46,7 +46,7 @@ fly-dev: fly-build
 ######################
 # Run prod server
 run-prod:
-	${NODE} src/server/run.js --config=prod
+	${NODE} src/node_modules/server/run.js --config=prod
 
 # Deploy dogo api server to prod
 push-api:
@@ -80,17 +80,18 @@ test-server: ${PHANTOMJS}
 # Reset local development database
 reset-db: run-databases
 	mysql -u dogo_rw --password=dogo -e 'DROP DATABASE IF EXISTS dogo; CREATE DATABASE dogo;'
-	cat db/schema.sql | mysql -u dogo_rw --password=dogo dogo
+	cat src/db/schema.sql | mysql -u dogo_rw --password=dogo dogo
 
 reset-test-db: run-databases
 	mysql -u dogo_tester --password=test -e 'DROP DATABASE IF EXISTS dogo_test; CREATE DATABASE dogo_test;'
-	cat db/schema.sql | mysql -u dogo_tester --password=test dogo_test
+	cat src/db/schema.sql | mysql -u dogo_tester --password=test dogo_test
 	if [ -f test/.fbTestDataCache.json ]; then mv test/.fbTestDataCache.json test/.fbTestDataCache.json.bak; fi
 
 setup-client: setup-source
 	cd node_modules/require && npm install --production .
 	cd dependencies/blowtorch && make setup
 	cd dependencies/facebook-ios-sdk && scripts/build_framework.sh
+	cd dependencies/emoji-extractor && ruby emoji_extractor.rb
 	cd node_modules/socket.io && npm install . --production
 	cd node_modules/stylus && npm install . --production
 	cd node_modules/mocha && npm install --production .
@@ -114,10 +115,10 @@ ios-client:
 	hostname > build/dogo-ios-build/dev-hostname.txt
 
 fly-build: ios-client
-	rm -rf src/client/ios/build
-	xcodebuild -project src/client/ios/dogo.xcodeproj -sdk iphoneos GCC_PREPROCESSOR_DEFINITIONS="TESTFLIGHT" -configuration Release
-	# xcodebuild -project src/client/ios/dogo.xcodeproj -sdk iphonesimulator5.1 GCC_PREPROCESSOR_DEFINITIONS="TESTFLIGHT" -configuration Release
-	/usr/bin/xcrun -sdk iphoneos PackageApplication src/client/ios/build/Release-iphoneos/dogo.app -o ~/Desktop/dogo.ipa
+	rm -rf src/ios/build
+	xcodebuild -project src/ios/dogo.xcodeproj -sdk iphoneos GCC_PREPROCESSOR_DEFINITIONS="TESTFLIGHT" -configuration Release
+	# xcodebuild -project src/ios/dogo.xcodeproj -sdk iphonesimulator5.1 GCC_PREPROCESSOR_DEFINITIONS="TESTFLIGHT" -configuration Release
+	/usr/bin/xcrun -sdk iphoneos PackageApplication src/ios/build/Release-iphoneos/dogo.app -o ~/Desktop/dogo.ipa
 	${NODE} src/scripts/save-ipa.js
 
 fly-nightly: bump-ios-patch fly-build

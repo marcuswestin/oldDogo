@@ -5,8 +5,8 @@ var url = require('url')
 var qs = require('querystring')
 var fs = require('fs')
 var request = require('request')
-var facebook = require('../../src/server/util/facebook')
-var makeTimer = require('../../src/server/util/makeTimer')
+var facebook = require('server/util/facebook')
+var makeTimer = require('server/util/makeTimer')
 
 var api = u.api
 

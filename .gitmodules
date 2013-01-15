@@ -73,3 +73,6 @@
 [submodule "node_modules/tinyTest"]
 	path = node_modules/tinyTest
 	url = git@github.com:marcuswestin/tinyTest.js.git
+[submodule "dependencies/emoji-extractor"]
+	path = dependencies/emoji-extractor
+	url = git@github.com:FlutterbyLabs/emoji-extractor.git
