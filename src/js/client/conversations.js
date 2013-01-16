@@ -9,7 +9,7 @@ function refresh(callback) {
 		waiting.push(callback)
 	} else {
 		waiting = [callback]
-		api.get('conversations', function getConversations(err, res) {
+		api.get('api/conversations', function getConversations(err, res) {
 			var callbacks = waiting
 			waiting = null
 			var conversations = err ? null : res.conversations

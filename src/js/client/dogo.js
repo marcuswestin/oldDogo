@@ -63,7 +63,7 @@ events.on('app.start', function onAppStart(info) {
 })
 
 events.on('push.registered', function onPushRegistered(info) {
-	api.post('push_auth', { pushToken:info.deviceToken, pushSystem:'ios' })
+	api.post('api/push_auth', { pushToken:info.deviceToken, pushSystem:'ios' })
 })
 
 events.on('app.didBecomeActive', function onAppDidBecomeActive() {

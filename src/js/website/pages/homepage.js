@@ -15,7 +15,7 @@ $(function() {
 					alert("That does not look like an email address. Wanna try again?")
 				})
 			}
-			api.post('waitlist', { emailAddress:emailAddress }, function(err, res) {
+			api.post('api/waitlist', { emailAddress:emailAddress }, function(err, res) {
 				if (err) { return alert('Oops! '+api.error(err)) }
 				if (res.waitlistedSince) {
 					alert(emailAddress+' was waitlisted '+res.waitlistedSince)

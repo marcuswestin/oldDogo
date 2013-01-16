@@ -16,14 +16,14 @@ describe('Waitlist', function() {
 	var emailAddress = 'narcvs@gmail.com'
 	var waitlistedTime
 	it('should be possible to sign up', function(done) {
-		api.post('waitlist', { emailAddress:emailAddress }, function(err, res) {
+		api.post('api/waitlist', { emailAddress:emailAddress }, function(err, res) {
 			check(err)
 			is(waitlistedTime = res.account.waitlistedTime)
 			done()
 		})
 	})
 	it('should detect that the email address has already been waitlisted', function(done) {
-		api.post('waitlist', { emailAddress:emailAddress }, function(err, res) {
+		api.post('api/waitlist', { emailAddress:emailAddress }, function(err, res) {
 			check(err)
 			is(res.waitlistedSince)
 			is(res.account.waitlistedTime, waitlistedTime)
@@ -72,7 +72,7 @@ describe('Setup with Facebook Connect', function() {
 		var fbUser = fbUsers[0]
 		this.timeout(0)
 		var timer = makeTimer('create session').start('postSession')
-		api.post('session', { facebookAccessToken:fbUser.access_token }, function(err, res) {
+		api.post('api/session', { facebookAccessToken:fbUser.access_token }, function(err, res) {
 			timer.stop('postSession').report()
 			check(err)
 			is(res.authToken)
@@ -89,7 +89,7 @@ describe('Setup with Facebook Connect', function() {
 		var convId
 		var accId
 		it('should have 0 conversations with a message', function(done) {
-			api.get('conversations', function(err, res) {
+			api.get('api/conversations', function(err, res) {
 				check(err)
 				each(res.conversations, function(conv) {
 					is(!conv.lastMessageId)
@@ -101,7 +101,7 @@ describe('Setup with Facebook Connect', function() {
 		})
 		it('should let you send a first message', function(done) {
 			var clientUid = u.clientUid()
-			api.post('message', { toConversationId:convId, toAccountId:accId, body:'Hi', clientUid:clientUid }, function(err, res) {
+			api.post('api/message', { toConversationId:convId, toAccountId:accId, body:'Hi', clientUid:clientUid }, function(err, res) {
 				check(err)
 				is(res.message.clientUid)
 				is(res.message.body, 'Hi')
@@ -109,14 +109,14 @@ describe('Setup with Facebook Connect', function() {
 			})
 		})
 		it('should then have one conversation, & messaging a 2nd friend should create a 2nd conversation', function(done) {
-			api.get('conversations', function(err, res) {
+			api.get('api/conversations', function(err, res) {
 				var convoCount = res.conversations.length
 				var secondConvo = res.conversations[1]
 				is(secondConvo)
 				is(numConversationsWithMessages(res.conversations), 1)
-				api.post('message', { toConversationId:secondConvo.id, toAccountId:secondConvo.person.id, body:'Ho', clientUid:u.clientUid() }, function(err, res) {
+				api.post('api/message', { toConversationId:secondConvo.id, toAccountId:secondConvo.person.id, body:'Ho', clientUid:u.clientUid() }, function(err, res) {
 					is(res.message)
-					api.get('conversations', function(err, res) {
+					api.get('api/conversations', function(err, res) {
 						is(numConversationsWithMessages(res.conversations), 2)
 						is(secondConvo.id, res.conversations[0].id) // the new conversation should now appear first, and the old conversation second
 						done()

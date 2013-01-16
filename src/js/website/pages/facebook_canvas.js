@@ -21,7 +21,7 @@ error = function(err) {
 		var facebookRequestId = requestIds.split(',').pop()
 		api.connect({ facebookRequestId:facebookRequestId }, function(err, res) {
 			if (err) { return error(err) }
-			api.get('facebook_canvas/conversation', { facebookRequestId:facebookRequestId }, function(err, res) {
+			api.get('api/facebook_canvas/conversation', { facebookRequestId:facebookRequestId }, function(err, res) {
 				if (err) { return error(err) }
 				$('#viewport').append(
 					div('dogoApp',
@@ -52,7 +52,7 @@ error = function(err) {
 						body:body
 					}
 					conversation.addMessage(message)
-					api.post('message', message, function(err, res) {
+					api.post('api/message', message, function(err, res) {
 						if (err) { return error(err) }
 					})
 				}
@@ -61,5 +61,5 @@ error = function(err) {
 	}
 
 	console.log('requestIds', requestIds)
-	// api.get('messages', {})
+	// api.get('api/messages', {})
 })()

@@ -28,7 +28,7 @@ function getAuth() {
 }
 
 function getPath(path) {
-	return '/api/'+path
+	return '/'+path
 }
 
 function send(method, path, params, callback) {
@@ -102,11 +102,11 @@ function connect(opts, callback) {
 		facebookExpirationDate:facebookSession.expirationDate,
 		facebookRequestId:opts.facebookRequestId
 	}
-	api.post('session', params, curry(handleSession, facebookSession, callback))
+	api.post('api/session', params, curry(handleSession, facebookSession, callback))
 }
 
 // function refresh(authToken, callback) {
-// 	api.get('session', { authToken:authToken }, curry(handleSession, null, callback))
+// 	api.get('api/session', { authToken:authToken }, curry(handleSession, null, callback))
 // }
 
 function handleSession(facebookSession, callback, err, res) {

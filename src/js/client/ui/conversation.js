@@ -110,7 +110,7 @@ function selectMessage(message) {
 function refreshMessages(scrollToBottom) {
 	if (!view) { return }
 	var wasCurrentView = view
-	api.get('messages', { conversationId:view.conversation.id }, function refreshRenderMessages(err, res) {
+	api.get('api/messages', { conversationId:view.conversation.id }, function refreshRenderMessages(err, res) {
 		if (wasCurrentView != view) { return }
 		if (err) { return error(err) }
 		var messagesList = getMessagesList()
@@ -323,7 +323,7 @@ function promptInvite(message) {
 				events.once('facebook.dialogCompleteWithUrl', function(info) {
 					var url = parseUrl(info.url)
 					var params = { conversationId:conversation.id, personId:conversation.person.id, facebookRequestId:url.getSearchParam('request') }
-					api.post('facebook_requests', params, error.handler)
+					api.post('api/facebook_requests', params, error.handler)
 				})
 			}))
 		)

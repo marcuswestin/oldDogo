@@ -56,7 +56,7 @@ loadAccount = function loadAccount(accountId, facebookId, callback) {
 		queue[id].push(callback)
 	} else {
 		queue[id] = [callback]
-		api.get('account_info', { accountId:accountId, facebookId:facebookId }, function onApiGetAccountInfo(err, res) {
+		api.get('api/account_info', { dogoId:dogoId, facebookId:facebookId }, function onApiGetAccountInfo(err, res) {
 			if (err) { return error(err) }
 			cache[id] = res.account
 			gState.set(cacheKey, cache)

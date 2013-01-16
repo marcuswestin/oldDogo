@@ -91,7 +91,7 @@ var api = u.api = {
 		}
 
 		var auth = api.authToken ? (api.authToken + '@') : ''
-		var url = 'http://'+auth+'localhost:'+u.port+'/api/'+path
+		var url = 'http://'+auth+'localhost:'+u.port+'/'+path
 		if (method == 'GET') {
 			var body = params ? JSON.stringify(params) : ''
 			var qs = null
@@ -127,7 +127,7 @@ describe('API Server', function() {
 		done()
 	})
 	it('should be reachable', function(done) {
-		api.get('ping', done)
+		api.get('api/ping', done)
 	})
 })
 

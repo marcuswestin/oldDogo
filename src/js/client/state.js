@@ -46,7 +46,7 @@ var state = module.exports = {
 		return clientUid
 	},
 	checkNewVersion:function() {
-		api.get('version/info', function(err, res) {
+		api.get('api/version/info', function(err, res) {
 			if (err || !res.url) { return }
 			bridge.command('version.download', { url:res.url, headers:api.getHeaders() }, function(err) {
 				if (err) { alert('upgrade failed ' + err) }
