@@ -245,7 +245,7 @@ function setupDev(app) {
 	app.get('/identity', sendPage('identity'))
 	app.get('/test', sendPage('test'))
 	
-	app.get('/app', sendFile('src/node_modules/client/dogo.html', 'text/html'))
+	app.get('/app', sendFile('src/js/client/dogo.html', 'text/html'))
 	app.get('/favicon.ico', sendFile('src/graphics/website/favicon.png', 'image/png'))
 		
 	app.get('/fonts/*', sendStatic('src'))

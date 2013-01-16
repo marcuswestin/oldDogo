@@ -7,3 +7,4 @@ build
 *.pyc
 dump.rdb
 phantom-screen.png
+node_modules

@@ -32,7 +32,7 @@ def deploy_dogo_api(git_hash):
 	# build_info = do("cd %s && git log %s --format=%s | head -n 1" % (src_dir, git_hash, '%h-%ct'))
 	with settings(warn_only=True):
 		sudo_do('killall -q node')
-	sudo_do('nohup node %s/src/node_modules/server/run.js --config=prod' % (src_dir))
+	sudo_do('nohup node %s/src/js/server/run.js --config=prod' % (src_dir))
 	note_deploy('dogo-api', git_hash)
 
 def deploy_nginx_conf(git_hash):

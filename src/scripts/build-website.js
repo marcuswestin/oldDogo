@@ -18,7 +18,7 @@ var copyCommands = map(['graphics','fonts','lib'], function(dir) {
 exec('rm -rf '+buildDir+' && mkdir -p '+buildDir+'/pages && '+copyCommands, function(err, stderr, stdout) {
 	if (err) { throw err }
 	if (stdout) { throw stdout }
-	var pages = fs.readdirSync('src/node_modules/website/pages')
+	var pages = fs.readdirSync('src/js/website/pages')
 	;(function next() {
 		if (!pages.length) {
 			return exec('mkdir -p '+dstDir+' && rm -rf '+dstDir+' && mv '+buildDir+' '+dstDir, function(err) {
