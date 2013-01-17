@@ -6,7 +6,7 @@ setup: setup-server setup-client reset-db
 # Run local server
 run: run-databases
 	# Run server with src/js in the node search path
-	export NODE_PATH=`pwd`/src/js && ${NODE} src/js/server/run.js --config=dev
+	${NODE} src/js/server/run.js --config=dev
 
 # Run all tests
 online = true
@@ -111,8 +111,7 @@ setup-source:
 # Testflight
 ############
 ios-client:
-	# Bah: xcode doesn't like the `which node` incantaion... # ${NODE} src/scripts/build-client.js
-	/usr/local/bin/node src/scripts/build-client.js
+	${NODE} src/scripts/build-client.js
 	hostname > build/dogo-ios-build/dev-hostname.txt
 
 fly-build: ios-client
@@ -156,7 +155,7 @@ build-website:
 
 # Dependencies
 ##############
-NODE = `which node`
+NODE = ./node
 REDIS = /usr/local/bin/redis-server
 MYSQL = /usr/local/bin/mysql.server
 BREW = /usr/local/bin/brew
