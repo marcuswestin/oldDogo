@@ -45,8 +45,12 @@ var selectMessage = sql.selectFrom('message', {
 function updateParticipations(participations, done) {
 	console.log('selecting recent text and picture messages')
 	serialMap(participations, {
-		iterate:function(participation, next) {
-			console.log('updating', participation.id)
+		iterate:function(participation, next, i) {
+			console.log('updating', participation.id, '('+i+' out of '+participations.length+')')
+			if (participation.payloadJson) {
+				console.log('skipping', participation.id)
+				return next()
+			}
 			var waiting = waitFor(2, doUpdateParticipation)
 			db.select(this, selectMessage+" WHERE conversation_id=? ORDER BY id DESC LIMIT 3", [participation.conversation_id], function(err, recent) {
 				each(recent, parseMessagePayload)
