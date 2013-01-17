@@ -129,3 +129,9 @@ Reached out
 -----------
 http://dribbble.com/charlesriccardi PA charlesriccardi@gmail.com
 http://dribbble.com/mrdidi
+
+
+Sound
+=====
+https://github.com/alexbw - http://alexspixels.com/ - https://twitter.com/awiltsch
+Chris Adamson - http://www.subfurther.com/blog/
