@@ -47,7 +47,7 @@ function updateParticipations(participations, done) {
 	serialMap(participations, {
 		iterate:function(participation, i, next) {
 			console.log('updating', participation.id, '('+i+' out of '+participations.length+')')
-			if (participation.payloadJson) {
+			if (participation.summaryJson) {
 				console.log('skipping', participation.id)
 				return next()
 			}
