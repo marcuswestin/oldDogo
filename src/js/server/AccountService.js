@@ -40,14 +40,14 @@ module.exports = proto(null,
 				tx.selectOne(this, 'SELECT account_id as dogoId FROM account_email WHERE email_address=?', [emailAddress], function(err, res) {
 					if (err) { return callback(err) }
 					if (res && res.dogoId) {
-						this._selectAccountByAccountId(tx, res.dogoId, callback)
+						this._selectAccountByDogoId(tx, res.dogoId, callback)
 					} else {
 						tx.insert(this, 'INSERT INTO account SET created_time=?', [tx.time()], function(err, dogoId) {
 							if (err) { return callback(err) }
 							tx.insert(this,
 								'INSERT INTO account_email SET email_address=?, account_id=?, created_time=?',
 								[emailAddress, dogoId, tx.time()], function(err, accountEmailId) {
-									this._selectAccountByAccountId(tx, dogoId, callback)
+									this._selectAccountByDogoId(tx, dogoId, callback)
 								}
 							)
 						})
@@ -57,7 +57,7 @@ module.exports = proto(null,
 		},
 		getAccount: function(dogoId, facebookId, callback) {
 			if (dogoId) {
-				this._selectAccountByAccountId(this.db, dogoId, callback)
+				this._selectAccountByDogoId(this.db, dogoId, callback)
 			} else {
 				this._selectAccountByFacebookId(this.db, facebookId, callback)
 			}
@@ -219,15 +219,15 @@ module.exports = proto(null,
 				'UPDATE account SET push_token=?, push_system=? WHERE id=?',
 				[pushToken, pushSystem, dogoId], callback)
 		},
-		_createUnclaimedAccountForFacebookFriend: function(conn, fbAccountId, name, callback) {
+		_createUnclaimedAccountForFacebookFriend: function(conn, facebookId, name, callback) {
 			conn.insert(this,
 				'INSERT INTO account SET created_time=?, facebook_id=?, full_name=?',
-				[conn.time(), fbAccountId, name], callback)
+				[conn.time(), facebookId, name], callback)
 		},
-		_selectAccountByFacebookId: function(conn, fbAccountId, callback) {
-			conn.selectOne(this, this.sql.account+'WHERE facebook_id=?', [fbAccountId], callback)
+		_selectAccountByFacebookId: function(conn, facebookId, callback) {
+			conn.selectOne(this, this.sql.account+'WHERE facebook_id=?', [facebookId], callback)
 		},
-		_selectAccountByAccountId: function(conn, dogoId, callback) {
+		_selectAccountByDogoId: function(conn, dogoId, callback) {
 			conn.selectOne(this, this.sql.account+'WHERE id=?', [dogoId], callback)
 		},
 		sql: {

@@ -168,7 +168,7 @@ gRenderMessageBubble = function(message, conversation, opts) {
 	var classes = [message.type+'Message', fromMe ? 'fromMe' : 'fromThem']
 	return [div('messageContainer',
 		div(classes.join(' '),
-			opts.face ? face(fromMe ? me : conversation.person, { size:34 }) : null,
+			opts.face ? face(fromMe ? me : conversation.summary.people[0], { size:34 }) : null,
 			div('messageBubble',
 				opts.arrow && div('arrow', style({
 					background:image.backgroundUrl(fromMe ? 'bubbleArrow-right' : 'bubbleArrow-left', 5, 10),
@@ -324,7 +324,7 @@ function promptInvite(message) {
 				})
 				events.once('facebook.dialogCompleteWithUrl', function(info) {
 					var url = parseUrl(info.url)
-					var params = { conversationId:conversation.id, personId:conversation.person.id, facebookRequestId:url.getSearchParam('request') }
+					var params = { conversationId:conversation.id, dogoId:conversation.summary.people[0].dogoId, facebookRequestId:url.getSearchParam('request') }
 					api.post('api/facebook_requests', params, error.handler)
 				})
 			}))

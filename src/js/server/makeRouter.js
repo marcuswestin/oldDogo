@@ -229,8 +229,8 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 		messageService.loadFacebookRequestId(params.facebookRequestId, curry(respond, req, res))
 	})
 	app.post('/api/facebook_requests', filter.session, function saveFacebookRequest(req, res) {
-		var params = getParams(req, 'facebookRequestId', 'toAccountId', 'conversationId')
-		messageService.saveFacebookRequest(req.session.dogoId, params.facebookRequestId, params.toAccountId, params.conversationId, curry(respond, req, res))
+		var params = getParams(req, 'facebookRequestId', 'toDogoId', 'conversationId')
+		messageService.saveFacebookRequest(req.session.dogoId, params.facebookRequestId, params.toDogoId, params.conversationId, curry(respond, req, res))
 	})
 }
 

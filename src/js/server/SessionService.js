@@ -22,10 +22,10 @@ module.exports = proto(null,
 					this.accountService.lookupOrCreateByFacebookAccount(req, fbAccount, fbAccessToken, bind(this, function(err, account) {
 						req.timer.stop('lookupOrCreateByFacebookAccount')
 						if (err) { return logError(err, callback, 'createSession.lookupOrCreateByFacebookAccount', account) }
-						req.timer.start('createSessionForAccountId')
-						this.createSessionForAccountId(account.id, bind(this, function(err, authToken) {
-							req.timer.stop('createSessionForAccountId')
-							if (err) { return logError(err, callback, 'createSession.createSessionForAccountId', account.id) }
+						req.timer.start('createSessionForDogoId')
+						this.createSessionForDogoId(account.id, bind(this, function(err, authToken) {
+							req.timer.stop('createSessionForDogoId')
+							if (err) { return logError(err, callback, 'createSession.createSessionForDogoId', account.id) }
 							req.timer.start('bumpClientUidBlock')
 							this.accountService.bumpClientUidBlock(account.id, bind(this, function(err, clientUidBlock) {
 								req.timer.stop('bumpClientUidBlock').report()
@@ -67,7 +67,7 @@ module.exports = proto(null,
 		// 		if (err) { return logError(err, callback, 'createSession.getContacts') }
 		// 	}))
 		// },
-		createSessionForAccountId: function(dogoId, callback) {
+		createSessionForDogoId: function(dogoId, callback) {
 			var authToken = uuid.v4(),
 				expiration = 1 * time.day
 			

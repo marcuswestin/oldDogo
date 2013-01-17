@@ -27,7 +27,7 @@ error = function(err) {
 					div('dogoApp',
 						conversation.render({
 							messages:res.messages,
-							myAccountId:res.facebookRequest.toAccountId,
+							myDogoId:res.facebookRequest.toDogoId,
 							height:viewport.height()
 						})
 					),
@@ -47,8 +47,8 @@ error = function(err) {
 					var body = $('.replyInput').val()
 					$('.replyInput').val('')
 					var message = {
-						toAccountId:res.facebookRequest.fromAccountId,
-						senderAccountId:res.facebookRequest.toAccountId,
+						toDogoId:res.facebookRequest.fromDogoId,
+						senderDogoId:res.facebookRequest.toDogoId,
 						body:body
 					}
 					conversation.addMessage(message)

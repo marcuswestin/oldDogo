@@ -8,7 +8,7 @@ function sendMessage(body, callback) {
 	api.get('api/conversations', function(err, res) {
 		check(err)
 		var conv = res.conversations[0]
-		api.post('api/message', { toConversationId:conv.id, toAccountId:conv.person.id, body:body, clientUid:u.clientUid() }, function(err, res) {
+		api.post('api/message', { toConversationId:conv.id, toDogoId:conv.person.id, body:body, clientUid:u.clientUid() }, function(err, res) {
 			check(err)
 			callback(err, res)
 		})

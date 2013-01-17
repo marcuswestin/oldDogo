@@ -89,7 +89,7 @@ events.on('push.notification', function onPushNotification(info) {
 	var message = data.message
 	if (message) {
 		if (info.didBringAppIntoForeground) {
-			loadAccountId(message.senderDogoId, function(account) {
+			loadDogoId(message.senderDogoId, function(account) {
 				var conversation = { dogoId:account.dogoId } // hmm... this should load from gState by message.conversationId
 				var view = { title:account.name, conversation:conversation } // Hmm.. This should 
 				gScroller.set({ view:view, index:1, render:true, animate:false })

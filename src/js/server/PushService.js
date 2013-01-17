@@ -38,24 +38,24 @@ module.exports = proto(null,
 			log("Created apns connection", prodOpts.gateway+':'+prodOpts.port)
 		}
 	}, {
-		sendMessagePush:function(message, fromAccountId, toAccountId, prodPush) {
-			this.db.selectOne(this, this.sql.selectPushInfo+'WHERE id=?', [toAccountId], function(err, data) {
+		sendMessagePush:function(message, fromDogoId, toDogoId, prodPush) {
+			this.db.selectOne(this, this.sql.selectPushInfo+'WHERE id=?', [toDogoId], function(err, data) {
 				if (err) { return }
-				if (!data.pushToken) { return log('Bah No push token for', toAccountId) }
+				if (!data.pushToken) { return log('Bah No push token for', toDogoId) }
 				if (data.pushSystem != 'ios') { return log.error('WARNING Unknown push system', data.pushSystem) }
 				
-				this.db.selectOne(this, this.sql.selectAccountFirstName+'WHERE id=?', [fromAccountId], function(err, fromAccountInfo) {
-					if (err) { return log.error("ERROR this.sql.selectAccountFirstName", fromAccountId) }
+				this.db.selectOne(this, this.sql.selectAccountFirstName+'WHERE id=?', [fromDogoId], function(err, fromAccountInfo) {
+					if (err) { return log.error("ERROR this.sql.selectAccountFirstName", fromDogoId) }
 					
 					var notification = new apns.Notification()
 					notification.device = new apns.Device(data.pushToken, ascii=true)
 					notification.payload = push.encodeMessage({
 						message:message,
-						recipientDogoId:toAccountId,
+						recipientDogoId:toDogoId,
 						fromFirstName:fromAccountInfo.firstName
 					})
 					
-					log("Send push notification to account ID", toAccountId)
+					log("Send push notification to account ID", toDogoId)
 					var connection = prodPush ? this.prodApnsConnection : this.devApnsConnection
 					connection.sendNotification(notification)
 				})

@@ -147,10 +147,10 @@ module.exports = proto(null,
 				})
 			})
 		},
-		saveFacebookRequest: function(dogoId, facebookRequestId, toAccountId, conversationId, callback) {
+		saveFacebookRequest: function(dogoId, facebookRequestId, toDogoId, conversationId, callback) {
 			this.db.insert(this,
 				'INSERT INTO facebook_request SET created_time=?, facebook_request_id=?, from_account_id=?, to_account_id=?, conversation_id=?',
-				[this.db.time(), facebookRequestId, dogoId, toAccountId, conversationId], function(err, res) {
+				[this.db.time(), facebookRequestId, dogoId, toDogoId, conversationId], function(err, res) {
 					if (err) { return callback(err) }
 					callback(null, 'OK')
 				})
@@ -209,8 +209,8 @@ module.exports = proto(null,
 			}),
 			
 			selectFacebookRequest:sql.selectFrom('facebook_request', {
-				fromAccountId: 'from_account_id',
-				toAccountId: 'to_account_id',
+				fromDogoId: 'from_account_id',
+				toDogoId: 'to_account_id',
 				conversationId: 'conversation_id'
 			})
 		}

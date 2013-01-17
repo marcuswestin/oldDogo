@@ -67,12 +67,6 @@ function renderCard(conversation) {
 	)
 	
 	function renderSummary(convo) {
-		// var person = conversation.person
-		// var lastMessage = conversation.lastMessage
-		// var lastReceived = conversation.lastReceivedMessage
-		// var lastRead = conversation.lastReadMessage
-		// var hasUnread = (lastReceived && (!lastRead || lastReceived.sentTime > lastRead.sentTime))
-
 		var hasUnread = convo.lastReceivedTime > convo.lastReadTime
 		var summary = convo.summary
 		

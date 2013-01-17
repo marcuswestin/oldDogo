@@ -101,7 +101,7 @@ describe('Setup with Facebook Connect', function() {
 		})
 		it('should let you send a first message', function(done) {
 			var clientUid = u.clientUid()
-			api.post('api/message', { toConversationId:convId, toAccountId:accId, body:'Hi', clientUid:clientUid }, function(err, res) {
+			api.post('api/message', { toConversationId:convId, toDogoId:accId, body:'Hi', clientUid:clientUid }, function(err, res) {
 				check(err)
 				is(res.message.clientUid)
 				is(res.message.body, 'Hi')
@@ -114,7 +114,7 @@ describe('Setup with Facebook Connect', function() {
 				var secondConvo = res.conversations[1]
 				is(secondConvo)
 				is(numConversationsWithMessages(res.conversations), 1)
-				api.post('api/message', { toConversationId:secondConvo.id, toAccountId:secondConvo.person.id, body:'Ho', clientUid:u.clientUid() }, function(err, res) {
+				api.post('api/message', { toConversationId:secondConvo.id, toDogoId:secondConvo.person.id, body:'Ho', clientUid:u.clientUid() }, function(err, res) {
 					is(res.message)
 					api.get('api/conversations', function(err, res) {
 						is(numConversationsWithMessages(res.conversations), 2)
