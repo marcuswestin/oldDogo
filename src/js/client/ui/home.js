@@ -2,7 +2,7 @@ var conversation = require('./conversation')
 var conversations = require('../conversations')
 var time = require('std/time')
 var hsvToRgb = require('client/colors/hsvToRgb')
-var pictures = require('data/pictures')
+var Pictures = require('data/pictures')
 
 function getConversationId(conv) {
 	var conversationId = (conv.id || conv)
@@ -44,20 +44,21 @@ module.exports = {
 
 
 function renderCard(conversation) {
-	
+	var pictures = conversation.summary.pictures || []
+	var recent = conversation.summary.recent || []
 	return div('card',
 		div('gradient'),
-		conversation.lastMessage && conversation.lastMessage.type == 'picture' && function() {
+		pictures.length > 0 && function() {
 			var size = [310, 200]
-			var url = pictures.displayUrl(conversation.lastMessage, { crop:[size[0]*2, size[1]*2] })
+			var url = Pictures.displayUrl(pictures[0], { crop:[size[0]*2, size[1]*2] })
 			var ratio = window.devicePixelRatio || 1
 			return style({
 				background:'url('+url+') #fff no-repeat',
-				height:size[1], backgroundSize:px(size)
+				minHeight:size[1], backgroundSize:px(size)
 			})
 		},
 		div('person',
-			face(conversation.person, { size:80 })
+			face(conversation.summary.people[0], { size:80 })
 		),
 		// http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
 		// style({ background:'rgb('+map(hsvToRgb([(Math.random() + 0.618033988749895) % 1, 0.03, 0.95]), Math.round)+')' }),
@@ -65,32 +66,35 @@ function renderCard(conversation) {
 		div('highlights')
 	)
 	
-	function renderSummary(conversation) {
-		var person = conversation.person
-		var lastMessage = conversation.lastMessage
-		var lastReceived = conversation.lastReceivedMessage
-		var lastRead = conversation.lastReadMessage
-		var hasUnread = (lastReceived && (!lastRead || lastReceived.sentTime > lastRead.sentTime))
+	function renderSummary(convo) {
+		// var person = conversation.person
+		// var lastMessage = conversation.lastMessage
+		// var lastReceived = conversation.lastReceivedMessage
+		// var lastRead = conversation.lastReadMessage
+		// var hasUnread = (lastReceived && (!lastRead || lastReceived.sentTime > lastRead.sentTime))
+
+		var hasUnread = convo.lastReceivedTime > convo.lastReadTime
+		var summary = convo.summary
 		
 		var currentConvo = gScroller.current().conversation
 		if (currentConvo && currentConvo.id == conversation.id) {
 			hasUnread = false
 		}
-		
+
 		function renderName(person) {
 			return div('name', function() {
-				var names = person.fullName.split(' ')
+				var names = person.name.split(' ')
 				return [div('first', names.shift()), div('rest', names.pop())]
 			})
 		}
 		
-		if (lastMessage) {
+		if (recent.length) {
 			return [
 			div('right',
 				div('time', function() {
 					var id = tags.id()
 					setTimeout(function() {
-						time.ago.brief(lastMessage.sentTime * time.seconds, function(timeStr) {
+						time.ago.brief(convo.lastMessageTime * time.seconds, function(timeStr) {
 							$('#'+id).text(timeStr)
 						})
 					})
@@ -98,14 +102,16 @@ function renderCard(conversation) {
 				}),
 				hasUnread && div('unreadDot', icon('icon-unreadDot', 14, 14))
 			),
-			renderName(person),
-			div('lastMessage', lastMessage.type == 'text'
-				? div('body', gRenderMessageBubble(lastMessage, conversation, { dynamics:false, face:true, arrow:true }))
-				: null // background image has already rendered over entire conversationc card
-			)]
+			renderName(summary.people[0]),
+			map(recent, function(message) {
+				return div('lastMessage',
+					div('body', gRenderMessageBubble(message, conversation, { dynamics:false, face:true, arrow:true }))
+				)
+			})
+			]
 		} else {
 			return [
-				renderName(person),
+				renderName(summary.people[0]),
 				div('info', 'Start the conversation')
 			]
 		}
@@ -119,9 +125,9 @@ function getInitialConversations(conversations) {
 	var myLastName = gState.myAccount().lastName
 	
 	each(conversations, function(conv) {
-		if (conv.lastMessage) {
+		if (conv.lastMessageTime) {
 			started.push(conv)
-		} else if (conv.person.fullName.split(' ').pop() == myLastName) {
+		} else if (find(conv.people, function(person) { return person.name.split(' ').pop() == myLastName })) {
 			family.push(conv)
 		} else {
 			notStarted.push(conv)

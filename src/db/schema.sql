@@ -52,11 +52,9 @@ CREATE TABLE account_email (
 
 CREATE TABLE conversation (
 	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-	account_1_id BIGINT UNSIGNED NOT NULL,
-	account_2_id BIGINT UNSIGNED NOT NULL,
+	account_1_id BIGINT UNSIGNED NOT NULL, -- the account ids are for non-group chats only.
+	account_2_id BIGINT UNSIGNED NOT NULL, -- they represent and ensure uniqueness of relationships.
 	created_time INT UNSIGNED NOT NULL,
-	last_message_id BIGINT UNSIGNED DEFAULT NULL,
-	FOREIGN KEY (last_message_id) REFERENCES message(id),
 	FOREIGN KEY (account_1_id) REFERENCES account(id),
 	FOREIGN KEY (account_2_id) REFERENCES account(id),
 	UNIQUE KEY index_accounts (account_1_id, account_2_id),
@@ -68,12 +66,12 @@ CREATE TABLE conversation_participation (
 	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 	conversation_id BIGINT UNSIGNED NOT NULL,
 	account_id BIGINT UNSIGNED NOT NULL,
-	last_received_message_id BIGINT UNSIGNED DEFAULT NULL,
-	last_read_message_id BIGINT UNSIGNED DEFAULT NULL,
+	lastMessageTime INT UNSIGNED DEFAULT NULL,
+	lastReceivedTime INT UNSIGNED DEFAULT NULL,
+	lastReadTime INT UNSIGNED DEFAULT NULL,
+	summaryJson VARCHAR(8192) NOT NULL,
 	FOREIGN KEY (conversation_id) REFERENCES conversation(id),
 	FOREIGN KEY (account_id) REFERENCES account(id),
-	FOREIGN KEY (last_received_message_id) REFERENCES message(id),
-	FOREIGN KEY (last_read_message_id) REFERENCES message(id),
 	UNIQUE KEY index_account_conversation (account_id, conversation_id),
 	PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

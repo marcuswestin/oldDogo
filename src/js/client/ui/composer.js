@@ -158,15 +158,14 @@ function sendMessage(type, payload) {
 	
 	var message = eventEmitter('message', {
 		toConversationId:conversation.id,
-		toPersonId:conversation.person.id,
-		senderAccountId:gState.myAccount().accountId,
+		senderDogoId:gState.myAccount().dogoId,
 		clientUid:clientUid,
 		type:type,
 		payload:payload,
 		_isSending:true
 	})
 	
-	bridge.command('net.request', { method:"POST", headers:api.getHeaders(), path:api.getPath('message'), params:message }, function(err, res) {
+	bridge.command('net.request', { method:"POST", headers:api.getHeaders(), path:api.getPath('api/message'), params:message }, function(err, res) {
 		if (err) { return error(err) }
 		conversation.lastMessage = res.message
 		conversation.lastSentMessage = res.message

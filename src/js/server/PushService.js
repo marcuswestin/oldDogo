@@ -51,7 +51,7 @@ module.exports = proto(null,
 					notification.device = new apns.Device(data.pushToken, ascii=true)
 					notification.payload = push.encodeMessage({
 						message:message,
-						toDogoId:toAccountId,
+						recipientDogoId:toAccountId,
 						fromFirstName:fromAccountInfo.firstName
 					})
 					

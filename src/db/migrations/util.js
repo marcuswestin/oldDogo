@@ -1,5 +1,13 @@
 require('server/util/globals')
 
+waitFor = require('std/waitFor')
+
+check = function check(err) {
+	if (!err) { return }
+	console.log("ERROR", err)
+	throw err
+}
+
 module.exports = {
 	makeDatabase:makeDatabase,
 	makeS3:makeS3

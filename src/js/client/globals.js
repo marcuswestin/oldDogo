@@ -30,17 +30,17 @@ getId = function getId(d) { return d.id }
 
 isArray = _.isArray
 
-accountKnown = function(accountId) { return !!gState.cache['contactsByAccountId'][accountId] }
+accountKnown = function(dogoId) { return !!gState.cache['contactsByAccountId'][dogoId] }
 loadFacebookId = function loadFacebookId(facebookId, callback) { return loadAccount(null, facebookId, callback) }
 loadFacebookId.queue = {}
-loadAccountId = function loadAccountId(accountId, callback) { return loadAccount(accountId, null, callback) }
+loadAccountId = function loadAccountId(dogoId, callback) { return loadAccount(dogoId, null, callback) }
 loadAccountId.queue = {}
-loadAccount = function loadAccount(accountId, facebookId, callback) {
-	if (!accountId && !facebookId) { throw new Error("loadAccount: Undefined accountId") }
-	if (accountId) {
+loadAccount = function loadAccount(dogoId, facebookId, callback) {
+	if (!dogoId && !facebookId) { throw new Error("loadAccount: Undefined dogoId") }
+	if (dogoId) {
 		var cacheKey = 'contactsByAccountId'
 		var queue = loadAccountId.queue
-		var id = accountId
+		var id = dogoId
 	} else {
 		var cacheKey = 'contactsByFacebookId'
 		var queue = loadFacebookId.queue

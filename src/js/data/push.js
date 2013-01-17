@@ -6,10 +6,10 @@ module.exports = {
 }
 
 var encodingMap = {
-	senderAccountId: 'A',
+	senderDogoId: 'D',
 	conversationId: 'C',
 	clientUid: 'U',
-	toDogoId: 'D',
+	recipientDogoId: 'R',
 	payload: 'P',
 	sentTime: 'S',
 	type:'T',
@@ -25,15 +25,15 @@ function encodeMessage(data) {
 			// alert: gets filled in below
 		}
 	}
-	push[encodingMap.toDogoId] = data.toDogoId
-	push[encodingMap.senderAccountId] = message.senderAccountId
+	push[encodingMap.recipientDogoId] = data.recipientDogoId
+	push[encodingMap.senderDogoId] = message.senderDogoId
 	push[encodingMap.conversationId] = message.conversationId
 	push[encodingMap.clientUid] = message.clientUid
 	push[encodingMap.sentTime] = message.sentTime
 	push[encodingMap.type] = Messages.types[message.type]
 
 	if (message.type == 'picture') {
-		push[encodingMap.payload] = Messages.payload.encode(message.type, message.payload)
+		push[encodingMap.payload] = Messages.payload[message.type].encode(message.payload)
 		push.aps.alert = data.fromFirstName+' sent you a drawing' // NOTE Clients depend on "\w+ sent you a drawing"
 	} else if (message.type == 'text') {
 		var body = message.payload.body
@@ -58,11 +58,11 @@ function encodeMessage(data) {
 
 function decodePush(push) {
 	var data = {
-		toDogoId: push[encodingMap.toDogoId],
+		recipientDogoId: push[encodingMap.recipientDogoId],
 		truncated: !!push[encodingMap.truncated],
 		message: {
 			type: Messages.types.reverse[push[encodingMap.type]],
-			senderAccountId: push[encodingMap.senderAccountId],
+			senderDogoId: push[encodingMap.senderDogoId],
 			conversationId: push[encodingMap.conversationId],
 			clientUid: push[encodingMap.clientUid],
 			sentTime: push[encodingMap.sentTime],
@@ -80,7 +80,7 @@ function decodePush(push) {
 				data.truncated = true
 			}
 		} else if (data.message.type == 'picture') {
-			data.message.payload = Messages.payload.decode(push[encodingMap.payload])
+			data.message.payload = Messages.payload['picture'].decode(push[encodingMap.payload])
 		} else {
 			data.truncated = true // should not get here
 		}

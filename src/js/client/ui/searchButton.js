@@ -23,7 +23,7 @@ var getFace = (function() {
 
 function render() {
 	var searchItems = map(gState.get('conversations'), function(conversation) {
-		var names = conversation.person.fullName.split(' ')
+		var names = conversation.summary.people[0].name.split(' ')
 		return { names:names, conversation:conversation }
 	})
 	
@@ -72,8 +72,8 @@ function render() {
 	function renderResult(result, i) {
 		var classNames = 'result'
 		return div(classNames, style({ width:sizes.result, height:sizes.result }),
-			div('faceHolder', { facebookId:result.conversation.person.facebookId }),
-			div('names', result.conversation.person.fullName)
+			div('faceHolder', { facebookId:result.conversation.summary.people[0].facebookId }),
+			div('names', result.conversation.summary.people[0].name)
 		)
 	}
 	

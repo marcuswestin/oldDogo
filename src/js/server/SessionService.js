@@ -54,24 +54,24 @@ module.exports = proto(null,
 			}
 		},
 		// getSession: function(authToken, callback) {
-		// 	this._authenticateSession(authToken, bind(this, function(err, accountId) {
+		// 	this._authenticateSession(authToken, bind(this, function(err, dogoId) {
 		// 		if (err) { return callback(err) }
-		// 		this.accountService.getAccount(accountId, null, bind(this, function(err, account) {
+		// 		this.accountService.getAccount(dogoId, null, bind(this, function(err, account) {
 		// 			if (err) { return callback(err) }
-		// 			this._finishCreateSession(authToken, accountId, account, callback)
+		// 			this._finishCreateSession(authToken, dogoId, account, callback)
 		// 		}))
 		// 	}))
 		// },
-		// _finishCreateSession: function(authToken, accountId, account, callback) {
-		// 	this.accountService.getConversations(accountId, bind(this, function(err, conversations) {
+		// _finishCreateSession: function(authToken, dogoId, account, callback) {
+		// 	this.accountService.getConversations(dogoId, bind(this, function(err, conversations) {
 		// 		if (err) { return logError(err, callback, 'createSession.getContacts') }
 		// 	}))
 		// },
-		createSessionForAccountId: function(accountId, callback) {
+		createSessionForAccountId: function(dogoId, callback) {
 			var authToken = uuid.v4(),
 				expiration = 1 * time.day
 			
-			this.setex('sess:'+authToken, expiration, accountId, function(err) {
+			this.setex('sess:'+authToken, expiration, dogoId, function(err) {
 				if (err) { return callback(err) }
 				callback(null, authToken)
 			})
@@ -101,10 +101,10 @@ module.exports = proto(null,
 				return callback('Error parsing auth: '+ req.authorization)
 			}
 			
-			this.get('sess:'+authToken, function(err, accountId) {
+			this.get('sess:'+authToken, function(err, dogoId) {
 				if (err) { return callback(err) }
-				if (!accountId) { return callback('Unauthorized') }
-				callback(null, accountId)
+				if (!dogoId) { return callback('Unauthorized') }
+				callback(null, dogoId)
 			})
 		},
 		setex:function(key, exp, val, cb) {

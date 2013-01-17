@@ -119,16 +119,16 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 		},
 		session: function filterSession(req, res, next) {
 			req.authorization = req.headers.authorization || req.param('authorization')
-			sessionService.authenticateRequest(req, function(err, accountId) {
+			sessionService.authenticateRequest(req, function(err, dogoId) {
 				if (err) {
 					log('bad auth', req.authorization)
 					return next(err)
 				}
-				if (!accountId) {
+				if (!dogoId) {
 					log('unauthorized client', req.authorization)
 					return next('Unauthorized')
 				}
-				req.session = { accountId:accountId }
+				req.session = { dogoId:dogoId }
 				next()
 			})
 		},
@@ -184,30 +184,30 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 	})
 	// app.get('/api/contacts', filter.oldClientsAndSession, function getContacts(req, res) {
 	// 	var params = getParams(req)
-	// 	accountService.getContacts(req.session.accountId, wrapRespond(req, res, 'contacts'))
+	// 	accountService.getContacts(req.session.dogoId, wrapRespond(req, res, 'contacts'))
 	// })
 	app.post('/api/message', filter.oldClientsAndSession, function postMessage(req, res) {
-		var params = getParams(req, 'toConversationId', 'toPersonId', 'clientUid', 'type', 'payload')
+		var params = getParams(req, 'toConversationId', 'clientUid', 'type', 'payload')
 		var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
-		messageService.sendMessage(req.session.accountId,
-			params.toConversationId, params.toPersonId, params.clientUid,
+		messageService.sendMessage(req.session.dogoId,
+			params.toConversationId, params.clientUid,
 			params.type, params.payload,
 			prodPush, curry(respond, req, res))
 	})
 	app.get('/api/messages', filter.oldClientsAndSession, function getConversationMessages(req, res) {
 		var params = getParams(req, 'conversationId')
-		messageService.getMessages(req.session.accountId, params.conversationId, function(err, messages) {
+		messageService.getMessages(req.session.dogoId, params.conversationId, function(err, messages) {
 			respond(req, res, err, !err && { messages:messages })
 		})
 	})
 	app.post('/api/push_auth', filter.oldClientsAndSession, function postPushAuth(req, res) {
 		var params = getParams(req, 'pushToken', 'pushSystem')
-		accountService.setPushAuth(req.session.accountId, params.pushToken, params.pushSystem,
+		accountService.setPushAuth(req.session.dogoId, params.pushToken, params.pushSystem,
 			curry(respond, req, res))
 	})
 	app.get('/api/account_info', filter.oldClientsAndSession, function getAccountInfo(req, res) {
-		var params = getParams(req, 'accountId', 'facebookId')
-		accountService.getAccount(params.accountId, params.facebookId, wrapRespond(req, res, 'account'))
+		var params = getParams(req, 'dogoId', 'facebookId')
+		accountService.getAccount(params.dogoId, params.facebookId, wrapRespond(req, res, 'account'))
 	})
 	app.get('/api/version/info', filter.oldClientsAndSession, function getVersionInfo(req, res) {
 		var url = null // 'http://marcus.local:9000/api/version/download/latest.tar'
@@ -230,7 +230,7 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 	})
 	app.post('/api/facebook_requests', filter.session, function saveFacebookRequest(req, res) {
 		var params = getParams(req, 'facebookRequestId', 'toAccountId', 'conversationId')
-		messageService.saveFacebookRequest(req.session.accountId, params.facebookRequestId, params.toAccountId, params.conversationId, curry(respond, req, res))
+		messageService.saveFacebookRequest(req.session.dogoId, params.facebookRequestId, params.toAccountId, params.conversationId, curry(respond, req, res))
 	})
 }
 
@@ -311,7 +311,7 @@ function getParams(req) {
 	}
 	
 	req.meta = {
-		accountId: req.session && req.session.accountId,
+		dogoId: req.session && req.session.dogoId,
 		client: req.headers['x-dogo-client'],
 		agent: req.headers['user-agent']
 	}

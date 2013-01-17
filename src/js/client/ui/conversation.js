@@ -35,7 +35,7 @@ function renderConversation(_view) {
 
 	return div({ id:'conversationView' },
 		div('personName', function() {
-			var names = view.conversation.person.fullName.split(' ')
+			var names = view.conversation.summary.people[0].name.split(' ')
 			if (names.length > 1) {
 				return names[0] + ' ' + names[names.length-1][0] // first name plus first letter of last name
 			} else {
@@ -76,7 +76,7 @@ function getMessagesList() {
 	getMessagesList._list = list('messagesList', {
 		onSelect:selectMessage,
 		renderItem:renderMessage,
-		getItemId:function(message) { return message.senderAccountId + '-' + message.clientUid },
+		getItemId:function(message) { return message.senderDogoId + '-' + message.clientUid },
 		renderEmpty:function() {
 			if (drewLoading) { return div('ghostTown', 'Start the conversation', br(), 'Draw something!') }
 			drewLoading = true
@@ -158,13 +158,13 @@ function arrowImage(name, size) {
 }
 
 function renderMessage(message) {
-	return gRenderMessageBubble(message, view.conversation, { dynamics:true, face:true, arrow:true })
+	return gRenderMessageBubble(message, view.conversation, { dynamics:true, face:true, arrow:true, lazy:true })
 }
 
 gRenderMessageBubble = function(message, conversation, opts) {
-	opts = options(opts, { dynamics:true, face:true, arrow:true })
+	opts = options(opts, { dynamics:true, face:true, arrow:true, lazy:false })
 	var me = gState.myAccount()
-	var fromMe = (message.senderAccountId == me.id)
+	var fromMe = (message.senderDogoId == me.id)
 	var classes = [message.type+'Message', fromMe ? 'fromMe' : 'fromThem']
 	return [div('messageContainer',
 		div(classes.join(' '),
@@ -175,7 +175,7 @@ gRenderMessageBubble = function(message, conversation, opts) {
 					width:5, height:10,
 					backgroundSize:px(5, 10)
 				})),
-				renderContent(message)
+				renderContent(message, opts)
 			)
 		)
 	), div('clear')]
@@ -201,7 +201,7 @@ function styleSize(size) {
 	return style({ width:size[0], height:size[1] })
 }
 
-function renderContent(message) {
+function renderContent(message, opts) {
 	var payload = message.payload
 	if (message.type == 'text') {
 		return div('textContent', linkify(payload.body).join(''))
@@ -214,10 +214,12 @@ function renderContent(message) {
 	)
 	if (payload.secret) {
 		var pixelSize = scaleSize(displaySize)
+		var pictureUrl = pictures.displayUrl(message, { resize:[262*2, 180*2] })
+		var background = opts.lazy ? { pictureUrl:pictureUrl } : style({ backgroundImage:'url('+pictureUrl+')' })
 		return [
 			loadingClock,
 			div('pictureContent',
-				{ pictureUrl:pictures.displayUrl(message, { resize:[262*2, 180*2] }) },
+				background,
 				style(translate(0,0)),
 				style({ width:displaySize[0], height:displaySize[1], backgroundSize:px(displaySize[0], displaySize[1]) })
 			)
@@ -276,8 +278,8 @@ events.on('message.sent', function(serverResponse) {
 	var message = serverResponse.message
 	if (!view || view.conversation.id != message.conversationId) { return }
 	// cacheMessage(message)
-	if (view.conversation.person.memberSince) { return }
-	if (serverResponse.disableInvite) { return }
+	if (view.conversation.summary.people[0].memberSince) { return }
+	if (false && serverResponse.disableInvite) { return }
 	promptInvite(message)
 })
 
@@ -292,11 +294,11 @@ function promptInvite(message) {
 	var $infoBar = $(div(style({ height:height, width:viewport.width() }), div('dogo-info',
 		div('invite',
 			div('encouragement', message.body ? 'Nice Message!' : 'Very Expressive!'),
-			div('personal', view.conversation.person.fullName.split(' ')[0], " has not installed Dogo"),
+			div('personal', view.conversation.summary.people[0].name.split(' ')[0], " has not installed Dogo"),
 			div('button',
 				// face.mine({ size:faceSize, style:{ 'float':'left' } }),
 				'Send via Facebook',
-				face(view.conversation.person, { size:faceSize, style:{ 'float':'right' } }),
+				face(view.conversation.summary.people[0], { size:faceSize, style:{ 'float':'right' } }),
 				button(function() {
 				// TODO events.on('facebook.dialogDidComplete', function() { ... })
 				// https://developers.facebook.com/docs/reference/dialogs/requests/
@@ -314,7 +316,7 @@ function promptInvite(message) {
 					dialog: 'apprequests',
 					params: {
 						message: text,
-						to: view.conversation.person.facebookId.toString()
+						to: view.conversation.summary.people[0].facebookId.toString()
 						// title: name+' sent you a...',
 						// data: JSON.stringify({ conversationId:message.conversationId }),
 						// frictionless:'1'

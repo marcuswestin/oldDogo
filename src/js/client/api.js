@@ -115,8 +115,8 @@ function handleSession(facebookSession, callback, err, res) {
 	var contactsByAccountId = gState.cache['contactsByAccountId'] || {}
 	var contactsByFacebookId = gState.cache['contactsByFacebookId'] || {}
 	each(contacts, function(contact) {
-		if (contact.accountId) {
-			contactsByAccountId[contact.accountId] = contact
+		if (contact.dogoId) {
+			contactsByAccountId[contact.dogoId] = contact
 		}
 		contactsByFacebookId[contact.facebookId] = contact
 	})

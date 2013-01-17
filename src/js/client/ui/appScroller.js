@@ -41,7 +41,7 @@ function createAndRenderScroller() {
 		var showBackButton = (opts.viewBelow && stackIsAboveHome)
 		var title = null
 		if (view.conversation) {
-			var names = view.conversation.person.fullName.split(' ')
+			var names = view.conversation.summary.people[0].name.split(' ')
 			title = names[0]
 			if (names.length > 1) {
 				title += ' ' + names[names.length-1][0] // first name plus first letter of last name
