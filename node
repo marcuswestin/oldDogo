@@ -1,4 +1,4 @@
 # Make all files in src/js available to e.g. require('data/Messages')
 export NODE_PATH=`pwd`/src/js
 # Actually run node
-/usr/local/bin/node $1 $2 $3 $4 $5 $6
+`which node` $1 $2 $3 $4 $5 $6
