@@ -18,7 +18,7 @@ describe('Waitlist', function() {
 	it('should be possible to sign up', function(done) {
 		api.post('api/waitlist', { emailAddress:emailAddress }, function(err, res) {
 			check(err)
-			is(waitlistedTime = res.account.waitlistedTime)
+			is(waitlistedTime = res.person.waitlistedTime)
 			done()
 		})
 	})
@@ -26,7 +26,7 @@ describe('Waitlist', function() {
 		api.post('api/waitlist', { emailAddress:emailAddress }, function(err, res) {
 			check(err)
 			is(res.waitlistedSince)
-			is(res.account.waitlistedTime, waitlistedTime)
+			is(res.person.waitlistedTime, waitlistedTime)
 			done()
 		})
 	})
@@ -76,8 +76,8 @@ describe('Setup with Facebook Connect', function() {
 			timer.stop('postSession').report()
 			check(err)
 			is(res.authToken)
-			is(res.account)
-			is(res.account.facebookId, fbUser.id)
+			is(res.person)
+			is(res.person.facebookId, fbUser.id)
 			
 			api.authToken = res.authToken
 			
@@ -101,7 +101,7 @@ describe('Setup with Facebook Connect', function() {
 		})
 		it('should let you send a first message', function(done) {
 			var clientUid = u.clientUid()
-			api.post('api/message', { toConversationId:convId, toDogoId:accId, body:'Hi', clientUid:clientUid }, function(err, res) {
+			api.post('api/message', { toConversationId:convId, toPersonId:accId, body:'Hi', clientUid:clientUid }, function(err, res) {
 				check(err)
 				is(res.message.clientUid)
 				is(res.message.body, 'Hi')
@@ -114,7 +114,7 @@ describe('Setup with Facebook Connect', function() {
 				var secondConvo = res.conversations[1]
 				is(secondConvo)
 				is(numConversationsWithMessages(res.conversations), 1)
-				api.post('api/message', { toConversationId:secondConvo.id, toDogoId:secondConvo.person.id, body:'Ho', clientUid:u.clientUid() }, function(err, res) {
+				api.post('api/message', { toConversationId:secondConvo.id, toPersonId:secondConvo.person.id, body:'Ho', clientUid:u.clientUid() }, function(err, res) {
 					is(res.message)
 					api.get('api/conversations', function(err, res) {
 						is(numConversationsWithMessages(res.conversations), 2)

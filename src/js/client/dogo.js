@@ -76,8 +76,8 @@ events.on('push.notification', function onPushNotification(info) {
 		// could not decode...
 		return
 	}
-	if (data.recipientDogoId && data.recipientDogoId != gState.myAccount().dogoId) {
-		// This can happen if a single device has been used to register multiple dogo accounts
+	if (data.recipientPersonId && data.recipientPersonId != gState.me().personId) {
+		// This can happen if a single device has been used to register multiple people
 		return
 	}
 	
@@ -89,9 +89,9 @@ events.on('push.notification', function onPushNotification(info) {
 	var message = data.message
 	if (message) {
 		if (info.didBringAppIntoForeground) {
-			loadDogoId(message.senderDogoId, function(account) {
-				var conversation = { dogoId:account.dogoId } // hmm... this should load from gState by message.conversationId
-				var view = { title:account.name, conversation:conversation } // Hmm.. This should 
+			loadPersonId(message.senderPersonId, function(person) {
+				var conversation = { personId:person.personId } // hmm... this should load from gState by message.conversationId
+				var view = { title:person.name, conversation:conversation } // Hmm.. This should 
 				gScroller.set({ view:view, index:1, render:true, animate:false })
 				events.fire('push.message', payload, info)
 			})

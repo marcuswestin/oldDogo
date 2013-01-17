@@ -30,17 +30,17 @@ getId = function getId(d) { return d.id }
 
 isArray = _.isArray
 
-accountKnown = function(dogoId) { return !!gState.cache['contactsByDogoId'][dogoId] }
-loadFacebookId = function loadFacebookId(facebookId, callback) { return loadAccount(null, facebookId, callback) }
+personKnown = function(personId) { return !!gState.cache['contactsByPersonId'][personId] }
+loadFacebookId = function loadFacebookId(facebookId, callback) { return loadPerson(null, facebookId, callback) }
 loadFacebookId.queue = {}
-loadDogoId = function loadDogoId(dogoId, callback) { return loadAccount(dogoId, null, callback) }
-loadDogoId.queue = {}
-loadAccount = function loadAccount(dogoId, facebookId, callback) {
-	if (!dogoId && !facebookId) { throw new Error("loadAccount: Undefined dogoId") }
-	if (dogoId) {
-		var cacheKey = 'contactsByDogoId'
-		var queue = loadDogoId.queue
-		var id = dogoId
+loadPersonId = function loadPersonId(personId, callback) { return loadPerson(personId, null, callback) }
+loadPersonId.queue = {}
+loadPerson = function loadPerson(personId, facebookId, callback) {
+	if (!personId && !facebookId) { throw new Error("loadPerson: Undefined personId") }
+	if (personId) {
+		var cacheKey = 'contactsByPersonId'
+		var queue = loadPersonId.queue
+		var id = personId
 	} else {
 		var cacheKey = 'contactsByFacebookId'
 		var queue = loadFacebookId.queue
@@ -48,19 +48,19 @@ loadAccount = function loadAccount(dogoId, facebookId, callback) {
 	}
 	
 	var cache = gState.cache[cacheKey] || {}
-	var account = cache[id]
-	if (account) {
-		callback && callback(account)
-		return account
+	var person = cache[id]
+	if (person) {
+		callback && callback(person)
+		return person
 	} else if (queue[id]) {
 		queue[id].push(callback)
 	} else {
 		queue[id] = [callback]
-		api.get('api/account_info', { dogoId:dogoId, facebookId:facebookId }, function onApiGetAccountInfo(err, res) {
+		api.get('api/personInfo', { personId:personId, facebookId:facebookId }, function onApiGetPersonInfo(err, res) {
 			if (err) { return error(err) }
-			cache[id] = res.account
+			cache[id] = res.person
 			gState.set(cacheKey, cache)
-			each(queue[id], function(callback) { callback(res.account) })
+			each(queue[id], function(callback) { callback(res.person) })
 			delete queue[id]
 		})
 	}

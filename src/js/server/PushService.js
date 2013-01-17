@@ -1,5 +1,4 @@
 var apns = require('apn')
-var sql = require('./util/sql')
 var log = makeLog('PushService')
 var push = require('data/push')
 
@@ -38,24 +37,24 @@ module.exports = proto(null,
 			log("Created apns connection", prodOpts.gateway+':'+prodOpts.port)
 		}
 	}, {
-		sendMessagePush:function(message, fromDogoId, toDogoId, prodPush) {
-			this.db.selectOne(this, this.sql.selectPushInfo+'WHERE id=?', [toDogoId], function(err, data) {
+		sendMessagePush:function(message, fromPersonId, toPersonId, prodPush) {
+			this.db.selectOne(this, sql.selectPushInfo+'WHERE id=?', [toPersonId], function(err, data) {
 				if (err) { return }
-				if (!data.pushToken) { return log('Bah No push token for', toDogoId) }
+				if (!data.pushToken) { return log('Bah No push token for', toPersonId) }
 				if (data.pushSystem != 'ios') { return log.error('WARNING Unknown push system', data.pushSystem) }
 				
-				this.db.selectOne(this, this.sql.selectAccountFirstName+'WHERE id=?', [fromDogoId], function(err, fromAccountInfo) {
-					if (err) { return log.error("ERROR this.sql.selectAccountFirstName", fromDogoId) }
+				this.db.selectOne(this, sql.selectPersonFirstName+'WHERE id=?', [fromPersonId], function(err, fromPersonInfo) {
+					if (err) { return log.error("ERROR sql.selectPersonFirstName", fromPersonId) }
 					
 					var notification = new apns.Notification()
 					notification.device = new apns.Device(data.pushToken, ascii=true)
 					notification.payload = push.encodeMessage({
 						message:message,
-						recipientDogoId:toDogoId,
-						fromFirstName:fromAccountInfo.firstName
+						recipientPersonId:toPersonId,
+						fromFirstName:fromPersonInfo.firstName || fromPersonInfo.name.split(' ')[0]
 					})
 					
-					log("Send push notification to account ID", toDogoId)
+					log("Send push notification to person Id", toPersonId)
 					var connection = prodPush ? this.prodApnsConnection : this.devApnsConnection
 					connection.sendNotification(notification)
 				})
@@ -64,16 +63,11 @@ module.exports = proto(null,
 		
 		onApnError:function() {
 			log.error("WARNING apn error", arguments)
-		},
-		
-		sql: {
-			selectPushInfo: sql.selectFrom('account', {
-				pushToken:'push_token',
-				pushSystem:'push_system'
-			}),
-			selectAccountFirstName: sql.selectFrom('account', {
-				firstName:'first_name'
-			})
 		}
 	}
 )
+
+var sql = {
+	selectPushInfo:'SELECT pushToken, pushSystem FROM person ',
+	selectPersonFirstName:'SELECT firstName FROM person '
+}

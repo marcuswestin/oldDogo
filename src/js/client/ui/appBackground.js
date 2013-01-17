@@ -14,7 +14,7 @@ function render() {
 			),
 			div('summary',
 				div('name', function() {
-					var names = gState.myAccount().name.split(' ')
+					var names = gState.me().name.split(' ')
 					return [div('first', names.shift()), div('rest', names.pop())]
 				}),
 				div('clear')

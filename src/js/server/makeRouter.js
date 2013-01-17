@@ -119,16 +119,16 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 		},
 		session: function filterSession(req, res, next) {
 			req.authorization = req.headers.authorization || req.param('authorization')
-			sessionService.authenticateRequest(req, function(err, dogoId) {
+			sessionService.authenticateRequest(req, function(err, personId) {
 				if (err) {
 					log('bad auth', req.authorization)
 					return next(err)
 				}
-				if (!dogoId) {
+				if (!personId) {
 					log('unauthorized client', req.authorization)
 					return next('Unauthorized')
 				}
-				req.session = { dogoId:dogoId }
+				req.session = { personId:personId }
 				next()
 			})
 		},
@@ -142,22 +142,22 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 	
 	app.post('/api/waitlist', function(req, res) {
 		var params = getParams(req, 'emailAddress')
-		accountService.lookupOrCreateByEmail(params.emailAddress, bind(this, function(err, account) {
+		accountService.lookupOrCreateByEmail(params.emailAddress, bind(this, function(err, person) {
 			if (err) { return respond(req, res, err) }
-			database.insert(this, 'INSERT INTO waitlist_event SET account_id=?, user_agent=?', [account.id, req.headers['user-agent']], function(err) {
-				if (err) { log.warn("COULD NOT INSERT WAITLIST EVENT", params.emailAddress, account.id, req.headers)}
+			database.insert(this, 'INSERT INTO waitlistEvent SET personId=?, userAgent=?', [person.id, req.headers['user-agent']], function(err) {
+				if (err) { log.warn("COULD NOT INSERT WAITLIST EVENT", params.emailAddress, person.id, req.headers)}
 			})
-			if (account.waitlistedTime) {
-				respond(req, res, null, { account:account, waitlistedSince:time.ago(account.waitlistedTime * time.seconds) })
+			if (person.waitlistedTime) {
+				respond(req, res, null, { person:person, waitlistedSince:time.ago(person.waitlistedTime * time.seconds) })
 				sms.notify('Repeat waitlister: ' + params.emailAddress)
 			} else {
-				account.waitlistedTime = database.time()
-				database.updateOne(this, 'UPDATE account SET waitlisted_time=? WHERE id=?', [account.waitlistedTime, account.id], function(err) {
+				person.waitlistedTime = database.time()
+				database.updateOne(this, 'UPDATE person SET waitlistedTime=? WHERE id=?', [person.waitlistedTime, person.id], function(err) {
 					if (err) {
 						sms.notify("Error cretating new waitlister! " + params.emailAddress)
 						return respond(req, res, err)
 					}
-					respond(req, res, null, { account:account, waitlistedSince:null })
+					respond(req, res, null, { person:person, waitlistedSince:null })
 					sms.notify('New waitlister! ' + params.emailAddress)
 				})
 			}
@@ -184,30 +184,30 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 	})
 	// app.get('/api/contacts', filter.oldClientsAndSession, function getContacts(req, res) {
 	// 	var params = getParams(req)
-	// 	accountService.getContacts(req.session.dogoId, wrapRespond(req, res, 'contacts'))
+	// 	accountService.getContacts(req.session.personId, wrapRespond(req, res, 'contacts'))
 	// })
 	app.post('/api/message', filter.oldClientsAndSession, function postMessage(req, res) {
 		var params = getParams(req, 'toConversationId', 'clientUid', 'type', 'payload')
 		var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
-		messageService.sendMessage(req.session.dogoId,
+		messageService.sendMessage(req.session.personId,
 			params.toConversationId, params.clientUid,
 			params.type, params.payload,
 			prodPush, curry(respond, req, res))
 	})
 	app.get('/api/messages', filter.oldClientsAndSession, function getConversationMessages(req, res) {
 		var params = getParams(req, 'conversationId')
-		messageService.getMessages(req.session.dogoId, params.conversationId, function(err, messages) {
+		messageService.getMessages(req.session.personId, params.conversationId, function(err, messages) {
 			respond(req, res, err, !err && { messages:messages })
 		})
 	})
-	app.post('/api/push_auth', filter.oldClientsAndSession, function postPushAuth(req, res) {
+	app.post('/api/pushAuth', filter.oldClientsAndSession, function postPushAuth(req, res) {
 		var params = getParams(req, 'pushToken', 'pushSystem')
-		accountService.setPushAuth(req.session.dogoId, params.pushToken, params.pushSystem,
+		accountService.setPushAuth(req.session.personId, params.pushToken, params.pushSystem,
 			curry(respond, req, res))
 	})
-	app.get('/api/account_info', filter.oldClientsAndSession, function getAccountInfo(req, res) {
-		var params = getParams(req, 'dogoId', 'facebookId')
-		accountService.getAccount(params.dogoId, params.facebookId, wrapRespond(req, res, 'account'))
+	app.get('/api/personInfo', filter.oldClientsAndSession, function getPersonInfo(req, res) {
+		var params = getParams(req, 'personId', 'facebookId')
+		accountService.getPerson(params.personId, params.facebookId, wrapRespond(req, res, 'person'))
 	})
 	app.get('/api/version/info', filter.oldClientsAndSession, function getVersionInfo(req, res) {
 		var url = null // 'http://marcus.local:9000/api/version/download/latest.tar'
@@ -224,13 +224,13 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 			respond(req, res, null, tar, 'application/x-tar')
 		}))
 	})
-	app.get('/api/facebook_canvas/conversation', function getFacebookConversation(req, res) {
+	app.get('/api/facebookCanvas/conversation', function getFacebookConversation(req, res) {
 		var params = getParams(req, 'facebookRequestId')
 		messageService.loadFacebookRequestId(params.facebookRequestId, curry(respond, req, res))
 	})
-	app.post('/api/facebook_requests', filter.session, function saveFacebookRequest(req, res) {
-		var params = getParams(req, 'facebookRequestId', 'toDogoId', 'conversationId')
-		messageService.saveFacebookRequest(req.session.dogoId, params.facebookRequestId, params.toDogoId, params.conversationId, curry(respond, req, res))
+	app.post('/api/facebookRequests', filter.session, function saveFacebookRequest(req, res) {
+		var params = getParams(req, 'facebookRequestId', 'toPersonId', 'conversationId')
+		messageService.saveFacebookRequest(req.session.personId, params.facebookRequestId, params.toPersonId, params.conversationId, curry(respond, req, res))
 	})
 }
 
@@ -311,7 +311,7 @@ function getParams(req) {
 	}
 	
 	req.meta = {
-		dogoId: req.session && req.session.dogoId,
+		personId: req.session && req.session.personId,
 		client: req.headers['x-dogo-client'],
 		agent: req.headers['user-agent']
 	}

@@ -1,13 +1,13 @@
-var face = module.exports = function face(account, opts) {
-	return facebookFace(account, opts)
+var face = module.exports = function face(person, opts) {
+	return facebookFace(person, opts)
 }
 
 face.mine = function myFace(opts) {
-	return facebookFace(gState.myAccount(), opts)
+	return facebookFace(gState.me(), opts)
 }
 
-function facebookFace(account, opts) {
-	var facebookId = account.facebookId || account
+function facebookFace(person, opts) {
+	var facebookId = person.facebookId || person
 	var opts = tags.options(opts, {
 		size:25,
 		style:null,

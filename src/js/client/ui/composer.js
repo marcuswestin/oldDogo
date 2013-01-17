@@ -158,7 +158,7 @@ function sendMessage(type, payload) {
 	
 	var message = eventEmitter('message', {
 		toConversationId:conversation.id,
-		senderDogoId:gState.myAccount().dogoId,
+		senderPersonId:gState.me().personId,
 		clientUid:clientUid,
 		type:type,
 		payload:payload,

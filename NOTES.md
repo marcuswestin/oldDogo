@@ -24,8 +24,8 @@ Client UIDs on messages
 -----------------------
 When sending a message, it is necessary to be able to uniquely identify it even before it has been created on the server. Consider sending a message while nearly-offline. If we don't get a response from the server, one of two things has happened: 1) the message was recorded and delivered, or 2) the message never reached the server. For case 1, we want to be able to recognize that *this message* was received when back online. For case 2, we need to be able to get all messages from the server and detect that this message is not among them.
 
-The client goes about this by adding an ever increasing numeric client_uid to the message. The database has a unique index on message across (account_id, client_uid). Using this, the client can detect whether the message was succesfully sent by
+The client goes about this by adding an ever increasing numeric clientUid to the message. The database has a unique index on message across (personId, clientUid). Using this, the client can detect whether the message was succesfully sent by
 
-- On refresh conversation, check if the client_uid message is in there
+- On refresh conversation, check if the clientUid message is in there
 - On attempt resend, if server already has received the message the server can respond with the relevant info about the message
 - While offline, the client can keep a list of unsent messages

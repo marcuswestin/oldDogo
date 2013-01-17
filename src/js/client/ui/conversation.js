@@ -76,7 +76,7 @@ function getMessagesList() {
 	getMessagesList._list = list('messagesList', {
 		onSelect:selectMessage,
 		renderItem:renderMessage,
-		getItemId:function(message) { return message.senderDogoId + '-' + message.clientUid },
+		getItemId:function(message) { return message.senderPersonId + '-' + message.clientUid },
 		renderEmpty:function() {
 			if (drewLoading) { return div('ghostTown', 'Start the conversation', br(), 'Draw something!') }
 			drewLoading = true
@@ -163,8 +163,8 @@ function renderMessage(message) {
 
 gRenderMessageBubble = function(message, conversation, opts) {
 	opts = options(opts, { dynamics:true, face:true, arrow:true, lazy:false })
-	var me = gState.myAccount()
-	var fromMe = (message.senderDogoId == me.id)
+	var me = gState.me()
+	var fromMe = (message.senderPersonId == me.id)
 	var classes = [message.type+'Message', fromMe ? 'fromMe' : 'fromThem']
 	return [div('messageContainer',
 		div(classes.join(' '),
@@ -304,8 +304,8 @@ function promptInvite(message) {
 				// https://developers.facebook.com/docs/reference/dialogs/requests/
 				// https://developers.facebook.com/docs/mobile/ios/build/
 				
-				var myAccount = gState.myAccount()
-				var name = myAccount.firstName || myAccount.name
+				var me = gState.me()
+				var name = me.firstName || me.name.split(' ')[0]
 				if (message.body) {
 					var text = name+' says: "'+message.body+'". Reply in style with Dogo!'
 				} else {
@@ -324,7 +324,7 @@ function promptInvite(message) {
 				})
 				events.once('facebook.dialogCompleteWithUrl', function(info) {
 					var url = parseUrl(info.url)
-					var params = { conversationId:conversation.id, dogoId:conversation.summary.people[0].dogoId, facebookRequestId:url.getSearchParam('request') }
+					var params = { conversationId:conversation.id, personId:conversation.summary.people[0].personId, facebookRequestId:url.getSearchParam('request') }
 					api.post('api/facebook_requests', params, error.handler)
 				})
 			}))

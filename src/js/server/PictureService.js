@@ -28,7 +28,7 @@ module.exports = proto(null,
 		s3 = aws2js.load('s3', s3conf.accessKeyId, s3conf.secretAccessKey)
 		s3.setBucket(s3conf.bucket)
 	}, {
-		upload: function(dogoId, conversationId, base64Data, callback) {
+		upload: function(personId, conversationId, base64Data, callback) {
 			var buf = new Buffer(base64Data.replace(/^data:image\/\w+;base64,/, ""), 'base64')
 			var size = buf.length
 			var pictureSecret = uuid.v4()

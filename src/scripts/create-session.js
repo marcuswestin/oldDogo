@@ -2,10 +2,10 @@ require('../server/util/globals')
 
 var SessionService = require('../server/SessionService')
 
-var dogoId = process.argv[2]
+var personId = process.argv[2]
 
-new SessionService().createSessionForDogoId(dogoId, function(err, authToken) {
+new SessionService().createSessionForPersonId(personId, function(err, authToken) {
 	if (err) { return console.error('error:', err) }
-	console.log("Created session for account", dogoId, "with authToken", authToken)
+	console.log("Created session for person", personId, "with authToken", authToken)
 	process.exit(0)
 })

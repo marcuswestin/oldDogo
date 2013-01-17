@@ -6,10 +6,10 @@ module.exports = {
 }
 
 var encodingMap = {
-	senderDogoId: 'D',
+	senderPersonId: 'D',
 	conversationId: 'C',
 	clientUid: 'U',
-	recipientDogoId: 'R',
+	recipientPersonId: 'R',
 	payload: 'P',
 	sentTime: 'S',
 	type:'T',
@@ -25,8 +25,8 @@ function encodeMessage(data) {
 			// alert: gets filled in below
 		}
 	}
-	push[encodingMap.recipientDogoId] = data.recipientDogoId
-	push[encodingMap.senderDogoId] = message.senderDogoId
+	push[encodingMap.recipientPersonId] = data.recipientPersonId
+	push[encodingMap.senderPersonId] = message.senderPersonId
 	push[encodingMap.conversationId] = message.conversationId
 	push[encodingMap.clientUid] = message.clientUid
 	push[encodingMap.sentTime] = message.sentTime
@@ -58,11 +58,11 @@ function encodeMessage(data) {
 
 function decodePush(push) {
 	var data = {
-		recipientDogoId: push[encodingMap.recipientDogoId],
+		recipientPersonId: push[encodingMap.recipientPersonId],
 		truncated: !!push[encodingMap.truncated],
 		message: {
 			type: Messages.types.reverse[push[encodingMap.type]],
-			senderDogoId: push[encodingMap.senderDogoId],
+			senderPersonId: push[encodingMap.senderPersonId],
 			conversationId: push[encodingMap.conversationId],
 			clientUid: push[encodingMap.clientUid],
 			sentTime: push[encodingMap.sentTime],

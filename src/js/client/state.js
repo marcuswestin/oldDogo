@@ -29,8 +29,8 @@ var state = module.exports = {
 		var sessionInfo = state.cache['sessionInfo'] || {}
 		return key ? sessionInfo[key] : sessionInfo
 	},
-	myAccount:function() {
-		return state.getSessionInfo('myAccount')
+	me:function() {
+		return state.getSessionInfo('me')
 	},
 	facebookSession:function() {
 		return state.getSessionInfo('facebookSession')

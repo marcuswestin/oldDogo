@@ -112,19 +112,19 @@ function connect(opts, callback) {
 function handleSession(facebookSession, callback, err, res) {
 	if (err) { return callback(err) }
 	var contacts = res.contacts
-	var contactsByDogoId = gState.cache['contactsByDogoId'] || {}
+	var contactsByPersonId = gState.cache['contactsByPersonId'] || {}
 	var contactsByFacebookId = gState.cache['contactsByFacebookId'] || {}
 	each(contacts, function(contact) {
-		if (contact.dogoId) {
-			contactsByDogoId[contact.dogoId] = contact
+		if (contact.personId) {
+			contactsByPersonId[contact.personId] = contact
 		}
 		contactsByFacebookId[contact.facebookId] = contact
 	})
 
-	gState.set('contactsByDogoId', contactsByDogoId)
+	gState.set('contactsByPersonId', contactsByPersonId)
 	gState.set('contactsByFacebookId', contactsByFacebookId)
 	gState.set('sessionInfo', {
-		myAccount:res.account,
+		me:res.person,
 		authToken:res.authToken,
 		facebookSession:facebookSession,
 		clientUidBlock:res.clientUidBlock,

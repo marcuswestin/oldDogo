@@ -116,7 +116,7 @@ function getInitialConversations(conversations) {
 	var notStarted = []
 	var started = []
 	var family = []
-	var myLastName = gState.myAccount().lastName
+	var myLastName = gState.me().lastName
 	
 	each(conversations, function(conv) {
 		if (conv.lastMessageTime) {
