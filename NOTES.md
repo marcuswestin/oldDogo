@@ -1,3 +1,9 @@
+Storage
+-------
+For now, we optimize for simplicity. Json blobs are stored as-is.
+Later, when it's time, apply two transformations:
+1. encode property names (begun this in makeEncoder.js, but stopped)
+2. encode properties with message-pack
 
 Screen flash on appDidEnterForeground
 -------------------------------------
