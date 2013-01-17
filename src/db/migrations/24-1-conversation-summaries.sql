@@ -1,3 +1,4 @@
+-- Executed on Jan 16 2013
 ALTER TABLE conversation_participation ADD COLUMN lastMessageTime INT UNSIGNED DEFAULT NULL AFTER account_id;
 ALTER TABLE conversation_participation ADD COLUMN lastReceivedTime INT UNSIGNED DEFAULT NULL AFTER lastMessageTime;
 ALTER TABLE conversation_participation ADD COLUMN lastReadTime INT UNSIGNED DEFAULT NULL AFTER lastReceivedTime;

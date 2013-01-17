@@ -1,3 +1,4 @@
+-- Executed on Jan 16 2013
 ALTER TABLE conversation_participation CHANGE COLUMN summaryJson summaryJson VARCHAR(8192) NOT NULL;
 
 ALTER TABLE conversation_participation DROP FOREIGN KEY conversation_participation_ibfk_3;
