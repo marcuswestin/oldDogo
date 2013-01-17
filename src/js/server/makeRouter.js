@@ -28,7 +28,7 @@ module.exports = function makeRouter(database, accountService, messageService, s
 		next()
 	})
 
-	opts.apiMaintainance = true
+	// opts.apiMaintainance = true
 	if (opts.apiMaintainance) {
 		app.use(function(req, res, next) {
 			if (req.url.match(/^\/api\//) && req.url != '/api/ping') {
