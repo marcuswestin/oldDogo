@@ -34,7 +34,7 @@ module.exports = {
 											api.connect({ facebookSession:facebookSession }, function(err) {
 												connecting = false
 												if (err) {
-													$button.text('Try again').removeClass('active')
+													$button.text('Try again').removeClass('active disabled')
 													return
 												}
 												$button.text('Connected!')
