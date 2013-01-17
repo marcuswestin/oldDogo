@@ -14,10 +14,8 @@ var Messages = require('data/Messages')
 var sql = require('server/util/sql')
 
 selectParticipations(function(participations) {
-	selectRecentMessages(participations, function() {
-		updateParticipations(participations, function() {
-			console.log("All done!")
-		})
+	updateParticipations(participations, function() {
+		console.log("All done!")
 	})
 })
 
@@ -44,12 +42,12 @@ var selectMessage = sql.selectFrom('message', {
 	payloadJson:'payloadJson'
 })
 
-function selectRecentMessages(participations, done) {
+function updateParticipations(participations, done) {
 	console.log('selecting recent text and picture messages')
 	serialMap(participations, {
 		iterate:function(participation, next) {
-			console.log('getting data for', participation.id)
-			var waiting = waitFor(2, next)
+			console.log('updating', participation.id)
+			var waiting = waitFor(2, doUpdateParticipation)
 			db.select(this, selectMessage+" WHERE conversation_id=? ORDER BY id DESC LIMIT 3", [participation.conversation_id], function(err, recent) {
 				each(recent, parseMessagePayload)
 				participation.recent = recent
@@ -65,48 +63,39 @@ function selectRecentMessages(participations, done) {
 				message.payload = JSON.parse(message.payloadJson)
 				delete message.payloadJson
 			}
+			function doUpdateParticipation(err) {
+				if (err) { throw err }
+				if (!participation.recent) { participation.recent = [] }
+				var lastMessage = participation.recent[participation.recent.length - 1]
+				var lastMessageTime = lastMessage ? lastMessage.sentTime : null
+				var lastReceivedTime = null
+				var lastReadTime = null
+				if (participation.last_received_message_id) {
+					lastReceivedTime = db.time() // it's ok to manufacture this
+					if (participation.last_read_message_id) {
+						var fudge = participation.last_received_message_id > participation.last_read_message_id ? 1 : -1
+						lastReadTime = lastReceivedTime + fudge
+					}
+				}
+				var summary = {
+					people:[{
+						name:participation.full_name,
+						dogoId:participation.with_account_id,
+						facebookId:participation.facebook_id
+					}],
+					recent:participation.recent,
+					pictures:participation.pictures
+				}
+
+				db.updateOne(this,
+					'UPDATE conversation_participation SET lastMessageTime=?, lastReceivedTime=?, lastReadTime=?, summaryJson=? WHERE id=?',
+					[lastMessageTime, lastReceivedTime, lastReadTime, JSON.stringify(summary), participation.id],
+					function(err) { next(err) }
+				)
+			}
 		},
 		finish:function(err) {
 			console.log("Done selecting recent messages")
-			check(err)
-			done()
-		}
-	})
-}
-
-function updateParticipations(participations, done) {
-	console.log("Update", participations.length, 'participations')
-	serialMap(participations, {
-		iterate:function(participation, next) {
-			if (!participation.recent) { participation.recent = [] }
-			var lastMessage = participation.recent[participation.recent.length - 1]
-			var lastMessageTime = lastMessage ? lastMessage.sentTime : null
-			var lastReceivedTime = null
-			var lastReadTime = null
-			if (participation.last_received_message_id) {
-				lastReceivedTime = db.time() // it's ok to manufacture this
-				if (participation.last_read_message_id) {
-					var fudge = participation.last_received_message_id > participation.last_read_message_id ? 1 : -1
-					lastReadTime = lastReceivedTime + fudge
-				}
-			}
-			var summary = {
-				people:[{
-					name:participation.full_name,
-					dogoId:participation.with_account_id,
-					facebookId:participation.facebook_id
-				}],
-				recent:participation.recent,
-				pictures:participation.pictures
-			}
-			
-			db.updateOne(this,
-				'UPDATE conversation_participation SET lastMessageTime=?, lastReceivedTime=?, lastReadTime=?, summaryJson=? WHERE id=?',
-				[lastMessageTime, lastReceivedTime, lastReadTime, JSON.stringify(summary), participation.id],
-				function(err) { next(err) }
-			)
-		},
-		finish:function(err) {
 			check(err)
 			done()
 		}
