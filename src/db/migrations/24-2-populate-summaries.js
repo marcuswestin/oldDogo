@@ -8,7 +8,7 @@
 */
 
 var util = require('./util')
-var config = require('server/config/prod')
+var config = require('server/config/dev')
 var db = util.makeDatabase(config.db)
 var Messages = require('data/Messages')
 var sql = require('server/util/sql')
@@ -26,7 +26,7 @@ function selectParticipations(done) {
 	var sql = [
 		"SELECT p.*, a.full_name, a.facebook_id, a.id as with_account_id",
 		"FROM conversation_participation p INNER JOIN conversation c ON c.id=p.conversation_id ",
-		"INNER JOIN account a ON a.id=(CASE c.account_1_id WHEN p.account_id THEN c.account_2_id ELSE c.account_1_id END) LIMIT 5"].join('\n')
+		"INNER JOIN account a ON a.id=(CASE c.account_1_id WHEN p.account_id THEN c.account_2_id ELSE c.account_1_id END)"].join('\n')
 	db.select(this, sql, [], function(err, participations) {
 		check(err)
 		console.log("Selected", participations.length, 'participations')
