@@ -6,6 +6,8 @@ bind = require('std/bind')
 slice = require('std/slice')
 options = require('std/options')
 _ = require('underscore')
+filter = require('std/filter')
+serialMap = require('std/serialMap')
 
 ListPromise = require('std/ListPromise')
 
@@ -27,29 +29,3 @@ logError = logErr = function logError(err, callback /* , args ... */) {
 	}
 }
 
-serialMap = function serialMap(items, opts) {
-	var i = 0
-	var result = []
-	var iterate = opts.iterate
-	var finish = opts.finish
-	var ctx = opts.context
-	var filterNulls = opts.filterNulls || false
-	// the given iterator may expect arguments (item + i + next), or just (item + i)
-	var callIterator = (iterate.length == 3 ? iterate : function(item, i, next) { iterate.call(this, item, next) })
-	function next() {
-		if (i == items.length) { return finish.call(ctx, null, result) }
-		var iterationI = i
-		process.nextTick(function() {
-			callIterator.call(ctx, items[iterationI], iterationI, iteratorCallback)
-		})
-		i += 1
-	}
-	function iteratorCallback(err, iterationResult) {
-		if (err) { return finish.call(ctx, err, null) }
-		if (iterationResult != null || !filterNulls) {
-			result.push(iterationResult)
-		}
-		next()
-	}
-	next()
-}
