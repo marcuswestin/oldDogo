@@ -51,16 +51,22 @@ RENAME TABLE waitlist_event TO waitlistEvent;
 RENAME TABLE account_email TO personEmail;
 RENAME TABLE conversation_participation TO conversationParticipation;
 
--- keys
+-- drop foreign key indexes
+ALTER TABLE waitlistEvent DROP KEY account_id;
+
+-- rename keys
 ALTER TABLE person DROP KEY index_facebook_id;
 ALTER TABLE person ADD KEY keyFacebookId (facebookId);
 ALTER TABLE personEmail DROP KEY index_email_address;
 ALTER TABLE personEmail ADD KEY keyEmailAddress (emailAddress);
+ALTER TABLE personEmail DROP KEY account_id;
 ALTER TABLE conversation DROP KEY index_accounts;
 ALTER TABLE conversation ADD KEY keyRelationship (person1Id, person2Id);
 ALTER TABLE conversation DROP KEY index_accounts_reverse;
 ALTER TABLE conversation ADD KEY keyRelationshipReverse (person2Id, person1Id);
 ALTER TABLE conversationParticipation DROP KEY index_account_conversation;
-ALTER TABLE conversationParticipation ADD KEY keyPersonConversation (personId, conversationId);
+ALTER TABLE conversationParticipation ADD KEY keyPersonIdConversationId (personId, conversationId);
+ALTER TABLE conversationParticipation DROP KEY conversation_id;
+ALTER TABLE conversationParticipation ADD KEY keyConversationId (conversationId);
 ALTER TABLE message DROP KEY index_sender_account_id_client_uid;
 ALTER TABLE message ADD KEY keyPersonClientUid (senderPersonId, clientUid);

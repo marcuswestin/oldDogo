@@ -65,8 +65,9 @@ CREATE TABLE conversationParticipation (
 	lastReceivedTime INT UNSIGNED DEFAULT NULL,
 	lastReadTime INT UNSIGNED DEFAULT NULL,
 	summaryJson VARCHAR(8192) NOT NULL,
-	UNIQUE KEY keyPersonConversation (personId, conversationId),
-	PRIMARY KEY (id)
+	PRIMARY KEY (id),
+	UNIQUE KEY keyPersonIdConversationId (personId, conversationId),
+	KEY keyConversationId (conversationId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE message (
