@@ -114,7 +114,7 @@ events.on('message.selected', function() {
 
 function selectPhoto() {
 	bridge.command('menu.show', {
-		title:"Pick a Photo",
+		title:"Send a Photo",
 		cancelTitle:'Cancel',
 		titles:['Pick from Library', 'Take new Photo']
 	}, function(err, res) {
