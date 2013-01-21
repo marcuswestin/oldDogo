@@ -65,6 +65,9 @@ deploy-dogo-website: ${FAB}
 	fab deploy_dogo_website:${GIT_REV} -H dogo-web1
 
 # Deploy nginx conf to prod, and reload nginx
+push-nginx:
+	gitpush
+	make deploy-nginx-conf
 deploy-nginx-conf: ${FAB}
 	fab deploy_nginx_conf:${GIT_REV} -H dogo-web1
 
