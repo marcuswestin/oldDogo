@@ -87,14 +87,14 @@ function setupBrowserDebugMode() {
 			serverHost:location.hostname,
 			serverUrl:'http://'+location.host
 		}
-		bridge.eventHandler('app.start', { config:config, client:'0.97.0-browser' })
-		gViewportTop = 55
+		bridge.eventHandler('app.start', { config:config, client:'0.98.0-browser' })
+		gViewportTop = 35
 		$('#viewport').css({ margin:'0 auto', position:'relative', top:gViewportTop, height:viewport.height() })
 		$('body').css({ background:'#222' })
 			.prepend(
 				div(style({ position:'absolute', top:0, left:0, width:'100%' }),
 					button(function(){}),
-					img({ src:'/graphics/mockPhone/iphoneStatusBar.png' }, style({ width:320, display:'block', margin:'0 auto', position:'relative', top:34 })),
+					img({ src:'/graphics/mockPhone/iphoneStatusBar.png' }, style({ width:320, display:'block', margin:'0 auto', position:'relative', top:34, zIndex:1, opacity:.6 })),
 					img({ src:'/graphics/mockPhone/iphone4.png' }, style({ margin:'-120px auto', display:'block' }))
 				)
 			)

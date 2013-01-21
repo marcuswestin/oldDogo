@@ -3,20 +3,24 @@ var log = module.exports = {
 	doLog:doLog
 }
 
-var padLength = 14
+var padLength = 18
 function makeLog(name) {
 	var pad = new Array(padLength-name.length).join(' ')+'-'+' '
-	return _.extend(function logInfo() { log.doLog(pad, name, 'info', arguments) },
+	return _.extend(function logInfo() { log.doLog(pad, name, 'info'.blue, arguments) },
 		{
-			warn: function logWarn() { log.doLog(pad, name, 'warn', arguments) },
-			error: function logError() { log.doLog(pad, name, 'error', arguments) }
+			info: function logInfo() { log.doLog(pad, name, 'info'.blue, arguments) },
+			warn: function logWarn() { log.doLog(pad, name, 'WARN'.pink, arguments) },
+			error: function logError() { log.doLog(pad, name, 'EROR'.red, arguments) }
 		}
 	)
 }
 
 function doLog(pad, name, level, args) {
 	console.log(level+' '+getTime()+' '+name+pad, Array.prototype.join.call(map(args, function(arg) {
-		return (typeof arg == 'string' || typeof arg == 'number' ? arg : JSON.stringify(arg))
+		if (arg == null) { return arg }
+		if (typeof arg == 'string' || typeof arg == 'number') { return arg }
+		if (arg.stack) { return arg.stack }
+		return JSON.stringify(arg)
 	}), ' | '))
 }
 

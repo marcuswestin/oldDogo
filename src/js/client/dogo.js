@@ -63,7 +63,7 @@ events.on('app.start', function onAppStart(info) {
 })
 
 events.on('push.registered', function onPushRegistered(info) {
-	api.post('api/push_auth', { pushToken:info.deviceToken, pushSystem:'ios' })
+	api.post('api/pushAuth', { pushToken:info.deviceToken, pushSystem:'ios' })
 })
 
 events.on('app.didBecomeActive', function onAppDidBecomeActive() {
@@ -76,7 +76,7 @@ events.on('push.notification', function onPushNotification(info) {
 		// could not decode...
 		return
 	}
-	if (data.recipientPersonId && data.recipientPersonId != gState.me().personId) {
+	if (data.toPersonId && data.toPersonId != gState.me().personId) {
 		// This can happen if a single device has been used to register multiple people
 		return
 	}
@@ -89,7 +89,7 @@ events.on('push.notification', function onPushNotification(info) {
 	var message = data.message
 	if (message) {
 		if (info.didBringAppIntoForeground) {
-			loadPersonId(message.senderPersonId, function(person) {
+			loadPersonId(message.fromPersonId, function(person) {
 				var conversation = { personId:person.personId } // hmm... this should load from gState by message.conversationId
 				var view = { title:person.name, conversation:conversation } // Hmm.. This should 
 				gScroller.set({ view:view, index:1, render:true, animate:false })

@@ -11,10 +11,13 @@ var time = require('std/time')
 var sms = require('./sms')
 var filter = require('std/filter')
 var map = require('std/map')
+var database = require('server/Database')
+var accountService = require('server/AccountService')
+var messageService = require('server/MessageService')
+var sessionService = require('server/SessionService')
+var pictureService = require('server/PictureService')
 
-require('color')
-
-module.exports = function makeRouter(database, accountService, messageService, sessionService, pictureService, opts) {
+module.exports = function makeRouter(opts) {
 	
 	var app = express()
 	
@@ -55,7 +58,7 @@ module.exports = function makeRouter(database, accountService, messageService, s
 	return {
 		listen:function(port) {
 			server.listen(port)
-			log("dogo-web listening on :"+port)
+			log(("dogo-web listening on :"+port).green)
 		}
 	}
 }
@@ -103,7 +106,7 @@ function setupProdProxy(app) {
 	})
 }
 
-function setupRoutes(app, database, accountService, messageService, sessionService, pictureService, opts) {
+function setupRoutes(app, opts) {
 	var filter = {
 		oldClients: function filterOldClient(req, res, next) {
 			var client = req.headers['x-dogo-client']
@@ -142,9 +145,9 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 	
 	app.post('/api/waitlist', function(req, res) {
 		var params = getParams(req, 'emailAddress')
-		accountService.lookupOrCreateByEmail(params.emailAddress, bind(this, function(err, person) {
+		accountService.lookupOrCreateByEmail(params.emailAddress, function(err, person) {
 			if (err) { return respond(req, res, err) }
-			database.insert(this, 'INSERT INTO waitlistEvent SET personId=?, userAgent=?', [person.id, req.headers['user-agent']], function(err) {
+			database.insert('INSERT INTO waitlistEvent SET personId=?, userAgent=?', [person.id, req.headers['user-agent']], function(err) {
 				if (err) { log.warn("COULD NOT INSERT WAITLIST EVENT", params.emailAddress, person.id, req.headers)}
 			})
 			if (person.waitlistedTime) {
@@ -152,7 +155,7 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 				sms.notify('Repeat waitlister: ' + params.emailAddress)
 			} else {
 				person.waitlistedTime = database.time()
-				database.updateOne(this, 'UPDATE person SET waitlistedTime=? WHERE id=?', [person.waitlistedTime, person.id], function(err) {
+				database.updateOne('UPDATE person SET waitlistedTime=? WHERE id=?', [person.waitlistedTime, person.id], function(err) {
 					if (err) {
 						sms.notify("Error cretating new waitlister! " + params.emailAddress)
 						return respond(req, res, err)
@@ -161,7 +164,7 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 					sms.notify('New waitlister! ' + params.emailAddress)
 				})
 			}
-		}))
+		})
 	})
 	
 	app.get('/api/ping', function(req, res) {
@@ -205,10 +208,6 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 		accountService.setPushAuth(req.session.personId, params.pushToken, params.pushSystem,
 			curry(respond, req, res))
 	})
-	app.get('/api/personInfo', filter.oldClientsAndSession, function getPersonInfo(req, res) {
-		var params = getParams(req, 'personId', 'facebookId')
-		accountService.getPerson(params.personId, params.facebookId, wrapRespond(req, res, 'person'))
-	})
 	app.get('/api/version/info', filter.oldClientsAndSession, function getVersionInfo(req, res) {
 		var url = null // 'http://marcus.local:9000/api/version/download/latest.tar'
 		respond(req, res, null, { url:url })
@@ -218,11 +217,11 @@ function setupRoutes(app, database, accountService, messageService, sessionServi
 		res.end()
 		return
 		log('download version', req.url)
-		fs.readFile(__dirname+'/../../../build/dogo-ios-build.tar', bind(this, function(err, tar) {
+		fs.readFile(__dirname+'/../../../build/dogo-ios-build.tar', function(err, tar) {
 			if (err) { return respond(req, res, err) }
 			log("send download response", tar.length)
 			respond(req, res, null, tar, 'application/x-tar')
-		}))
+		})
 	})
 	app.get('/api/facebookCanvas/conversation', function getFacebookConversation(req, res) {
 		var params = getParams(req, 'facebookRequestId')
@@ -312,8 +311,7 @@ function getParams(req) {
 	
 	req.meta = {
 		personId: req.session && req.session.personId,
-		client: req.headers['x-dogo-client'],
-		agent: req.headers['user-agent']
+		client: req.headers['x-dogo-client']
 	}
 	
 	var logParams = JSON.stringify(params)
@@ -350,7 +348,7 @@ function respond(req, res, err, content, contentType) {
 			log.warn("Unauthorized".red, req.url.pink)
 		} else if (err == 404) {
 			code = 404
-			content = 'Could not find ' + req.url
+			content = 'Could not ' + req.method + ' ' + req.url
 			contentType = 'text/plain'
 			log.warn('404', req.method, req.url)
 		} else {
@@ -401,5 +399,6 @@ function respond(req, res, err, content, contentType) {
 		try { res.end("Error sending message") }
 		catch(e) { log.error("COULD NOT RESPOND") }
 	}
-	log(req.method, req.url, req.meta, req.timer && req.timer.report())
+	// TODO Start logging timing somewhere
+	// log(req.method, req.url, req.meta, req.timer && req.timer.report())
 }

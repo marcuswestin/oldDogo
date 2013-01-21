@@ -13,7 +13,7 @@ var fs = require('fs')
 var time = require('std/time')
 var request = require('request')
 var makeRouter = require('../src/server/makeRouter')
-var conf = require('../src/server/config/test')
+var conf = require('../src/server/config/test/testConfig')
 
 var u = module.exports = {}
 u.database = new Database({ host:conf.db.host, database:conf.db.database, user:conf.db.user, password:conf.db.password })

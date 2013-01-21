@@ -8,7 +8,12 @@ var argv = require('optimist').argv
 
 if (!argv.config) { argv.config = 'dev' }
 
-var config = require('./config/'+argv.config)
+var configFiles = {
+	dev:'config/dev/devConfig',
+	prod:'config/prod/prodConfig',
+	test:'config/test/testConfig'
+}
+var config = require('./'+configFiles[argv.config])
 for (var key in config) {
 	if (argv[key] == null) { continue }
 	config[key] = (argv[key] == 'false' ? false : argv[key])

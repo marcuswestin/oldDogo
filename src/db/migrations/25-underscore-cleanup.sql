@@ -11,7 +11,7 @@ ALTER TABLE message DROP FOREIGN KEY message_ibfk_1;
 ALTER TABLE account CHANGE COLUMN facebook_id facebookId BIGINT UNSIGNED DEFAULT NULL;
 ALTER TABLE account CHANGE COLUMN last_client_uid_block_start lastClientUidBlockStart BIGINT UNSIGNED NOT NULL DEFAULT 0;
 ALTER TABLE account CHANGE COLUMN last_client_uid_block_end lastClientUidBlockEnd BIGINT UNSIGNED NOT NULL DEFAULT 0;
-ALTER TABLE account CHANGE COLUMN full_name fullName VARCHAR(255) DEFAULT NULL;
+ALTER TABLE account CHANGE COLUMN full_name name VARCHAR(255) DEFAULT NULL;
 ALTER TABLE account CHANGE COLUMN first_name firstName VARCHAR(63) DEFAULT NULL;
 ALTER TABLE account CHANGE COLUMN last_name lastName VARCHAR(63) DEFAULT NULL;
 ALTER TABLE account CHANGE COLUMN push_token pushToken VARCHAR(255) DEFAULT NULL;
@@ -40,7 +40,7 @@ ALTER TABLE conversation_participation CHANGE COLUMN conversation_id conversatio
 ALTER TABLE conversation_participation CHANGE COLUMN account_id personId BIGINT UNSIGNED NOT NULL;
 
 -- message properties
-ALTER TABLE message CHANGE COLUMN sender_account_id senderPersonId BIGINT UNSIGNED NOT NULL;
+ALTER TABLE message CHANGE COLUMN sender_account_id fromPersonId BIGINT UNSIGNED NOT NULL;
 ALTER TABLE message CHANGE COLUMN conversation_id conversationId BIGINT UNSIGNED NOT NULL;
 ALTER TABLE message CHANGE COLUMN sent_time sentTime INT UNSIGNED NOT NULL;
 ALTER TABLE message CHANGE COLUMN client_uid clientUid BIGINT UNSIGNED NOT NULL;
@@ -69,4 +69,4 @@ ALTER TABLE conversationParticipation ADD KEY keyPersonIdConversationId (personI
 ALTER TABLE conversationParticipation DROP KEY conversation_id;
 ALTER TABLE conversationParticipation ADD KEY keyConversationId (conversationId);
 ALTER TABLE message DROP KEY index_sender_account_id_client_uid;
-ALTER TABLE message ADD KEY keyPersonClientUid (senderPersonId, clientUid);
+ALTER TABLE message ADD KEY keyPersonClientUid (fromPersonId, clientUid);

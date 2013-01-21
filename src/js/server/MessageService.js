@@ -2,193 +2,234 @@ var trim = require('std/trim')
 var uuid = require('uuid')
 var orderConversationIds = require('./util/ids').orderConversationIds
 var Messages = require('data/Messages')
+var pushService = require('server/PushService')
+var db = require('server/Database')
+var pictureService = require('server/PictureService')
 
-module.exports = proto(null,
-	function(database, accountService, pushService, pictureService) {
-		this.db = database
-		this.accountService = accountService
-		this.pushService = pushService
-		this.pictureService = pictureService
-	}, {
-		getConversations: function(req, callback) {
-			var personId = req.session.personId
-			this.db.autocommit(this, function(ac) {
-				callback = ac.wrapCallback(callback)
-				req.timer.start('selectParticipants')
-				ac.select(this, sql.selectParticipation+'WHERE personId=? ORDER BY lastMessageTime DESC, id DESC', [personId], function(err, participations) {
-					req.timer.stop('selectParticipants')
-					if (err) { return callback(err) }
-					req.timer.start('decodeSummaries')
-					each(participations, function(partic) {
-						partic.summary = JSON.parse(partic.summaryJson)
-						delete partic.summaryJson
-						if (!partic.summary.recent) {
-							partic.summary.recent = []
-						}
-						if (!partic.summary.pictures) {
-							partic.summary.pictures = []
-						}
-					})
-					req.timer.stop('decodeSummaries')
-					callback(null, participations)
-				})
+module.exports = {
+	getConversations: getConversations,
+	sendMessage: sendMessage,
+	getMessages: getMessages,
+	saveFacebookRequest: saveFacebookRequest,
+	loadFacebookRequestId: loadFacebookRequestId
+}
+
+function getConversations(req, callback) {
+	var personId = req.session.personId
+	req.timer.start('selectParticipants')
+	var selectParticipationsSql = [
+		'SELECT conversationId as id, lastMessageTime, lastReceivedTime, lastReadTime, summaryJson',
+		'FROM conversationParticipation WHERE personId=? ORDER BY lastMessageTime DESC, id DESC'
+	].join('\n')
+	db.shard(personId).select(
+		selectParticipationsSql,
+		[personId],
+		function(err, participations) {
+			req.timer.stop('selectParticipants')
+			if (err) { return callback(err) }
+			req.timer.start('decodeSummaries')
+			each(participations, function(partic) {
+				partic.summary = JSON.parse(partic.summaryJson)
+				delete partic.summaryJson
+				if (!partic.summary.recent) {
+					partic.summary.recent = []
+				}
+				if (!partic.summary.pictures) {
+					partic.summary.pictures = []
+				}
 			})
-		},
+			req.timer.stop('decodeSummaries')
+			callback(null, participations)
+		}
+	)
+}
 		
-		sendMessage: function(personId, conversationId, clientUid, type, payload, prodPush, callback) {
-			// 1. Check that sender has right to send to this conversation
-			// 2. Upload assets, if any
-			// 3. Create message
-			// 4. Update conversation participations (this may later be done by each receiver upon notification in step 4.)
-			// 5. Notify receivers
-			if (!Messages.types[type]) { return callback("I don't recognize that message type") }
-			if (!Messages.payload.verify(type, payload)) { return callback("That message is missing properties") }
-			this.db.transact(this, function(conn) {
-				callback = conn.wrapCallback(callback)
-				conn.selectOne(this,
-					'SELECT id FROM conversationParticipation WHERE personId=? AND conversationId=?',
-					[personId, conversationId],
-					function(err, res) {
-						if (err) { return callback(err) }
-						if (!res) { return callback("I couldn't find that conversation") }
-						var proceed = bind(this, function(err) {
+function sendMessage(personId, conversationId, clientUid, type, payload, prodPush, callback) {
+	// 1. Check that sender has right to send to this conversation
+	// 2. Upload assets, if any
+	// 3. Create message
+	// 4. Update conversation participations (this may later be done by each receiver upon notification in step 4.)
+	// 5. Notify receivers
+	if (!Messages.types[type]) { return callback("I don't recognize that message type") }
+	if (!Messages.payload.verify(type, payload)) { return callback("That message is missing properties") }
+
+	db.shard(personId).selectOne(
+		'SELECT id FROM conversationParticipation WHERE personId=? AND conversationId=?',
+		[personId, conversationId],
+		function(err, res) {
+			if (err) { return callback(err) }
+			if (!res) { return callback("I couldn't find that conversation") }
+			if (type == 'picture') {
+				pictureService.upload(personId, conversationId, payload.base64Data, function(err, pictureSecret) {
+					if (!err) {
+						delete payload.base64Data
+						payload.secret = pictureSecret
+					}
+					createMessage(payload)
+				})
+			} else {
+				createMessage()
+			}
+			
+			function createMessage() {
+				db.shard(conversationId).transact(function(tx) {
+					callback = tx.wrapCallback(callback)
+					tx.insert(
+						'INSERT INTO message SET sentTime=?, fromPersonId=?, clientUid=?, conversationId=?, type=?, payloadJson=?',
+						[db.time(), personId, clientUid, conversationId, Messages.types[type], JSON.stringify(payload)],
+						function(err, messageId) {
 							if (err) { return callback(err) }
-							conn.insert(this,
-								'INSERT INTO message SET sentTime=?, senderPersonId=?, clientUid=?, conversationId=?, type=?, payloadJson=?',
-								[conn.time(), personId, clientUid, conversationId, Messages.types[type], JSON.stringify(payload)],
-								function(err, messageId) {
-									if (err) { return logError(err, callback, 'sendMessage.insert') }
-									var message = { 
-										id:messageId, senderPersonId:personId, conversationId:conversationId, clientUid:clientUid,
-										sentTime:conn.time(), type:type, payload:payload
-									}
-									var self = this
-									conn.select(this, "SELECT id, personId, summaryJson, lastReceivedTime FROM conversationParticipation WHERE conversationId=?", [conversationId], function(err, participations) {
-										if (err) { return callback(err) }
-										serialMap(participations, {
-											filterNulls:true,
-											iterate:function(partic, next) {
-												var isMyParticipation = (partic.personId == personId)
-												var summary = JSON.parse(partic.summaryJson)
-												if (!summary.recent) { summary.recent = [] }
-												if (!summary.pictures) { summary.pictures = [] }
-
-												if (summary.recent.length >= 3) { summary.recent.shift() }
-												summary.recent.push(message)
-
-												if (message.type == 'picture') {
-													if (summary.pictures.length >= 6) {
-														var i = Math.floor(Math.random() * 7)
-														if (i != 7) { // 1 in 7 chance of skipping the picture
-															summary.pictures[i] = message
-														}
-													} else {
-														summary.pictures.push(message)
-													}
-												}
-												console.log("UPDATED SUMMARY", partic.id, JSON.stringify(summary))
-												
-												var lastReceivedTime = (isMyParticipation ? partic.lastReceivedTime : conn.time())
-												conn.updateOne(self,
-													'UPDATE conversationParticipation SET lastMessageTime=?, lastReceivedTime=?, summaryJson=? WHERE id=?',
-													[conn.time(), lastReceivedTime, JSON.stringify(summary), partic.id],
-													function(err, res) {
-														next(err, isMyParticipation ? null : partic.personId)
-													}
-												)
-											},
-											finish:function(err, recipientPersonIds) {
-												if (err) { return callback(err) }
-												each(recipientPersonIds, function(recipientPersonId) {
-													conn.commit()
-													callback(null, { message:message, disableInvite:false })
-													self.pushService.sendMessagePush(message, personId, recipientPersonId, prodPush)
-												})
-											}
-										})
+							var message = {
+								id:messageId, fromPersonId:personId, conversationId:conversationId, clientUid:clientUid,
+								sentTime:db.time(), type:type, payload:payload
+							}
+							tx.selectOne(
+								'SELECT participantsJson FROM conversation WHERE id=?',
+								[conversationId],
+								function(err, res) {
+									if (err) { return callback(err) }
+									
+									var participants = JSON.parse(res.participantsJson) // [{ id:personId, name:personName }, ...]
+									var fromParticipantName
+									var recipientParticipantIds = filter(participants, function(participant) {
+										var isMe = (participant.id == message.fromPersonId)
+										if (isMe) {
+											fromParticipantName = participant.name
+											return null
+										} else {
+											return participant.id
+										}
 									})
+									callback(null, { message:message, disableInvite:false })
+									// do the rest in parallel
+									_notifyRecipients(recipientParticipantIds, fromParticipantName, message, prodPush)
+									_updateParticipations(participants, message)
 								}
 							)
-						})
-
-						if (type == 'picture') {
-							this.pictureService.upload(personId, conversationId, payload.base64Data, function(err, pictureSecret) {
-								if (!err) {
-									delete payload.base64Data
-									payload.secret = pictureSecret
-								}
-								proceed(err)
-							})
-						} else {
-							proceed(null, null)
 						}
+					)
+				})
+			}
+		}
+	)
+}
+
+function _notifyRecipients(recipientParticipants, fromParticipantName, message, prodPush) {
+	each(recipientParticipants, function(recipientParticipant) {
+		var pushFromName = fromParticipantName.split(' ')[0]
+		pushService.sendMessagePush(recipientParticipant.id, pushFromName, message, prodPush)
+	})
+}
+
+function _updateParticipations(participants, message) {
+	each(participants, function(participantInfo) {
+		var participantId = participantInfo.id
+		db.shard(participantId).selectOne(
+			"SELECT id, personId, summaryJson, lastReceivedTime FROM conversationParticipation WHERE personId=? AND conversationId=?",
+			[participantId, message.conversationId],
+			function(err, participation) {
+				var summary = JSON.parse(participation.summaryJson)
+				if (!summary.recent) { summary.recent = [] }
+				if (!summary.pictures) { summary.pictures = [] }
+				if (summary.recent.length >= 3) { summary.recent.shift() }
+				summary.recent.push(message)
+
+				if (message.type == 'picture') {
+					if (summary.pictures.length >= 6) {
+						var i = Math.floor(Math.random() * 7)
+						if (i != 7) { // 1 in 7 chance of skipping the picture
+							summary.pictures[i] = message
+						}
+					} else {
+						summary.pictures.push(message)
+					}
+				}
+
+				var isMyParticipation = (participantId == message.fromPersonId)
+				var lastReceivedTime = (isMyParticipation ? participation.lastReceivedTime : db.time())
+				db.shard(participation.id).updateOne(
+					'UPDATE conversationParticipation SET lastMessageTime=?, lastReceivedTime=?, summaryJson=? WHERE id=?',
+					[db.time(), lastReceivedTime, JSON.stringify(summary), participation.id],
+					function(err, res) {
+						if (err) { log.error("Error updating conversationParticipation", err, participantId) }
+					}
+				)
+			}
+		)
+	})
+}
+
+function getMessages(personId, conversationId, callback) {
+	// This could be sped up by checking conversation.participantsJson instead of selecting from conversationParticipation
+	db.shard(personId).selectOne(
+		'SELECT id FROM conversationParticipation WHERE personId=? AND conversationId=?',
+		[personId, conversationId],
+		function(err, res) {
+			if (err) { return callback(err) }
+			if (!res) { return callback('Unknown conversation') }
+			var participationId = res.id
+			_selectMessages(conversationId, function(err, messages) {
+				if (err) { return callback(err) }
+				callback(null, messages)
+				var lastMessage = messages[messages.length - 1]
+				if (!lastMessage) { return }
+				// Update the lastReadTime
+				db.shard(conversationId).updateOne(
+					'UPDATE conversationParticipation SET lastReadTime=? WHERE id=?',
+					[db.time(), participationId],
+					function(err) {
+						if (err) { log.error('Could not update conversatioParticipation lastReadTime', participationId, err) }
 					}
 				)
 			})
-		},
-		
-		getMessages: function(personId, conversationId, callback) {
-			this.db.selectOne(this, 'SELECT id FROM conversationParticipation WHERE personId=? AND conversationId=?', [personId, conversationId], function(err, res) {
-				if (err) { return callback(err) }
-				if (!res) { return callback('Unknown conversation') }
-				var participationId = res.id
-				this._selectMessages(this.db, conversationId, function(err, messages) {
-					if (err) { return callback(err) }
-					callback(null, messages)
-					var lastMessage = messages[messages.length - 1]
-					if (!lastMessage) { return }
-					this.db.updateOne(this, 'UPDATE conversationParticipation SET lastReadTime=? WHERE id=?',
-						[this.db.time(), participationId],
-						function(err) {
-							if (err) { return logErr(err, function() {}, 'getMessages._updateLastReadMessage')
-						}
-					})
-				})
-			})
-		},
-		saveFacebookRequest: function(personId, facebookRequestId, toPersonId, conversationId, callback) {
-			this.db.insert(this,
-				'INSERT INTO facebookRequest SET createdTime=?, facebookRequestId=?, fromPersonId=?, toPersonId=?, conversationId=?',
-				[this.db.time(), facebookRequestId, personId, toPersonId, conversationId], function(err, res) {
-					if (err) { return callback(err) }
-					callback(null, 'OK')
-				})
-		},
-		loadFacebookRequestId: function(facebookRequestId, callback) {
-			this.db.selectOne(this,
-				sql.selectFacebookRequest+'WHERE facebookRequestId=?', [facebookRequestId], function(err, facebookRequest) {
-					if (err) { return callback(err) }
-					if (!facebookRequest) { return callback('Unknown facebook request') }
-					this._selectMessages(this.db, facebookRequest.conversationId, function(err, messages) {
-						if (err) { return logErr(err, callback, 'loadFacebookRequestId._selectMessages', facebookRequest.conversationId) }
-						callback(null, { messages:messages, facebookRequest:facebookRequest })
-					})
-				})
-		},
-		_selectMessage: function(conn, messageId, callback) {
-			conn.selectOne(this, sql.selectMessage+' WHERE message.id=?', [messageId], function(err, message) {
-				if (err) { return callback.call(this, err) }
-				if (message) { decodeMessage(message) }
-				callback.call(this, null, message)
-			})
-		},
-		_selectMessages: function(conn, convoId, callback) {
-			conn.select(this, sql.selectMessage+' WHERE conversationId=? ORDER BY id DESC LIMIT 50', [convoId], function(err, messages) {
-				messages.reverse()
-				each(messages, decodeMessage)
-				callback.call(this, err, messages)
-			})
 		}
-	}
-)
-
-var sql = {
-	selectMessage:'SELECT id, senderPersonId, clientUid, conversationId, type, sentTime, payloadJson FROM message ',
-	selectParticipation:'SELECT conversationId as id, lastMessageTime, lastReceivedTime, lastReadTime, summaryJson FROM conversationParticipation ',
-	selectFacebookRequest:'SELECT fromPersonId, toPersonId, conversationId FROM facebookRequest '
+	)
 }
 
-function decodeMessage(message) {
+function saveFacebookRequest(personId, facebookRequestId, toPersonId, conversationId, callback) {
+	callback('saveFacebookRequest is not implemented')
+	// think through if this should go into lookupService, and what data is required
+	// db.shard(facebookRequestId).insert(this,
+	// 	'INSERT INTO facebookRequest SET createdTime=?, facebookRequestId=?, fromPersonId=?, toPersonId=?, conversationId=?',
+	// 	[this.db.time(), facebookRequestId, personId, toPersonId, conversationId], function(err, res) {
+	// 		if (err) { return callback(err) }
+	// 		callback(null, 'OK')
+	// 	})
+}
+
+function loadFacebookRequestId(facebookRequestId, callback) {
+	callback('loadFacebookRequestId is not implemented')
+	// db.shard(facebookRequestId).selectOne(
+	// 	'SELECT fromPersonId, toPersonId, conversationId FROM facebookRequest WHERE facebookRequestId=?',
+	// 	[facebookRequestId],
+	// 	function(err, facebookRequest) {
+	// 		if (err) { return callback(err) }
+	// 		if (!facebookRequest) { return callback('Unknown facebook request') }
+	// 		_selectMessages(facebookRequest.conversationId, function(err, messages) {
+	// 			if (err) { return callback(err) }
+	// 			callback(null, { messages:messages, facebookRequest:facebookRequest })
+	// 		})
+	// 	}
+	// )
+}
+
+function _selectMessages(conversationId, callback) {
+	var selectMessageSql = [
+		'SELECT id, fromPersonId, clientUid, conversationId, type, sentTime, payloadJson',
+		'FROM message WHERE conversationId=? ORDER BY id DESC LIMIT 50'
+	].join('\n')
+	db.shard(conversationId).select(
+		selectMessageSql,
+		[conversationId],
+		function(err, messages) {
+			if (err) { return callback(err) }
+			messages.reverse()
+			each(messages, _decodeMessage)
+			callback(null, messages)
+		}
+	)
+}
+function _decodeMessage(message) {
 	message.type = Messages.types.reverse[message.type]
 	message.payload = JSON.parse(message.payloadJson)
 	delete message.payloadJson

@@ -1,5 +1,5 @@
 var util = require('./util')
-var config = require('server/config/dev')
+var config = require('server/config/dev/devConfig')
 var db = util.makeDatabase(config.db)
 var orderConversationIds = require('server/util/ids').orderConversationIds
 
@@ -52,7 +52,7 @@ function createData(contacts, callback) {
 				var fromAccount = accounts[contact.account_id]
 				// create account for contact.contact_facebook_id, if not exists
 				console.log("process contact", contact)
-				tx.insertIgnoreDuplicateEntry(this,
+				tx.insertIgnoreDuplicate(
 					'INSERT INTO account SET facebook_id=?, full_name=?, created_time=?',
 					[contact.contact_facebook_id, contact.contact_facebook_name, fromAccount.claimed_time],
 					function(err) {
@@ -61,18 +61,18 @@ function createData(contacts, callback) {
 						tx.selectOne(this, "SELECT id FROM account WHERE facebook_id=?", [contact.contact_facebook_id], function(err, res) {
 							check(err)
 							var ids = orderConversationIds(res.id, contact.account_id)
-							tx.insertIgnoreDuplicateEntry(this,
+							tx.insertIgnoreDuplicate(
 								'INSERT INTO conversation SET account_1_id=?, account_2_id=?, created_time=?',
 								[ids.account1Id, ids.account2Id, fromAccount.claimed_time],
 								function(err) {
 									check(err)
 									tx.selectOne(this, "SELECT id FROM conversation WHERE account_1_id=? AND account_2_id=?", [ids.account1Id, ids.account2Id], function(err, res) {
 										check(err)
-										tx.insertIgnoreDuplicateEntry(this,
+										tx.insertIgnoreDuplicate(
 											'INSERT INTO conversation_participation SET conversation_id=?, account_id=?', [res.id, ids.account1Id],
 											function(err) {
 												check(err)
-												tx.insertIgnoreDuplicateEntry(this,
+												tx.insertIgnoreDuplicate(
 													'INSERT INTO conversation_participation SET conversation_id=?, account_id=?', [res.id, ids.account2Id],
 													function(err) {
 														check(err)

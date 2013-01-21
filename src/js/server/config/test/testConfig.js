@@ -3,22 +3,22 @@ var fs = require('fs')
 module.exports = {
 	log:true,
 	dev:true,
-	port:9000,
+	port:9090,
 	db: {
 		host:"localhost",
-		password:"dogo",
-		database:"dogo",
-		user:"dogo_rw"
+		password:"test",
+		database:"dogo_test",
+		user:"dogo_tester"
 	},
 	s3: {
-		bucket:'dogo-dev-conv',
+		bucket:'dogo-test-conv',
 		accessKeyId:'AKIAJDUJ4DPW4DE7552Q',
 		secretAccessKey:'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'
 	},
 	push: {
-		certData:fs.readFileSync(__dirname + '/dev/cert.pem'),
-		keyData:fs.readFileSync(__dirname + '/dev/key.pem'),
-		passphrase:'dogopass3'
+		certData: null,
+		keyData:null,
+		passphrase:null
 	},
 	twilio: {
 		disabled: true,

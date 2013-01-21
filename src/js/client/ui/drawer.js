@@ -47,10 +47,6 @@ function render(_opts) {
 	
 	$ui = $(div('drawer', style(viewport.getSize()), style(translate(0,0)),
 	
-		gIsDev && div('button', style({ position:'absolute', top:10, right:10 }), 'Reload', button(function() {
-			bridge.command('app.restart')
-		})),
-		
 		// div('loading', 'Loading...'),
 		div('close', style({ display:'inline-block' }), style(translate.x(viewport.width() - 52)),
 			icons.close,

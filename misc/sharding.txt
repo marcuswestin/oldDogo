@@ -1,0 +1,71 @@
+How many shards?
+================
+
+How big are things?
+-------------------
+
+Id: 2^64 bytes
+
+people           relationships per person *   message per relationship
+10,000,000,000 * 100,000 *                    10,000
+
+18446744073709550000 possible IDs per type of object
+10000000000000000000 things total
+
+68GB = 68000000000 bytes max memory per machine (today)
+
+javascript max int 2 ^ 63 = 9007199254740992
+
+Options
+-------
+
+2 ^ 16 = 65536
+281474976710656 IDs per database per table
+152587890625000 things per machine
+4456448000000000 max TOTAL bytes memory
+137438953472 IDs before table javascript max int craps out
+
+
+2 ^ 15 = 32768
+562949953421312 IDs per database per table
+305175781250000 things per machine
+2228224000000000 max TOTAL bytes memory
+274877906944 IDs in one DB table before javascript max int craps out
+
+
+2 ^ 14 = 16384 max databases
+1125899906842624 IDs per database per table
+610351562500000 things per machine
+1114112000000000 max TOTAL bytes memory
+549755813888 IDs in one DB before javascript max int craps out
+
+
+2 ^ 13 = 8192 max databases
+2251799813685248 IDs per database per table
+1220703125000000 things per machine
+557056000000000 max TOTAL bytes memory
+1099511627776 IDs in one DB table before javascript max int craps out
+
+
+Decision
+========
+
+2^16 = 65536 logical shards
+---------------------------
+
+this means
+- each shard needs an increment=2^16-1 and offset of N=[0..2^16-1]
+- figure out how to assign offsets on RDS
+- change dogo0 database to offset=0 & increment=2^16-1
+- migrate data from old db to new db
+	+ let skipId be
+		if (id == 1 || id > 65535) { skip this object, since its already been processed }
+	+ for each table
+		+ for each row
+			+ for each ID column
+				skipId?
+					if not, set id = 1 + 65535 * (id - 1)
+
+
+1				2				3				4
+1 + 65535 * 0, 1 + 65535 * 1, 1 + 65535 * 2, 1 + 65535 * 3

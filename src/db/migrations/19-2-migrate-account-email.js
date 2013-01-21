@@ -1,5 +1,5 @@
 var util = require('./util')
-var config = require('server/config/dev')
+var config = require('server/config/dev/devConfig')
 var db = util.makeDatabase(config.db)
 
 function check(err) {
@@ -33,7 +33,7 @@ function createAccountEmailRows(accounts, callback) {
 					return next()
 				}
 				console.log("Process", account.id, account.full_name, account.email)
-				tx.insertIgnoreDuplicateEntry(this,
+				tx.insertIgnoreDuplicate(
 					'INSERT INTO account_email SET account_id=?, email_address=?, created_time=?, claimed_time=?',
 					[account.id, account.email, account.claimed_time, account.email_verified_time],
 					next

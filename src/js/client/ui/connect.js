@@ -22,7 +22,7 @@ module.exports = {
 										button(function() {
 										var $button = $(this).text('Connecting...').addClass('active disabled')
 										var connecting = false
-										bridge.command('facebook.connect', { permissions:['email'] }, function(err, data) {
+										bridge.command('facebook.connect', { permissions:['email','friends_birthday'] }, function(err, data) {
 											var facebookSession = data.facebookSession
 											if (err || !facebookSession || !facebookSession.accessToken) {
 												$button.text('Try again').removeClass('active disabled')
@@ -40,7 +40,9 @@ module.exports = {
 												$button.text('Connected!')
 												scroller.push({})
 												events.fire('app.connected')
-												conversations.refresh(function(){ /* do nothing - just preload them */ })
+												setTimeout(function() {
+													conversations.refresh(function(){ /* do nothing - just preload them after a second */ })
+												}, 1000)
 											})
 										})
 									})),

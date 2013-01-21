@@ -76,7 +76,7 @@ function getMessagesList() {
 	getMessagesList._list = list('messagesList', {
 		onSelect:selectMessage,
 		renderItem:renderMessage,
-		getItemId:function(message) { return message.senderPersonId + '-' + message.clientUid },
+		getItemId:function(message) { return message.fromPersonId + '-' + message.clientUid },
 		renderEmpty:function() {
 			if (drewLoading) { return div('ghostTown', 'Start the conversation', br(), 'Draw something!') }
 			drewLoading = true
@@ -164,7 +164,7 @@ function renderMessage(message) {
 gRenderMessageBubble = function(message, conversation, opts) {
 	opts = options(opts, { dynamics:true, face:true, arrow:true, lazy:false })
 	var me = gState.me()
-	var fromMe = (message.senderPersonId == me.id)
+	var fromMe = (message.fromPersonId == me.id)
 	var classes = [message.type+'Message', fromMe ? 'fromMe' : 'fromThem']
 	return [div('messageContainer',
 		div(classes.join(' '),
@@ -325,7 +325,7 @@ function promptInvite(message) {
 				events.once('facebook.dialogCompleteWithUrl', function(info) {
 					var url = parseUrl(info.url)
 					var params = { conversationId:conversation.id, personId:conversation.summary.people[0].personId, facebookRequestId:url.getSearchParam('request') }
-					api.post('api/facebook_requests', params, error.handler)
+					api.post('api/facebookRequests', params, error.handler)
 				})
 			}))
 		)

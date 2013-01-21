@@ -15,4 +15,3 @@ Then, to run the dev server locally:
 #############
 
 	ssh dogo-web1
-	mysql -h dogo-db1.cqka8vcdrksp.us-east-1.rds.amazonaws.com -u dogo_rw -p dogo

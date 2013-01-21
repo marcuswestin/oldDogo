@@ -1,6 +1,7 @@
 var request = require('request')
 var curry = require('std/curry')
 var parseQueryString = require('querystring').parse
+var facebookDevCache = require('./facebookDevCache')
 
 module.exports = {
 	get: curry(send, 'get'),
@@ -8,6 +9,9 @@ module.exports = {
 }
 
 function send(method, path, qsParams, callback) {
+	if (facebookDevCache[method+path]) {
+		return setTimeout(function() { callback(null, facebookDevCache[method+path]) })
+	}
 	request[method]({ url:'https://graph.facebook.com/' + path, qs:qsParams }, function(err, res) {
 		if (err) { return callback(err) }
 		try {

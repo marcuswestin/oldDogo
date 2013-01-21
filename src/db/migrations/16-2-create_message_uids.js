@@ -1,5 +1,5 @@
 var util = require('./util')
-var config = require('server/config/dev')
+var config = require('server/config/dev/devConfig')
 
 var clientUidBlockSize = 100000
 var db = util.makeDatabase(config.db)

@@ -9,7 +9,7 @@ draggable = require('tags/draggable')
 viewport = require('tags/viewport')
 if (gIsPhantom || !tags.isTouch) {
 	// In dev mode Fake the viewport width and height to be an iPhone
-	viewport.height = function() { return 460 }
+	viewport.height = function() { return 480 }
 	viewport.width = function() { return 320 }
 }
 

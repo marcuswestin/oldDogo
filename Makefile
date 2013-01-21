@@ -80,8 +80,7 @@ test-server: ${PHANTOMJS}
 #######
 # Reset local development database
 reset-db: run-databases
-	mysql -u dogo_rw --password=dogo -e 'DROP DATABASE IF EXISTS dogo; CREATE DATABASE dogo;'
-	cat src/db/schema.sql | mysql -u dogo_rw --password=dogo dogo
+	node src/scripts/resetDb.js
 
 reset-test-db: run-databases
 	mysql -u dogo_tester --password=test -e 'DROP DATABASE IF EXISTS dogo_test; CREATE DATABASE dogo_test;'

@@ -21,7 +21,7 @@ error = function(err) {
 		var facebookRequestId = requestIds.split(',').pop()
 		api.connect({ facebookRequestId:facebookRequestId }, function(err, res) {
 			if (err) { return error(err) }
-			api.get('api/facebook_canvas/conversation', { facebookRequestId:facebookRequestId }, function(err, res) {
+			api.get('api/facebookCanvas/conversation', { facebookRequestId:facebookRequestId }, function(err, res) {
 				if (err) { return error(err) }
 				$('#viewport').append(
 					div('dogoApp',
@@ -48,7 +48,7 @@ error = function(err) {
 					$('.replyInput').val('')
 					var message = {
 						toPersonId:res.facebookRequest.fromPersonId,
-						senderPersonId:res.facebookRequest.toPersonId,
+						fromPersonId:res.facebookRequest.toPersonId,
 						body:body
 					}
 					conversation.addMessage(message)

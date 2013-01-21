@@ -1,237 +1,198 @@
 var uuid = require('uuid')
 var facebook = require('./util/facebook')
 var orderConversationIds = require('./util/ids').orderConversationIds
+var orderPersonIds = require('./util/ids').orderPersonIds
 var waitFor = require('std/waitFor')
+var db = require('server/Database')
+var lookupService = require('server/lookupService')
+var log = makeLog('AccountService')
 
-var clientUidBlockSize = 100000
+module.exports = {
+	lookupOrCreateByFacebookAccount:lookupOrCreateByFacebookAccount,
+	lookupOrCreateByEmail:lookupOrCreateByEmail,
+	setPushAuth:setPushAuth,
+	bumpClientUidBlock:bumpClientUidBlock
+}
 
-module.exports = proto(null,
-	function(database) {
-		this.db = database
-	}, {
-		lookupOrCreateByFacebookAccount:function(req, fbAccount, fbAccessToken, callback) {
-			req.timer.start('_selectPersonByFacebookId')
-			this._selectPersonByFacebookId(this.db, fbAccount.id, function(err, person) {
-				req.timer.stop('_selectPersonByFacebookId')
+var personSql = 'SELECT facebookId, name, firstName, lastName, id, id as personId, pushToken, claimedTime, waitlistedTime FROM person '
+
+function lookupOrCreateByFacebookAccount(req, fbAcc, fbAccessToken, callback) {
+	req.timer.start('lookupService.lookupPersonIdByFacebookId')
+	lookupService.lookupPersonIdByFacebookId(fbAcc.id, function(err, personId) {
+		req.timer.stop('lookupService.lookupPersonIdByFacebookId')
+		if (err) { return callback(err) }
+		// #1 facebook id is unknown => create account; index it with its fb ID; schedule friend processing.
+		// #2 facebook id is known => check if account is claimed; claim if not claimed; schedule friend processing.
+		if (personId) {
+			db.shard(personId).selectOne(personSql+'WHERE id=?', [personId], function(err, person) {
 				if (err) { return callback(err) }
-				
-				req.timer.start('get /me/friends from facebook')
-				facebook.get('/me/friends', { access_token:fbAccessToken }, bind(this, function(err, res) {
-					req.timer.stop('get /me/friends from facebook')
-					if (err) { return callback(err) }
-					var fbFriends = res.data
-					if (res.error || !fbFriends) {
-						callback(res.error || 'Facebook connect me/friends failed')
-					} else if (person && person.memberSince) {
-						this._insertFbContacts(req, this.db, fbAccount, fbFriends, callback)
-					} else if (person) {
-						this._claimAccount(req, person, fbAccount, fbFriends, callback)
-					} else {
-						this._createClaimedAccount(req, fbAccount, fbFriends, callback)
-					}
-				}))
+				if (!person.claimedTime) {
+					_claimPersonAndScheduleInsertFacebookFriends(personId, fbAcc, callback)
+				} else {
+					callback(null, person)
+					_scheduleInsertFacebookFriends(person, fbAccessToken)
+				}
 			})
-		},
-		lookupOrCreateByEmail:function(emailAddress, callback) {
-			if (!emailAddress) { return callback('Missing email address') }
-			this.db.transact(this, function(tx) {
-				callback = tx.wrapCallback(callback)
-				tx.selectOne(this, 'SELECT personId FROM personEmail WHERE emailAddress=?', [emailAddress], function(err, res) {
+		} else {
+			db.randomShard().insert('INSERT INTO person SET createdTime=?', [db.time()], function(err, personId) {
+				if (err) { return callback(err) }
+				lookupService.indexPersonIdByFacebookAccount(fbAcc, personId, function(err) {
 					if (err) { return callback(err) }
-					if (res && res.personId) {
-						this._selectPersonByPersonId(tx, res.personId, callback)
-					} else {
-						tx.insert(this, 'INSERT INTO person SET createdTime=?', [tx.time()], function(err, personId) {
-							if (err) { return callback(err) }
-							tx.insert(this,
-								'INSERT INTO personEmail SET emailAddress=?, personId=?, createdTime=?',
-								[emailAddress, personId, tx.time()], function(err, personEmailId) {
-									this._selectPersonByPersonId(tx, personId, callback)
-								}
-							)
-						})
-					}
+					_claimPersonAndScheduleInsertFacebookFriends(personId, fbAcc, callback)
 				})
 			})
-		},
-		getPerson: function(personId, facebookId, callback) {
-			if (personId) {
-				this._selectPersonByPersonId(this.db, personId, callback)
-			} else {
-				this._selectPersonByFacebookId(this.db, facebookId, callback)
+		}
+	})
+	
+	function _claimPersonAndScheduleInsertFacebookFriends(personId, fbAcc, callback) {
+		db.randomShard().updateOne(
+			'UPDATE person SET claimedTime=?, facebookId=?, name=?, firstName=?, lastName=?, gender=?, birthdate=?, locale=?, timezone=? WHERE id=?',
+			[db.time(), fbAcc.id, fbAcc.name, fbAcc.first_name, fbAcc.last_name, fbAcc.gender, _getFbAccBirthdate(fbAcc.birthday), fbAcc.locale, fbAcc.timezone, personId],
+			function(err) {
+				if (err) { return callback(err) }
+				db.shard(personId).selectOne(personSql+'WHERE id=?', [personId], function(err, person) {
+					callback(err, person)
+					if (!err) { _scheduleInsertFacebookFriends(person, fbAccessToken) }
+				})
 			}
-		},
-		setPushAuth: function(personId, pushToken, pushSystem, callback) {
-			this._updatePersonPushAuth(this.db, personId, pushToken, pushSystem, callback)
-		},
-		bumpClientUidBlock: function(personId, callback) {
-			this.db.transact(this, function(tx) {
-				callback = tx.wrapCallback(callback)
-				this._selectClientUidBlock(tx, personId, function(err, clientUidBlock) {
-					if (err) { return callback(err) }
-					clientUidBlock.start += clientUidBlockSize
-					clientUidBlock.end += clientUidBlockSize
-					this._updateClientUidBlock(tx, personId, clientUidBlock, function(err) {
-						if (err) { return callback(err) }
-						callback(null, clientUidBlock)
-					})
+		)
+	}
+}
+
+function _getFbAccBirthdate(birthday) {
+	 // "11/23/1985" -> "1985-11-23"
+	// "06/17" -> "0000/06/17"
+	// "32" -> null
+	// "", null, undefined -> null
+	if (!birthday) { return null }
+	var parts = birthday.split('/')
+	if (parts.length == 1) { return null }
+	if (parts.length == 2) { parts.push('0000') }
+	return parts[2]+'-'+parts[0]+'-'+parts[1]
+}
+
+function _scheduleInsertFacebookFriends(person, fbAccessToken) {
+	// => for each facebook friend:
+	// 		if facebook id is not known
+	// 			create person on random shard_F
+	// 			index person by facebook id
+	//		create conversation between person and friend on shard_F
+	//		& the 2 conversation participations on shard_A & shard_F
+	var personId = person.id
+	facebook.get('/me/friends?fields=id,name,birthday', { access_token:fbAccessToken }, function(err, res) {
+		if (err) { return log.error('Could not get facebook friends', personId, fbAcc, fbAccessToken, err) }
+		var numFriends = res.data.length
+		log.info('inserting '+numFriends+' facebook friends for person '+personId)
+		serialMap(res.data, {
+			iterate:processFriend,
+			finish:function(err) {
+				if (err) {
+					log.error('Error while inserting '+numFriends+' facebook friends for person '+personId, err)
+				}
+				log.info('finished inserting '+numFriends+' facebook friends for person '+personId)
+			}
+		})
+	})
+	
+	function processFriend(fbFriend, next) {
+		lookupService.lookupPersonIdByFacebookId(fbFriend.id, function(err, friendPersonId) {
+			if (err) { return next(err) }
+			if (friendPersonId) {
+				_createConversation(person, fbFriend, friendPersonId, next)
+			} else {
+				db.randomShard().insert(
+					'INSERT INTO person SET createdTime=?, facebookId=?, name=?, birthdate=?',
+					[db.time(), fbFriend.id, fbFriend.name, _getFbAccBirthdate(fbFriend.birthday)],
+					function(err, friendPersonId) {
+						if (err) { return next(err) }
+						lookupService.indexPersonIdByFacebookId(fbFriend.id, friendPersonId, function(err) {
+							if (err) { return next(err) }
+							_createConversation(person, fbFriend, friendPersonId, next)
+						}
+					)
 				})
-			})
-		},
-		_selectClientUidBlock:function(conn, personId, callback) {
-			conn.selectOne(this, 'SELECT lastClientUidBlockStart AS start, lastClientUidBlockEnd AS end FROM person WHERE id=?',
-				[personId], callback)
-		},
-		_updateClientUidBlock:function(conn, personId, clientUidBlock, callback) {
-			conn.updateOne(this, 'UPDATE person SET lastClientUidBlockStart=?, lastClientUidBlockEnd=? WHERE id=?',
-				[clientUidBlock.start, clientUidBlock.end, personId], callback)
-		},
-		_createClaimedAccount:function(req, fbAcc, fbFriends, callback) {
-			log('create new person with', fbFriends.length, 'friends')
-			this.db.transact(this, function(tx) {
-				callback = tx.wrapCallback(callback)
-				var emailVerifiedTime = fbAcc.email ? tx.time() : null
-				fbAcc.email, emailVerifiedTime
-				
-				tx.insert(this,
-					'INSERT INTO person SET createdTime=?, claimedTime=?, facebookId=?, fullName=?, firstName=?, lastName=?, gender=?, locale=?, timezone=?',
-					[tx.time(), tx.time(), fbAcc.id, fbAcc.name, fbAcc.first_name, fbAcc.last_name, fbAcc.gender, fbAcc.locale, fbAcc.timezone],
-					function(err, personId) {
-						if (err) { return callback(err) }
-						this._addFacebookEmail(req, tx, personId, fbAcc, function() {
-							this._insertFbContacts(req, tx, fbAcc, fbFriends, callback)
-						})
-					}
+			}
+		})
+	}
+}
+
+function _createConversation(person, fbFriend, friendPersonId, callback) {
+	try { var ids = orderPersonIds(person.id, friendPersonId) }
+	catch(e) { return callback(e) }
+	// create conversations on the friend's shard to spread them out
+	var participants = [{ id:person.id, name:person.name }, { id:friendPersonId, name:fbFriend.name }]
+	db.shard(friendPersonId).insert(
+		'INSERT INTO conversation SET person1Id=?, person2Id=?, participantsJson=?, createdTime=?',
+		[ids[0], ids[1], JSON.stringify(participants), db.time()],
+		function(err, conversationId) {
+			if (err) { return callback(err) }
+			var waiting = waitFor(2, callback)
+			var summaryISee = {
+				people:[{ personId:friendPersonId, facebookId:fbFriend.id, name:fbFriend.name }]
+			}
+			var summaryFriendSees = {
+				people:[{ personId:person.id, facebookId:person.facebookId, name:person.name }]
+			}
+			each(ids, function(personId) {
+				var summary = (personId == person.id ? summaryISee : summaryFriendSees)
+				db.shard(personId).insertIgnoreDuplicate(
+					'INSERT INTO conversationParticipation SET personId=?, conversationId=?, summaryJson=?',
+					[personId, conversationId, JSON.stringify(summary)],
+					waiting
 				)
 			})
-		},
-		_claimAccount:function(req, person, fbAcc, fbFriends, callback) {
-			log('claim account with', fbAcc, fbFriends.length, 'friends')
-			req.timer.start('_claimAccount')
-			this.db.transact(this, function(tx) {
-				callback = tx.wrapCallback(callback)
-				var emailVerifiedTime = fbAcc.email ? tx.time() : null
-				// Insert email ignore
-				tx.updateOne(this,
-					'UPDATE person SET claimedTime=?, fullName=?, firstName=?, lastName=?, gender=?, locale=?, timezone=? WHERE facebookId=? AND id=?',
-					[tx.time(), fbAcc.name, fbAcc.first_name, fbAcc.last_name, fbAcc.gender, fbAcc.locale, fbAcc.timezone, fbAcc.id, person.id],
+		}
+	)
+}
+
+function lookupOrCreateByEmail(emailAddress, callback) {
+	if (!emailAddress) { return callback('Missing email address') }
+	lookupService.personByEmail(emailAddress, function(err, personId) {
+		if (err) { return callback(err) }
+		var shard = db.shard(personId)
+		if (personId) {
+			shard.selectOne(personSql+'WHERE id=?', [personId], callback)
+		} else {
+			shard.insert('INSERT INTO person SET createdTime=?', [shard.time()], function(err, personId) {
+				if (err) { return callback(err) }
+				lookupService.indexPersonByEmail(emailAddress, personId, function(err) {
+					if (err) { return callback(err) }
+					shard.selectOne(personSql+'WHERE id=?', personId, callback)
+				})
+			})
+		}
+	})
+}
+
+function setPushAuth(personId, pushToken, pushSystem, callback) {
+	db.shard(personId).updateOne(
+		'UPDATE person SET pushToken=?, pushSystem=? WHERE id=?',
+		[pushToken, pushSystem, personId],
+		callback
+	)
+}
+
+function bumpClientUidBlock(personId, callback) {
+	var clientUidBlockSize = 100000
+	db.shard(personId).transact(function(tx) {
+		callback = tx.wrapCallback(callback)
+		tx.selectOne(
+			'SELECT lastClientUidBlockStart AS start, lastClientUidBlockEnd AS end FROM person WHERE id=?',
+			[personId],
+			function(err, clientUidBlock) {
+				if (err) { return callback(err) }
+				clientUidBlock.start += clientUidBlockSize
+				clientUidBlock.end += clientUidBlockSize
+				tx.updateOne(
+					'UPDATE person SET lastClientUidBlockStart=?, lastClientUidBlockEnd=? WHERE id=?',
+					[clientUidBlock.start, clientUidBlock.end, personId],
 					function(err) {
 						if (err) { return callback(err) }
-						this._addFacebookEmail(req, tx, person.id, fbAcc, function() {
-							req.timer.stop('_claimAccount')
-							this._insertFbContacts(req, tx, fbAcc, fbFriends, callback)
-						})
+						callback(null, clientUidBlock)
 					}
 				)
-			})
-		},
-		_addFacebookEmail:function(req, conn, personId, fbAcc, callback) {
-			req.timer.start('_addFacebookEmail')
-			if (fbAcc.email && !fbAcc.email.match('proxymail.facebook.com')) {
-				conn.insert(this,
-					'INSERT INTO personEmail SET personId=?, emailAddress=?, createdTime=?, claimedTime=?',
-					[personId, fbAcc.email, conn.time(), conn.time()], function(err) {
-						if (err) { console.log("WARNING _addFacebookEmail failed", err, personId, fbAcc) }
-						req.timer.stop('_addFacebookEmail')
-						callback.call(this)
-					}
-				)
-			} else {
-				req.timer.stop('_addFacebookEmail')
-				callback.call(this)
 			}
-		},
-		_insertFbContacts:function(req, tx, fbAccount, fbFriends, callback, err) {
-			if (err) { return logErr(err, callback, '_insertFbContacts', fbAccount) }
-			req.timer.start('_insertFbContacts')
-			this._selectPersonByFacebookId(tx, fbAccount.id, function(err, person) {
-				if (err) { return logErr(err, callback, 'select id by facebook id', fbAccount) }
-				var timestamp = tx.time()
-				ensureAccountsExist.call(this)
-				
-				function ensureAccountsExist() {
-					serialMap(fbFriends, {
-						context:this,
-						filterNulls:true,
-						iterate: function(fbFriend, next) {
-							tx.selectOne(this, 'SELECT id FROM person WHERE facebookId=?', [fbFriend.id], function(err, dogoFriend) {
-								if (err) { return next(err) }
-								if (dogoFriend) {
-									next(null, { personId:dogoFriend.id, facebookId:fbFriend.id, name:fbFriend.name })
-								} else {
-									this._createUnclaimedAccountForFacebookFriend(tx, fbFriend.id, fbFriend.name, function(err, personId) {
-										next(err, err ? null : { personId:personId, facebookId:fbFriend.id, name:fbFriend.name })
-									})
-								}
-							})
-						},
-						finish: function(err, friends) {
-							if (err) { return callback(err) }
-							req.timer.stop('_insertFbContacts')
-							createConversations.call(this, friends)
-						}
-					})
-				}
-				
-				function createConversations(friends) {
-					serialMap(friends, {
-						context:this,
-						iterate:function(friend, next) {
-							try { var ids = orderConversationIds(person.personId, friend.personId) }
-							catch(e) { return next(e) }
-							tx.selectOne(this, 'SELECT id FROM conversation WHERE person1Id=? AND person2Id=?',
-								[ids.person1Id, ids.person2Id],
-								function(err, conv) {
-								if (err) { return next(err) }
-								if (conv) { return next() }
-								tx.insert(this, 'INSERT INTO conversation SET person1Id=?, person2Id=?, createdTime=?',
-									[ids.person1Id, ids.person2Id, timestamp], function(err, convId) {
-										if (err) { return next(err) }
-										var waiting = waitFor(2, next)
-										var summaryISee = {
-											people:[{ personId:friend.personId, facebookId:friend.facebookId, name:friend.name }]
-										}
-										var summaryFriendSees = {
-											people:[{ personId:person.personId, facebookId:person.facebookId, name:person.name }]
-										}
-										each(ids, function(personId) {
-											var summary = (personId == person.personId ? summaryISee : summaryFriendSees)
-											tx.insertIgnoreDuplicateEntry(this,
-												'INSERT INTO conversationParticipation SET personId=?, conversationId=?, summaryJson=?',
-												[personId, convId, JSON.stringify(summary)],
-												waiting
-											)
-										})
-									}
-								)
-							})
-						},
-						finish:function(err, conversationInfos) {
-							callback(err, err ? null : person)
-						}
-					})
-				}
-			})
-		},
-		_updatePersonPushAuth: function(conn, personId, pushToken, pushSystem, callback) {
-			conn.updateOne(this,
-				'UPDATE person SET pushToken=?, pushSystem=? WHERE id=?',
-				[pushToken, pushSystem, personId], callback)
-		},
-		_createUnclaimedAccountForFacebookFriend: function(conn, facebookId, name, callback) {
-			conn.insert(this,
-				'INSERT INTO person SET createdTime=?, facebookId=?, fullName=?',
-				[conn.time(), facebookId, name], callback)
-		},
-		_selectPersonByFacebookId: function(conn, facebookId, callback) {
-			conn.selectOne(this, sql.selectPerson+'WHERE facebookId=?', [facebookId], callback)
-		},
-		_selectPersonByPersonId: function(conn, personId, callback) {
-			conn.selectOne(this, sql.selectPerson+'WHERE id=?', [personId], callback)
-		}
-	}
-)
-
-var sql = {
-	selectPerson: 'SELECT facebookId, fullName as name, firstName, lastName, id, id as personId, pushToken, claimedTime, waitlistedTime FROM person '
+		)
+	})
 }
+

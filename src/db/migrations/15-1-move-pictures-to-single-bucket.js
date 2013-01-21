@@ -22,7 +22,7 @@ Mikey:
 require('server/util/globals')
 var Database = require('server/Database')
 var PictureService = require('server/PictureService')
-var config = require('server/config/dev')
+var config = require('server/config/dev/devConfig')
 var request = require('request')
 var accessKeyId = 'AKIAJDUJ4DPW4DE7552Q'
 var secretAccessKey = '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'

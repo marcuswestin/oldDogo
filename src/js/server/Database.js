@@ -1,49 +1,85 @@
+// It is worth noting that we should never write into the mysql databases directly, but must always go through the shard
+
 var mysql = require('mysql')
 var log = makeLog('Database')
+var shardConfig = require('server/config/shardConfig')
+
+var Database = module.exports = {
+	configure:configure,
+	shard:shard,
+	randomShard:randomShard,
+	lookupShard:null,
+	time:getTime,
+	getShardName:getShardName
+}
+
+var shards = {}
+var numDogoShards = 0
+function configure(shardConfs) {
+	for (var shardName in shardConfs) {
+		shards[shardName] = new Shard(shardConfs[shardName])
+		if (shardName.match(/dogo\d+/)) {
+			numDogoShards += 1
+		}
+	}
+	Database.lookupShard = shards['dogoLookup']
+}
+
+function getShardName(id) {
+	var shardIndex = ((parseInt(id) - 1) % shardConfig.MAX_SHARDS) + 1 // 1->1, 2->2, 3->3, ..., 65535->65535, 65536->1, 65537->2
+	return 'dogo'+shardIndex
+}
+
+function shard(id) {
+	return shards[getShardName(id)]
+}
+
+function randomShard() {
+	return shard(Math.floor(Math.random() * numDogoShards) + 1)
+}
 
 var connectionBase = {
-	query:function(ctx, query, args, callback) {
+	query:function(query, args, callback) {
 		var stackError = new Error()
-		this._query(ctx, query, args, function(err) {
-			if (err) { err = logError(err, query, args, stackError) }
-			callback.apply(ctx, arguments)
+		this._query(query, args, function(err) {
+			if (err) { onDbError('query', err, stackError, query, args) }
+			callback.apply(this, arguments)
 		})
 	},
-	selectOne: function(ctx, query, args, callback) {
+	selectOne: function(query, args, callback) {
 		var stackError = new Error()
-		this.query(ctx, query, args, function(err, rows) {
-			if (err) { logError('selectOne error', query, args, err) }
+		this.query(query, args, function(err, rows) {
+			if (err) { onDbError('selectOne', err, stackError, query, args) }
 			if (!err && rows.length > 1) {
-				logError('Got more rows than expected', query, args, stackError)
+				log.warn('selectOne got multiple rows', query, args, stack)
 				err = "Got more rows than expected"
 			}
-			callback.call(this, err, err ? undefined : (rows[0] || null))
+			callback(err, err ? undefined : (rows[0] || null))
 		})
 	},
-	select:function(ctx, query, args, callback) {
+	select:function(query, args, callback) {
 		var stackError = new Error()
-		this.query(ctx, query, args, function(err, rows) {
-			if (err) { logError('select error', query, args, stackError) }
-			callback.call(this, err, !err && rows)
+		this.query(query, args, function(err, rows) {
+			if (err) { onDbError('select', err, stackError, query, args) }
+			callback(err, !err && rows)
 		})
 	},
-	insert:function(ctx, query, args, callback) {
+	insert:function(query, args, callback) {
 		var stackError = new Error()
-		this.query(ctx, query, args, function(err, info) {
-			if (err) { logError('insert error', query, args, err) }
+		this.query(query, args, function(err, info) {
+			if (err) { onDbError('insert', err, stackError, query, args) }
 			if (!err && !info.insertId) {
-				logError('insert error', query, args, stackError)
-				err = "Did not recieve an insertId"
+				err = onDbError('query', new Error('Did not receive an insertId'), stackError, query, args)
 			}
-			callback.call(this, err, !err && info.insertId)
+			callback(err, !err && info.insertId)
 		})
 	},
 	
-	insertIgnoreDuplicateEntry:function(ctx, query, args, callback) {
+	insertIgnoreDuplicate:function(query, args, callback) {
 		var stackError = new Error()
-		this._query(ctx, query, args, function(err, info) {
+		this._query(query, args, function(err, info) {
 			if (err && !err.message.match(/Duplicate entry/)) {
-				logError('insert ignore dup entry', query, args, stackError)
+				onDbError('insertIgnoreDuplicate', err, stackError, query, args)
 				callback(err)
 			} else {
 				callback(null)
@@ -51,56 +87,86 @@ var connectionBase = {
 		})
 	},
 	
-	updateOne:function(ctx, query, args, callback) {
-		this.query(ctx, query, args, function(err, info) {
-			if (err) { log.error('updateOne error', query, args, err) }
-			if (!err && info.affectedRows > 1) { err = "Updated more rows than expected ("+info.affectedRows+")" }
-			callback.call(this, err, null)
+	updateOne:function(query, args, callback) {
+		var stackError = new Error()
+		this.query(query, args, function(err, info) {
+			if (err) { onDbError('updateOne', err, stackError, query, args) }
+			if (!err && info.affectedRows > 1) {
+				var errorMessage = 'updateOne affected '+info.affectedRows+' rows'
+				err = onDbError(errorMessage, new Error(errorMessage), stackError, query, args)
+			}
+			callback(err, null)
 		})
 	},
 	time:getTime
+}
+
+function onDbError(method, err, stackError, query, args) {
+	err.stack = stackError.stack // make it easy to see where the calling code came from
+	log.error(method, err.message, query, args)
+	return err
 }
 
 function getTime() {
 	return Math.floor(new Date().getTime() / 1000)
 }
 
-module.exports = proto(connectionBase,
-	function(conf) {
-		this._poolSize = 4
-		this._pool = map(new Array(this._poolSize), function() {
-			var client = mysql.createClient({ host:conf.host, port:3306, user:conf.user, password:conf.password, database:conf.database })
-			client.query("SET SESSION sql_mode='STRICT_ALL_TABLES,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION'")
-			// client.query('SET NAMES utf8mb4')
-			return client
-		})
+var Shard = proto(connectionBase,
+	function(shardConfig) {
 		this._queue = []
-		this._poolSize = this._pool.length
+		this._pool = map(new Array(shardConfig.numConnections), bind(this, _createConnection))
+		
+		function _createConnection() {
+			var connection = mysql.createClient({
+				host:shardConfig.host,
+				port:3306,
+				user:shardConfig.user,
+				password:shardConfig.password,
+				database:shardConfig.shardName
+			})
+			connection.query('SET SESSION \n'+[
+				'sql_mode="STRICT_ALL_TABLES,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"',
+				'auto_increment_increment='+shardConfig.autoIncrement.increment,
+				'auto_increment_offset='+shardConfig.autoIncrement.offset
+			].join(',\n'))
+			// connection.query('SET NAMES utf8mb4')
+			
+			// from https://github.com/felixge/node-mysql#server-disconnects
+			connection.on('error', bind(this, function(err) {
+				if (!err.fatal) { return }
+				if (err.code !== 'PROTOCOL_CONNECTION_LOST') {
+					// We may want to consider staying up here, but do the simple thing for now
+					log.error('Lost connection', err)
+					throw err
+				}
+				log.warn('Reconnecting lost connection', err)
+				for (var i=0; i<this._pool.length; i++) {
+					if (this._pool[i] != connection) { continue }
+					this._pool.splice(i, i)
+					this._pool.push(_createConnection())
+					break
+				}
+			}))
+			
+			return connection
+		}
 	}, {
-		transact: function(ctx, fn) {
-			if (!fn) {
-				fn = ctx
-				ctx = this
-			}
+		transact: function(fn) {
 			this._takeConnection(function(conn) {
-				fn.call(ctx, Transaction(this, conn))
+				fn(Transaction(this, conn))
 			})
 		},
-		autocommit: function(ctx, fn) {
-			if (!fn) {
-				fn = ctx
-				ctx = this
-			}
+		autocommit: function(fn) {
 			this._takeConnection(function(conn) {
-				fn.call(ctx, Autocommit(this, conn))
+				fn(Autocommit(this, conn))
 			})
 		},
-		_query: function(ctx, query, args, callback) {
+		_query: function(query, args, callback) {
 			this._takeConnection(function(conn) {
 				var self = this
 				conn.query(query, args, function(err) {
 					self._returnConnection(conn)
-					callback.apply(ctx, arguments)
+					callback.apply(this, arguments)
 				})
 			})
 		},
@@ -132,14 +198,12 @@ var Transaction = proto(connectionBase,
 		time: function() {
 			return this._time
 		},
-		_query:function(ctx, query, args, callback) {
+		_query:function(query, args, callback) {
 			if (!this._conn) {
 				callback('Transaction closed')
 				return
 			}
-			this._conn.query(query, args, function(err) {
-				callback.apply(ctx, arguments)
-			})
+			this._conn.query(query, args, callback)
 		},
 		wrapCallback:function wrapTxCallback(callback) {
 			var tx = this
@@ -179,14 +243,12 @@ var Autocommit = proto(connectionBase,
 		time: function() {
 			return this._time
 		},
-		_query:function(ctx, query, args, callback) {
+		_query:function(query, args, callback) {
 			if (!this._conn) {
 				callback('Autocommit closed')
 				return
 			}
-			this._conn.query(query, args, function(err) {
-				callback.apply(ctx, arguments)
-			})
+			this._conn.query(query, args, callback)
 		},
 		wrapCallback:function(callback) {
 			var autocommit = this
@@ -202,8 +264,3 @@ var Autocommit = proto(connectionBase,
 	}
 )
 
-function logError(err, query, args, stackError) {
-	err = new Error((err.message || err) + '\n\t' + JSON.stringify(query) + ' '+JSON.stringify(args), stackError.stack || stackError)
-	log.warn(err, query, args, stackError.stack || stackError)
-	return err
-}

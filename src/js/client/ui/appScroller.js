@@ -39,6 +39,7 @@ function createAndRenderScroller() {
 		var isHome = (gScroller.stack.length == 1)
 		var stackIsAboveHome = (gScroller.stack.length > 1)
 		var showBackButton = (opts.viewBelow && stackIsAboveHome)
+		var cornerMargin = { top:24, side:4 }
 		var title = null
 		if (view.conversation) {
 			var names = view.conversation.summary.people[0].name.split(' ')
@@ -48,30 +49,18 @@ function createAndRenderScroller() {
 			}
 		}
 		return div('head', style(translate(0,0)),
-			renderCornerBlocks(),
 			div('corner left', style({ borderRadius:leftCornerRadius }),
-				style(translate.x(0)),
+				style(translate(cornerMargin.side, cornerMargin.top)),
 				showBackButton
 					? div('back', icons.back, backIconDragger)
 					: div('menu', icons.menu, logoIconDragger)
 			),
 			div('corner right', style({ borderRadius:rightCornerRadius }),
-				style(translate.x(viewport.width() - cornerSize.width), 0),
+				style(translate(viewport.width() - cornerSize.width - cornerMargin.side - 1, cornerMargin.top)),
 				style(cornerSize),
 				div('search', icons.search, searchIconDragger)
 			)
 		)
-	}
-	
-	function renderCornerBlocks() {
-		// When content transitions in the slider from left to right it may bleed through the top rounded corners.
-		// Put black pixels behind the corners to prevent the sliding UI to show behind the head's rounded corners.
-		var cornerBlockSize = 4
-		var cornerBlockStyle = style({ position:'absolute', top:0, left:0, width:cornerBlockSize, height:cornerBlockSize, background:'#000' })
-		return [
-			div(cornerBlockStyle),
-			div(cornerBlockStyle, style(translate.x(viewport.width() - cornerBlockSize)))
-		]
 	}
 }
 
@@ -80,8 +69,8 @@ events.on('statusBar.wasTapped', function() {
 })
 
 var cornerSize = { width:50, height:44 }
-var leftCornerRadius = px(6,0,3,0)
-var rightCornerRadius = px(0,6,0,3)
+var leftCornerRadius = px(4)//px(6,0,3,0)
+var rightCornerRadius = px(4)//px(0,6,0,3)
 
 var backIconDragger = (function makeBackIconDragger() {
 	function getDampening(dx) {

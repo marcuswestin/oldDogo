@@ -6,6 +6,9 @@ roundedTop()
 body
 	background #000; overflow hidden;
 
+#viewport
+	overflow hidden;
+
 .dogoApp
 	font-family "Open Sans"; font-weight 300; font-size 16px;
 	color #223;
@@ -77,18 +80,16 @@ body
 	.corner
 		height 44px; width 50px; overflow hidden;
 		gradient(buttonFrom, buttonTo);
-		border-top 1px solid rgba(255,255,255, .37);
-		border-bottom 1px solid rgba(0, 0, 0, .25);
+		toolBorder()
 		box-shadow 0 1px 2px rgba(0, 0, 0, .7);
+		opacity .97;
 	.corner.active
 		background cornerActive
 	.corner.left
 		absolute top 0 left 0;
-		border-right 1px solid rgba(255,255,255, .05);
 		.logoIcon, .back
 			absolute top 0 right -2px;
 	.corner.right
-		border-left 1px solid rgba(255,255,255, .05);
 		.search
 			absolute top 0 left -2px;
 	
@@ -116,10 +117,11 @@ body
 			margin 4px 2px 0;
 	
 .homeView
+	padding-top 20px;
 	.logoName .icon
 		display block; margin 0 auto;
 	.conversations
-		min-height 254px; padding 0 0 5px 0;
+		min-height 254px; padding 4px 0 5px 0;
 
 .searchUI .resultsBox
 	absolute top 0 left 0; width 100%; box-shadow 0px -1px 1px rgba(0,0,0,.9);

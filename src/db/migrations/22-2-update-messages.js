@@ -1,5 +1,5 @@
 var util = require('./util')
-var config = require('server/config/dev')
+var config = require('server/config/dev/devConfig')
 var db = util.makeDatabase(config.db)
 var Messages = require('data/Messages')
 

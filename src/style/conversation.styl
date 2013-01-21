@@ -61,7 +61,7 @@ fromMeGradient(alpha1, alpha2)
 		light(); padding 4px 10px 5px; text-shadow 0 2px 1px rgba(255, 255, 255, 0.81);
 
 #conversationView
-	padding 0 0 50px 0;
+	padding 20px 0 50px 0;
 	.personName
 		padding 8px 0 6px; font-weight normal; font-size 22px; color #fff; text-shadow 0 1px 1px blueShadowColor(.5); text-align center;
 	.messagesList
@@ -86,7 +86,7 @@ fromMeGradient(alpha1, alpha2)
 				box-shadow 0 0 15px rgba(255, 255, 255, 0.3);
 
 .drawer
-	z-index 2; background #000;
+	z-index 2; background #000; padding-top 20px;
 	.loading
 		relative top 150px; font-size 30px;
 	.buttons
@@ -95,6 +95,10 @@ fromMeGradient(alpha1, alpha2)
 			display block; margin 0 6px 6px; padding 5px 14px 7px
 	.drawTools
 		margin 8px 6px;
+
+toolBorder()
+	border 1px solid;
+	border-color rgba(255,255,255,1) rgba(255,255,255,.75) rgba(255,255,255,.7) rgba(255,255,255,.9);
 
 #composer
 	absolute bottom 0; width 320px; z-index 2;
@@ -106,8 +110,7 @@ fromMeGradient(alpha1, alpha2)
 		.tool
 			display inline-block; margin 0 0 0 6px; border-radius 6px; height 18px; width 24px; padding 8px 14px 10px;
 			box-shadow 0 1px 0px rgba(18, 110, 175, 0.74);
-			border 1px solid;
-			border-color rgba(255,255,255,1) rgba(255,255,255,.75) rgba(255,255,255,.7) rgba(255,255,255,.9);
+			toolBorder()
 	.inputArea
 		gradient(rgba(255,255,255, .5), rgba(255,255,255, 1)); padding-bottom 6px;
 		

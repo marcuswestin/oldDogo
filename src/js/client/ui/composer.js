@@ -78,7 +78,7 @@ function selectText() {
 	
 	setTimeout(function() {
 		$('#'+id).css({ opacity:1 })
-	}, 350)
+	}, 100)
 	
 	hideTextInput = function() {
 		hideTextInput = function() {}
@@ -158,7 +158,7 @@ function sendMessage(type, payload) {
 	
 	var message = eventEmitter('message', {
 		toConversationId:conversation.id,
-		senderPersonId:gState.me().personId,
+		fromPersonId:gState.me().personId,
 		clientUid:clientUid,
 		type:type,
 		payload:payload,
