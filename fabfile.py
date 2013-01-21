@@ -37,7 +37,7 @@ def deploy_dogo_api(git_hash):
 
 def deploy_nginx_conf(git_hash):
 	update_src_dir(git_hash)
-	sudo("cp %s/src/server/config/nginx.conf /etc/nginx/nginx.conf" % src_dir)
+	sudo("cp %s/src/js/server/config/nginx.conf /etc/nginx/nginx.conf" % src_dir)
 	sudo('/etc/init.d/nginx reload')
 	note_deploy('nginx-conf', git_hash)
 
