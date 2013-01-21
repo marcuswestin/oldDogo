@@ -51,7 +51,7 @@ module.exports = proto(basePicker,
 				background:'#fff'
 			}
 			var HIDE_FOR_NOW = style({ display:'none' })
-			return img('pen', style(styles, transition('width, height', 100)), { src:image.url(pen.path) }, HIDE_FOR_NOW)
+			return null // img('pen', style(styles, transition('width, height', 100)), { src:image.url(pen.path) }, HIDE_FOR_NOW)
 		},
 		getPos:function(i, j, num) {
 			var w = this.openSize[0] + 10
