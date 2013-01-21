@@ -42,7 +42,7 @@ module.exports = function makeRouter(opts) {
 		})
 	}
 	
-	app.use(express.bodyParser({ limit:'8mb' }))
+	app.use(express.bodyParser({ limit:'16mb' }))
 	// addApiLatency(app, 2000)
 	
 	var server = http.createServer(app)
