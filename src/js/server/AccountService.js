@@ -83,7 +83,24 @@ function _scheduleInsertFacebookFriends(person, fbAccessToken) {
 		if (err) { return log.error('Could not get facebook friends', personId, fbAcc, fbAccessToken, err) }
 		var numFriends = res.data.length
 		log.info('inserting '+numFriends+' facebook friends for person '+personId)
-		serialMap(res.data, {
+		// Serially or in parallel?
+		// In serial we don't use throughput of the multiple shards
+		processFbFriendsParallel(res.data)
+		// processFbFriendsSerially(res.data)
+	})
+	
+	function processFbFriendsParallel(fbFriends) {
+		function fakeNext(err) {
+			if (err) { log.error('error while processing friends in parallel', err) }
+		}
+		each(fbFriends, function(fbFriend, i) {
+			processFriend(fbFriend, i, fakeNext)
+		})
+	}
+	
+	function processFbFriendsSerially(fbFriends) {
+		var numFriends = fbFriends.length
+		serialMap(fbFriends, {
 			iterate:processFriend,
 			finish:function(err) {
 				if (err) {
@@ -92,9 +109,9 @@ function _scheduleInsertFacebookFriends(person, fbAccessToken) {
 				log.info('finished inserting '+numFriends+' facebook friends for person '+personId)
 			}
 		})
-	})
+	}
 	
-	function processFriend(fbFriend, next) {
+	function processFriend(fbFriend, i, next) {
 		lookupService.lookupPersonIdByFacebookId(fbFriend.id, function(err, friendPersonId) {
 			if (err) { return next(err) }
 			if (friendPersonId) {
@@ -107,7 +124,12 @@ function _scheduleInsertFacebookFriends(person, fbAccessToken) {
 						if (err) { return next(err) }
 						lookupService.indexPersonIdByFacebookId(fbFriend.id, friendPersonId, function(err) {
 							if (err) { return next(err) }
-							_createConversation(person, fbFriend, friendPersonId, next)
+							_createConversation(person, fbFriend, friendPersonId, function(err) {
+								if (err) {
+									log.error('Error while creating conversation', err, person, fbFriend, friendPersonId)
+								}
+								next()
+							})
 						}
 					)
 				})
