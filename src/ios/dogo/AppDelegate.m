@@ -49,7 +49,7 @@
         [self.config setValue:self.serverHost forKey:@"serverHost"];
         [self.config setValue:self.serverUrl forKey:@"serverUrl"];
 
-        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent];
+        [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent animated:YES];
         
         BOOL isDev = [scheme isEqualToString:@"http:"];
         [self setupApp:!isDev];
