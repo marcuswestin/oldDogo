@@ -17,6 +17,7 @@ module.exports = {
 		setTimeout(function() {
 			conversations.load(function(conversations) {
 				conversationsList.append(getInitialConversations(conversations))
+				// setTimeout(function() { conversations[0] && selectConversation(conversations[0]) }) // AUTOS
 			})
 		})
 		setTimeout(reloadConversations)
