@@ -1,9 +1,10 @@
 var composer = require('./composer')
 var once = require('std/once')
-var pictures = require('data/pictures')
+var payloads = require('data/payloads')
 var linkify = require('lib/linkify')
 var questions = require('./questions')
 var time = require('std/time')
+var pictures = require('client/ui/pictures')
 
 module.exports = {
 	render:renderConversation
@@ -100,6 +101,11 @@ function selectMessage(message) {
 		composer.selectDraw({
 			url: message.payload.secret ? pictures.displayUrl(message) : message.preview.base64Data,
 			size: [message.payload.width, message.payload.height]
+		})
+	} else if (message.type == 'audio') {
+		var url = payloads.url(message.conversationId, message.payload.secret, message.type)
+		bridge.command('audio.play', { location:url }, function(err) {
+			
 		})
 	} else {
 		// do nothing
@@ -244,7 +250,7 @@ gRenderMessageBubble = function(message, conversation, opts) {
 	}
 
 	function renderAudioContent(payload, opts) {
-		return div('textContent', 'AUDIO CONTENT LENGTH', payload.length)
+		return div('textContent', 'AUDIO CONTENT DURATION ', payload.duration)
 	}
 }
 

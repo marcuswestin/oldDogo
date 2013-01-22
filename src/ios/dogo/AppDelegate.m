@@ -3,6 +3,7 @@
 #import "BTTextInput.h"
 #import "BTImage.h"
 #import "BTFacebook.h"
+#import "BTAudio.h"
 #import "Base64.h"
 
 @implementation AppDelegate
@@ -11,6 +12,7 @@
     [BTTextInput setup:self];
     [BTImage setup:self];
     [BTFacebook setup:self];
+    [BTAudio setup:self];
 }
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
     // TODO THe module should be able to automaticlally access this behavior
@@ -103,7 +105,7 @@
     }];
     
     [self registerHandler:@"audio.send" handler:^(id data, BTResponseCallback responseCallback) {
-        NSData* audioData = [NSData dataWithContentsOfURL:[BTAudio getFileLocation]];
+        NSData* audioData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[data objectForKey:@"audioLocation"]]];
         [self _send:data attachment:audioData responseCallback:responseCallback];
     }];
 

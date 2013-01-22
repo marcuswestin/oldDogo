@@ -11,7 +11,7 @@ module.exports = {
 		user:"dogo_tester"
 	},
 	s3: {
-		bucket:'dogo-test-conv',
+		bucket:'dogo-test',
 		accessKeyId:'AKIAJDUJ4DPW4DE7552Q',
 		secretAccessKey:'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'
 	},

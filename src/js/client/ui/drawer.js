@@ -1,6 +1,5 @@
 var pens = require('./pens')
 var paint = require('./paint')
-var pictures = require('data/pictures')
 var makeToolPicker = require('./pickers/toolPicker')
 
 module.exports = {

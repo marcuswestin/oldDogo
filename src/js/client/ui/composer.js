@@ -1,6 +1,7 @@
 var trim = require('std/trim')
 var placeholder = 'Say something :)'
 var drawer = require('./drawer')
+var time = require('std/time')
 
 var currentConversation = null
 
@@ -10,7 +11,8 @@ var icons = icon.preload({
 	chat: ['glyphish/white/09-chat-2', 24, 22],
 	camera: ['glyphish/white/86-camera', 24, 18, 0, 0, 1],
 	palette: ['glyphish/white/98-palette', 24, 20],
-	close: ['icon-circlex', 22, 23, 10, 16, 10, 16]
+	close: ['icon-circlex', 22, 23, 10, 16, 10, 16],
+	voice: ['glyphish/white/66-microphone', 12, 24, 0, 0, 0, 0]
 })
 
 var composer = module.exports = {
@@ -36,6 +38,9 @@ var composer = module.exports = {
 				})),
 				div('button tool draw', icons.palette, button(function() {
 					selectDraw()
+				})),
+				div('button tool voice', icons.voice, button(function() {
+					selectVoice()
 				}))
 			)
 		)
@@ -112,6 +117,52 @@ events.on('message.selected', function() {
 	hideTextInput()
 })
 
+function selectVoice() {
+	bridge.command('audio.prepareRecording', function(err) {
+		if (err) { return error(err) }
+	})
+	var height = 100
+	$('#viewport').append(div({ id:'voiceTool' },
+		style(translate.y(0)),
+		style({ position:'absolute', bottom:-height, left:0, height:height, width:viewport.width(), background:'red' }),
+		div('button', 'Hold & Talk', button({
+			start:function() {
+				bridge.command('audio.record', function(err) {
+					if (err) { return error(err) }
+				})
+			},
+			end:function() {
+				bridge.command('audio.stopRecording', function(err) {
+					if (err) { return error(err) }
+					
+				})
+			}
+		})),
+		div('button', 'Listen', button(function() {
+			bridge.command('audio.play', function(err) {
+				if (err) { return error(err) }
+			})
+		})),
+		div('button', 'Squeek', button(function() {
+			bridge.command('audio.filter', { effect:'squeek', amount:50 }, function(err) {
+				if (err) { return error(err) }
+			})
+		})),
+		div('button', 'DONE', button(function() {
+			$('.dogoApp').css(translate.y(0, 200))
+			$('#voiceTool').css(translate.y(0, 200))
+			setTimeout(function() { $('#voiceTool').remove() }, 200)
+		})),
+		div('button', 'Send', button(function() {
+			sendMessage('audio')
+		}))
+	))
+	setTimeout(function() {
+		$('.dogoApp').css(translate.y(-height/2, 200))
+		$('#voiceTool').css(translate.y(-height, 200))
+	})
+}
+
 function selectPhoto() {
 	bridge.command('menu.show', {
 		title:"Send a Photo",
@@ -174,11 +225,13 @@ function sendMessage(type, messageData) {
 	var preview = null
 	
 	if (type == 'audio') {
-		// bridge.command('audio.save', {  }, function(err, res) {
-			// commandData.audioPath = res.path
+		var filename = 'audio-'+time.now()+'.m4a'
+		bridge.command('audio.save', { filename:filename }, function(err, res) {
+			commandData.audioLocation = res.location
+			commandData.params.payload.duration = res.duration
 			bridge.command('audio.send', commandData, onResponse)
-			previewMessage(message, { length:0 })
-		// })
+			previewMessage(message, { duration:res.duration })
+		})
 	} else if (type == 'picture') {
 		commandData.params.payload.width = messageData.width
 		commandData.params.payload.height = messageData.height

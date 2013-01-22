@@ -2,7 +2,7 @@ var conversation = require('./conversation')
 var conversations = require('../conversations')
 var time = require('std/time')
 var hsvToRgb = require('client/colors/hsvToRgb')
-var Pictures = require('data/pictures')
+var pictures = require('client/ui/pictures')
 
 function getConversationId(conv) {
 	var conversationId = (conv.id || conv)
@@ -51,7 +51,7 @@ function renderCard(conversation) {
 		div('gradient'),
 		pictures.length > 0 && function() {
 			var size = [310, 200]
-			var url = Pictures.displayUrl(pictures[0], { crop:[size[0]*2, size[1]*2] })
+			var url = pictures.displayUrl(pictures[0], { crop:[size[0]*2, size[1]*2] })
 			var ratio = window.devicePixelRatio || 1
 			return style({
 				background:'url('+url+') #fff no-repeat',

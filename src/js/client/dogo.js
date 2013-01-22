@@ -3,7 +3,7 @@ require('./globals')
 image.base += 'mobileApp/'
 
 var time = require('std/time')
-var pictures = require('data/pictures')
+var payloads = require('data/payloads')
 var push = require('data/push')
 
 error = function error(err) {
@@ -159,7 +159,7 @@ function startApp(info) {
 		}
 		
 		function onConnected() {
-			pictures.bucket = gState.cache['sessionInfo'].picturesBucket || 'dogo-prod-conv' // default to prod for old prod clients
+			payloads.bucket = gState.cache['sessionInfo'].picturesBucket
 			migrateNewClientUidBlock()
 			appScroller.createAndRender()
 			buildContactsIndex()

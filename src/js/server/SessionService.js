@@ -3,9 +3,9 @@ var makeRedisClient = require('redis').createClient
 var time = require('std/time')
 var facebook = require('server/util/facebook')
 var log = makeLog('SessionService')
-var pictures = require('data/pictures')
 var accountService = require('server/AccountService')
 var db = require('server/Database')
+var payloads = require('data/payloads')
 
 module.exports = {
 	createSession:createSession,
@@ -37,7 +37,7 @@ function createSession(req, fbAccessToken, callback) {
 							authToken:authToken,
 							person:person,
 							clientUidBlock:clientUidBlock,
-							picturesBucket:pictures.bucket
+							picturesBucket:payloads.bucket
 						}
 						callback(null, sessionInfo)
 					})

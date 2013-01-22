@@ -18,7 +18,7 @@ module.exports = {
 		dogoLookup: shardConfig.lookupShard(shardAccess)
 	},
 	s3: {
-		bucket:'dogo-dev-conv',
+		bucket:'dogo-dev',
 		accessKeyId:'AKIAJDUJ4DPW4DE7552Q',
 		secretAccessKey:'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'
 	},

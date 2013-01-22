@@ -4,7 +4,7 @@ var orderConversationIds = require('./util/ids').orderConversationIds
 var Messages = require('data/Messages')
 var pushService = require('server/PushService')
 var db = require('server/Database')
-var pictureService = require('server/PictureService')
+var payloadService = require('server/payloadService')
 
 module.exports = {
 	getConversations: getConversations,
@@ -52,9 +52,8 @@ function sendMessage(personId, conversationId, clientUid, type, payload, dataFil
 	// 5. Notify receivers
 	if (!Messages.types[type]) { return callback("I don't recognize that message type") }
 	
-	if (type == 'text' && !payload.body) { return callback("That text message is missing a body") }
-	if (type == 'picture' && !dataFile) { return callback("That picture message is missing a picture") }
-	if (type == 'audio' && !dataFile) { return callback("That audio message is missing sound") }
+	payload = Messages.payload.cleanForUpload(type, payload)
+	if (!payload) { return callback('That message is malformed') }
 	
 	db.shard(personId).selectOne(
 		'SELECT id FROM conversationParticipation WHERE personId=? AND conversationId=?',
@@ -62,8 +61,8 @@ function sendMessage(personId, conversationId, clientUid, type, payload, dataFil
 		function(err, res) {
 			if (err) { return callback(err) }
 			if (!res) { return callback("I couldn't find that conversation") }
-			if (type == 'picture') {
-				pictureService.upload(personId, conversationId, dataFile, function(err, pictureSecret) {
+			if (type == 'picture' || type == 'audio') {
+				payloadService.upload(personId, conversationId, type, dataFile, function(err, pictureSecret) {
 					if (!err) {
 						payload.secret = pictureSecret
 					}

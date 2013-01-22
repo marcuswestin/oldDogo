@@ -4,15 +4,11 @@ module.exports = {
 
 function run(config) {
 	var database = require('./Database')
-	var accountService = require('./AccountService')
-	var sessionService = require('./SessionService')
-	var pictureService = require('./PictureService')
-	var messageService = require('./MessageService')
-	var pushService = require('./PushService')
+	var payloadService = require('./payloadService')
 	var makeRouter = require('./makeRouter')
 	
 	database.configure(config.shards)
-	pictureService.configure(config.s3)
+	payloadService.configure(config.s3)
 	
 	var router = makeRouter({ log:config.log, dev:config.dev })
 	router.listen(config.port)

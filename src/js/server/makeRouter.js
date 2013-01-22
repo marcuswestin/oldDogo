@@ -15,7 +15,7 @@ var database = require('server/Database')
 var accountService = require('server/AccountService')
 var messageService = require('server/MessageService')
 var sessionService = require('server/SessionService')
-var pictureService = require('server/PictureService')
+var payloadService = require('server/payloadService')
 var arrayToObject = require('std/arrayToObject')
 
 module.exports = function makeRouter(opts) {
@@ -51,7 +51,7 @@ module.exports = function makeRouter(opts) {
 	if (opts.dev) { setupDev(app) }
 	
 	if (!opts.proxyProd) {
-		setupRoutes(app, database, accountService, messageService, sessionService, pictureService, opts)
+		setupRoutes(app, opts)
 	}
 	
 	app.all('*', function onError(req, res, next) { respond(req, res, 404) })
