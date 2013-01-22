@@ -14,7 +14,6 @@ error = function error(err) {
 			div('content',
 				style({ maxHeight:240 }), style(scrollable.y),
 				div('header',
-					span('title', 'Woops!'),
 					div('close', icon('icon-circlex', 22, 23), button(function() { error.hide() }), style(translate(6, 4)))
 				),
 				div('message')
