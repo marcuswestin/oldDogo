@@ -1,5 +1,7 @@
 ;(function(global) {
 	
+	function paint(dim, pixelRatio) { return new PaintContext(dim, pixelRatio) }
+
 	function PaintContext(dim, pixelRatio) {
 		this.pixelRatio = pixelRatio || window.devicePixelRatio || 1
 		this.dim = dim
@@ -73,6 +75,39 @@
 				if (!checkNum(d)) { return }
 			}
 			ctx.drawImage.apply(ctx, args)
+		}),
+
+		getImageData:ctxFunction(function(ctx, p, d) {
+			if (!p) { p = [0,0] }
+			if (!d) { d = this.dim }
+			return ctx.getImageData(p[0], p[1], d[0], d[1])
+		}),
+		putImageData:ctxFunction(function(ctx, imageData, p) {
+			ctx.putImageData(imageData, p[0], p[1])
+		}),
+		
+		/* per-pixel drawing
+		 *******************/
+		drawPixels:ctxFunction(function(ctx, p, d, drawFn) {
+			var imageData = this.getImageData(ctx, p, d)
+			var data = imageData.data
+			var width = d[1]
+			drawFn(data, {
+				getIndex: function getIndex(p) {
+					return (p[0] + p[1] * width) * 4
+				},
+				getR: function getR(p) {
+					return data[this.getIndex(p)]
+				},
+				setRgba: function setRgba(p, rgba) {
+					var index = this.getIndex(p)
+					data[index] = rgba[0]
+					data[index + 1] = rgba[1]
+					data[index + 2] = rgba[2]
+					data[index + 3] = rgba[3]
+				}
+			})
+			this.putImageData(ctx, imageData, p)
 		}),
 		
 		/* Drawing conveniences
@@ -186,8 +221,6 @@
 		return ({}).toString.call(obj) == '[object Array]'
 	}
 
-	function paint(dim, pixelRatio) { return new PaintContext(dim, pixelRatio) }
-	
 	function checkNum() {
 		for (var i=0; i<arguments.length; i++) {
 			var arg = arguments[i]
