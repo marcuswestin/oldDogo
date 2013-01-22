@@ -5,6 +5,4 @@
 
 + (AppDelegate*) instance;
 
-- (void) netRequest:(NSDictionary*)params response:(BTResponse*)response;
-
 @end

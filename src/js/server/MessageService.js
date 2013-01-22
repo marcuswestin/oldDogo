@@ -44,15 +44,18 @@ function getConversations(req, callback) {
 	)
 }
 		
-function sendMessage(personId, conversationId, clientUid, type, payload, prodPush, callback) {
+function sendMessage(personId, conversationId, clientUid, type, payload, dataFile, prodPush, callback) {
 	// 1. Check that sender has right to send to this conversation
 	// 2. Upload assets, if any
 	// 3. Create message
 	// 4. Update conversation participations (this may later be done by each receiver upon notification in step 4.)
 	// 5. Notify receivers
 	if (!Messages.types[type]) { return callback("I don't recognize that message type") }
-	if (!Messages.payload.verify(type, payload)) { return callback("That message is missing properties") }
-
+	
+	if (type == 'text' && !payload.body) { return callback("That text message is missing a body") }
+	if (type == 'picture' && !dataFile) { return callback("That picture message is missing a picture") }
+	if (type == 'audio' && !dataFile) { return callback("That audio message is missing sound") }
+	
 	db.shard(personId).selectOne(
 		'SELECT id FROM conversationParticipation WHERE personId=? AND conversationId=?',
 		[personId, conversationId],
@@ -60,9 +63,8 @@ function sendMessage(personId, conversationId, clientUid, type, payload, prodPus
 			if (err) { return callback(err) }
 			if (!res) { return callback("I couldn't find that conversation") }
 			if (type == 'picture') {
-				pictureService.upload(personId, conversationId, payload.base64Data, function(err, pictureSecret) {
+				pictureService.upload(personId, conversationId, dataFile, function(err, pictureSecret) {
 					if (!err) {
-						delete payload.base64Data
 						payload.secret = pictureSecret
 					}
 					createMessage(payload)

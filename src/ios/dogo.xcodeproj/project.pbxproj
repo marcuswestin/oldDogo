@@ -10,6 +10,7 @@
 		2C1884961687C2830071A3CE /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1884951687C2830071A3CE /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2C1884981687C28D0071A3CE /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1884971687C28D0071A3CE /* Accounts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2C18849A1687C2950071A3CE /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1884991687C2950071A3CE /* Social.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		2C2568AC16AE0DF9007C60B7 /* Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2568AB16AE0DF9007C60B7 /* Base64.m */; };
 		2C650B3016A5DCAD000F381E /* BTAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650AD016A5DCAD000F381E /* BTAudio.m */; };
 		2C650B4116A5DCAD000F381E /* BTFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650AF616A5DCAD000F381E /* BTFacebook.m */; };
 		2C650B4216A5DCAD000F381E /* BTImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650AF816A5DCAD000F381E /* BTImage.m */; };
@@ -74,6 +75,8 @@
 		2C1884951687C2830071A3CE /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		2C1884971687C28D0071A3CE /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		2C1884991687C2950071A3CE /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
+		2C2568AA16AE0DF9007C60B7 /* Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base64.h; sourceTree = "<group>"; };
+		2C2568AB16AE0DF9007C60B7 /* Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Base64.m; sourceTree = "<group>"; };
 		2C650ACF16A5DCAD000F381E /* BTAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTAudio.h; sourceTree = "<group>"; };
 		2C650AD016A5DCAD000F381E /* BTAudio.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTAudio.m; sourceTree = "<group>"; };
 		2C650AF516A5DCAD000F381E /* BTFacebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTFacebook.h; sourceTree = "<group>"; };
@@ -204,6 +207,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2C2568A916AE0DF9007C60B7 /* Base64 */ = {
+			isa = PBXGroup;
+			children = (
+				2C2568AA16AE0DF9007C60B7 /* Base64.h */,
+				2C2568AB16AE0DF9007C60B7 /* Base64.m */,
+			);
+			path = Base64;
+			sourceTree = "<group>";
+		};
 		2C650ACD16A5DCAD000F381E /* blowtorch-ios-modules */ = {
 			isa = PBXGroup;
 			children = (
@@ -300,6 +312,7 @@
 		2C650C7216A5E459000F381E /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				2C2568A916AE0DF9007C60B7 /* Base64 */,
 				2C650C7316A5E459000F381E /* NSString+Util.h */,
 				2C650C7416A5E459000F381E /* NSString+Util.m */,
 				2C650C7516A5E459000F381E /* UIImage-Categories */,
@@ -569,6 +582,7 @@
 				2C650CC616A5E459000F381E /* NSFileManager+Tar.m in Sources */,
 				2C650CE416A5E459000F381E /* WebViewProxy.m in Sources */,
 				2C650CF316A5E50E000F381E /* WebViewJavascriptBridge.m in Sources */,
+				2C2568AC16AE0DF9007C60B7 /* Base64.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

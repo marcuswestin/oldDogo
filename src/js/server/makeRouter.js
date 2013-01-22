@@ -145,7 +145,7 @@ function setupRoutes(app, opts) {
 	filter.oldClientsAndSession = [filter.oldClients, filter.session]
 	
 	app.post('/api/waitlist', function(req, res) {
-		var params = getParams(req, 'emailAddress')
+		var params = getJsonParams(req, 'emailAddress')
 		accountService.lookupOrCreateByEmail(params.emailAddress, function(err, person) {
 			if (err) { return respond(req, res, err) }
 			database.insert('INSERT INTO waitlistEvent SET personId=?, userAgent=?', [person.id, req.headers['user-agent']], function(err) {
@@ -172,44 +172,55 @@ function setupRoutes(app, opts) {
 		var data = {"data":{"Foo":"Bar"}, "data2":[1,2,3,5]}
 		respond(req, res, null, data, 'application/json')
 	})
+	app.get('/api/test/upload', function(req, res) {
+		respond(req, res, null, '<form action="/api/test/upload" enctype="multipart/form-data" method="post">'+
+	    '<input type="text" name="title"><br>'+
+	    '<input type="file" name="upload" multiple="multiple"><br>'+
+	    '<input type="submit" value="Upload">'+
+	    '</form>', 'text/html')
+	})
+	app.post('/api/test/upload', function(req, res) {
+		console.log("HERE", req.files)
+	})
 	app.get('/api/ping', function(req, res) {
 		res.end('"Dogo!"')
 	})
 	app.post('/api/session', filter.oldClients, function postSession(req, res) {
-		var params = getParams(req, 'facebookAccessToken', 'facebookRequestId')
+		var params = getJsonParams(req, 'facebookAccessToken', 'facebookRequestId')
 		if (params.facebookRequestId) { return respond(req, res, "Sessions for facebook requests is not ready yet. Sorry!") }
 		sessionService.createSession(req, params.facebookAccessToken, curry(respond, req, res))
 	})
-	// app.get('/api/session', filter.oldClients, function getSession(req, res) {
-	// 	var params = getParams(req, 'authToken')
-	// 	sessionService.getSession(params.authToken, curry(respond, req, res))
-	// })
 	app.get('/api/conversations', filter.oldClientsAndSession, function getConversations(req, res) {
-		var params = getParams(req)
+		var params = getUrlParams(req)
 		messageService.getConversations(req, function(err, conversations) {
 			respond(req, res, err, !err && { conversations:conversations })
 		})
 	})
-	// app.get('/api/contacts', filter.oldClientsAndSession, function getContacts(req, res) {
-	// 	var params = getParams(req)
-	// 	accountService.getContacts(req.session.personId, wrapRespond(req, res, 'contacts'))
-	// })
 	app.post('/api/message', filter.oldClientsAndSession, function postMessage(req, res) {
-		var params = getParams(req, 'toConversationId', 'clientUid', 'type', 'payload')
+		var params = getMultipartParams(req, 'toConversationId', 'clientUid', 'type', 'payload')
 		var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
+		var dataFile = req.files && req.files.data
 		messageService.sendMessage(req.session.personId,
 			params.toConversationId, params.clientUid,
-			params.type, params.payload,
-			prodPush, curry(respond, req, res))
+			params.type, params.payload, dataFile, prodPush,
+			function(err, content) {
+				if (dataFile) {
+					fs.unlink(dataFile.path, function(err) {
+						if (err) { log.warn('Unable to unlink data file', dataFile, err) }
+					})
+				}
+				respond(req, res, err, content)
+			}
+		)
 	})
 	app.get('/api/messages', filter.oldClientsAndSession, function getConversationMessages(req, res) {
-		var params = getParams(req, 'conversationId')
+		var params = getUrlParams(req, 'conversationId')
 		messageService.getMessages(req.session.personId, params.conversationId, function(err, messages) {
 			respond(req, res, err, !err && { messages:messages })
 		})
 	})
 	app.post('/api/pushAuth', filter.oldClientsAndSession, function postPushAuth(req, res) {
-		var params = getParams(req, 'pushToken', 'pushSystem')
+		var params = getJsonParams(req, 'pushToken', 'pushSystem')
 		accountService.setPushAuth(req.session.personId, params.pushToken, params.pushSystem,
 			curry(respond, req, res))
 	})
@@ -229,11 +240,11 @@ function setupRoutes(app, opts) {
 		})
 	})
 	app.get('/api/facebookCanvas/conversation', function getFacebookConversation(req, res) {
-		var params = getParams(req, 'facebookRequestId')
+		var params = getUrlParams(req, 'facebookRequestId')
 		messageService.loadFacebookRequestId(params.facebookRequestId, curry(respond, req, res))
 	})
 	app.post('/api/facebookRequests', filter.session, function saveFacebookRequest(req, res) {
-		var params = getParams(req, 'facebookRequestId', 'toPersonId', 'conversationId')
+		var params = getJsonParams(req, 'facebookRequestId', 'toPersonId', 'conversationId')
 		messageService.saveFacebookRequest(req.session.personId, params.facebookRequestId, params.toPersonId, params.conversationId, curry(respond, req, res))
 	})
 }
@@ -303,16 +314,36 @@ function setupDev(app) {
 	}
 }
 
+function getUrlParams(req) {
+	return logParams(req, _collectParams(arguments, function(argName) {
+		var param = req.param(argName)
+		return (param == 'null' ? null : param)
+	}))
+}
 
-function getParams(req) {
-	var argNames = slice(arguments, 1)
+function getMultipartParams(req) {
+	var multipartParams = JSON.parse(req.body['multipartParams'])
+	return logParams(req, _collectParams(arguments, function(argName) {
+		return multipartParams[argName]
+	}))
+}
+
+function getJsonParams(req) {
+	return logParams(req, _collectParams(arguments, function(argName) {
+		return req.param(argName)
+	}))
+}
+
+function _collectParams(args, collectFn) {
 	var params = {}
-	for (var i=0, argName; argName=argNames[i]; i++) {
-		params[argName] = req.body[argName] || req.param(argName)
-		if (params[argName] == 'null') {
-			delete params[argName]
-		}
-	}
+	each(slice(args, 1), function(argName) {
+		params[argName] = collectFn(argName)
+	})
+	return params
+}
+
+function logParams(req, params) {
+	req.params = params
 	
 	req.meta = {
 		personId: req.session && req.session.personId,
@@ -361,7 +392,7 @@ function respond(req, res, err, content, contentType) {
 			code = 500
 			content = err.stack || err.message || (err.toString && err.toString()) || err
 			if (respond.log) {
-				var logBody = JSON.stringify(req.body)
+				var logBody = JSON.stringify(req.params)
 				if (logBody && logBody.length > 400) { logBody = logBody.substr(0, 400) + ' (......)' }
 				log.warn('error', content, req.url, logBody, stackError.stack)
 			}
@@ -393,7 +424,7 @@ function respond(req, res, err, content, contentType) {
 	
 	if (contentType.match(/^(text|application)/)) {
 		headers['Content-Type'] = contentType+'; charset=utf-8'
-		headers['Content-Length'] = Buffer.byteLength(content, 'utf8')
+		headers['Content-Length'] = Buffer.isBuffer(content) ? content.length : Buffer.byteLength(content, 'utf8')
 		if (contentType == 'application/json') {
 			headers['Cache-Control'] = 'no-cache'
 		}

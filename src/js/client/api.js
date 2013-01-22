@@ -11,6 +11,7 @@ module.exports = {
 	connect:connect,
 	// refresh:refresh,
 	getPath:getPath,
+	getUrl:getUrl,
 	error:error
 }
 
@@ -29,6 +30,10 @@ function getAuth() {
 
 function getPath(path) {
 	return '/'+path
+}
+
+function getUrl(path) {
+	return gAppInfo.config.serverUrl + getPath(path)
 }
 
 function send(method, path, params, callback) {

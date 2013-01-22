@@ -98,7 +98,7 @@ function getMessagesList() {
 function selectMessage(message) {
 	if (message.type == 'picture') {
 		composer.selectDraw({
-			url: message.payload.secret ? pictures.displayUrl(message) : message.payload.base64Data,
+			url: message.payload.secret ? pictures.displayUrl(message) : message.preview.base64Data,
 			size: [message.payload.width, message.payload.height]
 		})
 	} else {
@@ -161,6 +161,7 @@ function renderMessage(message) {
 	return gRenderMessageBubble(message, view.conversation, { dynamics:true, face:true, arrow:true, lazy:true })
 }
 
+var picDisplaySize = [262, 180]
 gRenderMessageBubble = function(message, conversation, opts) {
 	opts = options(opts, { dynamics:true, face:true, arrow:true, lazy:false })
 	var me = gState.me()
@@ -175,7 +176,7 @@ gRenderMessageBubble = function(message, conversation, opts) {
 					width:5, height:10,
 					backgroundSize:px(5, 10)
 				})),
-				renderContent(message, opts)
+				message.preview ? renderPreview(message, opts) : renderContent(message, opts)
 			)
 		)
 	), div('clear')]
@@ -191,64 +192,66 @@ gRenderMessageBubble = function(message, conversation, opts) {
 			composer.sendMessage({ body:(answer ? 'Yes' : 'No') })
 		})
 	}
-}
-
-function scaleSize(size) {
-	var ratio = (window.devicePixelRatio || 1)
-	return map(size, function(size) { return size * ratio })
-}
-function styleSize(size) {
-	return style({ width:size[0], height:size[1] })
-}
-
-function renderContent(message, opts) {
-	var payload = message.payload
-	if (message.type == 'text') {
-		return div('textContent', linkify(payload.body).join(''))
-	}
 	
-	var displaySize = [262, 180]
-	var loadingClock = div('loadingClock', icon('icon-clock', 25, 25),
-		style(translate(displaySize[0] / 2 - 25/2, displaySize[1] / 2 - 25/2)),
-		style({ width:0, height:0 })
-	)
-	if (payload.secret) {
-		var pixelSize = scaleSize(displaySize)
-		var pictureUrl = pictures.displayUrl(message, { resize:[262*2, 180*2] })
-		var background = opts.lazy ? { pictureUrl:pictureUrl } : style({ backgroundImage:'url('+pictureUrl+')' })
-		return [
-			loadingClock,
-			div('pictureContent',
-				background,
-				style(translate(0,0)),
-				style({ width:displaySize[0], height:displaySize[1], backgroundSize:px(displaySize[0], displaySize[1]) })
+	function renderContent(message, opts) {
+		if (message.type == 'text') {
+			return renderTextContent(message.payload, opts)
+		} else if (message.type == 'audio') {
+			return renderAudioContent(message.payload, opts)
+		} else {
+			var loadingClock = div('loadingClock', icon('icon-clock', 25, 25),
+				style(translate(picDisplaySize[0] / 2 - 25/2, picDisplaySize[1] / 2 - 25/2)),
+				style({ width:0, height:0 })
 			)
-		]
-	} else {
-		var picSize = [message.payload.width, message.payload.height]
-		var widthRatio = displaySize[0] / picSize[0]
-		var heightRatio = displaySize[1] / picSize[1]
-		var ratio = Math.max(widthRatio, heightRatio) // Math.min for "fit" instead of "fill" into displaySize
-		var scaledSize = map(picSize, function(size) { return size * ratio })
-		var scaledOffset = map([(displaySize[0]-scaledSize[0]) / 2, (displaySize[1]-scaledSize[1]) / 2], Math.round)
-		return [
-			loadingClock,
-			div('pictureContent',
-				styleSize(displaySize), style(translate(0,0)),
+			var pictureUrl = pictures.displayUrl(message, { resize:[262*2, 180*2] })
+			var background = opts.lazy ? { pictureUrl:pictureUrl } : style({ backgroundImage:'url('+pictureUrl+')' })
+			return [
+				loadingClock,
+				div('pictureContent',
+					background, style(translate(0,0)),
+					style({ width:picDisplaySize[0], height:picDisplaySize[1], backgroundSize:px(picDisplaySize[0], picDisplaySize[1]) })
+				)
+			]
+		}
+	}
+
+	function renderPreview(message, opts) {
+		if (message.type == 'text') {
+			return renderTextContent(message.preview, opts)
+		} else if (message.type == 'audio') {
+			return renderAudioContent(message.preview, opts)
+		} else {
+			var picSize = [message.preview.width, message.preview.height]
+			var widthRatio = picDisplaySize[0] / picSize[0]
+			var heightRatio = picDisplaySize[1] / picSize[1]
+			var ratio = Math.max(widthRatio, heightRatio) // Math.min for "fit" instead of "fill" into picDisplaySize
+			var scaledSize = map(picSize, function(size) { return size * ratio })
+			var scaledOffset = map([(picDisplaySize[0]-scaledSize[0]) / 2, (picDisplaySize[1]-scaledSize[1]) / 2], Math.round)
+			return div('pictureContent',
+				style(translate(0,0)),
 				style({
-					backgroundImage:'url('+message.payload.base64Data+')',
+					width:picDisplaySize[0], height:picDisplaySize[1],
+					backgroundImage:'url('+message.preview.base64Data+')',
 					backgroundSize: px(scaledSize),
 					backgroundPosition: px(scaledOffset)
 				})
 			)
-		]
+		}
+	}
+
+	function renderTextContent(payload, opts) {
+		return div('textContent', linkify(payload.body).join(''))
+	}
+
+	function renderAudioContent(payload, opts) {
+		return div('textContent', 'AUDIO CONTENT LENGTH', payload.length)
 	}
 }
 
 function onNewMessage(message) {
 	$('#conversationView .ghostTown').remove()
 	var messagesList = getMessagesList()
-	if (message._isSending || (message._wasPushed && !gIsTouching)) {
+	if (message.preview || (message._wasPushed && !gIsTouching)) {
 		// If this message was sent by me, or if I just received it and I'm not currently touching the screen, then scroll the new message into view
 		var heightBefore = messagesList.height()
 		setTimeout(function() {

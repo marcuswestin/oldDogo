@@ -140,7 +140,7 @@ function selectDraw(background) {
 				$drawComposer.css(translate.y(viewport.height()))
 			},
 			onSend:function sendImage(data, width, height) {
-				sendMessage('picture', { width:width, height:height, base64Data:data })
+				sendMessage('picture', { base64Data:data, width:width, height:height })
 				$drawComposer.css(translate.y(-viewport.height()))
 			}
 		})
@@ -151,8 +151,7 @@ function selectDraw(background) {
 	})
 }
 
-
-function sendMessage(type, payload) {
+function sendMessage(type, messageData) {
 	var clientUid = gState.nextClientUid()
 	var conversation = currentConversation
 	
@@ -161,19 +160,48 @@ function sendMessage(type, payload) {
 		fromPersonId:gState.me().personId,
 		clientUid:clientUid,
 		type:type,
-		payload:payload,
-		_isSending:true
+		payload:{}
 	})
 	
-	bridge.command('net.request', { method:"POST", headers:api.getHeaders(), path:api.getPath('api/message'), params:message }, function(err, res) {
+	var commandData = {
+		method:"POST",
+		url:api.getUrl('api/message'),
+		headers:api.getHeaders(),
+		boundary: '________dgmltprtbndr',
+		params:message
+	}
+	
+	var preview = null
+	
+	if (type == 'audio') {
+		// bridge.command('audio.save', {  }, function(err, res) {
+			// commandData.audioPath = res.path
+			bridge.command('audio.send', commandData, onResponse)
+			previewMessage(message, { length:0 })
+		// })
+	} else if (type == 'picture') {
+		commandData.params.payload.width = messageData.width
+		commandData.params.payload.height = messageData.height
+		commandData.base64Data = messageData.base64Data // the iOS proxy converts it to an octet stream
+		bridge.command('picture.send', commandData, onResponse)
+		previewMessage(message, { base64Data:messageData.base64Data, width:messageData.width, height:messageData.height })
+	} else if (type == 'text') {
+		commandData.params.payload = { body:messageData.body } // for text messages, send the payload as part of the params
+		bridge.command('text.send', commandData, onResponse)
+		previewMessage(message, { body:messageData.body })
+	}
+
+	function onResponse(err, res) {
 		if (err) { return error(err) }
 		conversation.lastMessage = res.message
 		conversation.lastSentMessage = res.message
 		events.fire('message.sent', res, conversation)
-		message._isSending = false
 		message.events.fire('sent', res.message)
-	})
-	
+	}
+}
+
+function previewMessage(message, preview) {
+	message.preview = preview
 	events.fire('message.sending', message)
 }
 

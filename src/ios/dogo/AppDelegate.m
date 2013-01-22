@@ -3,6 +3,7 @@
 #import "BTTextInput.h"
 #import "BTImage.h"
 #import "BTFacebook.h"
+#import "Base64.h"
 
 @implementation AppDelegate
 
@@ -94,35 +95,38 @@
 - (void)setupBridgeHandlers {
     [super setupBridgeHandlers];
     [self registerHandler:@"net.request" handler:^(id data, BTResponseCallback responseCallback) {
-        [self netRequest:data response:[BTResponse responseWithCallback:responseCallback]];
+        [BTNet request:data responseCallback:responseCallback];
+    }];
+    
+    [self registerHandler:@"text.send" handler:^(id data, BTResponseCallback responseCallback) {
+        [self _send:data attachment:nil responseCallback:responseCallback];
+    }];
+    
+    [self registerHandler:@"audio.send" handler:^(id data, BTResponseCallback responseCallback) {
+        NSData* audioData = [NSData dataWithContentsOfURL:[BTAudio getFileLocation]];
+        [self _send:data attachment:audioData responseCallback:responseCallback];
+    }];
+
+    [self registerHandler:@"picture.send" handler:^(id data, BTResponseCallback responseCallback) {
+        NSString* base64String = [[data objectForKey:@"base64Data"] stringByReplacingOccurrencesOfString:@"data:image/jpeg;base64," withString:@""];
+        
+        NSData* pictureData = [NSData dataWithBase64EncodedString:base64String];
+        UIImage* image = [UIImage imageWithData:pictureData];
+        NSMutableDictionary* params = [NSMutableDictionary dictionaryWithDictionary:[data objectForKey:@"params"]];
+        [params setObject:[NSNumber numberWithFloat:image.size.width] forKey:@"width"];
+        [params setObject:[NSNumber numberWithFloat:image.size.height] forKey:@"height"];
+        id _data = [NSMutableDictionary dictionaryWithDictionary:data];
+        [_data setObject:params forKey:@"params"];
+        [self _send:_data attachment:pictureData responseCallback:responseCallback];
     }];
 }
 
-    
-- (void) netRequest:(NSDictionary *)params response:(BTResponse*)response {
-    NSDictionary* postParams = [params objectForKey:@"params"];
-    NSDictionary* headers = [params objectForKey:@"headers"];
-    NSString* method = [params objectForKey:@"method"];
-    NSString* url = [self.serverUrl stringByAppendingString:[params objectForKey:@"path"]];
-    
-    UIBackgroundTaskIdentifier bgTaskId = UIBackgroundTaskInvalid;
-    bgTaskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-        [[UIApplication sharedApplication] endBackgroundTask:bgTaskId];
-    }];
-    
-    [BTNet request:url method:method headers:headers params:postParams responseCallback:^(NSError* error, NSData *netData) {
-        [[UIApplication sharedApplication] endBackgroundTask:bgTaskId];
-        if (error) {
-            NSLog(@"ERROR %@ %@ %@ %@ %@", error, url, method, headers, postParams);
-            [response respondWithError:@"Could not complete request"];
-        } else {
-            NSDictionary* jsonData;
-            if (netData && netData.length) {
-                jsonData = [NSJSONSerialization JSONObjectWithData:netData options:NSJSONReadingAllowFragments error:nil];
-            }
-            [response respondWith:jsonData];
-        }
-    }];
+- (void)_send:(NSDictionary*)data attachment:(NSData*)attachment responseCallback:(BTResponseCallback)responseCallback {
+    NSString* url = [data objectForKey:@"url"];
+    NSDictionary* headers = [data objectForKey:@"headers"];
+    NSDictionary* params = [data objectForKey:@"params"];
+    NSString* boundary = [data objectForKey:@"boundary"];
+    [BTNet post:url json:params data:attachment headers:headers boundary:boundary responseCallback:responseCallback];
 }
 
 @end
