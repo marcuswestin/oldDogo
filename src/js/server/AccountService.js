@@ -45,7 +45,7 @@ function lookupOrCreateByFacebookAccount(req, fbAcc, fbAccessToken, callback) {
 	})
 	
 	function _claimPersonAndScheduleInsertFacebookFriends(personId, fbAcc, callback) {
-		db.randomShard().updateOne(
+		db.shard(personId).updateOne(
 			'UPDATE person SET claimedTime=?, facebookId=?, name=?, firstName=?, lastName=?, gender=?, birthdate=?, locale=?, timezone=? WHERE id=?',
 			[db.time(), fbAcc.id, fbAcc.name, fbAcc.first_name, fbAcc.last_name, fbAcc.gender, _getFbAccBirthdate(fbAcc.birthday), fbAcc.locale, fbAcc.timezone, personId],
 			function(err) {
