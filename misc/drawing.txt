@@ -1,0 +1,12 @@
+objc
+https://github.com/krzysztofzablocki/smooth-drawing
+http://tonyngo.net/2011/09/smooth-line-drawing-in-ios/
+http://core-plot.googlecode.com/hg/documentation/html/iOS/modules.html
+http://mobile.tutsplus.com/tutorials/iphone/ios-sdk_freehand-drawing/
+https://github.com/yusenhan/Smooth-Line-View
+http://www.cocos2d-iphone.org/forum/topic/9188
+
+http://mingapps.wordpress.com/2011/04/09/objective-c-tutorial-spline-line-smoothing-techniques/ and http://www.cocos2d-iphone.org/forum/topic/12833
+
+js
+http://eeroan.github.com/multi-draw/

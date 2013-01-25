@@ -1,0 +1,7 @@
+Box shadows / borders
+
+http://lea.verou.me/css3-secrets/#multiple-outlines
+http://www.css3.info/preview/box-shadow/
+http://bradbirdsall.com/mobile-web-in-high-resolution
+http://css-tricks.com/understanding-border-image/
+http://www.w3schools.com/cssref/css3_pr_border-image.asp
