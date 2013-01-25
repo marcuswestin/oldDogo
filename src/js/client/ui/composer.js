@@ -2,17 +2,22 @@ var trim = require('std/trim')
 var placeholder = 'Say something :)'
 var drawer = require('./drawer')
 var time = require('std/time')
+var pasteHtmlAtInputCaret = require('client/util/pasteHtmlAtInputCaret')
 
 var currentConversation = null
 
-var toolsHeight = 40
+var toolsHeight = 43
+var glassContentWidth
 
 var icons = icon.preload({
-	chat: ['glyphish/white/09-chat-2', 24, 22],
+	// chat: ['glyphish/white/09-chat-2', 24, 22],
+	chat: ['glyphish/white/286-speechbubble', 24, 24],
 	camera: ['glyphish/white/86-camera', 24, 18, 0, 0, 1],
 	palette: ['glyphish/white/98-palette', 24, 20],
-	close: ['icon-circlex', 22, 23, 10, 16, 10, 16],
-	voice: ['glyphish/white/66-microphone', 12, 24, 0, 0, 0, 0]
+	close: ['icon-circlex', 22, 23, 8, 9, 6],
+	voice: ['glyphish/white/66-microphone', 12, 24, 0, 0, 0, 0],
+	location: ['glyphish/white/193-location-arrow', 24, 24],
+	mapMarker: ['glyphish/white/07-map-marker', 16, 26, 0, 0, 4, 0]
 })
 
 var composer = module.exports = {
@@ -27,140 +32,293 @@ var composer = module.exports = {
 	render: function(view) {
 		currentConversation = view.conversation
 		
-		return div({ id:'composer' }, style({ height:toolsHeight }),
-			div('tools',
-				style({ height:toolsHeight }), style(translate.y(-6)),
-				div('button tool write', icons.chat, button(function() {
-					selectText()
-				})),
-				div('button tool photo', icons.camera, button(function() {
-					selectPhoto()
-				})),
-				div('button tool draw', icons.palette, button(function() {
-					selectDraw()
-				})),
-				div('button tool voice', icons.voice, button(function() {
-					selectVoice()
-				}))
+		var closeWidth = 50
+		var sendWidth = 60
+		glassContentWidth = viewport.width() - closeWidth - sendWidth
+		var toolsOffset = 3
+		var toolsSectionStyle = style({ width:viewport.width(), height:toolsHeight })
+		return div({ id:'composer' },
+			style({ height:toolsHeight, width:viewport.width() }),
+			div(repeatImage.x('optionsGlassBorder', 1, 1), style({ width:'100%' })),
+			div('toolContainer', style({ width:viewport.width(), height:toolsHeight, overflow:'hidden' }),
+				div('toolsSlider', style({ height:toolsHeight*2 }), style(translate.y(-toolsHeight, 1)),
+					// tool options are "on top" of the list of tools, but are initially out of view
+					div('toolOptions', toolsSectionStyle,
+						div('closeTool', icons.close,
+							style({ position:'absolute', top:0, width:closeWidth }),
+							button(function() {
+								slideTools.backIn()
+								bridge.command('textInput.hideKeyboard')
+							})
+						),
+						div('centerContent',
+							style({ position:'absolute', top:0, width:viewport.width() - closeWidth - sendWidth }),
+							style(translate.x(closeWidth)),
+							null // Center will be populated with slideTools.out(function contentFn() { ... })
+						),
+						div('sendMessage',
+							style({ position:'absolute', top:0, width:sendWidth, textAlign:'center' }),
+							style(translate.x(closeWidth + glassContentWidth)),
+							div('button send', 'Send', style({ marginTop:7 }), button(function() { slideTools.sendFn() }))
+						)
+					),
+					// the list of tools animate down to reveal
+					div('tools', toolsSectionStyle,
+						style(translate.y(toolsOffset - 1)),
+						style({ height:toolsHeight - 2 - toolsOffset }),
+						div('button tool write', icons.chat, button(function() {
+							selectText()
+						})),
+						div('button tool photo', icons.camera, button(function() {
+							selectPhoto()
+						})),
+						div('button tool voice', icons.voice, button(function() {
+							selectVoice()
+						})),
+						div('button tool location', icons.mapMarker, button(function() {
+							selectLocation()
+						})),
+						div('button tool draw', icons.palette, button(function() {
+							selectDraw()
+						}))
+					)
+				)
 			)
 		)
+	}
+}
+
+$(function() {
+	$('#appContainer').append(
+		div({ id:'composerCanvas' }, style({ width:viewport.width() }), style(translate.y(viewport.height(), 0)),
+			div('toolCanvasBorder', repeatImage.x('keyboard-border', 1, 2)),
+			div('toolCanvas')
+		)
+	)
+})
+
+repeatImage = {
+	x: function(name, width, height) {
+		return style({ background:image.background(name, width, height), backgroundSize:px(width, height), height:height, backgroundRepeat:'repeat-x' })
+	},
+	y: function(name, width, height) {
+		return style({ background:image.background(name, width, height), backgroundSize:px(width, height), width:width, backgroundRepeat:'repeat-y' })
 	}
 }
 
 var hideTextInput = function() {}
 function selectText() {
-	var inputWidth = viewport.width() - 122
-	var margin = 6
-	
 	var fadeDuration = 150
-	var id = tags.id()
-	$('.dogoApp').append(
-		div({ id:id },
-			style({ opacity:0, position:'absolute', bottom:0, left:0, height:0, width:viewport.width() }),
-			style(transition('opacity', fadeDuration)),
-			div('textInputBackground', { id:'textInput' }, { contenteditable:'true' },
-				style({
-					padding:px(8, 6),
-					width:inputWidth, margin:margin,
-					position:'absolute', bottom:0, '-webkit-user-select':'auto', left:40
-				})
-			),
-			div('send button', 'Send', style({ position:'absolute', bottom:9, right:4, padding:px(6,8,7) }), button(function() {
-				if (!currentConversation) { return }
-				var message = trim($('#textInput').text())
-				if (!message) { return }
-				$('#textInput').html('')
-				sendMessage('text', { body:message })
-			})),
-			div('closeTextInput',
-				icons.close,
-				style({ position:'absolute', bottom:0, left:0 }),
-				button(function() { hideTextInput() })
-			)
-		)
-	)
-	$('#'+id+' .textInputBackground').focus()
+	var uniqueId = tags.id()
+	var optionsHeight = 43
+
+	slideTools.out(gKeyboardHeight + optionsHeight, renderTextInput, renderKeyboards, sendTextMessage, optionsHeight) // the webview will slide with the keyboard as well
+	$('#'+uniqueId).focus()
 	
-	setTimeout(function() {
-		$('#'+id).css({ opacity:1 })
-	}, 100)
+	setTimeout(fadeInTextInput, 100)
 	
-	hideTextInput = function() {
-		hideTextInput = function() {}
-		$('#emoticons').remove()
-		bridge.command('textInput.hideKeyboard')
-		$('#'+id).css({ opacity:0 })
-		setTimeout(function() {
-			// Removing the element before command('textInput.hideKeyboard') has actually found the input
-			// causes the entire screen to go black. Just move it out of the way instead of removing it
-			$('#'+id).css(translate(-9999,-9999))
-			setTimeout(function() { $('#'+id).remove() }, 5000)
-		}, fadeDuration)
+	function fadeInTextInput() {
+		$('#'+uniqueId).css({ opacity:1 })
 	}
+	
+	function renderTextInput(width) {
+		var padding = 4
+		return div('textInputArea', { id:uniqueId, contentEditable:'true' },
+			style(scrollable.y),
+			style(transition('opacity', fadeDuration)),
+			style({
+				opacity:0,
+				padding:px(padding),
+				width:width - padding * 2,
+				margin:px(4,0),
+				'-webkit-user-select':'auto',
+				maxHeight:154
+			})
+		)
+	}
+	
+	function renderKeyboards() {
+		return [
+			map(['Abc', ':)',':->',':('], function(keyboard, keyboardNum) {
+				return div(style({ 'float':'left', textAlign:'center', width:80, height:optionsHeight, background:'#9199A4' }), keyboard, button(function() {
+					if (keyboardNum == 0) {
+						hideEmoticons()
+					} else {
+						showCustomKeyboard(function() {
+							var numPerKeyboard = 7 * 4
+							return [
+								div(style({ margin:px(0, 0, 0, 6) }),
+									map(new Array(numPerKeyboard), function(_,i) {
+										var keyboardSize = 32
+										var textSize = 20
+										var keyboardSize2 = keyboardSize * 2
+										var textSize2 = textSize * 2
+										var emojiNum = (keyboardNum - 1) * numPerKeyboard + i + 1
+										return div('key',
+											button(function() {
+												pasteHtmlAtInputCaret(img(
+													{ src:image.base+'emoji/'+textSize2+'x'+textSize2+'/'+emojiNum+'.png' },
+													style({ width:textSize, height:textSize })
+												).toString())
+											}),
+											style({
+												width:keyboardSize, height:keyboardSize, 'float':'left', margin:6,
+												background:'url('+image.base+'emoji/'+keyboardSize2+'x'+keyboardSize2+'/'+emojiNum+'.png)',
+												backgroundSize:keyboardSize+'px '+keyboardSize+'px'
+											})
+										)
+									})
+								)
+							]
+						})
+					}
+				}))
+			})
+		]
+	}
+	
+	function sendTextMessage() {
+		var message = trim($('#textInput').text())
+		if (!message) { return }
+		$('#textInput').html('')
+		sendMessage('text', { body:message })
+	}
+	
+	// hideTextInput = function() {
+	// 	setTimeout(function() {
+	// 		$('#'+uniqueId).css({ opacity:1 })
+	// 	}, 100)
+	// 	
+	// 	hideTextInput = function() {}
+	// 	hideEmoticons()
+	// 	bridge.command('textInput.hideKeyboard')
+	// 	$('#'+uniqueId).css({ opacity:0 })
+	// 	setTimeout(function() {
+	// 		// Removing the element before command('textInput.hideKeyboard') has actually found the input
+	// 		// causes the entire screen to go black. Just move it out of the way instead of removing it
+	// 		$('#'+uniqueId).css(translate(-9999,-9999))
+	// 		setTimeout(function() { $('#'+uniqueId).remove() }, 5000)
+	// 	}, fadeDuration)
+	// }
 }
 
-function showEmoticons() {
-	bridge.command('viewport.expand', { height:gKeyboardHeight })
-	if (!$('#emoticons')[0]) {
-		$('.dogoApp').append(div({ id:'emoticons' },
-			style({ position:'absolute', bottom:-gKeyboardHeight, left:0, width:viewport.width(), height:gKeyboardHeight, background:'red' }),
-			button(function() {
-				// hide emoticons
-				bridge.command('viewport.putUnderKeyboard')
-			})
+function showCustomKeyboard(contentFn) {
+	if (!$('#customKeyboard')[0]) {
+		$('#dogoApp').append(div({ id:'customKeyboard' },
+			style({ position:'absolute', bottom:-gKeyboardHeight, left:0, width:viewport.width(), height:gKeyboardHeight }),
+			div(repeatImage.x('keyboard-border', 1, 2)),
+			// div(style({ height:1, background:'-webkit-gradient(linear, left top, left bottom, from(#151515), to(#fff))' })),
+			// div(style({ height:1, background:'#3A3D41' })),
+			// div(style({ height:1, background:'#B3B8BE' })),
+			div('content')
 		))
+		bridge.command('viewport.expand', { height:gKeyboardHeight })
 	}
-	bridge.command('viewport.putOverKeyboard')
+	$('#customKeyboard .content').empty().append(contentFn())
+	setTimeout(function() {
+		bridge.command('viewport.putOverKeyboard')
+	})
 }
+function hideEmoticons() {
+	bridge.command('viewport.putUnderKeyboard')
+	$('#customKeyboard').remove()
+}
+
 
 events.on('message.selected', function() {
 	hideTextInput()
 })
 
+var slideTools = {
+	duration:275,
+	out: function(height, glassBarContentFn, canvasContentFn, sendFn, translation) {
+		if (!translation) { translation = height }
+		translation += 2 // 2 px border image
+		slideTools.sendFn = sendFn
+		$('#composer')
+			// .css(translate.y(-height, slideTools.duration))
+			// .css(transition('height', slideTools.duration))
+			// .css({ height:height + toolsHeight })
+		$('#composer .toolsSlider .centerContent').empty().append(glassBarContentFn(glassContentWidth))
+		var delay = 0
+		$('#composer .toolsSlider').css(translate.y(0, slideTools.duration * 1, delay))
+
+		$('#dogoApp').css(translate.y(-translation, slideTools.duration))
+		$('#composerCanvas').css(translate.y(-translation, slideTools.duration))
+		$('#composerCanvas .toolCanvas').empty().css({ height:height }).append(canvasContentFn(viewport.width(), height))
+	},
+	backIn: function() {
+		$('#composer')
+			// .css(translate.y(0, slideTools.duration))
+			// .css({ height:toolsHeight })
+		var delay = 0
+		$('#composer .toolsSlider').css(translate.y(-toolsHeight, slideTools.duration * 1, delay))
+		$('#dogoApp').css(translate.y(0, slideTools.duration))
+		$('#composerCanvas').css(translate.y(0, slideTools.duration))
+	}
+}
+
 function selectVoice() {
-	bridge.command('audio.prepareRecording', function(err) {
-		if (err) { return error(err) }
-	})
-	var height = 100
-	$('#viewport').append(div({ id:'voiceTool' },
-		style(translate.y(0)),
-		style({ position:'absolute', bottom:-height, left:0, height:height, width:viewport.width(), background:'red' }),
-		div('button', 'Hold & Talk', button({
-			start:function() {
-				bridge.command('audio.record', function(err) {
+	slideTools.out(150, renderAudioGraphic, renderAudioRecorder, sendVoiceMessage)
+	setTimeout(prepareAudioRecording, slideTools.duration)
+	
+	function renderAudioGraphic() {
+		return div('audioGraphic', 'AUDIO GRAPHIC')
+	}
+	
+	function renderAudioRecorder() {
+		return [
+			div('button', 'Hold & speek', button({
+				start:function() {
+					bridge.command('audio.record', function(err) {
+						if (err) { return error(err) }
+					})
+				},
+				end:function() {
+					bridge.command('audio.stopRecording', function(err) {
+						if (err) { return error(err) }
+					})
+				}
+			})),
+			div('button', 'Listen', button(function() {
+				bridge.command('audio.play', function(err) {
 					if (err) { return error(err) }
 				})
-			},
-			end:function() {
-				bridge.command('audio.stopRecording', function(err) {
-					if (err) { return error(err) }
-					
-				})
-			}
-		})),
-		div('button', 'Listen', button(function() {
-			bridge.command('audio.play', function(err) {
-				if (err) { return error(err) }
-			})
-		})),
-		div('button', 'Squeek', button(function() {
-			bridge.command('audio.filter', { effect:'squeek', amount:50 }, function(err) {
-				if (err) { return error(err) }
-			})
-		})),
-		div('button', 'DONE', button(function() {
-			$('.dogoApp').css(translate.y(0, 200))
-			$('#voiceTool').css(translate.y(0, 200))
-			setTimeout(function() { $('#voiceTool').remove() }, 200)
-		})),
-		div('button', 'Send', button(function() {
-			sendMessage('audio')
+			})),
+		]
+	}
+	
+	function sendVoiceMessage() {
+		sendMessage('audio')
+	}
+	
+	function prepareAudioRecording() {
+		return
+		bridge.command('audio.prepareRecording', function(err) {
+			if (err) { return error(err) }
+		})
+	}
+}
+
+function selectLocation() {
+	slideTools.out(150, renderLocationGlassContent, renderLocationCanvas, sendLocationMessage)
+	
+	function renderLocationGlassContent(width) {
+		var padding = 4
+		return div('button', 'My Current Location', style({ marginTop:7, padding:px(padding), width:width-padding*2-4 }), button(function() {
+			alert("TODO: Get current location")
 		}))
-	))
-	setTimeout(function() {
-		$('.dogoApp').css(translate.y(-height/2, 200))
-		$('#voiceTool').css(translate.y(-height, 200))
-	})
+	}
+	
+	function renderLocationCanvas(width, height) {
+		var margin = 4
+		var border = 1
+		return div('locationContent', style({ margin:margin, width:width-(margin+border)*2, height:height-(margin+border+1)*2, border:'1px solid #fff', borderRadius:4 }))
+	}
+	
+	function sendLocationMessage() {
+		alert("TODO send location message")
+	}
 }
 
 function selectPhoto() {
@@ -196,7 +354,7 @@ function selectDraw(background) {
 			}
 		})
 	).css({ position:'absolute', top:0 }).css(translate.y(viewport.height()))
-	$drawComposer.appendTo('.dogoApp')
+	$drawComposer.appendTo('#dogoApp')
 	setTimeout(function() {
 		$drawComposer.css(translate.y(0, 350))
 	})

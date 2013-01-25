@@ -24,7 +24,7 @@ redDark = #D8000C
 }
 
 // Annoying, crazy font hacks - not sure what's going on but it's related to the ordering of fonts in plist.info
-light() { font-weight 400; }
+light() { font-weight 300; }
 light-italic() { font-style italic; font-weight 100; }
 
 animate-rotation(duration)
@@ -53,6 +53,10 @@ gradient(colorFrom, colorTo)
 	background colorFrom;
 	background -webkit-gradient(linear, left top, left bottom, from(colorFrom), to(colorTo) );
 	background -moz-linear-gradient(top, colorFrom, colorTo);
+
+twoTone(tone1From, tone1To, tone2From, tone2To)
+	background tone1From;
+	background -webkit-linear-gradient(top, tone1From, tone1To 50%, tone2From 50%, tone2To);
 
 border-radius(r1, r2=r1, r3=r1, r4=r2)
 	border-radius r1 r2 r3 r4;

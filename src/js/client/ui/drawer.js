@@ -47,7 +47,7 @@ function render(_opts) {
 	$ui = $(div('drawer', style(viewport.getSize()), style(translate(0,0)),
 	
 		// div('loading', 'Loading...'),
-		div('close', style({ display:'inline-block' }), style(translate.x(viewport.width() - 52)),
+		div('close', style({ display:'inline-block' }),
 			icons.close,
 			button(function() { opts.onHide() })
 		),

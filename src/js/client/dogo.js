@@ -134,7 +134,7 @@ function startApp(info) {
 			bridge.command('app.show', { fade:.95 })
 			onConnected()
 		} else {
-			$('#viewport').append(
+			$('#appContainer').append(
 				connect.render(function() {
 					onConnected()
 					connect.slideOut()

@@ -17,7 +17,7 @@ module.exports = {
 		setTimeout(function() {
 			conversations.load(function(conversations) {
 				conversationsList.append(getInitialConversations(conversations))
-				// setTimeout(function() { conversations[0] && selectConversation(conversations[0]) }) // AUTOS
+				// setTimeout(function() { conversations && conversations[0] && selectConversation(conversations[0]) }) // AUTOS
 			})
 		})
 		setTimeout(reloadConversations)
@@ -45,13 +45,13 @@ module.exports = {
 
 
 function renderCard(conversation) {
-	var pictures = conversation.summary.pictures || []
+	var summaryPictures = conversation.summary.pictures || []
 	var recent = conversation.summary.recent || []
 	return div('card',
-		div('gradient'),
-		pictures.length > 0 && function() {
+		// div('gradient'),
+		summaryPictures.length > 0 && function() {
 			var size = [310, 200]
-			var url = pictures.displayUrl(pictures[0], { crop:[size[0]*2, size[1]*2] })
+			var url = pictures.displayUrl(summaryPictures[0], { crop:[size[0]*2, size[1]*2] })
 			var ratio = window.devicePixelRatio || 1
 			return style({
 				background:'url('+url+') #fff no-repeat',
@@ -100,7 +100,7 @@ function renderCard(conversation) {
 			renderName(summary.people[0]),
 			map(recent, function(message) {
 				return div('lastMessage',
-					div('body', gRenderMessageBubble(message, conversation, { dynamics:false, face:true, arrow:true }))
+					div('body', gRenderMessageBubble(message, conversation, { dynamics:false, face:28, arrow:true }))
 				)
 			})
 			]

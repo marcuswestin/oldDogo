@@ -72,6 +72,13 @@ function setupBrowserDebugMode() {
 				break
 			case 'textInput.hideKeyboard':
 				textInput.hideKeyboard()
+				break
+			case 'viewport.putOverKeyboard':
+				$('#fakeIPhoneKeyboard').hide()
+				break
+			case 'viewport.putUnderKeyboard':
+				$('#fakeIPhoneKeyboard').show()
+				break
 		}
 	}
 	
@@ -88,14 +95,14 @@ function setupBrowserDebugMode() {
 			serverUrl:'http://'+location.host
 		}
 		bridge.eventHandler('app.start', { config:config, client:'0.98.0-browser' })
-		gViewportTop = 35
-		$('#viewport').css({ margin:'0 auto', position:'relative', top:gViewportTop, height:viewport.height() })
+		gViewportTop = Math.max(20, $(window).height() / 2 - viewport.height()/2)
+		$('#viewport').css({ margin:'0 auto', position:'relative', top:gViewportTop, height:viewport.height(), overflow:'hidden' })
 		$('body').css({ background:'#222' })
 			.prepend(
 				div(style({ position:'absolute', top:0, left:0, width:'100%' }),
 					button(function(){}),
-					img({ src:'/graphics/mockPhone/iphoneStatusBar.png' }, style({ width:320, display:'block', margin:'0 auto', position:'relative', top:34, zIndex:1, opacity:.6 })),
-					img({ src:'/graphics/mockPhone/iphone4.png' }, style({ margin:'-120px auto', display:'block' }))
+					img({ src:'/graphics/mockPhone/iphoneStatusBar.png' }, style({ width:320, display:'block', margin:'0 auto', position:'relative', top:gViewportTop, zIndex:1, opacity:.6 })),
+					img({ id:'mockPhone' }, { src:'/graphics/mockPhone/iphone4.png' }, style({ margin:(gViewportTop-155)+'px auto', display:'block' }))
 				)
 			)
 			.append(

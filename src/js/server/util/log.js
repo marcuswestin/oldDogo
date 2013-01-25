@@ -10,7 +10,7 @@ function makeLog(name) {
 		{
 			info: function logInfo() { log.doLog(pad, name, 'info'.blue, arguments) },
 			warn: function logWarn() { log.doLog(pad, name, 'WARN'.pink, arguments) },
-			error: function logError() { log.doLog(pad, name, 'EROR'.red, arguments) }
+			error: function logError() { log.doLog(pad, name, 'ERRO'.red, arguments) }
 		}
 	)
 }

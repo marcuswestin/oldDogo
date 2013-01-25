@@ -143,11 +143,12 @@ function _createConversation(person, fbFriend, friendPersonId, callback) {
 	catch(e) { return callback(e) }
 	// create conversations on the friend's shard to spread them out
 	var participants = [{ id:person.id, name:person.name }, { id:friendPersonId, name:fbFriend.name }]
-	db.shard(friendPersonId).insert(
+	db.shard(friendPersonId).insertIgnoreDuplicate(
 		'INSERT INTO conversation SET person1Id=?, person2Id=?, participantsJson=?, createdTime=?',
 		[ids[0], ids[1], JSON.stringify(participants), db.time()],
 		function(err, conversationId) {
 			if (err) { return callback(err) }
+			if (!conversationId) { return callback() } // Have already processed this friend in the past
 			var waiting = waitFor(2, callback)
 			var summaryISee = {
 				people:[{ personId:friendPersonId, facebookId:fbFriend.id, name:fbFriend.name }]

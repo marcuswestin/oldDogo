@@ -9,27 +9,27 @@ module.exports = {
 }
 
 var icons = icon.preload({
-	back: ['glyphish/xtras-white/36-circle-west', 28, 28, 8, 13, 9, 13],
-	menu: ['icon-menu', 28, 28, 8, 11, 8, 11],
-	search: ['glyphish/white/112-group', 32, 21, 11, 8, 13, 12]
+	back: ['glyphish/xtras-white/36-circle-west', 28, 28, 6, 10, 6, 11],
+	menu: ['glyphish/white/19-gear', 26, 26, 7, 10],
+	// search: ['glyphish/white/112-group', 32, 21, 11, 8, 13, 12]
+	search: ['glyphish/white/06-magnify', 24, 24, 8, 14]
 })
 
 function createAndRenderScroller() {
 	gScroller = makeScroller({
+		headHeight:gHeadHeight,
+		numViews:2,
 		onViewChanging:function onViewChanging() { events.fire('view.changing') },
-		duration:300
+		duration:300,
+		renderHead:renderScrollerHead,
+		renderView:renderScrollerView,
+		renderFoot:renderScrollerFoot
 	})
 	
-	var res = div('dogoApp', style(translate(0,0)),
+	$('#appContainer').prepend(div({ id:'dogoApp' }, style(translate(0,0,1)),
 		appBackground.render(),
-		div('appForeground', style(translate(0,0)),
-			gScroller.renderHead(gHeadHeight, renderScrollerHead),
-			gScroller.renderBody(3, renderScrollerView),
-			gScroller.renderFoot(renderScrollerFoot)
-		)
-	)
-	
-	$('#viewport').prepend(res)
+		div('appForeground', style(translate(0,0)), gScroller)
+	))
 	
 	// setTimeout(function() { updateAppBackground(); showAppBackground() }, 0) // AUTOS
 	
@@ -51,6 +51,7 @@ function createAndRenderScroller() {
 		return div('head', style(translate(0,0)),
 			div('corner left', style({ borderRadius:leftCornerRadius }),
 				style(translate(cornerMargin.side, cornerMargin.top)),
+				style(cornerSize),
 				showBackButton
 					? div('back', icons.back, backIconDragger)
 					: div('menu', icons.menu, logoIconDragger)
@@ -68,7 +69,7 @@ events.on('statusBar.wasTapped', function() {
 	$(gScroller.getCurrentView()).animate({ scrollTop:0 }, 300)
 })
 
-var cornerSize = { width:50, height:44 }
+var cornerSize = { width:43, height:40 }
 var leftCornerRadius = px(4)//px(6,0,3,0)
 var rightCornerRadius = px(4)//px(0,6,0,3)
 

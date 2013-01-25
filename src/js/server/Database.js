@@ -81,8 +81,10 @@ var connectionBase = {
 			if (err && !err.message.match(/Duplicate entry/)) {
 				onDbError('insertIgnoreDuplicate', err, stackError, query, args)
 				callback(err)
+			} else if (err) {
+				return callback(err, null)
 			} else {
-				callback(null)
+				callback(null, info.insertId)
 			}
 		})
 	},

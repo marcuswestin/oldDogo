@@ -10,24 +10,48 @@ blueDropShadow()
 	box-shadow 0 1px 1px blueShadowColor();
 
 conversationFaceStyle()
-	blueDropShadow(); border 1px solid; border-radius 2px;
-	border-color #fff transparent transparent #fff;
+	border 1px solid; border-radius 2px;
+	border-color #fff #fff #fff #fff;
+	-webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,.3), inset 0 1px 1px 0 rgba(0,0,0,.3);
 
 fromThemGradient(alpha1, alpha2)
-	gradient(rgba(242, 254, 255, alpha1), rgba(211, 243, 255, alpha2))
+	borderColor = rgba(189,189,187,1)
+	border 1px solid borderColor;
+	gradient(rgba(231,231,231, alpha1), rgba(206,206,206, alpha2));
+	-webkit-box-shadow: inset 0 1px 0 0 rgba(254,254,254,1),
+		inset -1px 0 0 0 rgba(255,255,255, .2),
+		inset 0 -1px 0 0 rgba(borderColor, .5),
+		inset 1px 0 0 0 rgba(255,255,255, .2),
+		0 1px 0 0 rgba(borderColor, .2);
+	// gradient(rgba(242, 254, 255, alpha1), rgba(211, 243, 255, alpha2))
 fromMeGradient(alpha1, alpha2)
-	gradient(rgba(255, 255, 255, alpha1), rgba(221, 238, 255, alpha2))
+	borderColor = rgb(112,154,55)
+	border 1px solid borderColor;
+	gradient(#AAF94E, #93DA3E);
+	-webkit-box-shadow: inset 0 1px 0 0 rgba(206,254,149,1),
+		inset -1px 0 0 0 rgba(119,163,67, .3),
+		inset 0 -1px 0 0 rgba(borderColor, .5),
+		inset 1px 0 0 0 rgba(119,163,67, .3),
+		0 1px 0 0 rgba(borderColor, .2);
+	// gradient(rgba(255, 255, 255, alpha1), rgba(171, 213, 255, alpha2))
+
+bubbleBorderRadius = 14px;
 
 .messageContainer
 	margin-top 4px;
+	font-size 14px;
 	.messageBubble
+		// -webkit-box-shadow: 0 1px 1px 1px rgba(7, 39, 61, 0.4), inset 0 1px 1px 0px rgba(7, 39, 61, 0.4)
 		margin 3px 0; display inline-block;
 		.arrow
+			display inline-block; 
+			display none;
 			margin-top 10px;
 		.textContent
 			max-width 198px;
 		.pictureContent
-			border-radius 4px;
+			border-radius bubbleBorderRadius - 3px;
+			-webkit-box-shadow: inset 0px 1px 1px 1px rgba(0, 0, 0, 0.4);
 	.textMessage
 		.messageBubble
 			border-top none;
@@ -42,23 +66,24 @@ fromMeGradient(alpha1, alpha2)
 		.messageBubble
 			fromThemGradient(1, 1); margin-left 8px;
 	.fromThem.pictureMessage
-		margin 0 4px 0 0;
+		margin 0 -2px 0 0;
 	.fromMe
-		margin-left 36px;
+		margin-left 30px;
 		.face
 			float right;
 		.arrow
-			float right; display inline-block; margin-right -6px;
+			float right; margin-right -6px;
 		.messageBubble
-			float right; fromMeGradient(1, 1); margin-right 8px;
+			float right; fromMeGradient(1, 1); margin-right 4px;
+			color #000;
 	.fromMe.pictureMessage
-		margin 0 0 0 4px;
+		margin 0 0 0 -2px;
 
 .messageBubble
-	border-radius 4px; blueDropShadow();
-	border 1px solid #fff; word-wrap break-word;
+	border-radius bubbleBorderRadius; // blueDropShadow();
+	word-wrap break-word;
 	.textContent
-		light(); padding 4px 10px 5px; text-shadow 0 2px 1px rgba(255, 255, 255, 0.81);
+		light(); padding 4px 10px 5px; // text-shadow 0 2px 1px rgba(255, 255, 255, 0.81);
 
 #conversationView
 	padding 20px 0 50px 0;
@@ -101,32 +126,41 @@ toolBorder()
 	border-color rgba(255,255,255,1) rgba(255,255,255,.75) rgba(255,255,255,.7) rgba(255,255,255,.9);
 
 #composer
-	absolute bottom 0; width 320px; z-index 2;
-	gradient(rgba(255,255,255, 0), rgba(255,255,255, .5))
-	.surface
-		bodyRadius = 6px; bodyWidth = 320px;
-
+	alpha = .6
+	twoTone(
+		rgba(255,255,255, .45), rgba(appBackgroundTo, .35),
+		rgba(184, 215, 255, 0.8), rgba(71, 152, 255, 0.5));
+	
 	.tools
 		.tool
-			display inline-block; margin 0 0 0 6px; border-radius 6px; height 18px; width 24px; padding 8px 14px 10px;
+			margin 0 0 0 6px; border-radius 6px; height 18px; width 27px; padding 7px 14px 9px;
 			box-shadow 0 1px 0px rgba(18, 110, 175, 0.74);
-			toolBorder()
+			toolBorder();
+			twoTone(#227EBF, #025E9F, darken(#025E9F, 0%), darken(#025E9F, 10%));
+		.write .icon
+			margin-top -1px;
 		.voice .icon
 			margin-top -2px;
-	.inputArea
-		gradient(rgba(255,255,255, .5), rgba(255,255,255, 1)); padding-bottom 6px;
-		
-	.face
-		conversationFaceStyle(); float right; margin-right 4px;
+		.location .icon
+			margin-top -2px;
+			
+	.textInputArea
+		border-radius 2px;
+		border 1px solid; border-color textBorder1 textBorder2 textBorder3 textBorder4;
+		background #fff;
+		-webkit-box-shadow:
+			inset 1px 1px 1px -1px rgba(0, 60, 150, .5),
+			0 1px 1px -1px #000;
+		img
+			margin-bottom -3px;
+	
+.locationContent
+	gradient(rgb(97, 105, 116), keyboardFrom);
+	-webkit-box-shadow: inset 0 8px 19px -8px rgba(0,0,0,0.65);
 
 #voiceTool
 	.button
 		padding 9px 10px 9px; margin 5px 5px 5px 5px;
-
-.textInputBackground
-	border 1px solid; border-radius 2px;
-	border-color textBorder1 textBorder2 textBorder3 textBorder4;
-	background #fff; blueDropShadow();
 
 .card
 	background #fff; border 1px solid #ddd #bbb #bbb #eee; margin 6px 4px; clear both; border 1px solid #fff;

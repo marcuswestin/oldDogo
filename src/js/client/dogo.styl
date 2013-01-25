@@ -1,20 +1,20 @@
 @import "../../style/globals"
 
-roundedTop()
-	border-radius 6px 6px 0 0
+keyboardColor = #9299A3;
 
 body
-	background #000; overflow hidden;
+	background keyboardColor; overflow hidden;
 
 #viewport
-	overflow hidden;
+	background keyboardColor;
 
-.dogoApp
+#appContainer, #dogoApp
+	height 100%;
+	
+#dogoApp
 	font-family "Open Sans"; font-weight 300; font-size 16px;
 	color #223;
-	roundedTop()
 	// background -webkit-radial-gradient(center, circle cover, #FFE2AA 0%, #FF9F36 120%);
-	height 100%;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none; /* Disable selection/Copy of UIWebView */
 	-webkit-transition -webkit-transform .3s;
@@ -35,7 +35,6 @@ body
 		// gradient(#0070FF, lighten(#30A4FF, 75%))
 		// gradient(lighten(#227EBF, 25%), lighten(#025E9F, 75%))
 		height 100%;
-		roundedTop()
 		.foregroundOverlay
 			box-shadow -2px 0 2px rgba(0,0,0,.75);
 	
@@ -50,11 +49,6 @@ body
 					font-size 20px; text-shadow 0 1px 0 #fff;
 				.close
 					display inline-block;
-	
-	#viewport
-		position relative; overflow hidden;
-		> div
-			absolute top 0 left 0; width 100%; height 100%;
 
 #connectView
 	text-align center; width 100%; absolute top 0;
@@ -78,13 +72,12 @@ body
 .head
 	height 0;
 	.corner
-		height 44px; width 50px; overflow hidden;
-		gradient(buttonFrom, buttonTo);
+		overflow hidden;
+		gradient(rgba(buttonFrom, .9), rgba(buttonTo, .9));
 		toolBorder()
 		box-shadow 0 1px 2px rgba(0, 0, 0, .7);
-		opacity .97;
 	.corner.active
-		background cornerActive
+		background rgba(cornerActive, .97)
 	.corner.left
 		absolute top 0 left 0;
 		.logoIcon, .back
@@ -132,3 +125,17 @@ body
 		.names
 			margin -22px 0 10px 4px; color #fff; text-shadow 0 -1px 1px rgba(0,0,0,.5); max-width 100px; overflow hidden;
 
+#composerCanvas
+	gradient(#9199A4, #444E5C);
+
+#customKeyboard
+	gradient(keyboardFrom, keyboardTo);
+	.content
+		padding-top 5px;
+
+.glassBar
+	border-top 1px solid #025E9F;
+	twoTone(
+		rgba(appBackgroundFrom, .5), rgba(darken(appBackgroundFrom, 20%), .5),
+		rgba(darken(appBackgroundFrom, 40%), .5), rgba(darken(appBackgroundFrom, 60%), .5),
+	);

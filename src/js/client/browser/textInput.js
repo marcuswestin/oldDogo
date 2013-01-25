@@ -37,7 +37,7 @@ function showTextInput(data) {
 	var padding = 6
 	$input = $(input())
 		.css({ position:'absolute', border:0, margin:0, padding:0, zIndex:3, padding:'0 '+padding+'px' })
-		.css({ width:at.width - padding*2, height:at.height, left:at.x + $('.dogoApp').offset().left, top:at.y + gViewportTop })
+		.css({ width:at.width - padding*2, height:at.height, left:at.x + $('#dogoApp').offset().left, top:at.y + gViewportTop })
 		.on('keyup', onChange)
 		.on('keypress', onChange)
 		.appendTo(document.body)
@@ -83,7 +83,7 @@ function showFakeKeyboard() {
 }
 
 function shiftWebView(to) {
-	$('.dogoApp').css(translate.y(to), keyboardAnimationDuration)
+	$('#appContainer').css(translate.y(to, keyboardAnimationDuration))
 }
 
 function hideFakeKeyboard() {

@@ -49,7 +49,7 @@ module.exports = proto(basePicker,
 						}))
 					})
 				)
-				// styles.backgroundImage = image.backgroundUrl('color-'+color)
+				// styles.backgroundImage = image.background('color-'+color)
 				// styles.backgroundSize = diameter+'px '+diameter+'px'
 			} else {
 				return div('dot', style({

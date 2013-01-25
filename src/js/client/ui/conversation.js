@@ -164,21 +164,22 @@ function arrowImage(name, size) {
 }
 
 function renderMessage(message) {
-	return gRenderMessageBubble(message, view.conversation, { dynamics:true, face:true, arrow:true, lazy:true })
+	return gRenderMessageBubble(message, view.conversation, { dynamics:true, face:40, arrow:true, lazy:true })
 }
 
-var picDisplaySize = [262, 180]
+var pictureMargin = 4
+var picDisplaySize = [262 - pictureMargin * 2, 180 - pictureMargin * 2]
 gRenderMessageBubble = function(message, conversation, opts) {
-	opts = options(opts, { dynamics:true, face:true, arrow:true, lazy:false })
+	opts = options(opts, { dynamics:true, face:30, arrow:true, lazy:false })
 	var me = gState.me()
 	var fromMe = (message.fromPersonId == me.id)
 	var classes = [message.type+'Message', fromMe ? 'fromMe' : 'fromThem']
 	return [div('messageContainer',
 		div(classes.join(' '),
-			opts.face ? face(fromMe ? me : conversation.summary.people[0], { size:34 }) : null,
+			opts.face ? face(fromMe ? me : conversation.summary.people[0], { size:opts.face }) : null,
 			div('messageBubble',
 				opts.arrow && div('arrow', style({
-					background:image.backgroundUrl(fromMe ? 'bubbleArrow-right' : 'bubbleArrow-left', 5, 10),
+					background:image.background(fromMe ? 'bubbleArrow-right' : 'bubbleArrow-left', 5, 10),
 					width:5, height:10,
 					backgroundSize:px(5, 10)
 				})),
@@ -215,7 +216,12 @@ gRenderMessageBubble = function(message, conversation, opts) {
 				loadingClock,
 				div('pictureContent',
 					background, style(translate(0,0)),
-					style({ width:picDisplaySize[0], height:picDisplaySize[1], backgroundSize:px(picDisplaySize[0], picDisplaySize[1]) })
+					style({
+						width:picDisplaySize[0],
+						height:picDisplaySize[1],
+						margin:pictureMargin,
+						backgroundSize:px(picDisplaySize[0], picDisplaySize[1])
+					})
 				)
 			]
 		}
@@ -236,7 +242,9 @@ gRenderMessageBubble = function(message, conversation, opts) {
 			return div('pictureContent',
 				style(translate(0,0)),
 				style({
-					width:picDisplaySize[0], height:picDisplaySize[1],
+					width:picDisplaySize[0],
+					height:picDisplaySize[1],
+					margin:pictureMargin,
 					backgroundImage:'url('+message.preview.base64Data+')',
 					backgroundSize: px(scaledSize),
 					backgroundPosition: px(scaledOffset)

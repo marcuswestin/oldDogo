@@ -3,79 +3,85 @@ var conversations = require('../conversations')
 
 module.exports = {
 	render: function(onConnected) {
-		
-		var scroller = makeScroller({ duration:400, alwaysBounce:false })
+		var scroller = makeScroller({
+			numViews:2,
+			duration:400,
+			alwaysBounce:false,
+			renderView:renderView
+		})
 		return div({ id:'connectView' }, brandGradient([viewport.width() / 2, 150], 50),
 			div('logoIcon', icon('logoIcon-blank', 128, 128, 48, 0, 0, 0)),
 			div({ id:'logoName' }, icon('logoName', 166, 72, 64, 0, 0, 0), style(translate(0, 0, 1000))),
-			scroller.renderBody(2, function(view, info) {
-				switch (info.index) {
-					case 0: return function() {
-						var duration = 400
-						return div({ id:'connectUI1' },
-							delayed(duration * 2, function($el) {
-								$('#logoName').css(translate(0, -169, duration * 1.25))
-								$('#connectUI1').append(div(style({ opacity:0, marginTop:300 }), style(transition('opacity', duration)),
-									div('button connect',
-										'Connect to ',
-										div(icon('logoName', 56, 24), style({ display:'inline-block', marginTop:-6 }), style(translate.y(7))),
-										button(function() {
-										var $button = $(this).text('Connecting...').addClass('active disabled')
-										var connecting = false
-										bridge.command('facebook.connect', { permissions:['email','friends_birthday'] }, function(err, data) {
-											var facebookSession = data.facebookSession
-											if (err || !facebookSession || !facebookSession.accessToken) {
+			scroller
+		)
+		
+		function renderView(view, info) {
+			switch (info.index) {
+				case 0: return function() {
+					var duration = 400
+					return div({ id:'connectUI1' },
+						delayed(duration * 2, function($el) {
+							$('#logoName').css(translate(0, -169, duration * 1.25))
+							$('#connectUI1').append(div(style({ opacity:0, marginTop:300 }), style(transition('opacity', duration)),
+								div('button connect',
+									'Connect to ',
+									div(icon('logoName', 56, 24), style({ display:'inline-block', marginTop:-6 }), style(translate.y(7))),
+									button(function() {
+									var $button = $(this).text('Connecting...').addClass('active disabled')
+									var connecting = false
+									bridge.command('facebook.connect', { permissions:['email','friends_birthday'] }, function(err, data) {
+										var facebookSession = data.facebookSession
+										if (err || !facebookSession || !facebookSession.accessToken) {
+											$button.text('Try again').removeClass('active disabled')
+											return
+										}
+										if (connecting) { return }
+										connecting = true
+										$button.text('Loading...')
+										api.connect({ facebookSession:facebookSession }, function(err) {
+											connecting = false
+											if (err) {
 												$button.text('Try again').removeClass('active disabled')
 												return
 											}
-											if (connecting) { return }
-											connecting = true
-											$button.text('Loading...')
-											api.connect({ facebookSession:facebookSession }, function(err) {
-												connecting = false
-												if (err) {
-													$button.text('Try again').removeClass('active disabled')
-													return
-												}
-												$button.text('Connected!')
-												scroller.push({})
-												events.fire('app.connected')
-												setTimeout(function() {
-													conversations.refresh(function(){ /* do nothing - just preload them after a second */ })
-												}, 1000)
-											})
+											$button.text('Connected!')
+											scroller.push({})
+											events.fire('app.connected')
+											setTimeout(function() {
+												conversations.refresh(function(){ /* do nothing - just preload them after a second */ })
+											}, 1000)
 										})
-									})),
-									div('notice',
-										'When you connect, you agree to our ', link('Privacy Policy', '/privacy'), ' & ', link('Terms of Service', '/terms')
-									),
-									{ id:'registerUI' },
-									delayed(duration, function() {
-										$('#registerUI').css({ opacity:1 })
 									})
-								))
-							})
-						)
-					}
-					case 1: return div(style({ marginTop:300 }),
-						div('button', 'Enable Notifications', button(function() {
-							$(this).text('Enabling...').addClass('active')
-							bridge.command('push.register', function(err) {
-								onConnected()
-							})
-						})),
-						link('noNotifications', 'no thanks', function() {
-							setTimeout(function() {
-								var warning = "You must enable notifications for Dogo to work properly"
-								return alert(warning)
-								// if (!confirm(warning)) { return }
-								onConnected()
-							})
+								})),
+								div('notice',
+									'When you connect, you agree to our ', link('Privacy Policy', '/privacy'), ' & ', link('Terms of Service', '/terms')
+								),
+								{ id:'registerUI' },
+								delayed(duration, function() {
+									$('#registerUI').css({ opacity:1 })
+								})
+							))
 						})
 					)
 				}
-			})
-		)
+				case 1: return div(style({ marginTop:300 }),
+					div('button', 'Enable Notifications', button(function() {
+						$(this).text('Enabling...').addClass('active')
+						bridge.command('push.register', function(err) {
+							onConnected()
+						})
+					})),
+					link('noNotifications', 'no thanks', function() {
+						setTimeout(function() {
+							var warning = "You must enable notifications for Dogo to work properly"
+							return alert(warning)
+							// if (!confirm(warning)) { return }
+							onConnected()
+						})
+					})
+				)
+			}
+		}
 	},
 	slideOut: function() {
 		var duration = 750

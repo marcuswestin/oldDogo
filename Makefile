@@ -90,14 +90,19 @@ reset-test-db: run-databases
 	cat src/db/schema.sql | mysql -u dogo_tester --password=test dogo_test
 	if [ -f test/.fbTestDataCache.json ]; then mv test/.fbTestDataCache.json test/.fbTestDataCache.json.bak; fi
 
-setup-client: setup-source
+setup-client: setup-source setup-emojis
 	cd node_modules/require && npm install --production .
 	cd dependencies/blowtorch && make setup
 	cd dependencies/facebook-ios-sdk && scripts/build_framework.sh
-	cd dependencies/emoji-extractor && ruby emoji_extractor.rb
 	cd node_modules/socket.io && npm install . --production
 	cd node_modules/stylus && npm install . --production
 	cd node_modules/mocha && npm install --production .
+
+setup-emojis:
+	cd dependencies/emoji-extractor && ruby emoji_extractor.rb
+	mkdir -p src/graphics/mobileApp/emoji
+	cp -r dependencies/emoji-extractor/images/40x40 src/graphics/mobileApp/emoji/
+	cp -r dependencies/emoji-extractor/images/68x68 src/graphics/mobileApp/emoji/
 
 setup-server: setup-source
 	bash src/scripts/npm-install-modules.sh
