@@ -1,4 +1,5 @@
 var express = require('express')
+var toobusy = require('toobusy')
 var SessionService = require('./SessionService')
 var fs = require('fs')
 var path = require('path')
@@ -18,6 +19,8 @@ var sessionService = require('server/SessionService')
 var payloadService = require('server/payloadService')
 var arrayToObject = require('std/arrayToObject')
 
+toobusy.maxLag(60) // ms, less than default value 70
+
 module.exports = function makeRouter(opts) {
 	
 	var app = express()
@@ -26,6 +29,15 @@ module.exports = function makeRouter(opts) {
 
 	// opts.proxyProd = true
 	if (opts.proxyProd) { setupProdProxy(app) }
+	
+	app.use(function(req, res, next) {
+		if (toobusy()) {
+			log.warn('Server too busy')
+			return res.send(503, "My server is too busy right now - try again in a moment.")
+		} else {
+			next()
+		}
+	})
 	
 	app.use(function(req, res, next) {
 		req.timer = makeTimer(req.url)
@@ -60,6 +72,12 @@ module.exports = function makeRouter(opts) {
 		listen:function(port) {
 			server.listen(port)
 			log(("dogo-web listening on :"+port).green)
+			process.on('SIGINT', function() {
+				log('dogo-web closing down')
+				server.close()
+				toobusy.shutdown()
+				process.exit()
+			})
 		}
 	}
 }

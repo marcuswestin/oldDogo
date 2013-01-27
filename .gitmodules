@@ -76,3 +76,6 @@
 [submodule "dependencies/emoji-extractor"]
 	path = dependencies/emoji-extractor
 	url = git@github.com:FlutterbyLabs/emoji-extractor.git
+[submodule "node_modules/toobusy"]
+	path = node_modules/toobusy
+	url = git@github.com:FlutterbyLabs/node-toobusy.git
