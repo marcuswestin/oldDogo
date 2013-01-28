@@ -10,9 +10,9 @@ blueDropShadow()
 	box-shadow 0 1px 1px blueShadowColor();
 
 conversationFaceStyle()
-	border 1px solid; border-radius 2px;
-	border-color #fff #fff #fff #fff;
-	-webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,.3), inset 0 1px 1px 0 rgba(0,0,0,.3);
+	border-radius 2px;
+	border 1px solid; border-color #fff #fff #fff #fff;
+	-webkit-box-shadow: 0 1px 1px 0 rgba(50,50,50,.5);
 
 fromThemGradient(alpha1, alpha2)
 	borderColor = rgba(189,189,187,1)
@@ -181,7 +181,8 @@ toolBorder()
 		height 90px; gradient(rgba(226, 241, 255, 0.5), rgba(226, 241, 255, 0)); margin-bottom -90px;
 	.person
 		.face
-			box-shadow 0 1px 1px rgba(0, 50, 100, 0.50);
+			border 1px solid #fff;
+			-webkit-box-shadow: 0 1px 1px rgba(0, 23, 46, 0.71), inset 0 0 2px 2px rgba(244, 253, 255, 0.41), inset 0 1px 1px 0 rgba(0,0,0,0.5)
 			margin 4px 4px 0 4px; background #ccc; float left; border-radius 3px;
 	.summary
 		padding 4px;
