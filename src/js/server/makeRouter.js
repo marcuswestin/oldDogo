@@ -31,15 +31,6 @@ module.exports = function makeRouter(opts) {
 	if (opts.proxyProd) { setupProdProxy(app) }
 	
 	app.use(function(req, res, next) {
-		if (toobusy()) {
-			log.warn('Server too busy')
-			return res.send(503, "My server is too busy right now - try again in a moment.")
-		} else {
-			next()
-		}
-	})
-	
-	app.use(function(req, res, next) {
 		req.timer = makeTimer(req.url)
 		next()
 	})
@@ -60,7 +51,18 @@ module.exports = function makeRouter(opts) {
 	
 	var server = http.createServer(app)
 	
-	if (opts.dev) { setupDev(app) }
+	if (opts.dev) {
+		setupDev(app)
+	} else {
+		app.use(function(req, res, next) {
+			if (toobusy()) {
+				log.warn('Server too busy')
+				return res.send(503, "My server is too busy right now - try again in a moment.")
+			} else {
+				next()
+			}
+		})
+	}
 	
 	if (!opts.proxyProd) {
 		setupRoutes(app, opts)
