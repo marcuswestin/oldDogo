@@ -79,6 +79,10 @@ function setupBrowserDebugMode() {
 			case 'viewport.putUnderKeyboard':
 				$('#fakeIPhoneKeyboard').show()
 				break
+			case 'text.send':
+				data.url = api.getUrl('api/messageDev')
+				api.sendRequest(data, callback)
+				break
 		}
 	}
 	

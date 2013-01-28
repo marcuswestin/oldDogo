@@ -123,7 +123,7 @@ function selectText() {
 	
 	function renderTextInput(width) {
 		var padding = 4
-		return div('textInputArea', { id:uniqueId, contentEditable:'true' },
+		$('#appContainer').append(div('textInputArea', { id:uniqueId, contentEditable:'true' },
 			style(scrollable.y),
 			style(transition('opacity', fadeDuration)),
 			style({
@@ -132,9 +132,13 @@ function selectText() {
 				width:width - padding * 2,
 				margin:px(4,0),
 				'-webkit-user-select':'auto',
-				maxHeight:154
+				maxHeight:154,
+				position:'absolute',
+				left:Math.round((viewport.width() - width) / 2) - 10,
+				bottom:optionsHeight + 4
 			})
-		)
+		))
+		return null
 	}
 	
 	function renderKeyboards() {
@@ -178,9 +182,9 @@ function selectText() {
 	}
 	
 	function sendTextMessage() {
-		var message = trim($('#textInput').text())
+		var message = trim($('#appContainer .textInputArea').text())
 		if (!message) { return }
-		$('#textInput').html('')
+		$('#appContainer .textInputArea').html('')
 		sendMessage('text', { body:message })
 	}
 	

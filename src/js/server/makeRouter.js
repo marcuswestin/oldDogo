@@ -299,6 +299,13 @@ function setupDev(app) {
 		require('blowtorch-node-sdk/'+btModule).setup(app)
 	})
 	
+	app.post('/api/messageDev', filter.oldClientsAndSession, function postMessageDebug(req, res) {
+		var params = getJsonParams(req, 'toConversationId', 'clientUid', 'type', 'payload')
+		messageService.sendMessage(req.session.personId, params.toConversationId, params.clientUid, params.type, params.payload, null, false,
+			curry(respond, req, res)
+		)
+	})
+	
 	function sendExperiment(req, res) {
 		var experiment = req.url.replace(/\/experiments\/?/, '')
 		var html = experiment

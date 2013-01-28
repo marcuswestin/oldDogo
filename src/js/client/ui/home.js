@@ -195,7 +195,13 @@ function renderCard(conversation) {
 			renderName(summary.people[0]),
 			map(recent, function(message) {
 				return div('lastMessage',
-					div('body', gRenderMessageBubble(message, conversation, { dynamics:false, face:28, arrow:true }))
+					div('body', gRenderMessageBubble(message, conversation, {
+						dynamics:false,
+						face:28,
+						arrow:true,
+						pictureSize:[203, 90],
+						maxHeight:100
+					}))
 				)
 			})
 			]
