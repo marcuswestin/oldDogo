@@ -168,9 +168,15 @@ function renderMessage(message) {
 }
 
 var pictureMargin = 4
-var picDisplaySize = [262 - pictureMargin * 2, 180 - pictureMargin * 2]
 gRenderMessageBubble = function(message, conversation, opts) {
-	opts = options(opts, { dynamics:true, face:30, arrow:true, lazy:false })
+	opts = options(opts, {
+		dynamics:true,
+		face:30,
+		arrow:true,
+		lazy:false,
+		pictureSize: [254, 172],
+		maxHeight:null
+	})
 	var me = gState.me()
 	var fromMe = (message.fromPersonId == me.personId)
 	var classes = [message.type+'Message', fromMe ? 'fromMe' : 'fromThem']
@@ -183,6 +189,7 @@ gRenderMessageBubble = function(message, conversation, opts) {
 					width:5, height:10,
 					backgroundSize:px(5, 10)
 				})),
+				opts.maxHeight != null && style({ maxHeight:opts.maxHeight }),
 				message.preview ? renderPreview(message, opts) : renderContent(message, opts)
 			)
 		)
@@ -207,7 +214,7 @@ gRenderMessageBubble = function(message, conversation, opts) {
 			return renderAudioContent(message.payload, opts)
 		} else {
 			var loadingClock = div('loadingClock', icon('icon-clock', 25, 25),
-				style(translate(picDisplaySize[0] / 2 - 25/2, picDisplaySize[1] / 2 - 25/2)),
+				style(translate(opts.pictureSize[0] / 2 - 25/2, opts.pictureSize[1] / 2 - 25/2)),
 				style({ width:0, height:0 })
 			)
 			var pictureUrl = pictures.displayUrl(message, { resize:[262*2, 180*2] })
@@ -217,10 +224,10 @@ gRenderMessageBubble = function(message, conversation, opts) {
 				div('pictureContent',
 					background, style(translate(0,0)),
 					style({
-						width:picDisplaySize[0],
-						height:picDisplaySize[1],
+						width:opts.pictureSize[0],
+						height:opts.pictureSize[1],
 						margin:pictureMargin,
-						backgroundSize:px(picDisplaySize[0], picDisplaySize[1])
+						backgroundSize:px(opts.pictureSize[0], opts.pictureSize[1])
 					})
 				)
 			]
@@ -234,16 +241,16 @@ gRenderMessageBubble = function(message, conversation, opts) {
 			return renderAudioContent(message.preview, opts)
 		} else {
 			var picSize = [message.preview.width, message.preview.height]
-			var widthRatio = picDisplaySize[0] / picSize[0]
-			var heightRatio = picDisplaySize[1] / picSize[1]
-			var ratio = Math.max(widthRatio, heightRatio) // Math.min for "fit" instead of "fill" into picDisplaySize
+			var widthRatio = opts.pictureSize[0] / picSize[0]
+			var heightRatio = opts.pictureSize[1] / picSize[1]
+			var ratio = Math.max(widthRatio, heightRatio) // Math.min for "fit" instead of "fill" into opts.pictureSize
 			var scaledSize = map(picSize, function(size) { return size * ratio })
-			var scaledOffset = map([(picDisplaySize[0]-scaledSize[0]) / 2, (picDisplaySize[1]-scaledSize[1]) / 2], Math.round)
+			var scaledOffset = map([(opts.pictureSize[0]-scaledSize[0]) / 2, (opts.pictureSize[1]-scaledSize[1]) / 2], Math.round)
 			return div('pictureContent',
 				style(translate(0,0)),
 				style({
-					width:picDisplaySize[0],
-					height:picDisplaySize[1],
+					width:opts.pictureSize[0],
+					height:opts.pictureSize[1],
 					margin:pictureMargin,
 					backgroundImage:'url('+message.preview.base64Data+')',
 					backgroundSize: px(scaledSize),
