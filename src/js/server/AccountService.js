@@ -45,9 +45,10 @@ function lookupOrCreateByFacebookAccount(req, fbAcc, fbAccessToken, callback) {
 	})
 	
 	function _claimPersonAndScheduleInsertFacebookFriends(personId, fbAcc, callback) {
+		var infoJson = JSON.stringify({ devices:fbAcc.devices })
 		db.shard(personId).updateOne(
-			'UPDATE person SET claimedTime=?, facebookId=?, name=?, firstName=?, lastName=?, gender=?, birthdate=?, locale=?, timezone=? WHERE personId=?',
-			[db.time(), fbAcc.id, fbAcc.name, fbAcc.first_name, fbAcc.last_name, fbAcc.gender, _getFbAccBirthdate(fbAcc.birthday), fbAcc.locale, fbAcc.timezone, personId],
+			'UPDATE person SET claimedTime=?, facebookId=?, name=?, firstName=?, lastName=?, gender=?, birthdate=?, infoJson=?, locale=?, timezone=? WHERE personId=?',
+			[db.time(), fbAcc.id, fbAcc.name, fbAcc.first_name, fbAcc.last_name, fbAcc.gender, _getFbAccBirthdate(fbAcc.birthday), infoJson, fbAcc.locale, fbAcc.timezone, personId],
 			function(err) {
 				if (err) { return callback(err) }
 				db.shard(personId).selectOne(personSql+'WHERE personId=?', [personId], function(err, person) {
@@ -79,7 +80,7 @@ function _scheduleInsertFacebookFriends(person, fbAccessToken) {
 	//		create conversation between person and friend on shard_F
 	//		& the 2 conversation participations on shard_A & shard_F
 	var personId = person.personId
-	facebook.get('/me/friends?fields=id,name,birthday', { access_token:fbAccessToken }, function(err, res) {
+	facebook.get('/me/friends?fields=id,name,birthday,devices', { access_token:fbAccessToken }, function(err, res) {
 		if (err) { return log.error('Could not get facebook friends', personId, fbAcc, fbAccessToken, err) }
 		var numFriends = res.data.length
 		log.info('inserting '+numFriends+' facebook friends for person '+personId)
@@ -117,9 +118,10 @@ function _scheduleInsertFacebookFriends(person, fbAccessToken) {
 			if (friendPersonId) {
 				_createConversation(person, fbFriend, friendPersonId, next)
 			} else {
+				var infoJson = JSON.stringify({ devices:fbFriend.devices })
 				db.randomShard().insert(
-					'INSERT INTO person SET createdTime=?, facebookId=?, name=?, birthdate=?',
-					[db.time(), fbFriend.id, fbFriend.name, _getFbAccBirthdate(fbFriend.birthday)],
+					'INSERT INTO person SET createdTime=?, facebookId=?, infoJson=?, name=?, birthdate=?',
+					[db.time(), fbFriend.id, fbFriend.name, infoJson, _getFbAccBirthdate(fbFriend.birthday)],
 					function(err, friendPersonId) {
 						if (err) { return next(err) }
 						lookupService.indexPersonIdByFacebookId(fbFriend.id, friendPersonId, function(err) {

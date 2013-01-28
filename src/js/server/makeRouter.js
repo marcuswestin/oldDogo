@@ -127,43 +127,51 @@ function setupProdProxy(app) {
 	})
 }
 
-function setupRoutes(app, opts) {
-	var filter = {
-		oldClients: function filterOldClient(req, res, next) {
-			var client = req.headers['x-dogo-client']
-			if (semver.lt(client, '0.98.0-_')) {
-				log('refuse old client', client)
-				res.writeHead(400, {
-					'x-dogo-process': 'alert("You have an outdated client. Please upgrade to the most recent version.")'
-				})
-				res.end()
-				return
-			}
-			next()
-		},
-		session: function filterSession(req, res, next) {
-			req.authorization = req.headers.authorization || req.param('authorization')
-			sessionService.authenticateRequest(req, function(err, personId) {
-				if (err) {
-					log('bad auth', req.authorization)
-					return next(err)
-				}
-				if (!personId) {
-					log('unauthorized client', req.authorization)
-					return next('Unauthorized')
-				}
-				req.session = { personId:personId }
-				next()
+var filters = (function makeFilters() {
+	return {
+		oldClients:filterOldClients,
+		session:filterSession,
+		delay:delayRequest,
+		oldClientsAndSession: [filterOldClients, filterSession]
+	}
+	
+	function filterOldClients(req, res, next) {
+		var client = req.headers['x-dogo-client']
+		if (semver.lt(client, '0.98.0-_')) {
+			log('refuse old client', client)
+			res.writeHead(400, {
+				'x-dogo-process': 'alert("You have an outdated client. Please upgrade to the most recent version.")'
 			})
-		},
-		delay: function delayRequest(amount) {
-			return function(req, res, next) {
-				setTimeout(function() { next() }, amount)
+			res.end()
+			return
+		}
+		next()
+	}
+	
+	function filterSession(req, res, next) {
+		req.authorization = req.headers.authorization || req.param('authorization')
+		sessionService.authenticateRequest(req, function(err, personId) {
+			if (err) {
+				log('bad auth', req.authorization)
+				return next(err)
 			}
+			if (!personId) {
+				log('unauthorized client', req.authorization)
+				return next('Unauthorized')
+			}
+			req.session = { personId:personId }
+			next()
+		})
+	}
+	
+	function delayRequest(amount) {
+		return function(req, res, next) {
+			setTimeout(function() { next() }, amount)
 		}
 	}
-	filter.oldClientsAndSession = [filter.oldClients, filter.session]
-	
+}())
+
+function setupRoutes(app, opts) {
 	app.post('/api/waitlist', function(req, res) {
 		var params = getJsonParams(req, 'emailAddress')
 		accountService.lookupOrCreateByEmail(params.emailAddress, function(err, person) {
@@ -205,18 +213,18 @@ function setupRoutes(app, opts) {
 	app.get('/api/ping', function(req, res) {
 		res.end('"Dogo!"')
 	})
-	app.post('/api/session', filter.oldClients, function postSession(req, res) {
+	app.post('/api/session', filters.oldClients, function postSession(req, res) {
 		var params = getJsonParams(req, 'facebookAccessToken', 'facebookRequestId')
 		if (params.facebookRequestId) { return respond(req, res, "Sessions for facebook requests is not ready yet. Sorry!") }
 		sessionService.createSession(req, params.facebookAccessToken, curry(respond, req, res))
 	})
-	app.get('/api/conversations', filter.oldClientsAndSession, function getConversations(req, res) {
+	app.get('/api/conversations', filters.oldClientsAndSession, function getConversations(req, res) {
 		var params = getUrlParams(req)
 		messageService.getConversations(req, function(err, conversations) {
 			respond(req, res, err, !err && { conversations:conversations })
 		})
 	})
-	app.post('/api/message', filter.oldClientsAndSession, function postMessage(req, res) {
+	app.post('/api/message', filters.oldClientsAndSession, function postMessage(req, res) {
 		var params = getMultipartParams(req, 'toConversationId', 'clientUid', 'type', 'payload')
 		var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
 		var dataFile = req.files && req.files.data
@@ -233,22 +241,22 @@ function setupRoutes(app, opts) {
 			}
 		)
 	})
-	app.get('/api/messages', filter.oldClientsAndSession, function getConversationMessages(req, res) {
+	app.get('/api/messages', filters.oldClientsAndSession, function getConversationMessages(req, res) {
 		var params = getUrlParams(req, 'conversationId')
 		messageService.getMessages(req.session.personId, params.conversationId, function(err, messages) {
 			respond(req, res, err, !err && { messages:messages })
 		})
 	})
-	app.post('/api/pushAuth', filter.oldClientsAndSession, function postPushAuth(req, res) {
+	app.post('/api/pushAuth', filters.oldClientsAndSession, function postPushAuth(req, res) {
 		var params = getJsonParams(req, 'pushToken', 'pushSystem')
 		accountService.setPushAuth(req.session.personId, params.pushToken, params.pushSystem,
 			curry(respond, req, res))
 	})
-	app.get('/api/version/info', filter.oldClientsAndSession, function getVersionInfo(req, res) {
+	app.get('/api/version/info', filters.oldClientsAndSession, function getVersionInfo(req, res) {
 		var url = null // 'http://marcus.local:9000/api/version/download/latest.tar'
 		respond(req, res, null, { url:url })
 	})
-	app.get('/api/version/download/*', filter.session, function downloadVersion(req, res) {
+	app.get('/api/version/download/*', filters.session, function downloadVersion(req, res) {
 		res.writeHead(204)
 		res.end()
 		return
@@ -263,7 +271,7 @@ function setupRoutes(app, opts) {
 		var params = getUrlParams(req, 'facebookRequestId')
 		messageService.loadFacebookRequestId(params.facebookRequestId, curry(respond, req, res))
 	})
-	app.post('/api/facebookRequests', filter.session, function saveFacebookRequest(req, res) {
+	app.post('/api/facebookRequests', filters.session, function saveFacebookRequest(req, res) {
 		var params = getJsonParams(req, 'facebookRequestId', 'toPersonId', 'conversationId')
 		messageService.saveFacebookRequest(req.session.personId, params.facebookRequestId, params.toPersonId, params.conversationId, curry(respond, req, res))
 	})
@@ -301,7 +309,7 @@ function setupDev(app) {
 		require('blowtorch-node-sdk/'+btModule).setup(app)
 	})
 	
-	app.post('/api/messageDev', filter.oldClientsAndSession, function postMessageDebug(req, res) {
+	app.post('/api/messageDev', filters.oldClientsAndSession, function postMessageDebug(req, res) {
 		var params = getJsonParams(req, 'toConversationId', 'clientUid', 'type', 'payload')
 		messageService.sendMessage(req.session.personId, params.toConversationId, params.clientUid, params.type, params.payload, null, false,
 			curry(respond, req, res)

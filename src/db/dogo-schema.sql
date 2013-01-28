@@ -18,6 +18,7 @@ CREATE TABLE person (
 	claimedTime INT UNSIGNED DEFAULT NULL,
 	waitlistedTime INT UNSIGNED DEFAULT NULL,
 	disabledTime INT UNSIGNED DEFAULT NULL,
+	infoJson VARCHAR(1024) NOT NULL DEFAULT "{}",
 	UNIQUE KEY keyFacebookId (facebookId),
 	PRIMARY KEY (personId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
