@@ -37,6 +37,17 @@ fromMeGradient(alpha1, alpha2)
 
 bubbleBorderRadius = 14px;
 
+.homeView .messageContainer
+	.textMessage, .audioMessage
+		.messageBubble
+			margin-top 1px;
+	.messageBubble
+		.textContent
+			max-width 216px;
+			overflow hidden;
+			text-overflow ellipsis;
+			white-space nowrap;
+
 .messageContainer
 	margin-top 4px;
 	font-size 14px;
@@ -52,9 +63,9 @@ bubbleBorderRadius = 14px;
 		.pictureContent
 			border-radius bubbleBorderRadius - 3px;
 			-webkit-box-shadow: inset 0px 1px 1px 1px rgba(0, 0, 0, 0.4);
-	.textMessage
+	.textMessage, .audioMessage
 		.messageBubble
-			border-top none;
+			margin-top 5px;
 	.face
 		conversationFaceStyle();
 	.fromThem

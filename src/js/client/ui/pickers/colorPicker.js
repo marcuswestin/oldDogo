@@ -144,7 +144,7 @@ function getRgb(item) {
 function getHsv(item) {
 	return rgbToHsv(getRgb(item))
 }
-function rgbaString(rgb, alpha) {
+rgbaString = function(rgb, alpha) {
 	return 'rgba('+map(rgb, function(c) { return Math.round(c) }).concat(alpha||0.9).join(',')+')'
 }
 function clipArray(arr, min, max) {

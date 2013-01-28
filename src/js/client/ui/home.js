@@ -2,7 +2,11 @@ var conversation = require('./conversation')
 var conversations = require('../conversations')
 var time = require('std/time')
 var hsvToRgb = require('client/colors/hsvToRgb')
+var payloads = require('data/payloads')
 var pictures = require('client/ui/pictures')
+var sum = require('std/sum')
+var rand = require('std/rand')
+var flatten = require('std/flatten')
 
 function getConversationId(conv) {
 	var conversationId = (conv.id || conv)
@@ -43,21 +47,113 @@ module.exports = {
 	}
 }
 
+var summaryMessageHeights = {
+	'picture':106,
+	'audio':39,
+	'text':39
+}
+
+function randomColor() {
+	return "#" + Math.random().toString(16).slice(2, 8)
+}
+
+function randomDivision() {
+	return ([1/4, 2/3, 1/2, 1/3])[rand(0, 3)]
+}
+
+var colorSeries = (function(){
+	var colors = [
+		[255,0,147],[255,106,218],[200,132,213],
+		[151,108,221],[88,88,197],[71,125,197],
+		[0,141,216],[0,169,237],[0,200,232],
+		[61,222,224],[0,205,150],[0,195,47],
+		[54,206,18],[120,203,0],[189,238,0],
+		[233,239,0],null,null,
+		[255,162,0],[255,124,0],[219,84,0],
+		[205,35,0],null, null
+	]
+	var colorIndex = rand(0, colors.length)
+	return function() {
+		var color
+		while (!color) {
+			colorIndex = (colorIndex + 1) % colors.length
+			color = colors[colorIndex]
+		}
+		return color
+	}
+}())
+
+function getCollageBackground(width, conversation) {
+	var summary = conversation.summary
+	var recent = summary.recent || []
+	var pictures = summary.pictures || []
+	var collageHeight = !recent.length ? 148 : 94 + sum(recent, function getMessageHeight(message) {
+		return summaryMessageHeights[message.type]
+	})
+	// if (!recent.length)return
+	
+	var cardRect = [0, 0, width, collageHeight]
+	
+	var numRects = 4
+	var divisionAxis = rand(0, 1)
+	var numFirstHalf = rand(1,3)
+	var numSecondHalf = numRects - numFirstHalf
+	
+	var division = cardRect[divisionAxis] * randomDivision()
+
+	var halves = divideRect(cardRect, divisionAxis, 2)
+	var otherAxis = (divisionAxis + 1) % 2
+	
+	var rects = divideRect(halves[0], otherAxis, numFirstHalf).concat(divideRect(halves[1], otherAxis, numSecondHalf))
+	
+	var picUrls = map(pictures, function(summaryPic) {
+		return payloads.url(summaryPic.conversationId, summaryPic.payload.secret, 'picture')
+	})
+	
+	var contents = picUrls.concat(map(new Array(clip(numRects - pictures.length, 0, numRects)), function() {
+		return colorSeries().join('.')
+	}))
+	
+	// return drawRects(rects)
+	return style({
+		background:'url('+BT.url('BTImage', 'collage', {
+			rects:map(rects, function(r) { return r.join('.') }), // x1.y1,x2.y2,x3.y3
+			contents:contents, // http://example.com/image.jpg or r.g.b
+			size:width+'.'+collageHeight,
+			alpha:0.55
+		})+')',
+		backgroundSize:width+'px '+collageHeight+'px'
+	})
+	
+	function drawRects(rects) {
+		return [style({ position:'relative' }), map(rects, function(rect) {
+			return div(style({ position:'absolute', left:rect[0], top:rect[1], width:rect[2], height:rect[3], background:rgbaString(colorSeries(), 1), zIndex:1 }), style(translate(0,0)))
+		})]
+	}
+	
+	function divideRect(rect, dir, numParts) {
+		if (numParts == 1) { return [rect] }
+		var rects = []
+		var subSize = Math.floor(rect[2 + dir] / numParts)
+		for (var i=0; i<numParts; i++) {
+			var newRect = slice(rect, 0, 4) // copy the rect
+			newRect[dir] += subSize * i // origin
+			newRect[2 + dir] = subSize // size
+			if (i == numParts - 1) {
+				// add remainder to last rectangle
+				newRect[2 + dir] += rect[2 + dir] % numParts
+			}
+			rects.push(newRect)
+		}
+		return rects
+	}
+}
 
 function renderCard(conversation) {
-	var summaryPictures = conversation.summary.pictures || []
 	var recent = conversation.summary.recent || []
 	return div('card',
 		// div('gradient'),
-		summaryPictures.length > 0 && function() {
-			var size = [310, 200]
-			var url = pictures.displayUrl(summaryPictures[0], { crop:[size[0]*2, size[1]*2] })
-			var ratio = window.devicePixelRatio || 1
-			return style({
-				background:'url('+url+') #fff no-repeat',
-				minHeight:size[1], backgroundSize:px(size)
-			})
-		},
+		getCollageBackground(310, conversation),
 		div('person',
 			face(conversation.summary.people[0], { size:80 })
 		),
