@@ -217,7 +217,7 @@ function loadFacebookRequestId(facebookRequestId, callback) {
 function _selectMessages(conversationId, callback) {
 	var selectMessageSql = [
 		'SELECT messageId, fromPersonId, clientUid, conversationId, type, sentTime, payloadJson',
-		'FROM message WHERE conversationId=? ORDER BY id DESC LIMIT 50'
+		'FROM message WHERE conversationId=? ORDER BY messageId DESC LIMIT 50'
 	].join('\n')
 	db.shard(conversationId).select(
 		selectMessageSql,
