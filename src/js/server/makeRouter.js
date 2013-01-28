@@ -166,15 +166,15 @@ function setupRoutes(app, opts) {
 		var params = getJsonParams(req, 'emailAddress')
 		accountService.lookupOrCreateByEmail(params.emailAddress, function(err, person) {
 			if (err) { return respond(req, res, err) }
-			database.insert('INSERT INTO waitlistEvent SET personId=?, userAgent=?', [person.id, req.headers['user-agent']], function(err) {
-				if (err) { log.warn("COULD NOT INSERT WAITLIST EVENT", params.emailAddress, person.id, req.headers)}
+			database.insert('INSERT INTO waitlistEvent SET personId=?, userAgent=?', [person.personId, req.headers['user-agent']], function(err) {
+				if (err) { log.warn("COULD NOT INSERT WAITLIST EVENT", params.emailAddress, person.personId, req.headers)}
 			})
 			if (person.waitlistedTime) {
 				respond(req, res, null, { person:person, waitlistedSince:time.ago(person.waitlistedTime * time.seconds) })
 				sms.notify('Repeat waitlister: ' + params.emailAddress)
 			} else {
 				person.waitlistedTime = database.time()
-				database.updateOne('UPDATE person SET waitlistedTime=? WHERE id=?', [person.waitlistedTime, person.id], function(err) {
+				database.updateOne('UPDATE person SET waitlistedTime=? WHERE personId=?', [person.waitlistedTime, person.personId], function(err) {
 					if (err) {
 						sms.notify("Error cretating new waitlister! " + params.emailAddress)
 						return respond(req, res, err)

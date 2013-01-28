@@ -15,10 +15,6 @@ makeTimer = require('./makeTimer')
 makeLog = require('./log').makeLog
 log = makeLog('Global')
 
-getId = function(model) {
-	return typeof model == 'number' ? model : model.id
-}
-
 logError = logErr = function logError(err, callback /* , args ... */) {
 	var args = slice(arguments, 2)
 	log.error('Error:', args, err.stack || err.message || err)

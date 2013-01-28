@@ -365,7 +365,7 @@ function sendMessage(type, messageData) {
 	var conversation = currentConversation
 	
 	var message = eventEmitter('message', {
-		toConversationId:conversation.id,
+		toConversationId:conversation.conversationId,
 		fromPersonId:gState.me().personId,
 		clientUid:clientUid,
 		type:type,

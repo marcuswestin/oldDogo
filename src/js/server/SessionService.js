@@ -27,11 +27,11 @@ function createSession(req, fbAccessToken, callback) {
 				req.timer.stop('lookupOrCreateByFacebookAccount')
 				if (err) { return logError(err, callback, 'createSession.lookupOrCreateByFacebookAccount', person) }
 				req.timer.start('createSessionForPersonId')
-				createSessionForPersonId(person.id, function(err, authToken) {
+				createSessionForPersonId(person.personId, function(err, authToken) {
 					req.timer.stop('createSessionForPersonId')
-					if (err) { return logError(err, callback, 'createSession.createSessionForPersonId', person.id) }
+					if (err) { return logError(err, callback, 'createSession.createSessionForPersonId', person.personId) }
 					req.timer.start('bumpClientUidBlock')
-					accountService.bumpClientUidBlock(person.id, function(err, clientUidBlock) {
+					accountService.bumpClientUidBlock(person.personId, function(err, clientUidBlock) {
 						req.timer.stop('bumpClientUidBlock').report()
 						var sessionInfo = {
 							authToken:authToken,

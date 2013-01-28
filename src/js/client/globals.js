@@ -26,8 +26,6 @@ parseUrl = require('std/url')
 clip = require('std/clip')
 find = require('std/find')
 
-getId = function getId(d) { return d.id }
-
 isArray = _.isArray
 
 personKnown = function(personId) { return !!gState.cache['contactsByPersonId'][personId] }
@@ -103,7 +101,7 @@ eventEmitter.proto = {
 		})
 	},
 	_getDataId:function() {
-		return (this.dataClass == 'message' ? this.data.clientUid : this.data.id)
+		return (this.dataClass == 'message' ? this.data.clientUid : null)
 	}
 }
 eventEmitter.listeners = {}

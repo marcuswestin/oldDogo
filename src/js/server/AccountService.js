@@ -14,7 +14,7 @@ module.exports = {
 	bumpClientUidBlock:bumpClientUidBlock
 }
 
-var personSql = 'SELECT facebookId, name, firstName, lastName, id, id as personId, pushToken, claimedTime, waitlistedTime FROM person '
+var personSql = 'SELECT facebookId, name, firstName, lastName, personId, pushToken, claimedTime, waitlistedTime FROM person '
 
 function lookupOrCreateByFacebookAccount(req, fbAcc, fbAccessToken, callback) {
 	req.timer.start('lookupService.lookupPersonIdByFacebookId')
@@ -24,7 +24,7 @@ function lookupOrCreateByFacebookAccount(req, fbAcc, fbAccessToken, callback) {
 		// #1 facebook id is unknown => create account; index it with its fb ID; schedule friend processing.
 		// #2 facebook id is known => check if account is claimed; claim if not claimed; schedule friend processing.
 		if (personId) {
-			db.shard(personId).selectOne(personSql+'WHERE id=?', [personId], function(err, person) {
+			db.shard(personId).selectOne(personSql+'WHERE personId=?', [personId], function(err, person) {
 				if (err) { return callback(err) }
 				if (!person.claimedTime) {
 					_claimPersonAndScheduleInsertFacebookFriends(personId, fbAcc, callback)
@@ -46,11 +46,11 @@ function lookupOrCreateByFacebookAccount(req, fbAcc, fbAccessToken, callback) {
 	
 	function _claimPersonAndScheduleInsertFacebookFriends(personId, fbAcc, callback) {
 		db.shard(personId).updateOne(
-			'UPDATE person SET claimedTime=?, facebookId=?, name=?, firstName=?, lastName=?, gender=?, birthdate=?, locale=?, timezone=? WHERE id=?',
+			'UPDATE person SET claimedTime=?, facebookId=?, name=?, firstName=?, lastName=?, gender=?, birthdate=?, locale=?, timezone=? WHERE personId=?',
 			[db.time(), fbAcc.id, fbAcc.name, fbAcc.first_name, fbAcc.last_name, fbAcc.gender, _getFbAccBirthdate(fbAcc.birthday), fbAcc.locale, fbAcc.timezone, personId],
 			function(err) {
 				if (err) { return callback(err) }
-				db.shard(personId).selectOne(personSql+'WHERE id=?', [personId], function(err, person) {
+				db.shard(personId).selectOne(personSql+'WHERE personId=?', [personId], function(err, person) {
 					callback(err, person)
 					if (!err) { _scheduleInsertFacebookFriends(person, fbAccessToken) }
 				})
@@ -78,7 +78,7 @@ function _scheduleInsertFacebookFriends(person, fbAccessToken) {
 	// 			index person by facebook id
 	//		create conversation between person and friend on shard_F
 	//		& the 2 conversation participations on shard_A & shard_F
-	var personId = person.id
+	var personId = person.personId
 	facebook.get('/me/friends?fields=id,name,birthday', { access_token:fbAccessToken }, function(err, res) {
 		if (err) { return log.error('Could not get facebook friends', personId, fbAcc, fbAccessToken, err) }
 		var numFriends = res.data.length
@@ -139,10 +139,10 @@ function _scheduleInsertFacebookFriends(person, fbAccessToken) {
 }
 
 function _createConversation(person, fbFriend, friendPersonId, callback) {
-	try { var ids = orderPersonIds(person.id, friendPersonId) }
+	try { var ids = orderPersonIds(person.personId, friendPersonId) }
 	catch(e) { return callback(e) }
 	// create conversations on the friend's shard to spread them out
-	var participants = [{ id:person.id, name:person.name }, { id:friendPersonId, name:fbFriend.name }]
+	var participants = [{ id:person.personId, name:person.name }, { id:friendPersonId, name:fbFriend.name }]
 	db.shard(friendPersonId).insertIgnoreDuplicate(
 		'INSERT INTO conversation SET person1Id=?, person2Id=?, participantsJson=?, createdTime=?',
 		[ids[0], ids[1], JSON.stringify(participants), db.time()],
@@ -154,10 +154,10 @@ function _createConversation(person, fbFriend, friendPersonId, callback) {
 				people:[{ personId:friendPersonId, facebookId:fbFriend.id, name:fbFriend.name }]
 			}
 			var summaryFriendSees = {
-				people:[{ personId:person.id, facebookId:person.facebookId, name:person.name }]
+				people:[{ personId:person.personId, facebookId:person.facebookId, name:person.name }]
 			}
 			each(ids, function(personId) {
-				var summary = (personId == person.id ? summaryISee : summaryFriendSees)
+				var summary = (personId == person.personId ? summaryISee : summaryFriendSees)
 				db.shard(personId).insertIgnoreDuplicate(
 					'INSERT INTO conversationParticipation SET personId=?, conversationId=?, summaryJson=?',
 					[personId, conversationId, JSON.stringify(summary)],
@@ -174,13 +174,13 @@ function lookupOrCreateByEmail(emailAddress, callback) {
 		if (err) { return callback(err) }
 		var shard = db.shard(personId)
 		if (personId) {
-			shard.selectOne(personSql+'WHERE id=?', [personId], callback)
+			shard.selectOne(personSql+'WHERE personId=?', [personId], callback)
 		} else {
 			shard.insert('INSERT INTO person SET createdTime=?', [shard.time()], function(err, personId) {
 				if (err) { return callback(err) }
 				lookupService.indexPersonByEmail(emailAddress, personId, function(err) {
 					if (err) { return callback(err) }
-					shard.selectOne(personSql+'WHERE id=?', personId, callback)
+					shard.selectOne(personSql+'WHERE personId=?', personId, callback)
 				})
 			})
 		}
@@ -189,7 +189,7 @@ function lookupOrCreateByEmail(emailAddress, callback) {
 
 function setPushAuth(personId, pushToken, pushSystem, callback) {
 	db.shard(personId).updateOne(
-		'UPDATE person SET pushToken=?, pushSystem=? WHERE id=?',
+		'UPDATE person SET pushToken=?, pushSystem=? WHERE personId=?',
 		[pushToken, pushSystem, personId],
 		callback
 	)
@@ -200,14 +200,14 @@ function bumpClientUidBlock(personId, callback) {
 	db.shard(personId).transact(function(tx) {
 		callback = tx.wrapCallback(callback)
 		tx.selectOne(
-			'SELECT lastClientUidBlockStart AS start, lastClientUidBlockEnd AS end FROM person WHERE id=?',
+			'SELECT lastClientUidBlockStart AS start, lastClientUidBlockEnd AS end FROM person WHERE personId=?',
 			[personId],
 			function(err, clientUidBlock) {
 				if (err) { return callback(err) }
 				clientUidBlock.start += clientUidBlockSize
 				clientUidBlock.end += clientUidBlockSize
 				tx.updateOne(
-					'UPDATE person SET lastClientUidBlockStart=?, lastClientUidBlockEnd=? WHERE id=?',
+					'UPDATE person SET lastClientUidBlockStart=?, lastClientUidBlockEnd=? WHERE personId=?',
 					[clientUidBlock.start, clientUidBlock.end, personId],
 					function(err) {
 						if (err) { return callback(err) }

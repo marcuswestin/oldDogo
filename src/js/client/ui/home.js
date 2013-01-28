@@ -9,7 +9,7 @@ var rand = require('std/rand')
 var flatten = require('std/flatten')
 
 function getConversationId(conv) {
-	var conversationId = (conv.id || conv)
+	var conversationId = (conv.conversationId || conv)
 	return 'home-conversation-'+conversationId
 }
 
@@ -90,7 +90,6 @@ function getCollageBackground(width, conversation) {
 	var collageHeight = !recent.length ? 148 : 94 + sum(recent, function getMessageHeight(message) {
 		return summaryMessageHeights[message.type]
 	})
-	// if (!recent.length)return
 	
 	var cardRect = [0, 0, width, collageHeight]
 	
@@ -168,7 +167,7 @@ function renderCard(conversation) {
 		var summary = convo.summary
 		
 		var currentConvo = gScroller.current().conversation
-		if (currentConvo && currentConvo.id == conversation.id) {
+		if (currentConvo && currentConvo.conversationId == conversation.conversationId) {
 			hasUnread = false
 		}
 
@@ -251,7 +250,7 @@ function reloadConversations() {
 				if (!convo.lastMessage) { return false }
 				var currentKnownConvo = conversationsList._getItem(conversationsList.getItemId(convo))
 				var lastKnownMessage = currentKnownConvo && currentKnownConvo.lastMessage
-				if (lastKnownMessage && lastKnownMessage.id == convo.lastMessage.id) { return false }
+				if (lastKnownMessage && lastKnownMessage.messageId == convo.lastMessage.messageId) { return false }
 				return true
 			})
 		}
@@ -274,7 +273,7 @@ events.on('push.message', function(data) {
 		return // TODO add conversation to home conversation list from push
 	}
 	
-	var convo = find(gState.cache['conversations'], function(convo) { return convo.id == pushMessage.conversationId })
+	var convo = find(gState.cache['conversations'], function(convo) { return convo.conversationId == pushMessage.conversationId })
 	convo.lastMessage = convo.lastReceivedMessage = pushMessage
 	if (!pushMessage.sentTime) { pushMessage.sentTime = time.now() }
 	

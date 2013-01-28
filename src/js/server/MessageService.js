@@ -18,8 +18,8 @@ function getConversations(req, callback) {
 	var personId = req.session.personId
 	req.timer.start('selectParticipants')
 	var selectParticipationsSql = [
-		'SELECT conversationId as id, lastMessageTime, lastReceivedTime, lastReadTime, summaryJson',
-		'FROM conversationParticipation WHERE personId=? ORDER BY lastMessageTime DESC, id DESC'
+		'SELECT conversationId, lastMessageTime, lastReceivedTime, lastReadTime, summaryJson',
+		'FROM conversationParticipation WHERE personId=? ORDER BY lastMessageTime DESC, conversationId DESC'
 	].join('\n')
 	db.shard(personId).select(
 		selectParticipationsSql,
@@ -56,7 +56,7 @@ function sendMessage(personId, conversationId, clientUid, type, payload, dataFil
 	if (!payload) { return callback('That message is malformed') }
 	
 	db.shard(personId).selectOne(
-		'SELECT id FROM conversationParticipation WHERE personId=? AND conversationId=?',
+		'SELECT participationId FROM conversationParticipation WHERE personId=? AND conversationId=?',
 		[personId, conversationId],
 		function(err, res) {
 			if (err) { return callback(err) }
@@ -85,20 +85,20 @@ function sendMessage(personId, conversationId, clientUid, type, payload, dataFil
 								sentTime:db.time(), type:type, payload:payload
 							}
 							tx.selectOne(
-								'SELECT participantsJson FROM conversation WHERE id=?',
+								'SELECT participantsJson FROM conversation WHERE conversationId=?',
 								[conversationId],
 								function(err, res) {
 									if (err) { return callback(err) }
 									
-									var participants = JSON.parse(res.participantsJson) // [{ id:personId, name:personName }, ...]
+									var participants = JSON.parse(res.participantsJson) // [{ personId:personId, name:personName }, ...]
 									var fromParticipantName
 									var recipientParticipantIds = filter(participants, function(participant) {
-										var isMe = (participant.id == message.fromPersonId)
+										var isMe = (participant.personId == message.fromPersonId)
 										if (isMe) {
 											fromParticipantName = participant.name
 											return null
 										} else {
-											return participant.id
+											return participant.personId
 										}
 									})
 									callback(null, { message:message, disableInvite:false })
@@ -118,15 +118,15 @@ function sendMessage(personId, conversationId, clientUid, type, payload, dataFil
 function _notifyRecipients(recipientParticipants, fromParticipantName, message, prodPush) {
 	each(recipientParticipants, function(recipientParticipant) {
 		var pushFromName = fromParticipantName.split(' ')[0]
-		pushService.sendMessagePush(recipientParticipant.id, pushFromName, message, prodPush)
+		pushService.sendMessagePush(recipientParticipant.personId, pushFromName, message, prodPush)
 	})
 }
 
 function _updateParticipations(participants, message) {
 	each(participants, function(participantInfo) {
-		var participantId = participantInfo.id
+		var participantId = participantInfo.personId
 		db.shard(participantId).selectOne(
-			"SELECT id, personId, summaryJson, lastReceivedTime FROM conversationParticipation WHERE personId=? AND conversationId=?",
+			"SELECT participationId, personId, summaryJson, lastReceivedTime FROM conversationParticipation WHERE personId=? AND conversationId=?",
 			[participantId, message.conversationId],
 			function(err, participation) {
 				var summary = JSON.parse(participation.summaryJson)
@@ -148,9 +148,9 @@ function _updateParticipations(participants, message) {
 
 				var isMyParticipation = (participantId == message.fromPersonId)
 				var lastReceivedTime = (isMyParticipation ? participation.lastReceivedTime : db.time())
-				db.shard(participation.id).updateOne(
-					'UPDATE conversationParticipation SET lastMessageTime=?, lastReceivedTime=?, summaryJson=? WHERE id=?',
-					[db.time(), lastReceivedTime, JSON.stringify(summary), participation.id],
+				db.shard(participation.participationId).updateOne(
+					'UPDATE conversationParticipation SET lastMessageTime=?, lastReceivedTime=?, summaryJson=? WHERE participationId=?',
+					[db.time(), lastReceivedTime, JSON.stringify(summary), participation.participationId],
 					function(err, res) {
 						if (err) { log.error("Error updating conversationParticipation", err, participantId) }
 					}
@@ -163,12 +163,12 @@ function _updateParticipations(participants, message) {
 function getMessages(personId, conversationId, callback) {
 	// This could be sped up by checking conversation.participantsJson instead of selecting from conversationParticipation
 	db.shard(personId).selectOne(
-		'SELECT id FROM conversationParticipation WHERE personId=? AND conversationId=?',
+		'SELECT participationId FROM conversationParticipation WHERE personId=? AND conversationId=?',
 		[personId, conversationId],
 		function(err, res) {
 			if (err) { return callback(err) }
 			if (!res) { return callback('Unknown conversation') }
-			var participationId = res.id
+			var participationId = res.participationId
 			_selectMessages(conversationId, function(err, messages) {
 				if (err) { return callback(err) }
 				callback(null, messages)
@@ -176,7 +176,7 @@ function getMessages(personId, conversationId, callback) {
 				if (!lastMessage) { return }
 				// Update the lastReadTime
 				db.shard(conversationId).updateOne(
-					'UPDATE conversationParticipation SET lastReadTime=? WHERE id=?',
+					'UPDATE conversationParticipation SET lastReadTime=? WHERE participationId=?',
 					[db.time(), participationId],
 					function(err) {
 						if (err) { log.error('Could not update conversatioParticipation lastReadTime', participationId, err) }
@@ -216,7 +216,7 @@ function loadFacebookRequestId(facebookRequestId, callback) {
 
 function _selectMessages(conversationId, callback) {
 	var selectMessageSql = [
-		'SELECT id, fromPersonId, clientUid, conversationId, type, sentTime, payloadJson',
+		'SELECT messageId, fromPersonId, clientUid, conversationId, type, sentTime, payloadJson',
 		'FROM message WHERE conversationId=? ORDER BY id DESC LIMIT 50'
 	].join('\n')
 	db.shard(conversationId).select(

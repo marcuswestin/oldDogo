@@ -42,7 +42,7 @@ function _onApnsError() {
 }
 
 function sendMessagePush(toPersonId, pushFromName, message, prodPush) {
-	db.shard(toPersonId).selectOne('SELECT pushToken, pushSystem FROM person WHERE id=?', [toPersonId], function(err, data) {
+	db.shard(toPersonId).selectOne('SELECT pushToken, pushSystem FROM person WHERE personId=?', [toPersonId], function(err, data) {
 		if (err) { return }
 		if (!data.pushToken) { return log('Bah! No push token for', toPersonId) }
 		if (data.pushSystem != 'ios') { return log.error('WARNING Unknown push system', data.pushSystem) }

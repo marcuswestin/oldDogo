@@ -1,7 +1,7 @@
 set foreign_key_checks = 0;
 
 CREATE TABLE person (
-	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+	personId BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 	facebookId BIGINT UNSIGNED DEFAULT NULL,
 	lastClientUidBlockStart BIGINT UNSIGNED NOT NULL DEFAULT 0,
 	lastClientUidBlockEnd BIGINT UNSIGNED NOT NULL DEFAULT 100000,
@@ -19,43 +19,43 @@ CREATE TABLE person (
 	waitlistedTime INT UNSIGNED DEFAULT NULL,
 	disabledTime INT UNSIGNED DEFAULT NULL,
 	UNIQUE KEY keyFacebookId (facebookId),
-	PRIMARY KEY (id)
+	PRIMARY KEY (personId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE waitlistEvent (
-	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+	waitlistEventId BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 	personId BIGINT UNSIGNED NOT NULL,
 	userAgent VARCHAR(1024) DEFAULT NULL,
-	PRIMARY KEY (id)
+	PRIMARY KEY (waitlistEventId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE conversation (
-	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+	conversationId BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 	person1Id BIGINT UNSIGNED NOT NULL, -- the people ids are for non-group chats only.
 	person2Id BIGINT UNSIGNED NOT NULL, -- they represent and ensure uniqueness of relationships.
 	createdTime INT UNSIGNED NOT NULL,
 	participantsJson VARCHAR(1024) NOT NULL,
 	UNIQUE KEY keyRelationship (person1Id, person2Id),
 	UNIQUE KEY keyRelationshipReverse (person2Id, person1Id),
-	PRIMARY KEY (id)
+	PRIMARY KEY (conversationId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE conversationParticipation (
-	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+	participationId BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 	conversationId BIGINT UNSIGNED NOT NULL,
 	personId BIGINT UNSIGNED NOT NULL,
 	lastMessageTime INT UNSIGNED DEFAULT NULL,
 	lastReceivedTime INT UNSIGNED DEFAULT NULL,
 	lastReadTime INT UNSIGNED DEFAULT NULL,
 	summaryJson VARCHAR(8192) NOT NULL,
-	PRIMARY KEY (id),
+	PRIMARY KEY (participationId),
 	UNIQUE KEY keyPersonIdConversationId (personId, conversationId),
 	KEY keyConversationId (conversationId),
-	FOREIGN KEY keyPersonId (personId) REFERENCES person(id)
+	FOREIGN KEY keyPersonId (personId) REFERENCES person(personId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE message (
-	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+	messageId BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 	fromPersonId BIGINT UNSIGNED NOT NULL,
 	conversationId BIGINT UNSIGNED NOT NULL,
 	sentTime INT UNSIGNED NOT NULL,
@@ -63,8 +63,8 @@ CREATE TABLE message (
 	type INT UNSIGNED NOT NULL,
 	payloadJson VARCHAR(2048) NOT NULL,
 	UNIQUE KEY keyPersonClientUid (fromPersonId, clientUid),
-	FOREIGN KEY keyConversationId (conversationId) REFERENCES conversation(id),
-	PRIMARY KEY (id)
+	FOREIGN KEY keyConversationId (conversationId) REFERENCES conversation(conversationId),
+	PRIMARY KEY (messageId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- CREATE TABLE conversationParticipationSecret (

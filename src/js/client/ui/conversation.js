@@ -54,7 +54,7 @@ function renderConversation(_view) {
 }
 
 function getMessagesCacheId() {
-	return 'convo-'+view.conversation.id+'-messages'
+	return 'convo-'+view.conversation.conversationId+'-messages'
 }
 
 function scrollDown(duration, amount) {
@@ -116,7 +116,7 @@ function selectMessage(message) {
 function refreshMessages(scrollToBottom) {
 	if (!view) { return }
 	var wasCurrentView = view
-	api.get('api/messages', { conversationId:view.conversation.id }, function refreshRenderMessages(err, res) {
+	api.get('api/messages', { conversationId:view.conversation.conversationId }, function refreshRenderMessages(err, res) {
 		if (wasCurrentView != view) { return }
 		if (err) { return error(err) }
 		var messagesList = getMessagesList()
@@ -172,7 +172,7 @@ var picDisplaySize = [262 - pictureMargin * 2, 180 - pictureMargin * 2]
 gRenderMessageBubble = function(message, conversation, opts) {
 	opts = options(opts, { dynamics:true, face:30, arrow:true, lazy:false })
 	var me = gState.me()
-	var fromMe = (message.fromPersonId == me.id)
+	var fromMe = (message.fromPersonId == me.personId)
 	var classes = [message.type+'Message', fromMe ? 'fromMe' : 'fromThem']
 	return [div('messageContainer',
 		div(classes.join(' '),
@@ -279,7 +279,7 @@ function onNewMessage(message) {
 
 events.on('push.message', function(data) {
 	var message = data.message
-	if (!view || view.conversation.id != message.conversationId) { return }
+	if (!view || view.conversation.conversationId != message.conversationId) { return }
 	// cacheMessage(message)
 	onNewMessage(message)
 })
@@ -293,7 +293,7 @@ events.on('message.sending', function(message) {
 
 events.on('message.sent', function(serverResponse) {
 	var message = serverResponse.message
-	if (!view || view.conversation.id != message.conversationId) { return }
+	if (!view || view.conversation.conversationId != message.conversationId) { return }
 	// cacheMessage(message)
 	if (view.conversation.summary.people[0].memberSince) { return }
 	if (false && serverResponse.disableInvite) { return }
@@ -341,7 +341,7 @@ function promptInvite(message) {
 				})
 				events.once('facebook.dialogCompleteWithUrl', function(info) {
 					var url = parseUrl(info.url)
-					var params = { conversationId:conversation.id, personId:conversation.summary.people[0].personId, facebookRequestId:url.getSearchParam('request') }
+					var params = { conversationId:conversation.conversationId, personId:conversation.summary.people[0].personId, facebookRequestId:url.getSearchParam('request') }
 					api.post('api/facebookRequests', params, error.handler)
 				})
 			}))
