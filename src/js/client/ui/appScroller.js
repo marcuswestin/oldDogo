@@ -10,9 +10,9 @@ module.exports = {
 
 var icons = icon.preload({
 	back: ['glyphish/xtras-white/36-circle-west', 28, 28, 6, 10, 6, 11],
-	menu: ['glyphish/white/19-gear', 26, 26, 7, 10],
+	menu: ['glyphish/white/19-gear', 26, 26, 7, 9],
 	// search: ['glyphish/white/112-group', 32, 21, 11, 8, 13, 12]
-	search: ['glyphish/white/06-magnify', 24, 24, 8, 14]
+	search: ['glyphish/white/06-magnify', 24, 24, 8, 12]
 })
 
 function createAndRenderScroller() {
