@@ -9,7 +9,7 @@ var push = require('data/push')
 error = function error(err) {
 	var message = api.error(err)
 	if (!error.$tag) {
-		error.$tag = $(div('errorNotice',
+		error.$tag = $(div({ id:'errorNotice' },
 			style({ position:'absolute', top:0, left:0 }),
 			div('content',
 				style({ maxHeight:240 }), style(scrollable.y),
