@@ -109,9 +109,9 @@ setup-server: setup-source
 	cd node_modules/mocha && npm install --production .
 
 setup-source:
-	echo "node_modules" > ~/.__npm_installed__gitignore
-	echo ".__npm_installed__" >> ~/.__npm_installed__gitignore
-	git config --global core.excludesfile ~/.__npm_installed__gitignore
+	if ! grep --quiet "node_modules" ~/.gitignore; then echo "node_modules" >> ~/.gitignore; fi
+	if ! grep --quiet ".__npm_installed__" ~/.gitignore; then echo ".__npm_installed__" >> ~/.gitignore; fi
+	git config --global core.excludesfile ~/.gitignore
 	git submodule init; git submodule sync; git submodule update
 	mkdir -p node_modules
 
