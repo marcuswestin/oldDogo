@@ -6,6 +6,8 @@ var db = require('server/Database')
 var lookupService = require('server/lookupService')
 var log = makeLog('AccountService')
 var sms = require('server/sms')
+var payloadService = require('server/payloadService')
+var payloads = require('data/payloads')
 
 module.exports = {
 	lookupOrCreatePersonByFacebookAccount:lookupOrCreatePersonByFacebookAccount,
@@ -71,9 +73,14 @@ function lookupOrCreatePersonByFacebookAccount(fbAcc, callback) {
 			db.people.randomShard().insert('INSERT INTO person SET createdTime=?, claimedTime=?, facebookId=?, '+
 				'name=?, firstName=?, lastName=?, gender=?, birthdate=?, locale=?, timezone=?',
 				[time, time, fbAcc.id, fbAcc.name, fbAcc.first_name, fbAcc.last_name, fbAcc.gender, birthdate, fbAcc.locale, fbAcc.timezone],
-				function(err, res) {
-					callback(err, res)
-					// Create s3 redirect from s3.aws.com/dogo-dev-people/<personId>/picture/large.jpg -> graph.facebook.com/<fbAcc.id>/picture?type=large
+				function(err, personId) {
+					if (err) { return callback(err) }
+					callback(null, personId)
+					var fbUrl = 'http://graph.facebook.com/'+fbAcc.id+'/picture?type=large'
+					log.debug('Create person picture redirect from s3 to fb', personId, fbAcc)
+					payloadService.makeRedirect(payloads.personPicturePath(personId), fbUrl, function(err) {
+						if (err) { log.warn('Error setting picture redirect', personId, fbAcc, err) }
+					})
 				}
 			)
 

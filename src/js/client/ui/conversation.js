@@ -103,7 +103,7 @@ function selectMessage(message) {
 			size: [message.payload.width, message.payload.height]
 		})
 	} else if (message.type == 'audio') {
-		var url = payloads.url(message.conversationId, message.payload.secret, message.type)
+		var url = payloads.url(message.fromPersonId, message.payload.secret, message.type)
 		bridge.command('audio.play', { location:url }, function(err) {
 			
 		})

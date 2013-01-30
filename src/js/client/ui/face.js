@@ -1,4 +1,5 @@
 var Addresses = require('data/Addresses')
+var payloads = require('data/payloads')
 
 var face = module.exports = function face(person, opts) {
 	return getFace(person, opts)
@@ -36,7 +37,7 @@ function backgroundStyle(person, opts) {
 
 function getUrl(person, pixelSize) {
 	if (person.personId) {
-		return '/pictures/person?personId='+person.personId
+		return payloads.personPictureUrl(person.personId)
 	} else if (person.type == Addresses.types.facebook) {
 		return 'http://graph.facebook.com/'+person.address+'/picture'+(pixelSize > 50 ? '?type=large' : '')
 	}

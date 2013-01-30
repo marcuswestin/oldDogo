@@ -18,6 +18,7 @@ var redis = makeRedisClient()
 function createSession(req, fbAccessToken, callback) {
 	if (fbAccessToken) {
 		req.timer.start('get /me from facebook')
+		log.debug('get /me from mfacebook')
 		facebook.get('/me?fields=id,name,birthday', { access_token:fbAccessToken }, function(err, fbAccount) {
 			req.timer.stop('get /me from facebook')
 			if (err) { return logError(err, callback, '_handleFacebookAccount', fbAccessToken) }

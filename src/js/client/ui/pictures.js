@@ -10,7 +10,7 @@ function displayUrl(message, opts) {
 		resize:null,
 		crop:null
 	})
-	var url = payloads.url(message.conversationId, message.payload.secret, message.type)
+	var url = payloads.url(message.fromPersonId, message.payload.secret, message.type)
 	var params = {
 		url:url,
 		cache:'yes',

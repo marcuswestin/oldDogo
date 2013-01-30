@@ -41,7 +41,7 @@ function sendMessage(personId, participationId, clientUid, type, payload, dataFi
 			
 			function _uploadPayload(next) {
 				if (type != 'picture' && type != 'audio') { return next(null, payload) }
-				payloadService.upload(personId, conversationId, type, dataFile, function(err, secret) {
+				payloadService.upload(personId, type, dataFile, function(err, secret) {
 					if (!err) { payload.secret = secret }
 					return next(err, payload)
 				})
