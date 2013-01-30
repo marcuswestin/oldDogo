@@ -26,7 +26,7 @@ function selectData(callback) {
 function createAccountEmailRows(accounts, callback) {
 	console.log("Create account email rows...")
 	db.transact(this, function(tx) {
-		serialMap(accounts, {
+		asyncMap(accounts, {
 			iterate:function(account, next) {
 				if (!account.email) {
 					console.log("skipping account with no email", account.id, account.full_name)

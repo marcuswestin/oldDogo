@@ -28,42 +28,6 @@ find = require('std/find')
 
 isArray = _.isArray
 
-personKnown = function(personId) { return !!gState.cache['contactsByPersonId'][personId] }
-loadFacebookId = function loadFacebookId(facebookId, callback) { return loadPerson(null, facebookId, callback) }
-loadFacebookId.queue = {}
-loadPersonId = function loadPersonId(personId, callback) { return loadPerson(personId, null, callback) }
-loadPersonId.queue = {}
-loadPerson = function loadPerson(personId, facebookId, callback) {
-	if (!personId && !facebookId) { throw new Error("loadPerson: Undefined personId") }
-	if (personId) {
-		var cacheKey = 'contactsByPersonId'
-		var queue = loadPersonId.queue
-		var id = personId
-	} else {
-		var cacheKey = 'contactsByFacebookId'
-		var queue = loadFacebookId.queue
-		var id = facebookId
-	}
-	
-	var cache = gState.cache[cacheKey] || {}
-	var person = cache[id]
-	if (person) {
-		callback && callback(person)
-		return person
-	} else if (queue[id]) {
-		queue[id].push(callback)
-	} else {
-		queue[id] = [callback]
-		api.get('api/personInfo', { personId:personId, facebookId:facebookId }, function onApiGetPersonInfo(err, res) {
-			if (err) { return error(err) }
-			cache[id] = res.person
-			gState.set(cacheKey, cache)
-			each(queue[id], function(callback) { callback(res.person) })
-			delete queue[id]
-		})
-	}
-}
-
 gHeadHeight = 0
 gKeyboardHeight = 216
 

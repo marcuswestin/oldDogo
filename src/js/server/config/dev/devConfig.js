@@ -10,13 +10,6 @@ module.exports = {
 	log:true,
 	dev:true,
 	port:9000,
-	shards: {
-		dogo1: shardConfig.dogoShard(1, shardAccess),
-		dogo2: shardConfig.dogoShard(2, shardAccess),
-		dogo3: shardConfig.dogoShard(3, shardAccess),
-		dogo4: shardConfig.dogoShard(4, shardAccess),
-		dogoLookup: shardConfig.lookupShard(shardAccess)
-	},
 	s3: {
 		bucket:'dogo-dev',
 		accessKeyId:'AKIAJDUJ4DPW4DE7552Q',
@@ -32,6 +25,23 @@ module.exports = {
 		accountSid: 'AC4132bb5759ca40cfaca106e6f2052a1c',
 		authToken: '52d8aefbd1cac7f644f49f0789586a3b',
 		from: '+14155992671'
+	},
+	dbShards: {
+		people: [
+			shardConfig.shard('People', 1, shardAccess)
+			,shardConfig.shard('People', 2, shardAccess)
+			,shardConfig.shard('People', 3, shardAccess)
+			,shardConfig.shard('People', 4, shardAccess)
+		],
+		conversations: [
+			shardConfig.shard('Conversations', 1, shardAccess)
+			,shardConfig.shard('Conversations', 2, shardAccess)
+			,shardConfig.shard('Conversations', 3, shardAccess)
+			,shardConfig.shard('Conversations', 4, shardAccess)
+		],
+		lookup: [
+			shardConfig.lookupShard(shardAccess)
+		]
 	}
 }
 

@@ -36,7 +36,7 @@ function renderConversation(_view) {
 
 	return div({ id:'conversationView' },
 		div('personName', function() {
-			var names = view.conversation.summary.people[0].name.split(' ')
+			var names = view.conversation.people[0].name.split(' ')
 			if (names.length > 1) {
 				return names[0] + ' ' + names[names.length-1][0] // first name plus first letter of last name
 			} else {
@@ -116,7 +116,7 @@ function selectMessage(message) {
 function refreshMessages(scrollToBottom) {
 	if (!view) { return }
 	var wasCurrentView = view
-	api.get('api/messages', { conversationId:view.conversation.conversationId }, function refreshRenderMessages(err, res) {
+	api.get('api/messages', { participationId:view.conversation.participationId }, function refreshRenderMessages(err, res) {
 		if (wasCurrentView != view) { return }
 		if (err) { return error(err) }
 		var messagesList = getMessagesList()
@@ -182,7 +182,7 @@ gRenderMessageBubble = function(message, conversation, opts) {
 	var classes = [message.type+'Message', fromMe ? 'fromMe' : 'fromThem']
 	return [div('messageContainer',
 		div(classes.join(' '),
-			opts.face ? face(fromMe ? me : conversation.summary.people[0], { size:opts.face }) : null,
+			opts.face ? face(fromMe ? me : conversation.people[0], { size:opts.face }) : null,
 			div('messageBubble',
 				opts.arrow && div('arrow', style({
 					background:image.background(fromMe ? 'bubbleArrow-right' : 'bubbleArrow-left', 5, 10),
@@ -302,7 +302,7 @@ events.on('message.sent', function(serverResponse) {
 	var message = serverResponse.message
 	if (!view || view.conversation.conversationId != message.conversationId) { return }
 	// cacheMessage(message)
-	if (view.conversation.summary.people[0].memberSince) { return }
+	if (view.conversation.people[0].memberSince) { return }
 	if (false && serverResponse.disableInvite) { return }
 	promptInvite(message)
 })
@@ -318,11 +318,11 @@ function promptInvite(message) {
 	var $infoBar = $(div(style({ height:height, width:viewport.width() }), div('dogo-info',
 		div('invite',
 			div('encouragement', message.body ? 'Nice Message!' : 'Very Expressive!'),
-			div('personal', view.conversation.summary.people[0].name.split(' ')[0], " has not installed Dogo"),
+			div('personal', view.conversation.people[0].name.split(' ')[0], " has not installed Dogo"),
 			div('button',
 				// face.mine({ size:faceSize, style:{ 'float':'left' } }),
 				'Send via Facebook',
-				face(view.conversation.summary.people[0], { size:faceSize, style:{ 'float':'right' } }),
+				face(view.conversation.people[0], { size:faceSize, style:{ 'float':'right' } }),
 				button(function() {
 				// TODO events.on('facebook.dialogDidComplete', function() { ... })
 				// https://developers.facebook.com/docs/reference/dialogs/requests/
@@ -340,7 +340,7 @@ function promptInvite(message) {
 					dialog: 'apprequests',
 					params: {
 						message: text,
-						to: view.conversation.summary.people[0].facebookId.toString()
+						to: view.conversation.people[0].facebookId.toString()
 						// title: name+' sent you a...',
 						// data: JSON.stringify({ conversationId:message.conversationId }),
 						// frictionless:'1'
@@ -348,7 +348,7 @@ function promptInvite(message) {
 				})
 				events.once('facebook.dialogCompleteWithUrl', function(info) {
 					var url = parseUrl(info.url)
-					var params = { conversationId:conversation.conversationId, personId:conversation.summary.people[0].personId, facebookRequestId:url.getSearchParam('request') }
+					var params = { conversationId:conversation.conversationId, personId:conversation.people[0].personId, facebookRequestId:url.getSearchParam('request') }
 					api.post('api/facebookRequests', params, error.handler)
 				})
 			}))

@@ -42,13 +42,16 @@ function _onApnsError() {
 }
 
 function sendMessagePush(toPersonId, pushFromName, message, prodPush) {
-	db.shard(toPersonId).selectOne('SELECT pushToken, pushSystem FROM person WHERE personId=?', [toPersonId], function(err, data) {
+	db.people(toPersonId).selectOne('SELECT pushJson FROM person WHERE personId=?', [toPersonId], function(err, res) {
 		if (err) { return }
-		if (!data.pushToken) { return log('Bah! No push token for', toPersonId) }
-		if (data.pushSystem != 'ios') { return log.error('WARNING Unknown push system', data.pushSystem) }
+		var pushInfoList = JSON.parse(res.pushJson)
+		var pushInfo = pushInfoList[0]
+		if (!pushInfo) { return log('Bah! No push token for', toPersonId, message.messageId) }
+		
+		if (pushInfo.type != 'ios') { return log('Unknown push type', pushInfo[0]) }
 		
 		var notification = new apns.Notification()
-		notification.device = new apns.Device(data.pushToken, ascii=true)
+		notification.device = new apns.Device(pushInfo[0].token)
 		notification.payload = push.encodeMessage({
 			message:message,
 			toPersonId:toPersonId,

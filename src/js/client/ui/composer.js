@@ -188,22 +188,20 @@ function selectText() {
 		sendMessage('text', { body:message })
 	}
 	
-	// hideTextInput = function() {
-	// 	setTimeout(function() {
-	// 		$('#'+uniqueId).css({ opacity:1 })
-	// 	}, 100)
-	// 	
-	// 	hideTextInput = function() {}
-	// 	hideEmoticons()
-	// 	bridge.command('textInput.hideKeyboard')
-	// 	$('#'+uniqueId).css({ opacity:0 })
-	// 	setTimeout(function() {
-	// 		// Removing the element before command('textInput.hideKeyboard') has actually found the input
-	// 		// causes the entire screen to go black. Just move it out of the way instead of removing it
-	// 		$('#'+uniqueId).css(translate(-9999,-9999))
-	// 		setTimeout(function() { $('#'+uniqueId).remove() }, 5000)
-	// 	}, fadeDuration)
-	// }
+	hideTextInput = function() {
+		setTimeout(function() { $('#'+uniqueId).css({ opacity:1 }) }, 100)
+		
+		hideTextInput = function() {}
+		hideEmoticons()
+		bridge.command('textInput.hideKeyboard')
+		$('#'+uniqueId).css({ opacity:0 })
+		setTimeout(function() {
+			// Removing the element before command('textInput.hideKeyboard') has actually found the input
+			// causes the entire screen to go black. Just move it out of the way instead of removing it
+			$('#'+uniqueId).css(translate(-9999,-9999))
+			setTimeout(function() { $('#'+uniqueId).remove() }, 5000)
+		}, fadeDuration)
+	}
 }
 
 function showCustomKeyboard(contentFn) {
@@ -259,6 +257,7 @@ var slideTools = {
 		$('#composer .toolsSlider').css(translate.y(-toolsHeight, slideTools.duration * 1, delay))
 		$('#dogoApp').css(translate.y(0, slideTools.duration))
 		$('#composerCanvas').css(translate.y(0, slideTools.duration))
+		hideTextInput()
 	}
 }
 
@@ -369,7 +368,7 @@ function sendMessage(type, messageData) {
 	var conversation = currentConversation
 	
 	var message = eventEmitter('message', {
-		toConversationId:conversation.conversationId,
+		toParticipationId:conversation.participationId,
 		fromPersonId:gState.me().personId,
 		clientUid:clientUid,
 		type:type,

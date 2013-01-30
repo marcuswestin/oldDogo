@@ -62,7 +62,7 @@ events.on('app.start', function onAppStart(info) {
 })
 
 events.on('push.registered', function onPushRegistered(info) {
-	api.post('api/pushAuth', { pushToken:info.deviceToken, pushSystem:'ios' })
+	api.post('api/pushAuth', { token:info.deviceToken, type:'ios' })
 })
 
 events.on('app.didBecomeActive', function onAppDidBecomeActive() {
@@ -85,19 +85,20 @@ events.on('push.notification', function onPushNotification(info) {
 		return
 	}
 	
-	var message = data.message
-	if (message) {
-		if (info.didBringAppIntoForeground) {
-			loadPersonId(message.fromPersonId, function(person) {
-				var conversation = { personId:person.personId } // hmm... this should load from gState by message.conversationId
-				var view = { title:person.name, conversation:conversation } // Hmm.. This should 
-				gScroller.set({ view:view, index:1, render:true, animate:false })
-				events.fire('push.message', payload, info)
-			})
-		} else {
-			events.fire('push.message', data, info)
-			bridge.command('device.vibrate')
-		}
+	if (data.message) {
+		var message = data.message
+		loadPersonById(message.fromPersonId, function(person) {
+			if (info.didBringAppIntoForeground) {
+				loadConversation(message.fromPersonId, function(convo) {
+					var view = { conversation:convo }
+					gScroller.set({ view:view, index:1, render:true, animate:false })
+					events.fire('push.message', payload, info)
+				})
+			} else {
+				events.fire('push.message', data, info)
+				bridge.command('device.vibrate')
+			}
+		})
 	}
 })
 
@@ -161,7 +162,6 @@ function startApp(info) {
 			payloads.bucket = gState.cache['sessionInfo'].picturesBucket
 			migrateNewClientUidBlock()
 			appScroller.createAndRender()
-			buildContactsIndex()
 		}
 		
 		if (gIsPhantom) {
@@ -170,18 +170,6 @@ function startApp(info) {
 			document.dispatchEvent(readyEvent)
 		}
 	})
-}
-
-function buildContactsIndex() {
-	return
-	if (buildContactsIndex.built) { return }
-	buildContactsIndex.built = true
-	var facebookIdToNames = {}
-	each(gState.cache['contactsByFacebookId'], function(contact, facebookId) {
-		var names = contact.name.split(' ')
-		facebookIdToNames[facebookId] = names
-	})
-	bridge.command('index.build', { name:'facebookIdByName', payloadToStrings:facebookIdToNames })
 }
 
 if (gIsPhantom) { delete localStorage['dogo-browser-state'] }

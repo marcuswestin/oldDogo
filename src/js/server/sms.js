@@ -1,10 +1,9 @@
 var request = require('request')
-var log = makeLog('sms')
 
 var sms = module.exports = {
 	setConfig:setConfig,
 	send:send,
-	notify:notify
+	alertAdmin:alertAdmin
 }
 
 var url = null
@@ -15,17 +14,15 @@ function setConfig(conf) {
 	from = conf.from
 }
 
-function notify(text) {
+function alertAdmin(text) {
 	sms.send('+14156015654', text)
 }
 
 function send(to, text, callback) {
 	if (!url) {
-		log("Ignoring send sms", to, text)
 		return
 	}
 	var params = { From:from, To:to, Body:text }
-	log("Sending SMS", to, text)
 	request.post({ url:url, form:params }, function(err, res) {
 		// if (err) { log.error("Error sending SMS", err) }
 		// else { log("Sent SMS") }
@@ -42,5 +39,5 @@ function send(to, text, callback) {
 // var url = 'https://'+accountSid+':'+authToken+'@api.twilio.com/2010-04-01/Accounts/'+accountSid+'/SMS/Messages.json'
 // var params = { From: twilioSandbox, To: yourPhone, Body: text }
 // request.post({ url:url, form:params }, function(err, res) {
-// 	log("HERE", err, res)
+// 	console.log("SENT SMS", err, res)
 // })

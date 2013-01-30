@@ -7,7 +7,11 @@ function run(config) {
 	var payloadService = require('./payloadService')
 	var makeRouter = require('./makeRouter')
 	
-	database.configure(config.shards)
+	if (config.dev) {
+		require('server/util/log').enableDebugLoggin()
+	}
+	
+	database.configure(config.dbShards)
 	payloadService.configure(config.s3)
 	
 	var router = makeRouter({ log:config.log, dev:config.dev })

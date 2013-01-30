@@ -9,7 +9,7 @@ fixMessages(function() {
 
 function fixMessages(callback) {
 	db.select(this, 'SELECT id, type, payloadJson FROM message', [], function(err, messages) {
-		serialMap(messages, {
+		asyncMap(messages, {
 			iterate:function(message, next) {
 				console.log('process', message.id)
 				if (message.type == 1) {

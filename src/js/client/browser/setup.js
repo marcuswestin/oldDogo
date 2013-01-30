@@ -1,5 +1,7 @@
 var index = require('./index')
 var textInput = require('./textInput')
+var Conversations = require('client/conversations')
+var Addresses = require('data/Addresses')
 
 module.exports = {
 	setup:setupBrowserDebugMode
@@ -22,6 +24,11 @@ function setupBrowserDebugMode() {
 					callback(null, { facebookSession:response.authResponse })
 				}, { scope:data.permissions.join(',') })
 				break
+			case 'facebook.request':
+				FB.api(data.path, function(response) {
+					callback(null, response)
+				})
+				break
 			case 'facebook.dialog':
 				var params = data.params
 				FB.ui({ method:data.dialog, message:params.message, data:params.data, title:params.title, to:parseInt(params.to) }, function(res) {
@@ -30,6 +37,7 @@ function setupBrowserDebugMode() {
 				break
 			case 'facebook.clear':
 				callback(null)
+				break
 			case 'app.restart':
 				location.reload()
 				break
@@ -42,6 +50,7 @@ function setupBrowserDebugMode() {
 			case 'state.clear':
 				setTimeout(function() {
 					localStorage.clear()
+					callback()
 				})
 				break
 			case 'state.load':
@@ -161,6 +170,15 @@ function setupBrowserDebugMode() {
 		}
 		splashShowing = !splashShowing
 	})))
+	$buttons.append(div(padded,
+		div(null, 'Add email address', button(function() {
+			Conversations.addAddresses([{ type:Addresses.type.email, address:$('#addEmailAddress').val(), name:'Test Email' }], function() {
+				console.log('addedd', arguments)
+			})
+			$('#addEmailAddress').val('')
+		})),
+		input({ id:'addEmailAddress' })
+	))
 	$('body').append($buttons)
 }
 

@@ -45,7 +45,7 @@ var selectMessage = sql.selectFrom('message', {
 
 function updateParticipations(participations, done) {
 	console.log('selecting recent text and picture messages')
-	serialMap(participations, {
+	asyncMap(participations, {
 		iterate:function(participation, i, next) {
 			console.log('updating', participation.id, '('+i+' out of '+participations.length+')')
 			if (participation.summaryJson) {

@@ -18,7 +18,7 @@ selectMessages(function(messages) {
 function selectMessages(callback) {
 	db.select(this, 'SELECT * FROM message', function(err, messages) {
 		check(err)
-		serialMap(messages, {
+		asyncMap(messages, {
 			iterate:function(message, next) {
 				if (message.picture_id) {
 					db.selectOne(this, 'SELECT * FROM picture WHERE id=?', [message.picture_id], function(err, picture) {
@@ -41,7 +41,7 @@ function selectMessages(callback) {
 
 function updateMessages(messages, callback) {
 	console.log('Update', messages.length, 'messages')
-	serialMap(messages, {
+	asyncMap(messages, {
 		iterate:function(message, next) {
 			var type
 			var payload

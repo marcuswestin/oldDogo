@@ -132,7 +132,7 @@ function runConnectTests() {
 		then('click connect button', function(done) {
 			this.timeout = 0
 			tap('.connect.button', function() {
-				events.on('app.connected', done)
+				events.on('person.connected', done)
 			})
 		})
 		then('click no notifications link', function(done) {

@@ -1,13 +1,13 @@
 var MAX_SHARDS = 65535 // Don't change this :->
 
 module.exports = {
-	dogoShard:dogoShardConfig,
+	shard:shardConfig,
 	lookupShard:lookupShardConfig,
 	MAX_SHARDS:MAX_SHARDS
 }
 
-function dogoShardConfig(shardIndex, shardAccess) {
-	return _shardConfig(shardAccess, 'dogo'+shardIndex, { offset:shardIndex, increment:MAX_SHARDS })
+function shardConfig(shardType, shardIndex, shardAccess) {
+	return _shardConfig(shardAccess, 'dogo'+shardType+shardIndex, { offset:shardIndex, increment:MAX_SHARDS })
 }
 
 function lookupShardConfig(shardAccess) {
@@ -17,6 +17,7 @@ function lookupShardConfig(shardAccess) {
 function _shardConfig(shardAccess, shardName, autoIncrement) {
 	return {
 		numConnections:2,
+		maxQueueSize:10,
 		host:shardAccess.host,
 		password:shardAccess.password,
 		user:shardAccess.user,

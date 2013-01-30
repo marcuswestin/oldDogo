@@ -8,7 +8,7 @@ module.exports = {
 	getAuth:getAuth,
 	getHeaders:getHeaders,
 	setHeaders:setHeaders,
-	connect:connect,
+	createSession:createSession,
 	// refresh:refresh,
 	getPath:getPath,
 	getUrl:getUrl,
@@ -100,7 +100,7 @@ function handleResponse(jqXhr, url, callback, err, res) {
 	callback && callback(err, res)
 }
 
-function connect(opts, callback) {
+function createSession(opts, callback) {
 	var facebookSession = opts.facebookSession || {}
 	var params = {
 		facebookAccessToken:facebookSession.accessToken,
@@ -110,24 +110,8 @@ function connect(opts, callback) {
 	api.post('api/session', params, curry(handleSession, facebookSession, callback))
 }
 
-// function refresh(authToken, callback) {
-// 	api.get('api/session', { authToken:authToken }, curry(handleSession, null, callback))
-// }
-
 function handleSession(facebookSession, callback, err, res) {
 	if (err) { return callback(err) }
-	var contacts = res.contacts
-	var contactsByPersonId = gState.cache['contactsByPersonId'] || {}
-	var contactsByFacebookId = gState.cache['contactsByFacebookId'] || {}
-	each(contacts, function(contact) {
-		if (contact.personId) {
-			contactsByPersonId[contact.personId] = contact
-		}
-		contactsByFacebookId[contact.facebookId] = contact
-	})
-
-	gState.set('contactsByPersonId', contactsByPersonId)
-	gState.set('contactsByFacebookId', contactsByFacebookId)
 	gState.set('sessionInfo', {
 		me:res.person,
 		authToken:res.authToken,
@@ -135,7 +119,7 @@ function handleSession(facebookSession, callback, err, res) {
 		clientUidBlock:res.clientUidBlock,
 		picturesBucket:res.picturesBucket
 	})
-	callback(null)
+	callback(null, res.person)
 }
 
 function error(err) {

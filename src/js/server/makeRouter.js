@@ -181,16 +181,16 @@ function setupRoutes(app, opts) {
 			})
 			if (person.waitlistedTime) {
 				respond(req, res, null, { person:person, waitlistedSince:time.ago(person.waitlistedTime * time.seconds) })
-				sms.notify('Repeat waitlister: ' + params.emailAddress)
+				log.alert('Repeat waitlister', params.emailAddress)
 			} else {
 				person.waitlistedTime = database.time()
 				database.updateOne('UPDATE person SET waitlistedTime=? WHERE personId=?', [person.waitlistedTime, person.personId], function(err) {
 					if (err) {
-						sms.notify("Error cretating new waitlister! " + params.emailAddress)
+						log.alert('Error creating new waitlister', params.emailAddress)
 						return respond(req, res, err)
 					}
 					respond(req, res, null, { person:person, waitlistedSince:null })
-					sms.notify('New waitlister! ' + params.emailAddress)
+					log.alert('New waitlister', params.emailAddress)
 				})
 			}
 		})
@@ -208,7 +208,7 @@ function setupRoutes(app, opts) {
 	    '</form>', 'text/html')
 	})
 	app.post('/api/test/upload', function(req, res) {
-		console.log("HERE", req.files)
+		log.debug("TODO Update files", req.files)
 	})
 	app.get('/api/ping', function(req, res) {
 		res.end('"Dogo!"')
@@ -220,16 +220,20 @@ function setupRoutes(app, opts) {
 	})
 	app.get('/api/conversations', filters.oldClientsAndSession, function getConversations(req, res) {
 		var params = getUrlParams(req)
-		messageService.getConversations(req, function(err, conversations) {
+		accountService.getConversations(req, function(err, conversations) {
 			respond(req, res, err, !err && { conversations:conversations })
 		})
 	})
+	app.post('/api/addresses', filters.oldClientsAndSession, function postAddresses(req, res) {
+		var params = getJsonParams(req, 'newAddresses')
+		accountService.addAddresses(req, params.newAddresses, curry(respond, req, res))
+	})
 	app.post('/api/message', filters.oldClientsAndSession, function postMessage(req, res) {
-		var params = getMultipartParams(req, 'toConversationId', 'clientUid', 'type', 'payload')
+		var params = getMultipartParams(req, 'toParticipationId', 'clientUid', 'type', 'payload')
 		var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
 		var dataFile = req.files && req.files.data
 		messageService.sendMessage(req.session.personId,
-			params.toConversationId, params.clientUid,
+			params.toParticipationId, params.clientUid,
 			params.type, params.payload, dataFile, prodPush,
 			function(err, content) {
 				if (dataFile) {
@@ -242,14 +246,14 @@ function setupRoutes(app, opts) {
 		)
 	})
 	app.get('/api/messages', filters.oldClientsAndSession, function getConversationMessages(req, res) {
-		var params = getUrlParams(req, 'conversationId')
-		messageService.getMessages(req.session.personId, params.conversationId, function(err, messages) {
+		var params = getUrlParams(req, 'participationId')
+		messageService.getMessages(req.session.personId, parseInt(params.participationId), function(err, messages) {
 			respond(req, res, err, !err && { messages:messages })
 		})
 	})
 	app.post('/api/pushAuth', filters.oldClientsAndSession, function postPushAuth(req, res) {
-		var params = getJsonParams(req, 'pushToken', 'pushSystem')
-		accountService.setPushAuth(req.session.personId, params.pushToken, params.pushSystem,
+		var params = getJsonParams(req, 'pushToken', 'pushType')
+		accountService.setPushAuth(req.session.personId, params.pushToken, params.pushType,
 			curry(respond, req, res))
 	})
 	app.get('/api/version/info', filters.oldClientsAndSession, function getVersionInfo(req, res) {
@@ -310,8 +314,8 @@ function setupDev(app) {
 	})
 	
 	app.post('/api/messageDev', filters.oldClientsAndSession, function postMessageDebug(req, res) {
-		var params = getJsonParams(req, 'toConversationId', 'clientUid', 'type', 'payload')
-		messageService.sendMessage(req.session.personId, params.toConversationId, params.clientUid, params.type, params.payload, null, false,
+		var params = getJsonParams(req, 'toParticipationId', 'clientUid', 'type', 'payload')
+		messageService.sendMessage(req.session.personId, params.toParticipationId, params.clientUid, params.type, params.payload, null, false,
 			curry(respond, req, res)
 		)
 	})
@@ -412,6 +416,10 @@ function respond(req, res, err, content, contentType) {
 	try {
 	var code = 200, headers = {}
 	if (err) {
+		if (err === true) {
+			err = "I'm Sorry, I found a problem. Marcus has been notified, and he should be taking care of the problem very soon."
+		}
+		
 		if (err === 'Unauthorized') {
 			code = 401
 			content = 'Authorization Required'

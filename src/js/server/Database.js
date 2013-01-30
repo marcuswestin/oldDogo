@@ -3,39 +3,57 @@
 var mysql = require('mysql')
 var log = makeLog('Database')
 var shardConfig = require('server/config/shardConfig')
+var each = require('std/each')
 
 var Database = module.exports = {
 	configure:configure,
-	shard:shard,
-	randomShard:randomShard,
-	lookupShard:null,
-	time:getTime,
-	getShardName:getShardName
+	people:getPersonShard,
+	conversations:getConversationShard,
+	lookup:getLookupShard,
+	time:getTime
 }
 
 var shards = {}
-var numDogoShards = 0
-function configure(shardConfs) {
-	for (var shardName in shardConfs) {
-		shards[shardName] = new Shard(shardConfs[shardName])
-		if (shardName.match(/dogo\d+/)) {
-			numDogoShards += 1
-		}
+var numShards = {}
+function configure(dbShards) {
+	each(dbShards, function(shardList, shardType) {
+		each(shardList, function(shardConf) {
+			numShards[shardType] = (numShards[shardType] || 0) + 1
+			if (!shards[shardType]) { shards[shardType] = [] }
+			shards[shardType][shardConf.shardName] = new Shard(shardConf)
+		})
+	})
+}
+
+function getLookupShard() {
+	return shards['lookup']['dogoLookup']
+}
+
+getPersonShard.randomShard = _randomSharder('people', 'dogoPeople')
+function getPersonShard(personId) {
+	var shardIndex = _getShardIndex(personId)
+	return shards['people']['dogoPeople'+shardIndex]
+}
+
+getConversationShard.randomShard = _randomSharder('conversations', 'dogoConversations')
+function getConversationShard(conversationId) {
+	var shardIndex = _getShardIndex(conversationId)
+	return shards['conversations']['dogoConversations'+shardIndex]
+}
+
+function _randomSharder(shardType, shardBaseName) {
+	return function() {
+		var shardIndex = Math.floor(Math.random() * numShards[shardType]) + 1
+		return shards[shardType][shardBaseName+shardIndex]
 	}
-	Database.lookupShard = shards['dogoLookup']
 }
 
-function getShardName(id) {
-	var shardIndex = ((parseInt(id) - 1) % shardConfig.MAX_SHARDS) + 1 // 1->1, 2->2, 3->3, ..., 65535->65535, 65536->1, 65537->2
-	return 'dogo'+shardIndex
-}
-
-function shard(id) {
-	return shards[getShardName(id)]
-}
-
-function randomShard() {
-	return shard(Math.floor(Math.random() * numDogoShards) + 1)
+function _getShardIndex(id) {
+	if (typeof id != 'number') {
+		log.alert('Non-numeric shard lookup id', id)
+		return null
+	}
+	return ((parseInt(id) - 1) % shardConfig.MAX_SHARDS) + 1 // 1->1, 2->2, 3->3, ..., 65535->65535, 65536->1, 65537->2
 }
 
 var connectionBase = {
@@ -74,7 +92,13 @@ var connectionBase = {
 			callback(err, !err && info.insertId)
 		})
 	},
-	
+	insertIgnoreId:function(query, args, callback) {
+		var stackError = new Error()
+		this.query(query, args, function(err) {
+			if (err) { onDbError('insert', err, stackError, query, args) }
+			callback(err)
+		})
+	},
 	insertIgnoreDuplicate:function(query, args, callback) {
 		var stackError = new Error()
 		this._query(query, args, function(err, info) {
@@ -93,7 +117,7 @@ var connectionBase = {
 		var stackError = new Error()
 		this.query(query, args, function(err, info) {
 			if (err) { onDbError('updateOne', err, stackError, query, args) }
-			if (!err && info.affectedRows > 1) {
+			if (!err && info.affectedRows != 1) {
 				var errorMessage = 'updateOne affected '+info.affectedRows+' rows'
 				err = onDbError(errorMessage, new Error(errorMessage), stackError, query, args)
 			}
@@ -117,6 +141,7 @@ var Shard = proto(connectionBase,
 	function(shardConfig) {
 		this._queue = []
 		this._pool = map(new Array(shardConfig.numConnections), bind(this, _createConnection))
+		this.config = shardConfig
 		
 		function _createConnection() {
 			var connection = mysql.createClient({
@@ -154,17 +179,18 @@ var Shard = proto(connectionBase,
 		}
 	}, {
 		transact: function(fn) {
-			this._takeConnection(function(conn) {
-				fn(Transaction(this, conn))
+			this._takeConnection(function(err, conn) {
+				fn(err, err ? null : Transaction(this, conn))
 			})
 		},
 		autocommit: function(fn) {
-			this._takeConnection(function(conn) {
-				fn(Autocommit(this, conn))
+			this._takeConnection(function(err, conn) {
+				fn(err, err ? null : Autocommit(this, conn))
 			})
 		},
 		_query: function(query, args, callback) {
-			this._takeConnection(function(conn) {
+			this._takeConnection(function(err, conn) {
+				if (err) { return callback(err) }
 				var self = this
 				conn.query(query, args, function(err) {
 					self._returnConnection(conn)
@@ -174,9 +200,14 @@ var Shard = proto(connectionBase,
 		},
 		_takeConnection: function(fn) {
 			if (!this._pool.length) {
-				this._queue.push(fn)
+				if (this._queue.length >= this.config.maxQueueSize) {
+					log.warn('Database queue full', this.config.database, this.config.host, this.config.port)
+					fn("Database queue is full ("+this.config.database+")", null)
+				} else {
+					this._queue.push(fn)
+				}
 			} else {
-				fn.call(this, this._pool.pop())
+				fn.call(this, null, this._pool.pop())
 			}
 		},
 		_returnConnection: function(conn) {

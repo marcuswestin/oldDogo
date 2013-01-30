@@ -1,3 +1,5 @@
+require('HandyHelpers/Array+Util')
+
 proto = require('std/proto')
 create = require('std/create')
 each = require('std/each')
@@ -7,13 +9,16 @@ slice = require('std/slice')
 options = require('std/options')
 _ = require('underscore')
 filter = require('std/filter')
-serialMap = require('std/serialMap')
+asyncMap = require('std/asyncMap')
+asyncEach = require('std/asyncEach')
 
 ListPromise = require('std/ListPromise')
 
 makeTimer = require('./makeTimer')
 makeLog = require('./log').makeLog
 log = makeLog('Global')
+
+jsonList = function(jsonProperty) { return jsonProperty ? JSON.parse(jsonProperty) : [] }
 
 logError = logErr = function logError(err, callback /* , args ... */) {
 	var args = slice(arguments, 2)

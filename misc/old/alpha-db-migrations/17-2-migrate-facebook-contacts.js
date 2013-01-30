@@ -23,7 +23,7 @@ function selectData(callback) {
 	console.log("Select facebook contacts ...")
 	db.select(this, 'SELECT account_id, contact_facebook_id, contact_facebook_name FROM facebook_contact', [], function(err, contacts) {
 		check(err)
-		serialMap(contacts, {
+		asyncMap(contacts, {
 			iterate:function processContact(contact, i, next) {
 				if (!contact) { process.exit() }
 				if (accounts[contact.account_id]) {
@@ -47,7 +47,7 @@ function selectData(callback) {
 function createData(contacts, callback) {
 	console.log('Create accounts...')
 	db.transact(this, function(tx) {
-		serialMap(contacts, {
+		asyncMap(contacts, {
 			iterate: function(contact, next) {
 				var fromAccount = accounts[contact.account_id]
 				// create account for contact.contact_facebook_id, if not exists

@@ -42,7 +42,7 @@ function createAndRenderScroller() {
 		var cornerMargin = { top:24, side:4 }
 		var title = null
 		if (view.conversation) {
-			var names = view.conversation.summary.people[0].name.split(' ')
+			var names = view.conversation.people[0].name.split(' ')
 			title = names[0]
 			if (names.length > 1) {
 				title += ' ' + names[names.length-1][0] // first name plus first letter of last name
@@ -138,9 +138,12 @@ var backIconDragger = (function makeBackIconDragger() {
 var searchIconDragger = (function makeSearchIconDragger() {
 	var margin = 5
 	var textInputHeight = 36
-	var maxCornerSize = { width:viewport.width(), height:viewport.height() }
+	
+	var cornersOffset = 4
+	var statusBarHeight = 20
+	var maxCornerSize = { width:viewport.width() - cornersOffset*2, height:viewport.height() - (statusBarHeight + cornersOffset*2) }
 	var maxTextInputWidth = maxCornerSize.width - cornerSize.width * 2 - margin * 2
-	var textInputLeftOffset = cornerSize.width + margin
+	var textInputLeftOffset = cornerSize.width + margin + cornersOffset
 	var resultsBoxTop = textInputHeight + margin * 2 + 2
 	var maxResultsBoxWidth = maxCornerSize.width
 	var maxResultsBoxHeight = viewport.height() - resultsBoxTop
@@ -148,8 +151,8 @@ var searchIconDragger = (function makeSearchIconDragger() {
 	var currentCornerSize = cornerSize
 
 	var duration = 250
-	var animate = transition({ height:duration, '-webkit-transform':duration })
-	var noAnimation = transition({ height:0, '-webkit-transform':0 })
+	var animate = transition({ height:duration, width:duration, '-webkit-transform':duration })
+	var noAnimation = transition({ height:0, width:0, '-webkit-transform':0 })
 	var fade = transition('opacity', duration)
 	
 	function renderSearchUI() {
@@ -164,7 +167,7 @@ var searchIconDragger = (function makeSearchIconDragger() {
 					}),
 					button(function() {
 						bridge.command('textInput.show', {
-							at:{ x:textInputLeftOffset, y:margin+2, width:maxTextInputWidth, height:textInputHeight },
+							at:{ x:textInputLeftOffset+cornersOffset, y:margin+statusBarHeight+cornersOffset+2, width:maxTextInputWidth, height:textInputHeight },
 							returnKeyType:'Go',
 							font: { name:'Open Sans', size:16 },
 							backgroundColor:[0,0,0,0],
@@ -187,9 +190,8 @@ var searchIconDragger = (function makeSearchIconDragger() {
 		$('.corner.right').css(animate).css({
 			width:maxCornerSize.width,
 			height:maxCornerSize.height,
-			'-webkit-transform':'translate3d(-1px,0,0)',
 			borderRadius:0
-		})
+		}).css(translate(cornersOffset, cornersOffset+statusBarHeight))
 		$('.corner.right .textInput').css({ width:maxTextInputWidth })
 		setTimeout(function() {
 			setTimeout(function() {
@@ -206,10 +208,10 @@ var searchIconDragger = (function makeSearchIconDragger() {
 		$('.corner.right .textInput').css(fade).css({ opacity:0 })
 		// $('.corner.right .resultsBox').css({ opacity:0 })
 		$('.corner.right').css(animate).css({
+			// width:cornerSize.width,
 			height:cornerSize.height,
-			'-webkit-transform':'translate3d('+(viewport.width()-cornerSize.width)+'px,0,0)',
 			borderRadius:rightCornerRadius
-		})
+		}).css(translate(viewport.width()-cornerSize.width-cornersOffset, cornersOffset+statusBarHeight))
 		setTimeout(function(duration) {
 			$('.corner.right').css({ width:cornerSize.width })
 			$('.corner.right .searchUI').remove()
@@ -234,9 +236,9 @@ var searchIconDragger = (function makeSearchIconDragger() {
 			}
 		},
 		move:function(pos) {
-			var offset = clip(viewport.width() - currentCornerSize.width + pos.distance.x, 0, viewport.width() - cornerSize.width)
-			var width = clip(currentCornerSize.width - pos.distance.x, cornerSize.width, viewport.width())
-			$('.corner.right').css(translate.x(offset, 0)).css({ width:width })
+			var offset = clip(maxCornerSize.width - currentCornerSize.width + pos.distance.x, cornersOffset, maxCornerSize.width - cornerSize.width - cornersOffset)
+			var width = clip(currentCornerSize.width - pos.distance.x, cornerSize.width, maxCornerSize.width)
+			$('.corner.right').css(translate(offset, cornersOffset + statusBarHeight, 0)).css({ width:width })
 			// $('.corner.right .textInput').css({ width:clip(-pos.distance.x - margin * 2, 0, maxTextInputWidth) })
 			// $('.corner.right .resultsBox').css({ width:clip(-pos.distance.x + cornerSize.width - margin * 2, cornerSize.width - margin * 2, maxResultsBoxWidth) })
 		},

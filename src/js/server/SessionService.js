@@ -18,12 +18,12 @@ var redis = makeRedisClient()
 function createSession(req, fbAccessToken, callback) {
 	if (fbAccessToken) {
 		req.timer.start('get /me from facebook')
-		facebook.get('/me', { access_token:fbAccessToken }, function(err, fbAccount) {
+		facebook.get('/me?fields=id,name,birthday', { access_token:fbAccessToken }, function(err, fbAccount) {
 			req.timer.stop('get /me from facebook')
 			if (err) { return logError(err, callback, '_handleFacebookAccount', fbAccessToken) }
 			if (!fbAccount) { return logError('Facebook did not return information for user', callback, { fbAccessToken:fbAccessToken }) }
 			req.timer.start('lookupOrCreateByFacebookAccount')
-			accountService.lookupOrCreateByFacebookAccount(req, fbAccount, fbAccessToken, function(err, person) {
+			accountService.lookupOrCreatePersonByFacebookAccount(fbAccount, function(err, person) {
 				req.timer.stop('lookupOrCreateByFacebookAccount')
 				if (err) { return logError(err, callback, 'createSession.lookupOrCreateByFacebookAccount', person) }
 				req.timer.start('createSessionForPersonId')
@@ -79,8 +79,9 @@ function authenticateRequest(req, callback) {
 		return callback('Error parsing auth: '+ req.authorization)
 	}
 	
-	redis.get('sess:'+authToken, function(err, personId) {
+	redis.get('sess:'+authToken, function(err, personIdStr) {
 		if (err) { return callback(err) }
+		var personId = personIdStr && parseInt(personIdStr)
 		if (!personId) { return callback('Unauthorized') }
 		callback(null, personId)
 	})

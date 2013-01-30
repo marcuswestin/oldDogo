@@ -18,7 +18,7 @@ error = function(err) {
 	})
 	if (requestIds) {
 		var facebookRequestId = requestIds.split(',').pop()
-		api.connect({ facebookRequestId:facebookRequestId }, function(err, res) {
+		api.createSession({ facebookRequestId:facebookRequestId }, function(err, res) {
 			if (err) { return error(err) }
 			api.get('api/facebookCanvas/conversation', { facebookRequestId:facebookRequestId }, function(err, res) {
 				if (err) { return error(err) }

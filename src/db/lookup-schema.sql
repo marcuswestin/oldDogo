@@ -1,17 +1,20 @@
-CREATE TABLE personEmail (
-	personId BIGINT UNSIGNED NOT NULL,
-	emailAddress VARCHAR(255) NOT NULL,
-	createdTime INT UNSIGNED NOT NULL,
-	PRIMARY KEY (emailAddress),
-	KEY keyPersonId (personId)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+-- CREATE TABLE personEmail (
+-- 	personId BIGINT UNSIGNED NOT NULL,
+-- 	emailAddress VARCHAR(255) NOT NULL,
+-- 	createdTime INT UNSIGNED NOT NULL,
+-- 	PRIMARY KEY (emailAddress),
+-- 	KEY keyPersonId (personId)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE TABLE personFacebook (
-	personId BIGINT UNSIGNED NOT NULL,
-	facebookId BIGINT UNSIGNED NOT NULL,
+CREATE TABLE addressLookup (
+	type TINYINT UNSIGNED NOT NULL,
+	address VARCHAR(255) NOT NULL,
+	personId BIGINT UNSIGNED DEFAULT NULL,
+	name VARCHAR(255) NOT NULL,
+	conversationIdsJson VARCHAR(1024) DEFAULT NULL,
 	createdTime INT UNSIGNED NOT NULL,
-	PRIMARY KEY (facebookId),
-	UNIQUE KEY keyPersonId (personId)
+	claimedTime INT UNSIGNED DEFAULT NULL,
+	PRIMARY KEY (type, address)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- CREATE TABLE personPhone (

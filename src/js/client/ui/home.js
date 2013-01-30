@@ -1,5 +1,5 @@
 var conversation = require('./conversation')
-var conversations = require('../conversations')
+var Conversations = require('../conversations')
 var time = require('std/time')
 var hsvToRgb = require('client/colors/hsvToRgb')
 var payloads = require('data/payloads')
@@ -9,8 +9,7 @@ var rand = require('std/rand')
 var flatten = require('std/flatten')
 
 function getConversationId(conv) {
-	var conversationId = (conv.conversationId || conv)
-	return 'home-conversation-'+conversationId
+	return 'home-conversation-'+(conv.participationId || conv)
 }
 
 var conversationsList
@@ -19,7 +18,7 @@ module.exports = {
 	render:function() {
 		var drewLoading = false
 		setTimeout(function() {
-			conversations.load(function(conversations) {
+			Conversations.load(function(conversations) {
 				conversationsList.append(getInitialConversations(conversations))
 				// setTimeout(function() { conversations && conversations[0] && selectConversation(conversations[0]) }) // AUTOS
 			})
@@ -47,7 +46,7 @@ module.exports = {
 	}
 }
 
-var summaryMessageHeights = {
+var cardMessageHeights = {
 	'picture':106,
 	'audio':39,
 	'text':39
@@ -84,11 +83,10 @@ var colorSeries = (function(){
 }())
 
 function getCollageBackground(width, conversation) {
-	var summary = conversation.summary
-	var recent = summary.recent || []
-	var pictures = summary.pictures || []
+	var recent = conversation.recent
+	var pictures = conversation.pictures
 	var collageHeight = !recent.length ? 148 : 94 + sum(recent, function getMessageHeight(message) {
-		return summaryMessageHeights[message.type]
+		return cardMessageHeights[message.type]
 	})
 	
 	var cardRect = [0, 0, width, collageHeight]
@@ -105,8 +103,8 @@ function getCollageBackground(width, conversation) {
 	
 	var rects = divideRect(halves[0], otherAxis, numFirstHalf).concat(divideRect(halves[1], otherAxis, numSecondHalf))
 	
-	var picUrls = map(pictures, function(summaryPic) {
-		return payloads.url(summaryPic.conversationId, summaryPic.payload.secret, 'picture')
+	var picUrls = map(pictures, function(cardPic) {
+		return payloads.url(cardPic.conversationId, cardPic.payload.secret, 'picture')
 	})
 	
 	var contents = picUrls.concat(map(new Array(clip(numRects - pictures.length, 0, numRects)), function() {
@@ -149,22 +147,21 @@ function getCollageBackground(width, conversation) {
 }
 
 function renderCard(conversation) {
-	var recent = conversation.summary.recent || []
+	var recent = conversation.recent
 	return div('card',
 		// div('gradient'),
 		getCollageBackground(310, conversation),
 		div('person',
-			face(conversation.summary.people[0], { size:80 })
+			face(conversation.people[0], { size:80 })
 		),
 		// http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
 		// style({ background:'rgb('+map(hsvToRgb([(Math.random() + 0.618033988749895) % 1, 0.03, 0.95]), Math.round)+')' }),
-		div('summary', renderSummary(conversation)),
+		div('recent', renderRecent(conversation)),
 		div('highlights')
 	)
 	
-	function renderSummary(convo) {
+	function renderRecent(convo) {
 		var hasUnread = convo.lastReceivedTime > convo.lastReadTime
-		var summary = convo.summary
 		
 		var currentConvo = gScroller.current().conversation
 		if (currentConvo && currentConvo.conversationId == conversation.conversationId) {
@@ -192,9 +189,9 @@ function renderCard(conversation) {
 				}),
 				hasUnread && div('unreadDot', icon('icon-unreadDot', 14, 14))
 			),
-			renderName(summary.people[0]),
+			renderName(convo.people[0]),
 			map(recent, function(message) {
-				return div('lastMessage',
+				return div('recentMessage',
 					div('body', gRenderMessageBubble(message, conversation, {
 						dynamics:false,
 						face:28,
@@ -207,7 +204,7 @@ function renderCard(conversation) {
 			]
 		} else {
 			return [
-				renderName(summary.people[0]),
+				renderName(convo.people[0]),
 				div('info', 'Start the conversation')
 			]
 		}
@@ -246,7 +243,7 @@ function getInitialConversations(conversations) {
 }
 
 function reloadConversations() {
-	conversations.refresh(function(err, conversations) {
+	Conversations.fetch(function(err, conversations) {
 		if (err) { return error(err) }
 		if (conversationsList.isEmpty()) {
 			// first time load
