@@ -20,6 +20,7 @@ a = tags('a')
 input = tags('input')
 img = tags('img')
 canvas = tags('canvas')
+label = tags('label')
 
 translate = style.translate
 transition = style.transition

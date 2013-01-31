@@ -6,6 +6,9 @@ var Conversations = require('client/conversations')
 module.exports = function renderFirstStep(view) {
 	var welcomeDuration = 50
 	
+	// setTimeout(_emailConnect, 500)
+	setTimeout(_phoneNumberConnect, 500)
+	
 	return div({ id:'connectUI1' },
 		delayed(welcomeDuration * 2, function($el) {
 			$('#connectUI1').append(div(_fadeIn,
@@ -33,14 +36,12 @@ module.exports = function renderFirstStep(view) {
 	}	
 }
 
-setTimeout(_emailConnect, 500)
-
 function _emailConnect() {
-	gScroller.push({ step:'enterAddress', type:'email' })
+	gScroller.push({ step:'enterAddress', addressType:'email' })
 }
 
 function _phoneNumberConnect() {
-	gScroller.push({ step:'enterAddress', type:'phone' })
+	gScroller.push({ step:'enterAddress', addressType:'phone' })
 }
 
 var _facebookSession = null

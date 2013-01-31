@@ -33,7 +33,7 @@ module.exports = {
 		}
 		
 		function renderView(view) {
-			return div(style({ marginTop:300 }), _pickViewContent())
+			return div(style({ marginTop:300 }), div('stepView', _pickViewContent()))
 			function _pickViewContent() {
 				switch (view.step) {
 					case 'first': return renderFirstStep(view)
