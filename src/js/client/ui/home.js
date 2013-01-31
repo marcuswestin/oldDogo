@@ -1,5 +1,4 @@
-var conversation = require('./conversation')
-var Conversations = require('../conversations')
+var Conversations = require('client/conversations')
 var time = require('std/time')
 var hsvToRgb = require('client/colors/hsvToRgb')
 var payloads = require('data/payloads')

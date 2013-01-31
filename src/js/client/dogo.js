@@ -42,9 +42,9 @@ error.handler = function(err, res) {
 	if (err) { error(err) }
 }
 
-var connect = require('./ui/connect')
-var appScroller = require('./ui/appScroller')
-var browserModeSetup = require('./browser/setup')
+var connect = require('client/ui/connect/connect')
+var appScroller = require('client/ui/appScroller')
+var browserModeSetup = require('client/browser/setup')
 
 gAppInfo = {}
 
