@@ -24,3 +24,5 @@ canvas = tags('canvas')
 translate = style.translate
 transition = style.transition
 scrollable = style.scrollable
+
+absolute = function(left, top) { return { position:'absolute', left:left, top:top } }
