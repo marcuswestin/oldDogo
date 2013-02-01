@@ -13,7 +13,7 @@ module.exports = {
 	s3: {
 		bucket:'dogo-test',
 		accessKeyId:'AKIAJDUJ4DPW4DE7552Q',
-		secretAccessKey:'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'
+		accessKeySecret:'GGmu7dUQBRjGEUdoglQ4GQCR/pET92lFgJjpJN8l'
 	},
 	push: {
 		certData: null,

@@ -13,7 +13,7 @@ module.exports = {
 	s3: {
 		bucket:'dogo-prod',
 		accessKeyId:'AKIAJDUJ4DPW4DE7552Q',
-		secretAccessKey:'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'
+		accessKeySecret:'GGmu7dUQBRjGEUdoglQ4GQCR/pET92lFgJjpJN8l'
 	},
 	push: {
 		certData:fs.readFileSync(__dirname + '/cert.pem'),

@@ -14,7 +14,7 @@ module.exports = {
 }
 
 function makeS3(s3conf) {
-	return require('aws2js').load('s3', s3conf.accessKeyId, s3conf.secretAccessKey)
+	return require('aws2js').load('s3', s3conf.accessKeyId, s3conf.accessKeySecret)
 }
 
 function makeDatabase(dbConf) {

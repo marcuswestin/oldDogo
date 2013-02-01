@@ -14,7 +14,7 @@ var s3 = null
 var s3PersmissionAcl = 'public-read'
 function configure(s3conf) {
 	payloads.bucket = s3conf.bucket
-	s3 = aws2js.load('s3', s3conf.accessKeyId, s3conf.secretAccessKey)
+	s3 = aws2js.load('s3', s3conf.accessKeyId, s3conf.accessKeySecret)
 	s3.setBucket(s3conf.bucket)
 }
 
