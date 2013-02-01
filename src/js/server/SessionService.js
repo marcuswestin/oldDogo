@@ -7,13 +7,14 @@ var accountService = require('server/AccountService')
 var db = require('server/Database')
 var payloads = require('data/payloads')
 
+var redis = makeRedisClient()
+
 module.exports = {
 	createSession:createSession,
 	createSessionForPersonId:createSessionForPersonId, // used by create-session.js utility script
-	authenticateRequest:authenticateRequest
+	authenticateRequest:authenticateRequest,
+	redis:redis
 }
-
-var redis = makeRedisClient()
 
 function createSession(req, fbAccessToken, callback) {
 	if (fbAccessToken) {
@@ -91,7 +92,7 @@ function authenticateRequest(req, callback) {
 
 function createSessionForPersonId(personId, callback) {
 	var authToken = uuid.v4(),
-		expiration = 1 * time.day
+		expiration = (1 * time.day) / time.seconds
 	
 	redis.setex('sess:'+authToken, expiration, personId, function(err) {
 		if (err) { return callback(err) }

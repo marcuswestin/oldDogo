@@ -18,6 +18,7 @@ var messageService = require('server/MessageService')
 var sessionService = require('server/SessionService')
 var payloadService = require('server/payloadService')
 var arrayToObject = require('std/arrayToObject')
+var uuid = require('uuid')
 
 toobusy.maxLag(60) // ms, less than default value 70
 
@@ -212,6 +213,53 @@ function setupRoutes(app, opts) {
 	})
 	app.get('/api/ping', function(req, res) {
 		res.end('"Dogo!"')
+	})
+	app.post('/api/address', filters.oldClients, function postAddress(req, res) {
+		var config = require('server/config/dev/devConfig')
+		var ses = require('aws2js').load('ses', config.s3.accessKeyId, config.s3.accessKeySecret)
+		var Addresses = require('data/Addresses')
+		var params = getJsonParams(req, 'addressType', 'address')
+		var type = Addresses.types[params.addressType]
+		var address = params.address
+		var time = require('std/time')
+		var expiration = (10 * require('std/time').minutes) / time.seconds
+		var callback = curry(respond, req, res)
+		parallel(_createVerification, _lookupPerson, function(err, secret, lookupInfo) {
+			if (err) { return callback(err) }
+			if (lookupInfo) {
+				// scrub
+				lookupInfo = { name:lookupInfo.name, personId:lookupInfo.personId }
+			}
+			var response = { expiration:expiration, lookupInfo:lookupInfo }
+			if (opts.dev) { response.devSecret = secret }
+			callback(null, response)
+		})
+		function _createVerification(proceed) {
+			var secret = uuid.v4()
+			sessionService.redis.setex('verify:'+secret, expiration, type+':'+params.address, function(err) {
+				if (err) { return proceed(err) }
+				var link = 'http://dogo.co/i?s='+encodeURIComponent(secret)
+				var args = {
+					'Destination.ToAddresses.member.1': params.address,
+					'Message.Body.Text.Charset': 'UTF-8',
+					'Message.Body.Text.Data': 'Hello text body!',
+					'Message.Body.Html.Charset': 'UTF-8',
+					'Message.Body.Html.Data': 'Welcome to Dogo! <br><br>Please click: <a href="'+link+'">'+link+'</a>',
+					'Message.Subject.Charset': 'UTF-8',
+					'Message.Subject.Data': 'Test subject',
+					'Source': 'welcome@dogo.co'
+				}
+				ses.request('SendEmail', args, function(err, res) {
+					if (err) { return proceed('I was unable to send an email to ' + params.address) }
+					proceed(null, secret)
+				})
+			})
+		}
+		function _lookupPerson(proceed) {
+			require('server/lookupService').lookupPerson({ type:type, address:address }, function(err, personId, lookupInfo) {
+				proceed(lookupInfo)
+			})
+		}
 	})
 	app.post('/api/session', filters.oldClients, function postSession(req, res) {
 		var params = getJsonParams(req, 'facebookAccessToken', 'facebookRequestId')

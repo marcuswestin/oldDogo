@@ -6,8 +6,8 @@ var Conversations = require('client/conversations')
 module.exports = function renderFirstStep(view) {
 	var welcomeDuration = 50
 	
-	// setTimeout(_emailConnect, 500)
-	setTimeout(_phoneNumberConnect, 500)
+	setTimeout(_emailConnect, 150)
+	// setTimeout(_phoneNumberConnect, 150)
 	
 	return div({ id:'connectUI1' },
 		delayed(welcomeDuration * 2, function($el) {

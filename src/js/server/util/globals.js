@@ -11,6 +11,7 @@ _ = require('underscore')
 filter = require('std/filter')
 asyncMap = require('std/asyncMap')
 asyncEach = require('std/asyncEach')
+parallel = require('std/parallel')
 
 ListPromise = require('std/ListPromise')
 
