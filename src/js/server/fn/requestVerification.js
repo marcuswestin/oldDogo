@@ -10,7 +10,7 @@ module.exports = function requestVerification(name, color, email, password, call
 		password.createHash(password, function(err, passwordHash) {
 			if (err) { return callback(err) }
 			var token = uuid.v4()
-			var sql = 'INSERT INTO addressVerification SET token=?, passwordHash=?, name=?, color=?, address=?, addressType=?, createdTime=?'
+			var sql = 'INSERT INTO addressVerification SET token=?, passwordHash=?, name=?, color=?, addressId=?, addressType=?, createdTime=?'
 			db.lookup().insert(sql, [token, passwordHash, name, color, email, Addresses.types.email, db.time()], function(err, verificationId) {
 				if (err) { return callback(err) }
 				var url = 'https://dogoapp.com/v?i='+verificationId+'&t='+token

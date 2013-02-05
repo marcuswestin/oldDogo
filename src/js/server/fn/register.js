@@ -4,13 +4,13 @@ module.exports = {
 }
 
 function registerWithAddressToken(verificationId, verificationToken, password, callback) {
-	parallel(_lookupAddress, _getMatchingVerification, function(err, addrInfo, verification) {
+	parallel(_lookupAddress, _getMatchingVerification, function(err, addrInfo, verInfo) {
 		if (err) { return callback(err) }
-		var addresses = [{ address:verificationInfo.address, type:verificationInfo.type }]
+		var addresses = [{ addressId:verInfo.addressId, addressType:verInfo.addressType }]
 		return callback("TODO Create picture URL")
-		createPersonWithVerifiedAddresses(regInfo.name, regInfo.color, regInfo.passwordHash, {}, addresses, pictureUrl, function(err, personRes) {
+		createPersonWithVerifiedAddresses(verInfo.name, verInfo.color, verInfo.passwordHash, {}, addresses, pictureUrl, function(err, personRes) {
 			if (err) { return callback(err) }
-			db.lookup().updateOne('UPDATE addressVerification SET usedTime=? WHERE id=?', [db.time(), verificatioId], function(err) {
+			db.lookup().updateOne('UPDATE addressVerification SET usedTime=? WHERE verificationId=?', [db.time(), verInfo.verificationId], function(err) {
 				callback(err, personRes)
 			})
 		})
@@ -24,7 +24,7 @@ function registerWithAddressToken(verificationId, verificationToken, password, c
 		})
 	}
 	function _getMatchingVerification(callback) {
-		var sql = 'SELECT id, address, addressType, passwordHash, color, name, token, createdTime, usedTime FROM addressVerification WHERE id=? AND token=?'
+		var sql = 'SELECT verificationId, addressId, addressType, passwordHash, color, name, token, createdTime, usedTime FROM addressVerification WHERE id=? AND token=?'
 		db.lookup().selectOne(sql, [verificationId, verificationToken], function(err, verification) {
 			if (err) { return callback(err) }
 			if (verification.usedTime) { return callback('Sorry, this verification link has already been used') }
@@ -51,7 +51,7 @@ function registerWithFacebook(name, color, email, password, fbSession, callback)
 			return callback('Hmm... That email is not right. Are you trying to trick us? Why not join forces instead, ping us at jobs@dogo.co')
 		}
 		var pictureUrl = 'http://graph.facebook.com/'+fbAccount.id+'/picture?type=large'
-		var addresses = [{ type:Addresses.types.email, address:email }, { type:Addresses.types.facebook, address:fbAccount.id }]
+		var addresses = [{ addressType:Addresses.types.email, addressId:email }, { addressType:Addresses.types.facebook, addressId:fbAccount.id }]
 		var opts = { birthdate:_getFbAccBirthdate(fbAccount.birthday), locale:fbAccount.locale, gender:fbAccount.gender, facebookId:fbAccount.id }
 		createPersonWithVerifiedAddresses(name, color, passwordHash, opts, addresses, pictureUrl, callback)
 	})
@@ -104,7 +104,7 @@ function createPersonWithVerifiedAddresses(name, color, passwordHash, opts, addr
 			iterate:function(address, next) {
 				lookupService.lookup(address, function(err, personId, addrInfo) {
 					if (err) { return next(err) }
-					if (personId) { return next(addrInfo.address+' is already in use by another person.') }
+					if (personId) { return next(address.addressId+' is already in use by another person.') }
 					if (addrInfo) { return next(null, addrInfo) }
 					address.isNewAddress = true
 					next(null, address)

@@ -29,10 +29,10 @@ face.style = function(person, opts) {
 	}
 }
 
-function getUrl(person, pixelSize) {
-	if (person.personId) {
-		return payloads.personPictureUrl(person.personId)
-	} else if (Addresses.isFacebook(person)) {
-		return 'http://graph.facebook.com/'+person.address+'/picture'+(pixelSize > 50 ? '?type=large' : '')
+function getUrl(address, pixelSize) {
+	if (address.personId) {
+		return payloads.personPictureUrl(address.personId)
+	} else if (Addresses.isFacebook(address)) {
+		return 'http://graph.facebook.com/'+address.addressId+'/picture'+(pixelSize > 50 ? '?type=large' : '')
 	}
 }

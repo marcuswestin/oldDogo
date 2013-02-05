@@ -29,7 +29,7 @@ function checkName(name) {
 }
 
 function checkEmail(email) {
-	if (!Addresses.verifyFormat('email', email)) {
+	if (!Addresses.verifyFormat({ addressType:'email', addressId:email })) {
 		return 'Check your email address.'
 	}
 }

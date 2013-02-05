@@ -26,10 +26,10 @@ function isPhone(type) { return isType(type, 'phone') }
 
 /* Address format checks.
  ************************/
-function verifyFormat(type, address) {
-	if (isEmail(type)) { return verifyEmailFormat(address) }
-	if (isFacebook(type)) { return verifyFacebookFormat(address) }
-	if (isPhone(type)) { return verifyPhoneFormat(address) }
+function verifyFormat(address) {
+	if (isEmail(address)) { return verifyEmailFormat(address) }
+	if (isFacebook(address)) { return verifyFacebookFormat(address) }
+	if (isPhone(address)) { return verifyPhoneFormat(address) }
 }
 
 var domainRegex = /^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}$/

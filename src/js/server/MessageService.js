@@ -156,7 +156,7 @@ function _createConversation(personId, participation, callback) {
 								lookupService.updateAddressInfo(lookupInfo, next)
 							} else {
 								var person = info.person
-								var addrInfo = { type:person.type, address:person.address, name:person.name, conversationIds:[conversationId] }
+								var addrInfo = { addressType:person.addressType, addressId:person.addressId, name:person.name, conversationIds:[conversationId] }
 								lookupService.addUnclaimedAddress(addrInfo, next)
 							}
 						}

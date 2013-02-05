@@ -1,11 +1,5 @@
 var delayed = require('std/delayed')
 var renderWelcome = require('client/ui/connect/renderWelcome')
-var renderEnterPersonInfo = require('client/ui/connect/renderEnterPersonInfo')
-var renderEnterAddress = require('client/ui/connect/renderEnterAddress')
-var renderLinkSent = require('client/ui/connect/renderLinkSent')
-var renderLinkClicked = require('client/ui/connect/renderLinkClicked')
-var renderAddFriends = require('client/ui/connect/renderAddFriends')
-var renderPushNotifications = require('client/ui/connect/renderPushNotifications')
 var renderLogin = require('client/ui/connect/renderLogin')
 var renderRegister = require('client/ui/connect/renderRegister')
 
@@ -51,13 +45,6 @@ module.exports = {
 					case 'welcome': return renderWelcome(view)
 					case 'register': return renderRegister(view)
 					case 'login': return renderLogin(view)
-					
-					case 'enterAddress': return renderEnterAddress(view)
-					case 'enterPersonInfo': return renderEnterPersonInfo(view)
-					case 'linkSent': return renderLinkSent(view)
-					case 'linkClicked': return renderLinkClicked(view)
-					case 'addFriends': return renderAddFriends(view)
-					case 'pushNotifications': return renderPushNotifications(view, onDone)
 					default: return ['Unknown view', JSON.stringify(view)]
 				}
 			}

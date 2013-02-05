@@ -5,9 +5,6 @@ var Conversations = require('client/conversations')
 module.exports = function renderWelcome(view) {
 	var welcomeDuration = 50
 	
-	// setTimeout(_emailConnect, 150) // AUTOS
-	// setTimeout(_phoneNumberConnect, 150) // AUTOS
-	
 	return div({ id:'connectUI1' },
 		delayed(welcomeDuration * 2, function($el) {
 			$('#connectUI1').append(div(_fadeIn,
@@ -32,14 +29,6 @@ module.exports = function renderWelcome(view) {
 	function _renderLogoName() {
 		return div(icon('logoName', 56, 24), style({ display:'inline-block', marginTop:-6 }), style(translate.y(7)))
 	}	
-}
-
-function _emailConnect() {
-	gScroller.push({ step:'enterAddress', addressType:'email' })
-}
-
-function _phoneNumberConnect() {
-	gScroller.push({ step:'enterAddress', addressType:'phone' })
 }
 
 var _facebookSession = null
@@ -96,7 +85,7 @@ function _facebookConnect() {
 				})
 				
 				var newAddresses = map(friendsByFbId, function(fbFriend) {
-					return { type:Addresses.types.facebook, address:fbFriend.id, name:fbFriend.name }
+					return { addressType:Addresses.types.facebook, addressId:fbFriend.id, name:fbFriend.name }
 				})
 				
 				newAddresses = newAddresses.slice(0,10) // for testing

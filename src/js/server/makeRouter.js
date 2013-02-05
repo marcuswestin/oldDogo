@@ -11,6 +11,7 @@ var setPushAuth = require('server/fn/setPushAuth')
 var getConversations = require('server/fn/getConversations')
 var addAddresses = require('server/fn/addAddresses')
 var sendEmail = require('server/fn/sendEmail')
+var createSession = require('server/fn/createSession')
 
 var log = makeLog('Router')
 
@@ -208,52 +209,14 @@ function setupRoutes(app, opts) {
 	app.get('/api/ping', function(req, res) {
 		res.end('"Dogo!"')
 	})
-	app.post('/api/address', filters.oldClients, function postAddress(req, res) {
-		var config = require('server/config/dev/devConfig')
-		var ses = require('aws2js').load('ses', config.aws.accessKeyId, config.aws.accessKeySecret)
-		var params = getJsonParams(req, 'addressType', 'address')
-		var type = Addresses.types[params.addressType]
-		var address = params.address
-		var time = require('std/time')
-		var expiration = (10 * require('std/time').minutes) / time.seconds
-		var callback = curry(respond, req, res)
-		parallel(_createVerification, _lookupPerson, function(err, secret, lookupInfo) {
-			if (err) { return callback(err) }
-			if (lookupInfo) {
-				// scrub
-				lookupInfo = { name:lookupInfo.name, personId:lookupInfo.personId }
-			}
-			var response = { expiration:expiration, lookupInfo:lookupInfo }
-			if (opts.dev) { response.devSecret = secret }
-			callback(null, response)
-		})
-		function _createVerification(proceed) {
-			sessionService.redis.setex('verify:'+secret, expiration, type+':'+params.address, function(err) {
-				if (err) { return proceed(err) }
-				var secret = uuid.v4()
-				var url = 'http://dogo.co/i?s='+encodeURIComponent(secret)
-				var html = 'Welcome to Dogo! <br><br>Please click: <a href="'+link+'">'+link+'</a>'
-				var text = 'Welcome to Dogo! \n\nPlease click: '+url
-				sendEmail('welcome@dogo.com', params.address, 'Welcome to Dogo!', html, text, function(err, res) {
-					if (err) { return proceed('I was unable to send an email to ' + params.address) }
-					proceed(null, secret)
-				})
-			})
-		}
-		function _lookupPerson(proceed) {
-			require('server/lookupService').lookup({ type:type, address:address }, function(err, personId, lookupInfo) {
-				proceed(lookupInfo)
-			})
-		}
-	})
-	app.post('/api/register', filters.oldClients, function postRegister(req, res) {
-		var params = getJsonParams(req, 'name', 'color', 'email', 'password', 'fbSession')
-		accountService.register(name, color, email, password, fbSession, curry(respond, req, res))
-	})
-	app.post('/api/session', filters.oldClients, function postSession(req, res) {
-		var params = getJsonParams(req, 'username', 'password')
+	// app.post('/api/register', filters.oldClients, function postRegister(req, res) {
+	// 	var params = getJsonParams(req, 'name', 'color', 'email', 'password', 'fbSession')
+	// 	accountService.register(name, color, email, password, fbSession, curry(respond, req, res))
+	// })
+	app.post('/api/login', filters.oldClients, function postSession(req, res) {
+		var params = getJsonParams(req, 'address', 'password')
 		if (params.facebookRequestId) { return respond(req, res, "Sessions for facebook requests is not ready yet. Sorry!") }
-		sessionService.createSession(req, params.username, params.password, curry(respond, req, res))
+		createSession(req, params.address, params.password, curry(respond, req, res))
 	})
 	app.get('/api/conversations', filters.oldClientsAndSession, function getConversations(req, res) {
 		getUrlParams(req) // for logging
