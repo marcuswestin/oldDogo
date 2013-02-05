@@ -1,27 +1,23 @@
 var request = require('request')
 
-var sms = module.exports = {
-	setConfig:setConfig,
-	send:send,
-	alertAdmin:alertAdmin
-}
+module.exports = sendSms
+sendSms.configure = configure
+sendSms.alertAdmin = alertAdmin
 
 var url = null
 var from = null
-function setConfig(conf) {
+function configure(conf) {
 	if (conf.disabled) { return }
 	url = 'https://'+conf.accountSid+':'+conf.authToken+'@api.twilio.com/2010-04-01/Accounts/'+conf.accountSid+'/SMS/Messages.json'
 	from = conf.from
 }
 
 function alertAdmin(text) {
-	sms.send('+14156015654', text)
+	sendSms('+14156015654', text)
 }
 
-function send(to, text, callback) {
-	if (!url) {
-		return
-	}
+function sendSms(to, text, callback) {
+	if (!url) { return }
 	var params = { From:from, To:to, Body:text }
 	request.post({ url:url, form:params }, function(err, res) {
 		// if (err) { log.error("Error sending SMS", err) }

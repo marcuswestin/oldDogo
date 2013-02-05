@@ -1,7 +1,7 @@
 var aws2js = require('aws2js')
-var knox = require('knox')
 var uuid = require('uuid')
 var payloads = require('data/payloads')
+
 var log = makeLog('payloadService')
 
 module.exports = {

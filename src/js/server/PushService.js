@@ -3,7 +3,6 @@ var log = makeLog('PushService')
 var push = require('data/push')
 var devConfig = require('server/config/dev/devConfig').push
 var prodConfig = require('server/config/prod/prodConfig').push
-var db = require('server/Database')
 
 module.exports = {
 	sendMessagePush:sendMessagePush

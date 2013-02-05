@@ -2,11 +2,9 @@ var trim = require('std/trim')
 var uuid = require('uuid')
 var Messages = require('data/Messages')
 var pushService = require('server/PushService')
-var db = require('server/Database')
 var payloadService = require('server/payloadService')
 var parallel = require('std/parallel')
 var lookupService = require('server/lookupService')
-var accountService = require('server/AccountService')
 var log = makeLog('MessageService')
 
 module.exports = {
@@ -86,7 +84,7 @@ function _createConversation(personId, participation, callback) {
 				dogoPeople.push(person)
 				next()
 			} else {
-				lookupService.lookupPerson(person, function(err, lookupPersonId, lookupInfo) {
+				lookupService.lookup(person, function(err, lookupPersonId, lookupInfo) {
 					if (err) { return next(err) }
 					if (lookupPersonId) {
 						dogoPeople.push({ personId:lookupPersonId, name:lookupInfo.name })
@@ -155,7 +153,7 @@ function _createConversation(personId, participation, callback) {
 								var lookupInfo = info.lookupInfo
 								if (!lookupInfo.name) { lookupInfo.name = person.name }
 								lookupInfo.conversationIds.push(conversationId)
-								lookupService.updateAddress(lookupInfo, next)
+								lookupService.updateAddressInfo(lookupInfo, next)
 							} else {
 								var person = info.person
 								var addrInfo = { type:person.type, address:person.address, name:person.name, conversationIds:[conversationId] }
@@ -316,7 +314,6 @@ function _selectMessages(conversationId, callback) {
 
 	function _decodeMessage(message) {
 		message.type = Messages.types.reverse[message.type]
-		message.payload = JSON.parse(message.payloadJson)
-		delete message.payloadJson
+		message.payload = JSON.parse(remove(message, 'payloadJson'))
 	}
 }

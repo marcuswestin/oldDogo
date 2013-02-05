@@ -1,4 +1,4 @@
-require('../server/util/globals')
+require('server/globals')
 
 var SessionService = require('../server/SessionService')
 

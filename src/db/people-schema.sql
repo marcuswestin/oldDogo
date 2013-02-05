@@ -1,25 +1,22 @@
 CREATE TABLE person (
 	-- personal info
 	personId BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-	timezone TINYINT SIGNED DEFAULT NULL,
 	locale CHAR(5) DEFAULT NULL,
 	name VARCHAR(255) DEFAULT NULL,
-	firstName VARCHAR(63) DEFAULT NULL,
-	lastName VARCHAR(63) DEFAULT NULL,
 	birthdate DATE DEFAULT NULL,
 	gender ENUM('male','female') DEFAULT NULL,
+	color TINYINT UNSIGNED NOT NULL,
 	-- addresses
 	facebookId BIGINT UNSIGNED DEFAULT NULL,
-	phoneNumbersJson VARCHAR(1024) NOT NULL DEFAULT "[]",
-	emailAddressesJson VARCHAR(1024) NOT NULL DEFAULT "[]",
+	phoneNumbersJson VARCHAR(1024) DEFAULT NULL,
+	emailAddressesJson VARCHAR(1024) DEFAULT NULL,
 	-- utility data
+	passwordHash VARCHAR(255) NOT NULL,
 	lastClientUidBlockStart BIGINT UNSIGNED NOT NULL DEFAULT 0,
 	lastClientUidBlockEnd BIGINT UNSIGNED NOT NULL DEFAULT 100000,
 	pushJson VARCHAR(1024) DEFAULT NULL,
 	-- times
-	createdTime INT UNSIGNED NOT NULL,
-	claimedTime INT UNSIGNED DEFAULT NULL,
-	waitlistedTime INT UNSIGNED DEFAULT NULL,
+	joinedTime INT UNSIGNED NOT NULL,
 	disabledTime INT UNSIGNED DEFAULT NULL,
 	PRIMARY KEY (personId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -38,27 +35,3 @@ CREATE TABLE participation (
 	UNIQUE KEY keyPersonIdConversationId (personId, conversationId),
 	FOREIGN KEY keyPersonId (personId) REFERENCES person(personId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- CREATE TABLE waitlistEvent (
--- 	waitlistEventId BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
--- 	personId BIGINT UNSIGNED NOT NULL,
--- 	userAgent VARCHAR(1024) DEFAULT NULL,
--- 	PRIMARY KEY (waitlistEventId)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- CREATE TABLE participationSecret (
--- 	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
--- 	participationId BIGINT UNSIGNED NOT NULL,
--- 	secret CHAR(36) NOT NULL,
--- 	createdTime INT UNSIGNED NOT NULL,
--- 	claimedTime INT UNSIGNED DEFAULT NULL,
--- 	PRIMARY KEY (id)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
--- 
--- CREATE TABLE facebook_request (
--- 	id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
--- 	facebookRequestId BIGINT UNSIGNED NOT NULL,
--- 	conversationSecretId BIGINT UNSIGNED NOT NULL,
--- 	UNIQUE KEY keyFacebookRequestId (facebookRequestId),
--- 	PRIMARY KEY (id)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

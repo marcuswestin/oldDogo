@@ -1,24 +1,18 @@
 var express = require('express')
 var toobusy = require('toobusy')
-var SessionService = require('./SessionService')
 var fs = require('fs')
 var path = require('path')
-var curry = require('std/curry')
-var slice = require('std/slice')
 var http = require('http')
 var semver = require('semver')
-var log = require('./util/log').makeLog('Router')
-var time = require('std/time')
-var sms = require('./sms')
-var filter = require('std/filter')
-var map = require('std/map')
-var database = require('server/Database')
-var accountService = require('server/AccountService')
-var messageService = require('server/MessageService')
-var sessionService = require('server/SessionService')
-var payloadService = require('server/payloadService')
-var arrayToObject = require('std/arrayToObject')
 var uuid = require('uuid')
+var messageService = require('server/MessageService')
+var payloadService = require('server/payloadService')
+var setPushAuth = require('server/fn/setPushAuth')
+var getConversations = require('server/fn/getConversations')
+var addAddresses = require('server/fn/addAddresses')
+var sendEmail = require('server/fn/sendEmail')
+
+var log = makeLog('Router')
 
 toobusy.maxLag(60) // ms, less than default value 70
 
@@ -177,15 +171,15 @@ function setupRoutes(app, opts) {
 		var params = getJsonParams(req, 'emailAddress')
 		accountService.lookupOrCreateByEmail(params.emailAddress, function(err, person) {
 			if (err) { return respond(req, res, err) }
-			database.insert('INSERT INTO waitlistEvent SET personId=?, userAgent=?', [person.personId, req.headers['user-agent']], function(err) {
+			db.insert('INSERT INTO waitlistEvent SET personId=?, userAgent=?', [person.personId, req.headers['user-agent']], function(err) {
 				if (err) { log.warn("COULD NOT INSERT WAITLIST EVENT", params.emailAddress, person.personId, req.headers)}
 			})
 			if (person.waitlistedTime) {
 				respond(req, res, null, { person:person, waitlistedSince:time.ago(person.waitlistedTime * time.seconds) })
 				log.alert('Repeat waitlister', params.emailAddress)
 			} else {
-				person.waitlistedTime = database.time()
-				database.updateOne('UPDATE person SET waitlistedTime=? WHERE personId=?', [person.waitlistedTime, person.personId], function(err) {
+				person.waitlistedTime = db.time()
+				db.updateOne('UPDATE person SET waitlistedTime=? WHERE personId=?', [person.waitlistedTime, person.personId], function(err) {
 					if (err) {
 						log.alert('Error creating new waitlister', params.emailAddress)
 						return respond(req, res, err)
@@ -235,46 +229,40 @@ function setupRoutes(app, opts) {
 			callback(null, response)
 		})
 		function _createVerification(proceed) {
-			var secret = uuid.v4()
 			sessionService.redis.setex('verify:'+secret, expiration, type+':'+params.address, function(err) {
 				if (err) { return proceed(err) }
-				var link = 'http://dogo.co/i?s='+encodeURIComponent(secret)
-				var args = {
-					'Destination.ToAddresses.member.1': params.address,
-					'Message.Body.Text.Charset': 'UTF-8',
-					'Message.Body.Text.Data': 'Hello text body!',
-					'Message.Body.Html.Charset': 'UTF-8',
-					'Message.Body.Html.Data': 'Welcome to Dogo! <br><br>Please click: <a href="'+link+'">'+link+'</a>',
-					'Message.Subject.Charset': 'UTF-8',
-					'Message.Subject.Data': 'Test subject',
-					'Source': 'welcome@dogo.co'
-				}
-				ses.request('SendEmail', args, function(err, res) {
+				var secret = uuid.v4()
+				var url = 'http://dogo.co/i?s='+encodeURIComponent(secret)
+				var html = 'Welcome to Dogo! <br><br>Please click: <a href="'+link+'">'+link+'</a>'
+				var text = 'Welcome to Dogo! \n\nPlease click: '+url
+				sendEmail('welcome@dogo.com', params.address, 'Welcome to Dogo!', html, text, function(err, res) {
 					if (err) { return proceed('I was unable to send an email to ' + params.address) }
 					proceed(null, secret)
 				})
 			})
 		}
 		function _lookupPerson(proceed) {
-			require('server/lookupService').lookupPerson({ type:type, address:address }, function(err, personId, lookupInfo) {
+			require('server/lookupService').lookup({ type:type, address:address }, function(err, personId, lookupInfo) {
 				proceed(lookupInfo)
 			})
 		}
 	})
+	app.post('/api/register', filters.oldClients, function postRegister(req, res) {
+		var params = getJsonParams(req, 'name', 'color', 'email', 'password', 'fbSession')
+		accountService.register(name, color, email, password, fbSession, curry(respond, req, res))
+	})
 	app.post('/api/session', filters.oldClients, function postSession(req, res) {
-		var params = getJsonParams(req, 'facebookAccessToken', 'facebookRequestId')
+		var params = getJsonParams(req, 'username', 'password')
 		if (params.facebookRequestId) { return respond(req, res, "Sessions for facebook requests is not ready yet. Sorry!") }
-		sessionService.createSession(req, params.facebookAccessToken, curry(respond, req, res))
+		sessionService.createSession(req, params.username, params.password, curry(respond, req, res))
 	})
 	app.get('/api/conversations', filters.oldClientsAndSession, function getConversations(req, res) {
-		var params = getUrlParams(req)
-		accountService.getConversations(req, function(err, conversations) {
-			respond(req, res, err, !err && { conversations:conversations })
-		})
+		getUrlParams(req) // for logging
+		getConversations(req, wrapRespond(req, res, 'conversations'))
 	})
 	app.post('/api/addresses', filters.oldClientsAndSession, function postAddresses(req, res) {
 		var params = getJsonParams(req, 'newAddresses')
-		accountService.addAddresses(req, params.newAddresses, curry(respond, req, res))
+		addAddresses(req, params.newAddresses, curry(respond, req, res))
 	})
 	app.post('/api/message', filters.oldClientsAndSession, function postMessage(req, res) {
 		var params = getMultipartParams(req, 'toParticipationId', 'clientUid', 'type', 'payload')
@@ -301,7 +289,7 @@ function setupRoutes(app, opts) {
 	})
 	app.post('/api/pushAuth', filters.oldClientsAndSession, function postPushAuth(req, res) {
 		var params = getJsonParams(req, 'pushToken', 'pushType')
-		accountService.setPushAuth(req.session.personId, params.pushToken, params.pushType,
+		setPushAuth(req.session.personId, params.pushToken, params.pushType,
 			curry(respond, req, res))
 	})
 	app.get('/api/version/info', filters.oldClientsAndSession, function getVersionInfo(req, res) {
@@ -424,7 +412,7 @@ function getJsonParams(req) {
 function _collectParams(args, collectFn) {
 	var params = {}
 	each(slice(args, 1), function(argName) {
-		params[argName] = collectFn(argName)
+		params[argName] = trim(collectFn(argName))
 	})
 	return params
 }
@@ -481,11 +469,12 @@ function respond(req, res, err, content, contentType) {
 		} else {
 			var stackError = new Error()
 			code = 500
-			content = err.stack || err.message || (err.toString && err.toString()) || err
+			content = err.stack || err.message || (err.args && err.args.join(' | ')) || (err.toString && err.toString()) || err
 			if (respond.log) {
 				var logBody = JSON.stringify(req.params)
 				if (logBody && logBody.length > 400) { logBody = logBody.substr(0, 400) + ' (......)' }
-				log.warn('error', content, req.url, logBody, stackError.stack)
+				if (err.alert) { log.alert.apply(this, err.args) }
+				log.warn(content, req.url, logBody, stackError.stack)
 			}
 		}
 		contentType = 'text/plain'
@@ -534,5 +523,3 @@ function respond(req, res, err, content, contentType) {
 	// TODO Start logging timing somewhere
 	// log(req.method, req.url, req.meta, req.timer && req.timer.report())
 }
-
-var utf8ContentTypes = arrayToObject(['text/html', 'text/plain', 'application/json'])

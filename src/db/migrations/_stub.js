@@ -1,9 +1,6 @@
-var util = require('./util')
+require('server/globals')
 var config = require('server/config/dev/devConfig')
-var db = util.makeDatabase(config.db)
-var sql = require('server/util/sql')
-var asyncEach = require('std/asyncEach')
-var log = require('server/util/log').makeLog('stub')
+db.config(config.db)
 
 getData(function(stuff) {
 	updateData(stuff, function() {

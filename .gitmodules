@@ -43,9 +43,6 @@
 [submodule "node_modules/aws2js"]
 	path = node_modules/aws2js
 	url = https://github.com/SaltwaterC/aws2js.git
-[submodule "node_modules/knox"]
-	path = node_modules/knox
-	url = https://github.com/LearnBoost/knox.git
 [submodule "node_modules/express"]
 	path = node_modules/express
 	url = https://github.com/visionmedia/express.git
@@ -79,3 +76,6 @@
 [submodule "node_modules/toobusy"]
 	path = node_modules/toobusy
 	url = git@github.com:FlutterbyLabs/node-toobusy.git
+[submodule "node_modules/bcrypt"]
+	path = node_modules/bcrypt
+	url = git://github.com/ncb000gt/node.bcrypt.js.git

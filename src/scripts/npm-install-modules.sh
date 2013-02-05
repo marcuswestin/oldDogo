@@ -1,4 +1,4 @@
-for npm_module in uuid mysql request optimist aws2js knox express color semver toobusy
+for npm_module in uuid mysql request optimist aws2js express color semver toobusy bcrypt
 do
 	echo "check npm install $npm_module"
 	if [ ! -f node_modules/$npm_module/.__npm_installed__ ]

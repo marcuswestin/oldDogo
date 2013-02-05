@@ -6,7 +6,7 @@ setup: setup-server setup-client reset-db
 # Run local server
 run: run-databases
 	# Run server with src/js in the node search path
-	${NODE} src/js/server/run.js --config=dev
+	${NODE} src/js/server/runServer.js --config=dev
 
 # Run all tests
 online = true
@@ -47,7 +47,7 @@ fly-dev: fly-build
 ######################
 # Run prod server
 run-prod:
-	${NODE} src/js/server/run.js --config=prod
+	${NODE} src/js/server/runServer.js --config=prod
 
 # Deploy dogo api server to prod
 push-api:
