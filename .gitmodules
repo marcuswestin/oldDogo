@@ -49,9 +49,6 @@
 [submodule "dependencies/blowtorch"]
 	path = dependencies/blowtorch
 	url = git@github.com:marcuswestin/blowtorch.git
-[submodule "node_modules/color"]
-	path = node_modules/color
-	url = https://github.com/harthur/color.git
 [submodule "node_modules/stylus"]
 	path = node_modules/stylus
 	url = https://github.com/LearnBoost/stylus.git
@@ -79,3 +76,6 @@
 [submodule "node_modules/bcrypt"]
 	path = node_modules/bcrypt
 	url = git://github.com/ncb000gt/node.bcrypt.js.git
+[submodule "node_modules/node-color"]
+	path = node_modules/node-color
+	url = git@github.com:marcuswestin/node-color.git

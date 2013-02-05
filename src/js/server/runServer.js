@@ -3,9 +3,9 @@ require('server/globals')
 var cluster = require('cluster')
 var log = makeLog('Run')
 
-gConfig = getConfig()
-if (cluster.isMaster) { runMaster(gConfig) }
-else { runServer(gConfig) }
+var config = getConfig()
+if (cluster.isMaster) { runMaster(config) }
+else { runServer(config) }
 
 function getConfig() {
 	var argv = require('optimist').argv
@@ -61,20 +61,5 @@ function runMaster(config) {
 
 function runServer(config) {
 	log('starting', process.pid)
-	var payloadService = require('server/payloadService')
-	var makeRouter = require('server/makeRouter')
-	var sendEmail = require('server/fn/sendEmail')
-	var sendSms = require('server/fn/sendSms')
-	
-	if (config.dev) {
-		require('server/util/log').enableDebugLoggin()
-	}
-	
-	db.configure(config.dbShards)
-	payloadService.configure(config.aws)
-	sendEmail.configure(config.aws)
-	sendSms.configure(config.twilio)
-	
-	var router = makeRouter({ log:config.log, dev:config.dev })
-	router.listen(config.port)
+	require('server/configureServer')(config)
 }

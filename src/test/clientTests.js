@@ -1,10 +1,3 @@
-var tinyTest = require('tinyTest/tinyTest')
-var describe = tinyTest.describe
-var then = tinyTest.then
-var is = tinyTest.is
-var waitFor = tinyTest.waitFor
-var tap = tinyTest.tap
-var count = tinyTest.count
 
 module.exports = {
 	runConnectTests:runConnectTests,
