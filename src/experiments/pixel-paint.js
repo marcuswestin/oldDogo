@@ -1,4 +1,6 @@
-require('./experiment-globals')
+require('client/globals')
+require('website/template/scrollToTop')
+
 var makePaint = require('client/ui/paint')
 
 var size = [320, 480]
