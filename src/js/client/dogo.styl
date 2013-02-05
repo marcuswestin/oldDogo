@@ -1,4 +1,5 @@
 @import "../../style/globals"
+@import "./connect"
 
 keyboardColor = #9299A3;
 
@@ -39,35 +40,16 @@ body
 			box-shadow -2px 0 2px rgba(0,0,0,.75);
 	
 #errorNotice
-	width 100%; color redDark; z-index 1;
+	color redDark; z-index 1; font-weight 300;
 	.content
 		background rgba(255, 210, 210, 0.92);
-		 text-align center; padding 8px 0; border 1px solid; margin 0 3px; border-radius: 0 0 4px 4px;
+		padding 8px; border 1px solid; margin 0 3px; border-radius: 0 0 4px 4px;
 		.header
 			min-height 40px;
 			.title
 				font-size 20px; text-shadow 0 1px 0 #fff;
 			.close
 				display inline-block;
-
-#connectView
-	text-align center; width 100%; absolute top 0;
-	gradient(lighten(#227EBF, 25%), lighten(#227EBF, 75%));
-	// z-index 2;
-	.logoIcon
-		margin 32px 0 0 0;
-	.logoName
-		// margin 20px 0 0 0;
-	.button
-		font-size 22px; text-shadow rgba(0,0,0,.3); padding 10px 8px 12px;
-		margin 0 auto; width 200px; border-radius 8px;
-		margin-bottom 20px;
-	.button.active
-		box-shadow 0 0 0;
-	.notice
-		width 240px; margin 0 auto; color #fff; font-size 13px;
-	.link
-		text-decoration underline;
 
 .head
 	height 0;

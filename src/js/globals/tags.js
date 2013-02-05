@@ -5,6 +5,7 @@ list = require('tags/list')
 style = require('tags/style')
 makeScroller = require('tags/scroller')
 draggable = require('tags/draggable')
+overlay = require('tags/overlay')
 
 viewport = require('tags/viewport')
 if (gIsPhantom || !tags.isTouch) {
@@ -27,3 +28,11 @@ transition = style.transition
 scrollable = style.scrollable
 
 absolute = function(left, top) { return { position:'absolute', left:left, top:top } }
+
+var ulTag = tags('ul')
+var li = tags('li')
+ul = function() {
+	return ulTag(map(arguments, function(content) {
+		return li('tags-ul-li', content)
+	}))
+}

@@ -6,7 +6,7 @@ buttonRadius = 4px;
 	padding 3px 8px 5px; border-radius buttonRadius;
 	color #fff;
 	gradient(buttonFrom, buttonTo);
-	// box-shadow 0 2px 0 buttonBoxShadow;
+	// box-shadow 0 1px 0 buttonBoxShadow;
 	// text-shadow 0 -1px 0 buttonTextShadow;
 	-webkit-transform translate3d(0,0,0);
 	// -webkit-transition -webkit-transform 1ms; this may be necesary to force button style to update if inside of a parent with transitioned transform on ios...
@@ -14,12 +14,12 @@ buttonRadius = 4px;
 	                inset 0 1px 0 #75c2f8,
 	                0 1px 1px -1px rgba(0, 0, 0, .5);
 .button.active, .button.selected
-	box-shadow 0 0px 0; -webkit-transform translate3d(0,2px,0);
+	box-shadow 0 0px 0; -webkit-transform translate3d(0,1px,0);
 .button.secondary
 	background secondaryButton;
-	box-shadow 0 2px 0 secondaryButtonBoxShadow;
+	box-shadow 0 1px 0 secondaryButtonBoxShadow;
 .button.secondary.active, .button.secondary.selected
 	box-shadow 0 0px 0 secondaryButtonBoxShadow;
 
-.dom-buttom
+.tags-button
 	cursor pointer;

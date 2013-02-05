@@ -329,7 +329,7 @@ function promptInvite(message) {
 				// https://developers.facebook.com/docs/mobile/ios/build/
 				
 				var me = gState.me()
-				var name = me.firstName || me.name.split(' ')[0]
+				var name = me.name.split(' ')[0]
 				if (message.body) {
 					var text = name+' says: "'+message.body+'". Reply in style with Dogo!'
 				} else {

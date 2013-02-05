@@ -25,6 +25,9 @@ _ = require('underscore')
 parseUrl = require('std/url')
 clip = require('std/clip')
 find = require('std/find')
+trim = require('std/trim')
+merge = require('std/merge')
+nextTick = require('std/nextTick')
 
 isArray = _.isArray
 
@@ -77,8 +80,8 @@ unique.current = 1
 
 link = function(className, title, path) {
 	if (arguments.length == 2) {
-		title = className
 		path = title
+		title = className
 		className = ''
 	}
 	if (typeof path == 'function') {

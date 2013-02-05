@@ -1,33 +1,45 @@
 var delayed = require('std/delayed')
-var renderFirstStep = require('client/ui/connect/renderFirstStep')
+var renderWelcome = require('client/ui/connect/renderWelcome')
 var renderEnterPersonInfo = require('client/ui/connect/renderEnterPersonInfo')
 var renderEnterAddress = require('client/ui/connect/renderEnterAddress')
 var renderLinkSent = require('client/ui/connect/renderLinkSent')
 var renderLinkClicked = require('client/ui/connect/renderLinkClicked')
 var renderAddFriends = require('client/ui/connect/renderAddFriends')
 var renderPushNotifications = require('client/ui/connect/renderPushNotifications')
+var renderLogin = require('client/ui/connect/renderLogin')
+var renderRegister = require('client/ui/connect/renderRegister')
 
 module.exports = {
 	render: function(onDone) {
+		
+		// setTimeout(function() { gScroller.push({ step:'register', registerStep:'profile' }) }) // AUTOS
+		// setTimeout(function() { gScroller.push({ step:'register', registerStep:'facebook' }) }) // AUTOS
+		// setTimeout(function() { gScroller.push({ step:'login' }) }) // AUTOS
+		
 		gScroller = makeScroller({
 			numViews:5,
 			duration:400,
 			alwaysBounce:false,
 			renderHead:renderHead,
 			renderView:renderView,
-			stack: [{ step:'first' }]
+			stack: [{ step:'welcome' }]
 		})
 		var welcomeDuration = 50
 		return div({ id:'connectView' }, brandGradient([viewport.width() / 2, 150], 50),
-			div('logoIcon', icon('logoIcon-blank', 128, 128, 48, 0, 0, 0)),
-			div({ id:'logoName' }, icon('logoName', 166, 72, 64, 0, 0, 0), style(translate(0, 0, 1000))),
+			div('centered',
+				div('logoIcon', icon('logoIcon-blank', 128, 128, 48, 0, 0, 0)),
+				div({ id:'logoName' }, icon('logoName', 166, 72, 64, 0, 0, 0), style(translate(0, 0, 1000))),
+				div(style({ position:'absolute', width:'100%', top:0 }),
+					div({ id:'userPic' }, style({ borderRadius:50, position:'absolute', top:30, right:10, opacity:0 }))
+				)
+			),
 			delayed(welcomeDuration * 2, function() { $('#logoName').css(translate(0, -169, welcomeDuration * 1.25)) }),
 			gScroller
 		)
 		
 		function renderHead(view) {
-			if (view.step == 'first') { return '' }
-			return div('button', '<-', style(absolute(20, 40)), style({ width:40, height:40, padding:0 }), button(function() {
+			if (view.step == 'welcome') { return '' }
+			return div('button', '<-', style(absolute(10, 30)), style({ padding:px(6, 8) }), button(function() {
 				gScroller.pop()
 			}))
 		}
@@ -36,7 +48,10 @@ module.exports = {
 			return div(style({ marginTop:300 }), div('stepView', _pickViewContent()))
 			function _pickViewContent() {
 				switch (view.step) {
-					case 'first': return renderFirstStep(view)
+					case 'welcome': return renderWelcome(view)
+					case 'register': return renderRegister(view)
+					case 'login': return renderLogin(view)
+					
 					case 'enterAddress': return renderEnterAddress(view)
 					case 'enterPersonInfo': return renderEnterPersonInfo(view)
 					case 'linkSent': return renderLinkSent(view)

@@ -3,22 +3,21 @@ var parallel = require('std/parallel')
 var Addresses = require('data/Addresses')
 var Conversations = require('client/conversations')
 
-module.exports = function renderFirstStep(view) {
+module.exports = function renderWelcome(view) {
 	var welcomeDuration = 50
 	
-	setTimeout(_emailConnect, 150)
-	// setTimeout(_phoneNumberConnect, 150)
+	// setTimeout(_emailConnect, 150) // AUTOS
+	// setTimeout(_phoneNumberConnect, 150) // AUTOS
 	
 	return div({ id:'connectUI1' },
 		delayed(welcomeDuration * 2, function($el) {
 			$('#connectUI1').append(div(_fadeIn,
-				div('info', 'Connect to ', _renderLogoName, ' with'),
-				div('button email', 'Email', button(_emailConnect)),
-				div('button phoneNumber', 'Text Msg', button(_phoneNumberConnect)),
-				div('button facebook', 'FB Connect', button(_facebookConnect)),
-				div('notice',
-					'When you connect, you agree to our ', link('Privacy Policy', '/privacy'), ' & ', link('Terms of Service', '/terms')
-				)
+				div('menu',
+					div('menuItem', span('label', 'Register'), button(function() { gScroller.push({ step:'register' }) })),
+					div('menuItem', span('label', 'Sign In'), button(function() { gScroller.push({ step:'login' })}))
+				),
+				
+				div('button disabled', 'hidden', style({ visibility:'hidden' }))
 			))
 		})
 	)

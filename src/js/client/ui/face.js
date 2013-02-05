@@ -2,28 +2,23 @@ var Addresses = require('data/Addresses')
 var payloads = require('data/payloads')
 
 var face = module.exports = function face(person, opts) {
-	return getFace(person, opts)
+	return renderFace(person, opts)
 }
 
 face.mine = function myFace(opts) {
-	return getFace(gState.me(), opts)
+	return renderFace(gState.me(), opts)
 }
 
-function getFace(person, opts) {
+function renderFace(person, opts) {
+	return div('face', style(face.style(person, opts)), opts && opts.style && style(opts.style))
+}
+
+face.style = function(person, opts) {
 	var opts = tags.options(opts, {
 		size:25,
-		style:null,
-		className:null,
 		radius:null
 	})
-	return div('face',
-		style({ width:opts.size, height:opts.size }),
-		style(backgroundStyle(person, opts)),
-		opts.style && style(opts.style)
-	)
-}
 
-function backgroundStyle(person, opts) {
 	var ratio = window.devicePixelRatio || 1
 	var pixelSize = opts.size*ratio
 	var imageUrl = getUrl(person, pixelSize)
@@ -31,14 +26,14 @@ function backgroundStyle(person, opts) {
 	if (opts.radius) { params.radius = opts.radius }
 	return {
 		background:'url('+BT.url('BTImage', 'fetchImage', params)+') rgba(240,240,255,.3) no-repeat',
-		width:opts.size, height:opts.size, backgroundSize:px(opts.size, opts.size)
+		width:opts.size, height:opts.size, backgroundSize:px(opts.size, opts.size), display:'inline-block'
 	}
 }
 
 function getUrl(person, pixelSize) {
 	if (person.personId) {
 		return payloads.personPictureUrl(person.personId)
-	} else if (person.type == Addresses.types.facebook) {
+	} else if (Addresses.isFacebook(person)) {
 		return 'http://graph.facebook.com/'+person.address+'/picture'+(pixelSize > 50 ? '?type=large' : '')
 	}
 }
