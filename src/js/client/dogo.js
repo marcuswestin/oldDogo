@@ -7,15 +7,15 @@ var payloads = require('data/payloads')
 var push = require('data/push')
 
 error = function error(err) {
+	var margin = 0
+	var cornerSize = 40
 	var message = api.error(err)
 	if (!error.$tag) {
 		error.$tag = $(div({ id:'errorNotice' },
-			style({ position:'absolute', top:0, left:0 }),
+			style({ position:'absolute', top:20+margin, left:cornerSize+margin, width:viewport.width() - cornerSize*2 - margin*4 }),
 			div('content',
-				style({ maxHeight:240 }), style(scrollable.y),
-				div('header',
-					div('close', icon('icon-circlex', 22, 23), button(function() { error.hide() }), style(translate(6, 4)))
-				),
+				style({ maxHeight:240 }, scrollable.y),
+				div('close', style({ 'float':'right' }), icon('icon-circlex', 22, 23), button(function() { error.hide() })),
 				div('message')
 			)
 		)).appendTo('.tags-scroller-body')
@@ -26,15 +26,15 @@ error = function error(err) {
 			.find('.message').text(message)
 		setTimeout(function() {
 			error.$tag
-				.css(translate.y(-error.$tag.height(), 0))
+				.css(translate.y(-(error.$tag.height() + 30), 0))
 				.css({ visibility:'visible' })
 			setTimeout(function() {
-				error.$tag.css(translate.y(76, 400))
+				error.$tag.css(translate.y(0, 400))
 			})
 		})
 	})
 	error.hide = function() {
-		error.$tag.css(translate.y(-error.$tag.height()))
+		error.$tag.css(translate.y(-(error.$tag.height() + 30)))
 	}
 }
 error.hide = function() {}
