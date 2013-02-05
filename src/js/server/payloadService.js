@@ -12,10 +12,10 @@ module.exports = {
 
 var s3 = null
 var s3PersmissionAcl = 'public-read'
-function configure(s3conf) {
-	payloads.bucket = s3conf.bucket
-	s3 = aws2js.load('s3', s3conf.accessKeyId, s3conf.accessKeySecret)
-	s3.setBucket(s3conf.bucket)
+function configure(awsConf) {
+	s3 = aws2js.load('s3', awsConf.accessKeyId, awsConf.accessKeySecret)
+	s3.setBucket(awsConf.s3.bucket)
+	payloads.configure(awsConf.s3)
 }
 
 var emptyBuffer = new Buffer(0)

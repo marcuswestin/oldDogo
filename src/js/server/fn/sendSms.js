@@ -6,10 +6,10 @@ sendSms.alertAdmin = alertAdmin
 
 var url = null
 var from = null
-function configure(conf) {
-	if (conf.disabled) { return }
-	url = 'https://'+conf.accountSid+':'+conf.authToken+'@api.twilio.com/2010-04-01/Accounts/'+conf.accountSid+'/SMS/Messages.json'
-	from = conf.from
+function configure(twilioConf) {
+	if (twilioConf.disabled) { return }
+	url = 'https://'+twilioConf.accountSid+':'+twilioConf.authToken+'@api.twilio.com/2010-04-01/Accounts/'+twilioConf.accountSid+'/SMS/Messages.json'
+	from = twilioConf.from
 }
 
 function alertAdmin(text) {

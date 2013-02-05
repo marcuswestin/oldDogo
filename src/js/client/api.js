@@ -110,15 +110,9 @@ function createSession(opts, callback) {
 	api.post('api/session', params, curry(handleSession, facebookSession, callback))
 }
 
-function handleSession(facebookSession, callback, err, res) {
+function handleSession(facebookSession, callback, err, sessionInfo) {
 	if (err) { return callback(err) }
-	gState.set('sessionInfo', {
-		me:res.person,
-		authToken:res.authToken,
-		facebookSession:facebookSession,
-		clientUidBlock:res.clientUidBlock,
-		picturesBucket:res.picturesBucket
-	})
+	gState.set('sessionInfo', sessionInfo)
 	callback(null, res.person)
 }
 

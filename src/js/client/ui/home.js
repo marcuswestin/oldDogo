@@ -103,7 +103,7 @@ function getCollageBackground(width, conversation) {
 	var rects = divideRect(halves[0], otherAxis, numFirstHalf).concat(divideRect(halves[1], otherAxis, numSecondHalf))
 	
 	var picUrls = map(pictures, function(cardPic) {
-		return payloads.url(cardPic.fromPersonId, cardPic.payload.secret, 'picture')
+		return payloads.url(cardPic.fromPersonId, 'picture', cardPic.payload)
 	})
 	
 	var contents = picUrls.concat(map(new Array(clip(numRects - pictures.length, 0, numRects)), function() {

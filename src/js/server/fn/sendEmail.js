@@ -2,8 +2,8 @@ module.exports = sendEmail
 sendEmail.configure = configure
 
 var ses
-function configure(s3conf) {
-	ses = require('aws2js').load('ses', s3conf.accessKeyId, s3conf.accessKeySecret)
+function configure(awsConf) {
+	ses = require('aws2js').load('ses', awsConf.accessKeyId, awsConf.accessKeySecret)
 }
 
 function sendEmail(fromEmail, toEmail, subject, text, html, callback) {

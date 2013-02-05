@@ -10,10 +10,13 @@ module.exports = {
 	log:true,
 	dev:true,
 	port:9000,
-	s3: {
-		bucket:'dogo-dev',
+	aws: {
 		accessKeyId:'AKIAJDUJ4DPW4DE7552Q',
-		accessKeySecret:'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'
+		accessKeySecret:'GGmu7dUQBRjGEUdoglQ4GQCR/pET92lFgJjpJN8l',
+		s3: {
+			bucket:'dogo-dev',
+			region:'us-east-1'
+		}
 	},
 	push: {
 		certData:fs.readFileSync(__dirname + '/cert.pem'),
@@ -44,4 +47,3 @@ module.exports = {
 		]
 	}
 }
-

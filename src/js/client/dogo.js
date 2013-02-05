@@ -146,21 +146,8 @@ function startApp(info) {
 			}, 250)
 		}
 		
-		function migrateNewClientUidBlock() {
-			var sessionInfo = gState.cache['sessionInfo']
-			if (sessionInfo.clientUidBlock) { return }
-			// migrate old clients to have new block size
-			var clientUidBlockSize = 100000
-			sessionInfo.clientUidBlock = {
-				start: clientUidBlockSize + 1,
-				end: clientUidBlockSize * 2
-			}
-			gState.set('sessionInfo', sessionInfo)
-		}
-		
 		function onConnected() {
-			payloads.bucket = gState.cache['sessionInfo'].picturesBucket
-			migrateNewClientUidBlock()
+			payloads.bucket.configure(sessionInfo.config.payloads)
 			appScroller.createAndRender()
 		}
 		

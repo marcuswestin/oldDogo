@@ -30,7 +30,7 @@ var state = module.exports = {
 		return key ? sessionInfo[key] : sessionInfo
 	},
 	me:function() {
-		return state.getSessionInfo('me')
+		return state.getSessionInfo('person')
 	},
 	facebookSession:function() {
 		return state.getSessionInfo('facebookSession')

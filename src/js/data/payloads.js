@@ -1,15 +1,19 @@
 var payloads = module.exports = {
 	url:url,
 	path:path,
-	bucket:null,
 	personPicturePath:personPicturePath,
 	personPictureUrl:personPictureUrl,
 	base:base,
-	s3Region:'us-east-1', //'us-west-1',
+	configure:configure,
 	mimeTypes: {
 		'picture':'image/jpg',
 		'audio':'audio/mp4a-latm'
 	}
+}
+
+function configure(config) {
+	payloads.bucket = config.bucket
+	payloads.region = config.region
 }
 
 var extensions = {
@@ -24,10 +28,10 @@ function path(personId, secret, type) {
 	return '/people/'+(personId || 'guests')+'/payloads/'+secret+'.'+extensions[type]
 }
 
-function url(personId, secret, type) {
-	return base() + payloads.path(personId, secret, type)
+function url(personId, type, payload) {
+	return base(payload.bucket, payload.region) + payloads.path(personId, secret, type)
 }
 
-function base() {
-	return 'http://'+payloads.bucket+'.s3-website-'+payloads.s3Region+'.amazonaws.com'
+function base(bucket, region) {
+	return 'http://'+(bucket || payloads.bucket)+'.s3-website-'+(region || payloads.bucket)+'.amazonaws.com'
 }

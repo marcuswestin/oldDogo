@@ -10,10 +10,13 @@ module.exports = {
 	log:true,
 	dev:false,
 	port:9000,
-	s3: {
-		bucket:'dogo-prod',
+	aws: {
 		accessKeyId:'AKIAJDUJ4DPW4DE7552Q',
-		accessKeySecret:'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'
+		accessKeySecret:'GGmu7dUQBRjGEUdoglQ4GQCR/pET92lFgJjpJN8l',
+		s3: {
+			bucket:'dogo-prod',
+			region:'us-east-1'
+		}
 	},
 	push: {
 		certData:fs.readFileSync(__dirname + '/cert.pem'),
@@ -26,18 +29,18 @@ module.exports = {
 		authToken: '52d8aefbd1cac7f644f49f0789586a3b',
 		from: '+14155992671'
 	},
-	dbShard: {
+	dbShards: {
 		people: [
-			shardConfig.shard('People', 1, shardAccess),
-			shardConfig.shard('People', 2, shardAccess),
-			shardConfig.shard('People', 3, shardAccess),
-			shardConfig.shard('People', 4, shardAccess)
+			shardConfig.shard('People', 1, shardAccess)
+			,shardConfig.shard('People', 2, shardAccess)
+			,shardConfig.shard('People', 3, shardAccess)
+			,shardConfig.shard('People', 4, shardAccess)
 		],
 		conversations: [
-			shardConfig.shard('Conversations', 1, shardAccess),
-			shardConfig.shard('Conversations', 2, shardAccess),
-			shardConfig.shard('Conversations', 3, shardAccess),
-			shardConfig.shard('Conversations', 4, shardAccess)
+			shardConfig.shard('Conversations', 1, shardAccess)
+			,shardConfig.shard('Conversations', 2, shardAccess)
+			,shardConfig.shard('Conversations', 3, shardAccess)
+			,shardConfig.shard('Conversations', 4, shardAccess)
 		],
 		lookup: [
 			shardConfig.lookupShard(shardAccess)
