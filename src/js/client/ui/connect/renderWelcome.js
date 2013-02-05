@@ -1,6 +1,5 @@
 var delayed = require('std/delayed')
 var parallel = require('std/parallel')
-var Addresses = require('data/Addresses')
 var Conversations = require('client/conversations')
 
 module.exports = function renderWelcome(view) {

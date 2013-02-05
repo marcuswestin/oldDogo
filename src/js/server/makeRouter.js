@@ -211,7 +211,6 @@ function setupRoutes(app, opts) {
 	app.post('/api/address', filters.oldClients, function postAddress(req, res) {
 		var config = require('server/config/dev/devConfig')
 		var ses = require('aws2js').load('ses', config.aws.accessKeyId, config.aws.accessKeySecret)
-		var Addresses = require('data/Addresses')
 		var params = getJsonParams(req, 'addressType', 'address')
 		var type = Addresses.types[params.addressType]
 		var address = params.address

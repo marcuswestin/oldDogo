@@ -1,7 +1,6 @@
 var index = require('./index')
 var textInput = require('./textInput')
 var Conversations = require('client/conversations')
-var Addresses = require('data/Addresses')
 
 module.exports = {
 	setup:setupBrowserDebugMode

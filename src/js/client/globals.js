@@ -29,6 +29,8 @@ trim = require('std/trim')
 merge = require('std/merge')
 nextTick = require('std/nextTick')
 
+Addresses = require('data/Addresses')
+
 isArray = _.isArray
 
 gHeadHeight = 0

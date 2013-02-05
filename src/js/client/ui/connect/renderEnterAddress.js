@@ -1,4 +1,3 @@
-var Addresses = require('data/Addresses')
 var trim = require('std/trim')
 var overlay = require('tags/overlay')
 

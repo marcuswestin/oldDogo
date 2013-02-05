@@ -1,5 +1,7 @@
 require('HandyHelpers/Array+Util')
 
+_ = require('underscore')
+
 proto = require('std/proto')
 create = require('std/create')
 each = require('std/each')
@@ -14,7 +16,7 @@ parallel = require('std/parallel')
 curry = require('std/curry')
 time = require('std/time')
 
-_ = require('underscore')
+Addresses = require('data/Addresses')
 
 makeTimer = require('server/util/makeTimer')
 makeLog = require('server/util/log').makeLog

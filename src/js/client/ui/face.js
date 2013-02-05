@@ -1,4 +1,3 @@
-var Addresses = require('data/Addresses')
 var payloads = require('data/payloads')
 
 var face = module.exports = function face(person, opts) {

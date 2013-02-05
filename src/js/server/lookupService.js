@@ -1,5 +1,4 @@
 var log = makeLog('LookupService')
-var Addresses = require('data/Addresses')
 
 module.exports = {
 	// Register and claim addresses

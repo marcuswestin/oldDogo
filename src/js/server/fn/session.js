@@ -4,7 +4,6 @@ var facebook = require('server/util/facebook')
 var log = makeLog('session')
 var payloads = require('data/payloads')
 var bcrypt = require('bcrypt')
-var Addresses = require('data/Addresses')
 var getPerson = require('server/fn/getPerson')
 var password = require('server/util/password')
 

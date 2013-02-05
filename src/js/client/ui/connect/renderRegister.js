@@ -1,4 +1,3 @@
-var Addresses = require('data/Addresses')
 var registration = require('data/registration')
 
 module.exports = function renderRegister(view) {
