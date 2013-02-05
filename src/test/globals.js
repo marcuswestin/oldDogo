@@ -27,7 +27,7 @@ api = {
 	send: function(method, path, params, callback) {
 		if (!callback) {
 			callback = params
-			params = {}
+			params = null
 		}
 
 		var auth = api.authToken ? (api.authToken + '@') : ''
