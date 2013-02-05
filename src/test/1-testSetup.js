@@ -35,14 +35,16 @@ setup('API server', function() {
 	})
 })
 
-tinyTest.run({
-	onTestStart:function(stack) { console.log("Test:".white, stack.join(' | ').cyan) },
-	onTestDone: function(stack, duration) { console.log('Done: '.white, (duration+'ms').greenLight) },
-	onTestFail: function(stack, err) { console.error("ERROR".red, stack.join(' | ').red, err) },
-	onAllDone: function(duration) {
-		console.log("All Done:".green, (duration+'ms').greenLight)
-		process.exit(0)
-	}
+process.nextTick(function() {
+	tinyTest.run({
+		onTestStart:function(stack) { console.log("Test:".white, stack.join(' | ').cyan) },
+		onTestDone: function(stack, duration) { console.log('Done: '.white, (duration+'ms').greenLight) },
+		onTestFail: function(stack, err) { console.error("ERROR".red, stack.join(' | ').red, err) },
+		onAllDone: function(duration) {
+			console.log("All Done:".green, (duration+'ms').greenLight)
+			process.exit(0)
+		}
+	})
 })
 
 // function checkConnectionLeaks(done) {
