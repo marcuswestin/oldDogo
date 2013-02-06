@@ -13,6 +13,7 @@ var addAddresses = require('server/fn/addAddresses')
 var sendEmail = require('server/fn/sendEmail')
 var createSession = require('server/fn/createSession')
 var requestVerification = require('server/fn/requestVerification')
+var register = require('server/fn/register')
 
 var log = makeLog('Router')
 
@@ -174,7 +175,7 @@ function setupRoutes(app, opts) {
 		var params = getJsonParams(req, 'address', 'name', 'color', 'password')
 		requestVerification(params.address, params.name, params.color, params.password, curry(respond, req, res))
 	})
-	app.post('/api/register/withAddress', function(req, res) {
+	app.post('/api/register/withAddressVerification', function(req, res) {
 		var params = getJsonParams(req, 'verificationId', 'verificationToken', 'password')
 		register.withAddressVerification(params.verificationId, params.verificationToken, params.password, curry(respond, req, res))
 	})

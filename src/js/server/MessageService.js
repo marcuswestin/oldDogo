@@ -4,7 +4,6 @@ var Messages = require('data/Messages')
 var pushService = require('server/PushService')
 var payloadService = require('server/payloadService')
 var parallel = require('std/parallel')
-var lookupService = require('server/lookupService')
 var log = makeLog('MessageService')
 
 module.exports = {

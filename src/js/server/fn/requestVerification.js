@@ -1,6 +1,7 @@
 var sendEmail = require('server/fn/sendEmail')
 var registration = require('data/registration')
-var lookupService = require('server/lookupService')
+var createPasswordHash = require('server/fn/createPasswordHash')
+var uuid = require('uuid')
 
 module.exports = function requestVerification(address, name, color, password, callback) {
 	var error = registration.checkAll({ name:name, color:color, address:address, password:password })
@@ -8,10 +9,11 @@ module.exports = function requestVerification(address, name, color, password, ca
 	
 	if (!Addresses.isEmail(address)) { return callback("Unimplemented: requestVerification for type "+address.addressType) }
 	
+	var email = address.addressId
 	lookupService.lookup(address, function(err, personId, addrInfo) {
 		if (err) { return callback(err) }
-		if (personId) { return callback(address.addressId+' is already used') }
-		password.createHash(password, function(err, passwordHash) {
+		if (personId) { return callback(email+' is already used') }
+		createPasswordHash(password, function(err, passwordHash) {
 			if (err) { return callback(err) }
 			var token = uuid.v4()
 			lookupService.createVerification(token, passwordHash, name, color, address, function(err, verificationId) {

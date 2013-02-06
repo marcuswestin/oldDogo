@@ -1,7 +1,7 @@
 var getPerson = require('server/fn/getPerson')
 var bumpClientUidBlock = require('server/fn/bumpClientUidBlock')
-var password = require('server/util/password')
 var redis = require('server/redis')
+var checkPasswordAgainstHash = require('server/fn/checkPasswordAgainstHash')
 
 module.exports = function createSession(req, addrInfo, password, callback) {
 	if (!username) { return callback('Please give me an address') }
@@ -15,7 +15,7 @@ module.exports = function createSession(req, addrInfo, password, callback) {
 				log.alert('address has personId but no person and passwordHash', addrInfo, personId)
 				return callback(true)
 			}
-			password.checkAgainstHash(password, passwordHash, function(err) {
+			checkPasswordAgainstHash(password, passwordHash, function(err) {
 				if (err) { return callback(err) }
 				var authToken = uuid.v4()
 				var expiration = (1 * time.day) / time.seconds // expiration in seconds

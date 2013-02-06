@@ -12,7 +12,7 @@ run: run-databases
 online = true
 verbose = true
 time = true
-test: reset-test-db test-server
+test: reset-db test-server
 t:
 	make test online=false verbose=true time=false
 
@@ -74,21 +74,13 @@ deploy-nginx-conf: ${FAB}
 # Testing
 #########
 test-server: ${PHANTOMJS}
-	./node_modules/mocha/bin/mocha --reporter list --bail \
-		test/1_test-utils.js test/2_account-setup/test-api.js test/3_device-usage/test-api.js test/test-questions.js\
-		--dogo-test-online=${online} --dogo-test-verbose=${verbose} --dogo-test-time=${time}
-	# ${PHANTOMJS} test/3_device-usage/test-phantom-client.js
+	./node src/test/2-testApi.js
 
 # Setup
 #######
 # Reset local development database
 reset-db: run-databases
 	node src/scripts/resetDb.js
-
-reset-test-db: run-databases
-	mysql -u dogo_tester --password=test -e 'DROP DATABASE IF EXISTS dogo_test; CREATE DATABASE dogo_test;'
-	cat src/db/schema.sql | mysql -u dogo_tester --password=test dogo_test
-	if [ -f test/.fbTestDataCache.json ]; then mv test/.fbTestDataCache.json test/.fbTestDataCache.json.bak; fi
 
 setup-client: setup-source setup-emojis
 	cd node_modules/require && npm install --production .

@@ -25,6 +25,7 @@ log = require('server/util/log')
 makeLog = log.makeLog
 
 db = require('server/db')
+lookupService = require('server/lookupService')
 
 jsonList = function(jsonProperty) { return jsonProperty ? JSON.parse(jsonProperty) : [] }
 remove = function(obj, prop) { var val = obj[prop]; delete obj[prop]; return val }

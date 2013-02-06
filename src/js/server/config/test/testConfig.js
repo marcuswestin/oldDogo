@@ -2,8 +2,8 @@ var fs = require('fs')
 var shardConfig = require('server/config/shardConfig')
 var shardAccess = {
 	host:"localhost",
-	password:"test",
-	user:"dogo_tester"
+	password:"dogopass9",
+	user:"dogoApp"
 }
 
 module.exports = {

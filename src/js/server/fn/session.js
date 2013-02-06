@@ -5,7 +5,6 @@ var log = makeLog('session')
 var payloads = require('data/payloads')
 var bcrypt = require('bcrypt')
 var getPerson = require('server/fn/getPerson')
-var password = require('server/util/password')
 
 module.exports = {
 	create:createSession,

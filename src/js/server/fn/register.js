@@ -1,4 +1,6 @@
 var claimVerifiedAddresses = require('server/fn/claimVerifiedAddresses')
+var checkPasswordAgainstHash = require('server/fn/checkPasswordAgainstHash')
+var createPasswordHash = require('server/fn/createPasswordHash')
 
 module.exports = {
 	withAddressVerification:withAddressVerification,
@@ -6,7 +8,7 @@ module.exports = {
 }
 
 function withAddressVerification(verificationId, verificationToken, password, callback) {
-	parallel(_lookupAddress, _getMatchingVerification, function(err, addrInfo, verInfo) {
+	_getMatchingVerification(function(err, verInfo) {
 		if (err) { return callback(err) }
 		var addresses = [{ addressId:verInfo.addressId, addressType:verInfo.addressType }]
 		return callback("TODO Create picture URL")
@@ -18,19 +20,13 @@ function withAddressVerification(verificationId, verificationToken, password, ca
 		})
 	})
 	
-	function _lookupAddress(callback) {
-		lookupService.lookupEmail(email, function(err, personId, addrInfo) {
-			if (err) { return callback(err) }
-			if (personId) { return callback('This address has already been verified') }
-			callback(null, addrInfo)
-		})
-	}
 	function _getMatchingVerification(callback) {
-		var sql = 'SELECT verificationId, addressId, addressType, passwordHash, color, name, token, createdTime, usedTime FROM addressVerification WHERE id=? AND token=?'
+		var sql = 'SELECT verificationId, addressId, addressType, passwordHash, color, name, token, createdTime, usedTime '
+			+ 'FROM addressVerification WHERE verificationId=? AND token=?'
 		db.lookup().selectOne(sql, [verificationId, verificationToken], function(err, verification) {
 			if (err) { return callback(err) }
 			if (verification.usedTime) { return callback('Sorry, this verification link has already been used') }
-			password.checkAgainstHash(password, verification.passwordHash, function(err) {
+			checkPasswordAgainstHash(password, verification.passwordHash, function(err) {
 				if (err) { return callback(err) }
 				callback(null, verification)
 			})
@@ -45,7 +41,7 @@ function withFacebookSession(name, color, email, password, fbSession, callback) 
 	var err = registration.checkAll({ name:name, color:color, address:Addresses.email(email), password:password })
 	if (err) { return callback(err) }
 	
-	parallel(_getFacebookData, curry(password.createHash, password), function(err, fbAccount, passwordHash) {
+	parallel(_getFacebookData, curry(createPasswordHash, password), function(err, fbAccount, passwordHash) {
 		if (err) { return callback(err) }
 		if (!fbAccount || !fbAccount.id) { return callback('I could not connect to your Facebook account') }
 		if (!fbAccount.email == email) {
