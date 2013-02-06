@@ -25,12 +25,12 @@ function makeRedirect(fromPath, toUrl, callback) {
 	s3.putBuffer(fromPath, emptyBuffer, s3PersmissionAcl, headers, callback)
 }
 
-function upload(personId, type, dataFile, callback) {
+function upload(personId, type, payloadFile, callback) {
 	var secret = uuid.v4()
 	var path = payloads.path(personId, secret, type)
-	var uploadHeaders = { 'content-type':payloads.mimeTypes[type], 'content-length':dataFile.size }
-	log.debug('uploading', dataFile.path+' -> '+path, uploadHeaders)
-	s3.putFile(path, dataFile.path, s3PersmissionAcl, uploadHeaders, function(err, headers) {
+	var uploadHeaders = { 'content-type':payloads.mimeTypes[type], 'content-length':payloadFile.size }
+	log.debug('uploading', payloadFile.path+' -> '+path, uploadHeaders)
+	s3.putFile(path, payloadFile.path, s3PersmissionAcl, uploadHeaders, function(err, headers) {
 		if (err) { log.error("Error uploading payload", path, err) }
 		callback(err ? err : null, err ? null : secret)
 	})

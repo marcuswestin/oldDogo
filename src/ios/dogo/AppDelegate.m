@@ -101,12 +101,12 @@
     }];
     
     [self registerHandler:@"text.send" handler:^(id data, BTResponseCallback responseCallback) {
-        [self _send:data attachment:nil responseCallback:responseCallback];
+        [self _send:data payload:nil responseCallback:responseCallback];
     }];
     
     [self registerHandler:@"audio.send" handler:^(id data, BTResponseCallback responseCallback) {
         NSData* audioData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[data objectForKey:@"audioLocation"]]];
-        [self _send:data attachment:audioData responseCallback:responseCallback];
+        [self _send:data payload:audioData responseCallback:responseCallback];
     }];
 
     [self registerHandler:@"picture.send" handler:^(id data, BTResponseCallback responseCallback) {
@@ -119,16 +119,17 @@
         [params setObject:[NSNumber numberWithFloat:image.size.height] forKey:@"height"];
         id _data = [NSMutableDictionary dictionaryWithDictionary:data];
         [_data setObject:params forKey:@"params"];
-        [self _send:_data attachment:pictureData responseCallback:responseCallback];
+        [self _send:_data payload:pictureData responseCallback:responseCallback];
     }];
 }
 
-- (void)_send:(NSDictionary*)data attachment:(NSData*)attachment responseCallback:(BTResponseCallback)responseCallback {
+- (void)_send:(NSDictionary*)data payload:(NSData*)payload responseCallback:(BTResponseCallback)responseCallback {
     NSString* url = [data objectForKey:@"url"];
     NSDictionary* headers = [data objectForKey:@"headers"];
     NSDictionary* params = [data objectForKey:@"params"];
     NSString* boundary = [data objectForKey:@"boundary"];
-    [BTNet post:url json:params data:attachment headers:headers boundary:boundary responseCallback:responseCallback];
+    NSDictionary* attachments = [NSDictionary dictionaryWithObject:payload forKey:@"payload"];
+    [BTNet post:url json:params attachments:attachments headers:headers boundary:boundary responseCallback:responseCallback];
 }
 
 @end

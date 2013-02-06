@@ -171,7 +171,8 @@ var filters = (function makeFilters() {
 
 function setupRoutes(app, opts) {
 	app.all('/api/address/verification', function(req, res) {
-		var params = getJsonParams(req, 'address', 'name', 'color', 'password')
+		var params = getMultipartParams(req, 'address', 'name', 'color', 'password')
+		var pictureFile = req.files && req.files.picture
 		requestVerification(params.address, params.name, params.color, params.password, curry(respond, req, res))
 	})
 	app.post('/api/register/withAddressVerification', function(req, res) {
@@ -242,14 +243,14 @@ function setupRoutes(app, opts) {
 	app.post('/api/message', filters.oldClientsAndSession, function postMessage(req, res) {
 		var params = getMultipartParams(req, 'toParticipationId', 'clientUid', 'type', 'payload')
 		var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
-		var dataFile = req.files && req.files.data
+		var payloadFile = req.files && req.files.payload
 		messageService.sendMessage(req.session.personId,
 			params.toParticipationId, params.clientUid,
-			params.type, params.payload, dataFile, prodPush,
+			params.type, params.payload, payloadFile, prodPush,
 			function(err, content) {
-				if (dataFile) {
-					fs.unlink(dataFile.path, function(err) {
-						if (err) { log.warn('Unable to unlink data file', dataFile, err) }
+				if (payloadFile) {
+					fs.unlink(payloadFile.path, function(err) {
+						if (err) { log.warn('Unable to unlink data file', payloadFile, err) }
 					})
 				}
 				respond(req, res, err, content)

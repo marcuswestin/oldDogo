@@ -13,7 +13,7 @@ module.exports = {
 	loadFacebookRequestId: loadFacebookRequestId
 }
 
-function sendMessage(personId, participationId, clientUid, type, payload, dataFile, prodPush, callback) {
+function sendMessage(personId, participationId, clientUid, type, payload, payloadFile, prodPush, callback) {
 	log.debug('sendMessage', personId, participationId, clientUid, type, payload)
 	if (!Messages.types[type]) { return callback("I don't recognize that message type") }
 	
@@ -38,7 +38,7 @@ function sendMessage(personId, participationId, clientUid, type, payload, dataFi
 			
 			function _uploadPayload(next) {
 				if (type != 'picture' && type != 'audio') { return next(null, payload) }
-				payloadService.upload(personId, type, dataFile, function(err, secret) {
+				payloadService.upload(personId, type, payloadFile, function(err, secret) {
 					if (!err) { payload.secret = secret }
 					return next(err, payload)
 				})
