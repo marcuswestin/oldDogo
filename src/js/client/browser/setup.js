@@ -171,7 +171,7 @@ function setupBrowserDebugMode() {
 		div(null, 'Add email address', button(function() {
 			var email = trim($('#addEmailAddress').val())
 			$('#addEmailAddress').val('')
-			Conversations.addAddresses([{ Addresses.email(email, 'Test Email') }], function() {
+			Conversations.addAddresses([Addresses.email(email, 'Test Email')], function() {
 				console.log('addedd', arguments)
 			})
 		})),
