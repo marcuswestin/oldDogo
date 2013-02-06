@@ -145,11 +145,9 @@ function setupBrowserDebugMode() {
 		gState.clear()
 	})))
 	$buttons.append(div(padded, 'Run Usage tests', button(function() {
-		var clientTests = require('../clientTests')
 		clientTests.runUsageTests()
 	})))
 	$buttons.append(div(padded, 'Run Connect tests', button(function() {
-		var clientTests = require('../clientTests')
 		clientTests.runConnectTests()
 	})))
 	var splashShowing = false
