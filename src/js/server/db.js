@@ -85,7 +85,6 @@ var connectionBase = {
 	insert:function(query, args, callback) {
 		var stackError = new Error()
 		this.query(query, args, function(err, info) {
-			if (err) { onDbError('insert', err, stackError, query, args) }
 			if (!err && !info.insertId) {
 				err = onDbError('query', new Error('Did not receive an insertId'), stackError, query, args)
 			}
