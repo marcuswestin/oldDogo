@@ -171,7 +171,6 @@ var filters = (function makeFilters() {
 
 function setupRoutes(app, opts) {
 	app.all('/api/address/verification', function(req, res) {
-		if (!req) { throw new Error('asd') }
 		var params = getJsonParams(req, 'address', 'name', 'color', 'password')
 		requestVerification(params.address, params.name, params.color, params.password, curry(respond, req, res))
 	})
