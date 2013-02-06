@@ -1,7 +1,6 @@
 module.exports = function configureServer(config) {
 	gConfig = config
 	
-	var payloadService = require('server/payloadService')
 	var makeRouter = require('server/makeRouter')
 	var sendEmail = require('server/fn/sendEmail')
 	var sendSms = require('server/fn/sendSms')

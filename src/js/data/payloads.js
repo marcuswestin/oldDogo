@@ -3,6 +3,8 @@ var payloads = module.exports = {
 	path:path,
 	personPicturePath:personPicturePath,
 	personPictureUrl:personPictureUrl,
+	underlyingPersonPicturePath:underlyingPersonPicturePath,
+	underlyingPersonPictureUrl:underlyingPersonPictureUrl,
 	base:base,
 	configure:configure,
 	mimeTypes: {
@@ -23,6 +25,8 @@ var extensions = {
 
 function personPicturePath(personId) { return '/people/'+personId+'/picture' }
 function personPictureUrl(personId) { return base() + personPicturePath(personId) }
+function underlyingPersonPicturePath(secret) { return '/people/pictures/'+secret+'.'+extensions['picture'] }
+function underlyingPersonPictureUrl(secret) { return base() + underlyingPersonPicturePath(secret) }
 
 function path(personId, secret, type) {
 	return '/people/'+(personId || 'guests')+'/payloads/'+secret+'.'+extensions[type]

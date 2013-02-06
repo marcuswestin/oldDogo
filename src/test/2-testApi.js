@@ -1,5 +1,7 @@
 require('./1-testSetup')
 var url = require('std/url')
+var exec = require('child_process').exec
+var fs = require('fs')
 
 setup('Ping', function() {
 	then('ping it', function(done) {
@@ -9,9 +11,19 @@ setup('Ping', function() {
 
 setup('Email registration', function() {
 	var userInfo = { name:'Joe Doe', color:1, password:'foobarcat', address:Addresses.email('foo@dogo.co') }
-	var devVerificationUrl
+	var devVerificationUrl = null
+	var picPath = null
+	
+	then('create image', function(done) {
+		picPath = '/tmp/dogoTestPic-'+new Date().getTime()+'.jpg'
+		exec('convert -size 300x300 xc: +noise Random '+picPath, function(err, stderr, stdout) {
+			check(err || stderr)
+			done()
+		})
+	})
 	then('request verification', function(done) {
-		api.post('api/address/verification', userInfo, function(err, res) {
+		var picData = fs.readFileSync(picPath)
+		api.jsonMultipart('api/address/verification', userInfo, { picture:picData }, function(err, res) {
 			check(err)
 			is(devVerificationUrl = res.devVerificationUrl)
 			done()
@@ -21,7 +33,6 @@ setup('Email registration', function() {
 		params = url(devVerificationUrl).getSearchParams()
 		api.post('api/register/withAddressVerification', { password:userInfo.password, verificationToken:params.t, verificationId:params.i }, function(err, res) {
 			check(err)
-			console.log("HERE", res)
 			done()
 		})
 	})

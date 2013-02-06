@@ -1,13 +1,14 @@
-module.exports = function claimVerifiedAddresses(addrInfos, personId) {
+module.exports = function claimVerifiedAddresses(addrInfos, personId, name, callback) {
 	_claimAddressConversations(function(err) {
 		if (err) { return callback(err) }
 		asyncEach(addrInfos, {
 			parallel:addrInfos.length,
+			finish:callback,
 			iterate:function(addrInfo, next) {
 				if (addrInfo.isNewAddress) {
-					lookupService.createVerifiedAddress(addrInfo, personId, name)
+					lookupService.createVerifiedAddress(addrInfo, personId, name, next)
 				} else {
-					lookupService.claimVerifiedAddress(addrInfo, personId, name)
+					lookupService.claimVerifiedAddress(addrInfo, personId, name, next)
 				}
 			}
 		})

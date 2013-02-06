@@ -1,6 +1,7 @@
 var claimVerifiedAddresses = require('server/fn/claimVerifiedAddresses')
 var checkPasswordAgainstHash = require('server/fn/checkPasswordAgainstHash')
 var createPasswordHash = require('server/fn/createPasswordHash')
+var payloads = require('data/payloads')
 
 module.exports = {
 	withAddressVerification:withAddressVerification,
@@ -11,19 +12,18 @@ function withAddressVerification(verificationId, verificationToken, password, ca
 	_getMatchingVerification(function(err, verInfo) {
 		if (err) { return callback(err) }
 		var addresses = [{ addressId:verInfo.addressId, addressType:verInfo.addressType }]
-		return callback("TODO Create picture URL")
-		_createPersonWithVerifiedAddresses(verInfo.name, verInfo.color, verInfo.passwordHash, {}, addresses, pictureUrl, function(err, person) {
+		var pictureUrl = payloads.underlyingPersonPictureUrl(verInfo.pictureSecret)
+		var opts = {}
+		_createPersonWithVerifiedAddresses(verInfo.name, verInfo.color, verInfo.passwordHash, pictureUrl, addresses, opts, function(err, person) {
 			if (err) { return callback(err) }
 			db.lookup().updateOne('UPDATE addressVerification SET usedTime=? WHERE verificationId=?', [db.time(), verInfo.verificationId], function(err) {
-				callback(err, person)
+				callback(err, 'Ok')
 			})
 		})
 	})
 	
 	function _getMatchingVerification(callback) {
-		var sql = 'SELECT verificationId, addressId, addressType, passwordHash, color, name, token, createdTime, usedTime '
-			+ 'FROM addressVerification WHERE verificationId=? AND token=?'
-		db.lookup().selectOne(sql, [verificationId, verificationToken], function(err, verification) {
+		lookupService.getAddressVerification(verificationId, verificationToken, function(err, verification) {
 			if (err) { return callback(err) }
 			if (verification.usedTime) { return callback('Sorry, this verification link has already been used') }
 			checkPasswordAgainstHash(password, verification.passwordHash, function(err) {
@@ -51,7 +51,7 @@ function withFacebookSession(name, color, email, password, fbSession, callback) 
 		var pictureUrl = 'http://graph.facebook.com/'+fbAccount.id+'/picture?type=large'
 		var addresses = [Addresses.email(email), Addresses.facebook(fbAccount.id)]
 		var opts = { birthdate:_getFbAccBirthdate(fbAccount.birthday), locale:fbAccount.locale, gender:fbAccount.gender, facebookId:fbAccount.id }
-		_createPersonWithVerifiedAddresses(name, color, passwordHash, opts, addresses, pictureUrl, callback)
+		_createPersonWithVerifiedAddresses(name, color, passwordHash, pictureUrl, addresses, opts, callback)
 	})
 	
 	function _getFacebookData(callback) {
@@ -71,7 +71,7 @@ function withFacebookSession(name, color, email, password, fbSession, callback) 
 	}
 }
 
-function _createPersonWithVerifiedAddresses(name, color, passwordHash, opts, addresses, pictureUrl, callback) {
+function _createPersonWithVerifiedAddresses(name, color, passwordHash, pictureUrl, addresses, opts, callback) {
 	parallel(_lookupAddresses, _createPerson, function(err, addrInfos, personId) {
 		if (err) { return callack(err) }
 		parallel(_createPictureRedirect, _claimVerifiedAddresses, callback)
@@ -80,7 +80,7 @@ function _createPersonWithVerifiedAddresses(name, color, passwordHash, opts, add
 			payloadService.makeRedirect(payloads.personPicturePath(personId), pictureUrl, callback)
 		}
 		function _claimVerifiedAddresses(callback) {
-			claimVerifiedAddresses(addrInfos, personId, callback)
+			claimVerifiedAddresses(addrInfos, personId, name, callback)
 		}
 	})
 	function _createPerson(callback) {

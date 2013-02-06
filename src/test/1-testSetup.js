@@ -1,4 +1,3 @@
-require('server/globals')
 require('./globals')
 
 var config = require('server/config/test/testConfig')
@@ -8,6 +7,7 @@ var pushService = require('server/pushService')
 sendEmail.disable()
 log.disable()
 pushService.disable()
+payloadService.disable()
 
 ;(function(){
 	for (var i=0, arg; arg=process.argv[i]; i++) {

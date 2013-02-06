@@ -2,7 +2,6 @@ var trim = require('std/trim')
 var uuid = require('uuid')
 var Messages = require('data/Messages')
 var pushService = require('server/PushService')
-var payloadService = require('server/payloadService')
 var parallel = require('std/parallel')
 var log = makeLog('MessageService')
 
@@ -38,7 +37,7 @@ function sendMessage(personId, participationId, clientUid, type, payload, payloa
 			
 			function _uploadPayload(next) {
 				if (type != 'picture' && type != 'audio') { return next(null, payload) }
-				payloadService.upload(personId, type, payloadFile, function(err, secret) {
+				payloadService.uploadPayload(personId, type, payloadFile, function(err, secret) {
 					if (!err) { payload.secret = secret }
 					return next(err, payload)
 				})

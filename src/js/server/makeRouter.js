@@ -6,7 +6,6 @@ var http = require('http')
 var semver = require('semver')
 var uuid = require('uuid')
 var messageService = require('server/MessageService')
-var payloadService = require('server/payloadService')
 var setPushAuth = require('server/fn/setPushAuth')
 var getConversations = require('server/fn/getConversations')
 var addAddresses = require('server/fn/addAddresses')
@@ -14,6 +13,7 @@ var sendEmail = require('server/fn/sendEmail')
 var createSession = require('server/fn/createSession')
 var requestVerification = require('server/fn/requestVerification')
 var register = require('server/fn/register')
+var authenticateRequest = require('server/fn/authenticateRequest')
 
 var log = makeLog('Router')
 
@@ -148,7 +148,7 @@ var filters = (function makeFilters() {
 	
 	function filterSession(req, res, next) {
 		req.authorization = req.headers.authorization || req.param('authorization')
-		sessionService.authenticateRequest(req, function(err, personId) {
+		authenticateRequest(req, function(err, personId) {
 			if (err) {
 				log('bad auth', req.authorization)
 				return next(err)
@@ -173,7 +173,7 @@ function setupRoutes(app, opts) {
 	app.all('/api/address/verification', function(req, res) {
 		var params = getMultipartParams(req, 'address', 'name', 'color', 'password')
 		var pictureFile = req.files && req.files.picture
-		requestVerification(params.address, params.name, params.color, params.password, curry(respond, req, res))
+		requestVerification(params.address, params.name, params.color, params.password, pictureFile, curry(respond, req, res))
 	})
 	app.post('/api/register/withAddressVerification', function(req, res) {
 		var params = getJsonParams(req, 'verificationId', 'verificationToken', 'password')
@@ -373,9 +373,9 @@ function getUrlParams(req) {
 }
 
 function getMultipartParams(req) {
-	var multipartParams = JSON.parse(req.body['multipartParams'])
+	var jsonParams = JSON.parse(req.body['jsonParams'])
 	return logParams(req, _collectParams(arguments, function(argName) {
-		return multipartParams[argName]
+		return jsonParams[argName]
 	}))
 }
 

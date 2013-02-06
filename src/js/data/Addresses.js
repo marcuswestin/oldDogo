@@ -26,7 +26,9 @@ function email(emailAddress, name) { return address('email', emailAddress, name)
 function facebook(facebookId, name) { return address('facebook', facebookId, name) }
 function phone(phoneNumber, name) { return address('phone', phoneNumber, name) }
 function address(addressType, addressId, name) {
-	return { addressType:addressType, addressId:addressId, name:name }
+	var addrInfo = { addressType:addressType, addressId:addressId }
+	if (name) { addrInfo.name = name }
+	return addrInfo
 }
 
 /* Address format checks.

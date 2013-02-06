@@ -1,6 +1,7 @@
-var log = makeLog('LookupService')
+var uuid = require('uuid')
 var inverse = require('std/inverse')
 
+var log = makeLog('LookupService')
 var encodeAddressTypes = { 'email':2, 'phone':3, 'facebook':4 }
 var decodeAddressTypes = inverse(encodeAddressTypes)
 
@@ -8,7 +9,8 @@ module.exports = {
 	// Register and claim addresses
 	claimVerifiedAddress: claimVerifiedAddress,
 	createVerifiedAddress: createVerifiedAddress,
-	createVerification: createVerification,
+	createAddressVerification: createAddressVerification,
+	getAddressVerification: getAddressVerification,
 	// Lookup addresses
 	lookup: lookup,
 	lookupEmail: lookupEmail,
@@ -25,12 +27,25 @@ function claimVerifiedAddress(addrInfo, personId, name, callback) {
 function createVerifiedAddress(addrInfo, personId, name, callback) {
 	var sql = 'INSERT INTO addressLookup SET name=?, personId=?, claimedTime=?, createdTime=?, addressId=?, addressType=?'
 	var addressType = encodeAddressTypes[addrInfo.addressType]
-	db.lookup().insert(sql, [name, personId, db.time(), db.time(), addrInfo.addressId, addressType], callback)
+	db.lookup().insertIgnoreId(sql, [name, personId, db.time(), db.time(), addrInfo.addressId, addressType], callback)
 }
-function createVerification(token, passwordHash, name, color, addrInfo, callback) {
-	var sql = 'INSERT INTO addressVerification SET token=?, passwordHash=?, name=?, color=?, addressId=?, addressType=?, createdTime=?'
+function createAddressVerification(passwordHash, name, color, addrInfo, pictureSecret, callback) {
+	var verificationToken = uuid.v4()
 	var addressType = encodeAddressTypes[addrInfo.addressType]
-	db.lookup().insert(sql, [token, passwordHash, name, color, addrInfo.addressId, addressType, db.time()], callback)
+	var sql = 'INSERT INTO addressVerification SET verificationToken=?, passwordHash=?, name=?, color=?, addressId=?, addressType=?, pictureSecret=?, createdTime=?'
+	var values = [verificationToken, passwordHash, name, color, addrInfo.addressId, addressType, pictureSecret, db.time()]
+	db.lookup().insert(sql, values, function(err, verificationId) {
+		callback(err, verificationId, verificationToken)
+	})
+}
+function getAddressVerification(verificationId, verificationToken, callback) {
+	var sql = 'SELECT verificationId, addressId, addressType, passwordHash, color, name, verificationToken, createdTime, usedTime '
+		+ 'FROM addressVerification WHERE verificationId=? AND verificationToken=?'
+	db.lookup().selectOne(sql, [verificationId, verificationToken], function(err, verification) {
+		if (err) { return callback(err) }
+		verification.addressType = decodeAddressTypes[verification.addressType]
+		callback(null, verification)
+	})
 }
 
 function lookup(addrInfo, callback) { _lookupByTypeAndAddress(addrInfo.addressType, addrInfo.addressId, callback) }
