@@ -1,4 +1,11 @@
+var sendEmail = require('server/fn/sendEmail')
+var pushService = require('server/pushService')
 var facebook = require('server/util/facebook')
+
+sendEmail.disable()
+pushService.disable()
+payloadService.disable()
+
 facebook.get = facebook.post = function intercept(path, params, callback) {
 	if (path == '/oauth/access_token') {
 		var data = { 'access_token':'OFFLINE_ACCESS_TOKEN_FROM_TEST_UTILS.js' }

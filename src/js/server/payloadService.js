@@ -27,7 +27,7 @@ var emptyBuffer = new Buffer(0)
 function makeRedirect(fromPath, toUrl, callback) {
 	log.debug('redirect from', payloads.base()+fromPath, 'to', toUrl)
 	var headers = { 'x-amz-website-redirect-location':toUrl }
-	if (disabled) { return callback() }
+	if (disabled) { log.debug('(disabled - skipping payload redirect)'); return callback() }
 	s3.putBuffer(fromPath, emptyBuffer, s3PersmissionAcl, headers, callback)
 }
 
@@ -46,7 +46,7 @@ function uploadPersonPicture(pictureFile, callback) {
 function _doUpload(type, path, file, callback) {
 	var uploadHeaders = { 'content-type':payloads.mimeTypes[type], 'content-length':file.size }
 	log.debug('uploading', file.path+' -> '+path, uploadHeaders)
-	if (disabled) { return callback() }
+	if (disabled) { log.debug('(disabled - skipping payload upload)'); return callback() }
 	s3.putFile(path, file.path, s3PersmissionAcl, uploadHeaders, function(err, headers) {
 		if (err) { log.error("Error uploading", path, err) }
 		callback(err)

@@ -9,12 +9,13 @@ run: run-databases
 	${NODE} src/js/server/runServer.js --config=dev
 
 # Run all tests
-online = true
+offline = false
 verbose = true
 time = true
-test: reset-db test-server
-t:
-	make test online=false verbose=true time=false
+test: reset-db ${PHANTOMJS}
+	./node src/test/2-testApi.js --dogo-test-offline=${offline} --dogo-test-verbose=${verbose} --dogo-test-time=${time}
+test-quick:
+	make test offline=true verbose=true time=false
 
 icons:
 	# app meta resources
@@ -70,11 +71,6 @@ push-nginx:
 	make deploy-nginx-conf
 deploy-nginx-conf: ${FAB}
 	fab deploy_nginx_conf:${GIT_REV} -H dogo-web1
-
-# Testing
-#########
-test-server: ${PHANTOMJS}
-	./node src/test/2-testApi.js
 
 # Setup
 #######

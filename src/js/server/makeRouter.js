@@ -179,6 +179,10 @@ function setupRoutes(app, opts) {
 		var params = getJsonParams(req, 'verificationId', 'verificationToken', 'password')
 		register.withAddressVerification(params.verificationId, params.verificationToken, params.password, curry(respond, req, res))
 	})
+	app.post('/api/session', filters.oldClients, function postSession(req, res) {
+		var params = getJsonParams(req, 'address', 'password')
+		createSession(params.address, params.password, curry(respond, req, res))
+	})
 	
 	
 	

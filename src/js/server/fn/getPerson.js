@@ -2,12 +2,12 @@ module.exports = getPerson
 getPerson.andPasswordHash = getPersonAndPasswordHash
 
 function getPerson(personId, callback) {
-	var sql = 'SELECT facebookId, phoneNumbersJson, emailAddressesJson, name, personId, claimedTime, waitlistedTime FROM person WHERE personId=?'
+	var sql = 'SELECT facebookId, phoneNumbersJson, emailAddressesJson, name, color, personId, joinedTime FROM person WHERE personId=?'
 	return _selectPerson(sql, personId, callback)
 }
 
 function getPersonAndPasswordHash(personId, callback) {
-	var sql = 'SELECT facebookId, passwordHash, phoneNumbersJson, emailAddressesJson, name, personId, claimedTime, waitlistedTime FROM person WHERE personId=?'
+	var sql = 'SELECT facebookId, passwordHash, phoneNumbersJson, emailAddressesJson, name, color, personId, joinedTime FROM person WHERE personId=?'
 	return _selectPerson(sql, personId, function(err, person) {
 		if (err) { return callback(err) }
 		var passwordHash = remove(person, 'passwordHash')
@@ -16,7 +16,7 @@ function getPersonAndPasswordHash(personId, callback) {
 }
 
 function _selectPerson(sql, personId, callback) {
-	db.people(personId).selectOne(personSql, [personId], function(err, person) {
+	db.people(personId).selectOne(sql, [personId], function(err, person) {
 		if (err || !person) { return callback(err) }
 		person.phoneNumbers = jsonList(remove(person, 'phoneNumbersJson'))
 		person.emailAddresses = jsonList(remove(person, 'emailAddressesJson'))

@@ -20,16 +20,19 @@ module.exports = {
 }
 
 function claimVerifiedAddress(addrInfo, personId, name, callback) {
+	log.debug('claim verified address', addrInfo, personId, name)
 	var sql = 'UPDATE addressLookup SET name=?, personId=?, claimedTime=? WHERE addressId=? AND addressType=? AND claimedTime IS NULL'
 	var addressType = encodeAddressTypes[addrInfo.addressType]
 	db.lookup().updateOne(sql, [name, personId, db.time(), addrInfo.addressId, addressType], callback)
 }
 function createVerifiedAddress(addrInfo, personId, name, callback) {
+	log.debug('create verified address', addrInfo, personId, name)
 	var sql = 'INSERT INTO addressLookup SET name=?, personId=?, claimedTime=?, createdTime=?, addressId=?, addressType=?'
 	var addressType = encodeAddressTypes[addrInfo.addressType]
 	db.lookup().insertIgnoreId(sql, [name, personId, db.time(), db.time(), addrInfo.addressId, addressType], callback)
 }
 function createAddressVerification(passwordHash, name, color, addrInfo, pictureSecret, callback) {
+	log.debug('create address verification', addrInfo, name)
 	var verificationToken = uuid.v4()
 	var addressType = encodeAddressTypes[addrInfo.addressType]
 	var sql = 'INSERT INTO addressVerification SET verificationToken=?, passwordHash=?, name=?, color=?, addressId=?, addressType=?, pictureSecret=?, createdTime=?'
@@ -51,8 +54,9 @@ function getAddressVerification(verificationId, verificationToken, callback) {
 function lookup(addrInfo, callback) { _lookupByTypeAndAddress(addrInfo.addressType, addrInfo.addressId, callback) }
 function lookupEmail(email, callback) { _lookupByTypeAndAddress(Addresses.types.email, email, callback) }
 function _lookupByTypeAndAddress(addressType, addressId, callback) {
+	log.debug('lookup address', addressType, addressId)
 	var sql = 'SELECT addressType, addressId, personId, name, conversationIdsJson, createdTime, claimedTime FROM addressLookup WHERE addressType=? AND addressId=?'
-	db.lookup().selectOne(sql, [addressType, addressId], function(err, addrInfo) {
+	db.lookup().selectOne(sql, [encodeAddressTypes[addressType], addressId], function(err, addrInfo) {
 		if (err) { return callback(err, null) }
 		if (!addrInfo) { return callback(null, null) }
 		addrInfo.conversationIds = jsonList(remove(addrInfo, 'conversationIdsJson'))

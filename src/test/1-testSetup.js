@@ -1,18 +1,11 @@
 require('./globals')
 
 var config = require('server/config/test/testConfig')
-var sendEmail = require('server/fn/sendEmail')
-var pushService = require('server/pushService')
-
-sendEmail.disable()
-log.disable()
-pushService.disable()
-payloadService.disable()
 
 ;(function(){
 	for (var i=0, arg; arg=process.argv[i]; i++) {
-		if (arg == '--dogo-test-online=false') {
-			require('test/enableOfflineMode')
+		if (arg == '--dogo-test-offline=true') {
+			require('./enableOfflineMode')
 		}
 		if (arg == '--dogo-test-verbose=false') {
 			log.disable()
@@ -25,8 +18,13 @@ payloadService.disable()
 
 process.nextTick(function() {
 	tinyTest.run({
-		onTestStart:function(stack) { console.log("Test:".white, stack.join(' | ').cyan) },
-		onTestDone: function(stack, duration) { console.log('Done: '.white, (duration+'ms').greenLight) },
+		onTestStart:function(stack) { console.log("Test:".white, stack.join(' | ').white) },
+		onTestDone: function(stack, duration) {
+			var durationStr = duration < 50 ? (duration+'ms').greenLight
+				: duration < 200 ? (duration+'ms').yellowLight
+				: (duration+'ms').redLight
+			console.log('Done: '.white, durationStr)
+		},
 		onTestFail: function(stack, err) { console.error("ERROR".red, stack.join(' | ').red, err) },
 		onAllDone: function(duration) {
 			console.log("All Done:".green, (duration+'ms').greenLight)

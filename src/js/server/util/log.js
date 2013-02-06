@@ -1,11 +1,9 @@
 var sendSms = require('server/fn/sendSms')
 
-var log = module.exports = {
-	log:makeLog('Global'),
-	disable:disable,
-	makeLog:makeLog,
-	enableDebugLoggin:enableDebugLoggin
-}
+var log = module.exports = makeLog('Global')
+log.disable = disable
+log.makeLog = makeLog
+log.enableDebugLoggin = enableDebugLoggin
 
 var disabled = false
 function disable() { disabled = true }

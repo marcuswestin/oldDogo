@@ -3,6 +3,7 @@ tinyTest = require('tinyTest/tinyTest')
 setup = tinyTest.setup
 then = tinyTest.then
 is = tinyTest.is
+has = tinyTest.has
 waitFor = tinyTest.waitFor
 tap = tinyTest.tap
 count = tinyTest.count

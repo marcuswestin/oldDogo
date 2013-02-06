@@ -10,7 +10,7 @@ setup('Ping', function() {
 })
 
 setup('Email registration', function() {
-	var userInfo = { name:'Joe Doe', color:1, password:'foobarcat', address:Addresses.email('foo@dogo.co') }
+	var testPerson = { name:'Joe Doe', color:1, password:'foobarcat', address:Addresses.email('foo@dogo.co') }
 	var devVerificationUrl = null
 	var picPath = null
 	
@@ -23,20 +23,24 @@ setup('Email registration', function() {
 	})
 	then('request verification', function(done) {
 		var picData = fs.readFileSync(picPath)
-		api.jsonMultipart('api/address/verification', userInfo, { picture:picData }, function(err, res) {
+		api.jsonMultipart('api/address/verification', testPerson, { picture:picData }, function(err, res) {
 			check(err)
 			is(devVerificationUrl = res.devVerificationUrl)
 			done()
 		})
 	})
 	then('verify address', function(done) {
-		params = url(devVerificationUrl).getSearchParams()
-		api.post('api/register/withAddressVerification', { password:userInfo.password, verificationToken:params.t, verificationId:params.i }, function(err, res) {
+		var verParams = url(devVerificationUrl).getSearchParams()
+		api.post('api/register/withAddressVerification', { password:testPerson.password, verificationToken:verParams.t, verificationId:verParams.i }, done)
+	})
+	then('login', function(done) {
+		api.post('api/session', { address:testPerson.address, password:testPerson.password }, function(err, sessionInfo) {
 			check(err)
+			has(sessionInfo.person, { name:testPerson.name, color:testPerson.color })
+			is(sessionInfo.authToken)
+			is(sessionInfo.clientUidBlock)
+			is(sessionInfo.config)
 			done()
 		})
 	})
-	// then('login', function(done) {
-	// 	
-	// })
 })
