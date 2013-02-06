@@ -219,7 +219,7 @@ function setupRoutes(app, opts) {
 	app.post('/api/test/upload', function(req, res) {
 		log.debug("TODO Update files", req.files)
 	})
-	app.get('/api/ping', function(req, res) {
+	app.all('/api/ping', function(req, res) {
 		res.end('"Dogo!"')
 	})
 	// app.post('/api/register', filters.oldClients, function postRegister(req, res) {
