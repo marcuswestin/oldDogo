@@ -85,7 +85,7 @@ function _facebookConnect() {
 				})
 				
 				var newAddresses = map(friendsByFbId, function(fbFriend) {
-					return { addressType:Addresses.types.facebook, addressId:fbFriend.id, name:fbFriend.name }
+					return Addresses.facebook(fbFriend.id, fbFriend.name)
 				})
 				
 				newAddresses = newAddresses.slice(0,10) // for testing

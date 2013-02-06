@@ -90,7 +90,7 @@ function renderAccount(view) {
 		div('button', 'Register Account', button(function() {
 
 			view.email = trim($('#email').val())
-			var emailError = registration.checkEmail(view.email)
+			var emailError = registration.check(Addresses.email(view.email))
 			if (emailError) { return error(emailError) }
 
 			view.password = trim($('#password').val())

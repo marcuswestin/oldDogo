@@ -1,17 +1,20 @@
 var sendEmail = require('server/fn/sendEmail')
+var registration = require('data/registration')
+var lookupService = require('server/lookupService')
 
-module.exports = function requestVerification(name, color, email, password, callback) {
-	var error = registration.checkAll({ name:name, color:color, email:email, password:password })
+module.exports = function requestVerification(address, name, color, password, callback) {
+	var error = registration.checkAll({ name:name, color:color, address:address, password:password })
 	if (error) { return callback(error) }
 	
-	lookupService.lookupEmail(email, function(err, personId, addrInfo) {
+	if (!Addresses.isEmail(address)) { return callback("Unimplemented: requestVerification for type "+address.addressType) }
+	
+	lookupService.lookup(address, function(err, personId, addrInfo) {
 		if (err) { return callback(err) }
-		if (personId) { return callback('That email is already used') }
+		if (personId) { return callback(address.addressId+' is already used') }
 		password.createHash(password, function(err, passwordHash) {
 			if (err) { return callback(err) }
 			var token = uuid.v4()
-			var sql = 'INSERT INTO addressVerification SET token=?, passwordHash=?, name=?, color=?, addressId=?, addressType=?, createdTime=?'
-			db.lookup().insert(sql, [token, passwordHash, name, color, email, Addresses.types.email, db.time()], function(err, verificationId) {
+			lookupService.createVerification(token, passwordHash, name, color, address, function(err, verificationId) {
 				if (err) { return callback(err) }
 				var url = 'https://dogoapp.com/v?i='+verificationId+'&t='+token
 				var text = 'Please verify your email address by visiting this link: '+url

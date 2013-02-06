@@ -12,8 +12,8 @@ CREATE TABLE addressLookup (
 CREATE TABLE addressVerification (
 	verificationId BIGINT UNSIGNED NOT NULL,
 	token VARCHAR(36) NOT NULL,
-	addressId VARCHAR(255) NOT NULL,
 	addressType TINYINT UNSIGNED NOT NULL,
+	addressId VARCHAR(255) NOT NULL,
 	name VARCHAR(255) NOT NULL,
 	color TINYINT UNSIGNED NOT NULL,
 	passwordHash VARCHAR(60) NOT NULL,

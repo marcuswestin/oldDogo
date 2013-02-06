@@ -5,8 +5,12 @@ var devConfig = require('server/config/dev/devConfig').push
 var prodConfig = require('server/config/prod/prodConfig').push
 
 module.exports = {
-	sendMessagePush:sendMessagePush
+	sendMessagePush:sendMessagePush,
+	disable:disable
 }
+
+var disabled = false
+function disable() { disabled = true }
 
 var apnsConnections = {
 	dev: _connect({
@@ -41,6 +45,7 @@ function _onApnsError() {
 }
 
 function sendMessagePush(toPersonId, pushFromName, message, prodPush) {
+	if (disabled) { return }
 	db.people(toPersonId).selectOne('SELECT pushJson FROM person WHERE personId=?', [toPersonId], function(err, res) {
 		if (err) { return }
 		var pushInfoList = JSON.parse(res.pushJson)

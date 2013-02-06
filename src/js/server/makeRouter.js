@@ -12,6 +12,7 @@ var getConversations = require('server/fn/getConversations')
 var addAddresses = require('server/fn/addAddresses')
 var sendEmail = require('server/fn/sendEmail')
 var createSession = require('server/fn/createSession')
+var requestVerification = require('server/fn/requestVerification')
 
 var log = makeLog('Router')
 
@@ -168,6 +169,18 @@ var filters = (function makeFilters() {
 }())
 
 function setupRoutes(app, opts) {
+	app.all('/api/address/verification', function(req, res) {
+		if (!req) { throw new Error('asd') }
+		var params = getJsonParams(req, 'address', 'name', 'color', 'password')
+		requestVerification(params.address, params.name, params.color, params.password, curry(respond, req, res))
+	})
+	app.post('/api/register/withAddress', function(req, res) {
+		var params = getJsonParams(req, 'verificationId', 'verificationToken', 'password')
+		register.withAddressVerification(params.verificationId, params.verificationToken, params.password, curry(respond, req, res))
+	})
+	
+	
+	
 	app.post('/api/waitlist', function(req, res) {
 		var params = getJsonParams(req, 'emailAddress')
 		accountService.lookupOrCreateByEmail(params.emailAddress, function(err, person) {
@@ -374,7 +387,10 @@ function getJsonParams(req) {
 function _collectParams(args, collectFn) {
 	var params = {}
 	each(slice(args, 1), function(argName) {
-		params[argName] = trim(collectFn(argName))
+		params[argName] = collectFn(argName)
+		if (typeof params[argName] == 'string') {
+			params[argName] = trim(params[argName])
+		}
 	})
 	return params
 }

@@ -1,7 +1,6 @@
 module.exports = {
 	checkAll:checkAll,
 	checkName:checkName,
-	checkEmail:checkEmail,
 	checkPassword:checkPassword
 }
 
@@ -9,7 +8,7 @@ function checkAll(params) {
 	var error
 	if (error = checkName(params.name)) { return error }
 	if (error = checkColor(params.color)) { return error }
-	if (error = checkEmail(params.email)) { return error }
+	if (error = checkAddress(params.address)) { return error }
 	if (error = checkPassword(params.password)) { return error }
 }
 
@@ -28,9 +27,9 @@ function checkName(name) {
 	}
 }
 
-function checkEmail(email) {
-	if (!Addresses.verifyFormat({ addressType:'email', addressId:email })) {
-		return 'Check your email address.'
+function checkAddress(address) {
+	if (!Addresses.verifyFormat(address)) {
+		return 'Check '+address.addressId+'.'
 	}
 }
 

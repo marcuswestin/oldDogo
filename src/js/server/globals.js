@@ -16,21 +16,18 @@ asyncEach = require('std/asyncEach')
 parallel = require('std/parallel')
 curry = require('std/curry')
 time = require('std/time')
+trim = require('std/trim')
 
 Addresses = require('data/Addresses')
 
 makeTimer = require('server/util/makeTimer')
-makeLog = require('server/util/log').makeLog
-log = makeLog('Global')
+log = require('server/util/log')
+makeLog = log.makeLog
 
 db = require('server/db')
 
 jsonList = function(jsonProperty) { return jsonProperty ? JSON.parse(jsonProperty) : [] }
-remove = function(obj, prop) {
-	var val = obj[prop]
-	delete obj[prop]
-	return val
-}
+remove = function(obj, prop) { var val = obj[prop]; delete obj[prop]; return val }
 
 makeAlert = function() { return { args:arguments, alert:true } }
 logError = logErr = function logError(err, callback /* , args ... */) {

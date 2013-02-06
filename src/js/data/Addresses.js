@@ -1,35 +1,40 @@
-var types = { 'facebook':2, 'email':3, 'phone':4 }
 module.exports = {
-	types:types,
-	type:types,
-	
 	verifyFormat:verifyFormat,
 	verifyEmailFormat:verifyEmailFormat,
 	verifyPhoneFormat:verifyPhoneFormat,
 	verifyFacebookFormat:verifyFacebookFormat,
 	
-	isType:isType,
 	isEmail:isEmail,
+	isFacebook:isFacebook,
 	isPhone:isPhone,
-	isFacebook:isFacebook
+	
+	address:address,
+	email:email,
+	facebook:facebook,
+	phone:phone
 }
 
-/* Address type inquiry.
- ***********************/
-function isType(typeToTest, typeName) {
-	if (typeof typeToTest == 'object') { typeToTest = typeToTest.type }
-	return (typeof typeToTest == 'number') ? (typeToTest == types[typeName]) : (typeToTest == typeName)
+/* Type inquires
+ ***************/
+function isPhone(address) { return address.addressType == 'phone' }
+function isEmail(address) { return address.addressType == 'email' }
+function isFacebook(address) { return address.addressType == 'facebook' }
+
+/* Address makers
+ ****************/
+function email(emailAddress, name) { return address('email', emailAddress, name) }
+function facebook(facebookId, name) { return address('facebook', facebookId, name) }
+function phone(phoneNumber, name) { return address('phone', phoneNumber, name) }
+function address(addressType, addressId, name) {
+	return { addressType:addressType, addressId:addressId, name:name }
 }
-function isEmail(type) { return isType(type, 'email') }
-function isFacebook(type) { return isType(type, 'facebook') }
-function isPhone(type) { return isType(type, 'phone') }
 
 /* Address format checks.
  ************************/
 function verifyFormat(address) {
-	if (isEmail(address)) { return verifyEmailFormat(address) }
-	if (isFacebook(address)) { return verifyFacebookFormat(address) }
-	if (isPhone(address)) { return verifyPhoneFormat(address) }
+	if (address.addressType == 'email') { return verifyEmailFormat(address.addressId) }
+	if (address.addressType == 'facebook') { return verifyFacebookFormat(address.addressId) }
+	if (address.addressType == 'phone') { return verifyPhoneFormat(address.addressId) }
 }
 
 var domainRegex = /^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}$/

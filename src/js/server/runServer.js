@@ -21,16 +21,14 @@ function getConfig() {
 		if (argv[key] == null) { continue }
 		config[key] = (argv[key] == 'false' ? false : argv[key])
 	}
-	if (argv.config == 'dev') { config.dev = true }
+	if (argv.config == 'dev' || argv.config == 'test') { config.dev = true }
 	return config
 }
 
 function runMaster(config) {
-	var numCPUs = Math.min(require('os').cpus().length - 1, 2)
-	var minCpus = 1
-	var maxCpus = config.dev ? 2 : 3
-	if (numCPUs < minCpus) { numCPUs = minCpus }
-	if (numCPUs > maxCpus) { numCPUs = maxCpus }
+	var clip = require('std/clip')
+	var maxForks = config.dev ? 2 : 8
+	var numForks = clip(require('os').cpus().length, 1, maxForks)
 	
 	var lastSendTime
 	var onBadDeath = function(exitCode) {
@@ -41,7 +39,7 @@ function runMaster(config) {
 	
 	require('server/fn/sendSms').configure(config.twilio) // log.alert depends on sendSms
 	
-	for (var i = 0; i < numCPUs; i++) {
+	for (var i = 0; i < numForks; i++) {
 		cluster.fork()
 	}
 	var count = 0

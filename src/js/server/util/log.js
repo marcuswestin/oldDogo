@@ -1,33 +1,38 @@
 var sendSms = require('server/fn/sendSms')
 
 var log = module.exports = {
+	log:makeLog('Global'),
+	disable:disable,
 	makeLog:makeLog,
-	doLog:doLog,
 	enableDebugLoggin:enableDebugLoggin
 }
 
-function enableDebugLoggin() { logDebug = true }
+var disabled = false
+function disable() { disabled = true }
+
 var logDebug = false
+function enableDebugLoggin() { logDebug = true }
 
 function makeLog(name) {
 	var padLength = 18
 	var pad = new Array(padLength-name.length).join(' ')+'-'+' '
-	return _.extend(function logInfo() { logDebug && log.doLog(pad, name, 'info'.blue, getArgsString(arguments)) },
+	return _.extend(function logInfo() { logDebug && doLog(pad, name, 'info'.blue, getArgsString(arguments)) },
 		{
-			debug: function logDebug() { log.doLog(pad, name, 'debug'.cyan, getArgsString(arguments).cyan) },
-			info: function logInfo() { log.doLog(pad, name, 'info'.blue, getArgsString(arguments)) },
-			warn: function logWarn() { log.doLog(pad, name, 'WARN'.pink, getArgsString(arguments)) },
-			error: function logError() { log.doLog(pad, name, 'ERRO'.red, getArgsString(arguments)) },
+			debug: function logDebug() { doLog(pad, name, 'debug'.cyan, getArgsString(arguments).cyan) },
+			info: function logInfo() { doLog(pad, name, 'info'.blue, getArgsString(arguments)) },
+			warn: function logWarn() { doLog(pad, name, 'WARN'.pink, getArgsString(arguments), true) },
+			error: function logError() { doLog(pad, name, 'ERRO'.red, getArgsString(arguments), true) },
 			alert: function alert() {
 				var message = getArgsString(arguments)
-				log.doLog(pad, name.red, 'ALRT'.red, message.red)
+				doLog(pad, name.red, 'ALRT'.red, message.red, true)
 				sendSms.alertAdmin(('ALERT! '+message).substr(0, 160))
 			}
 		}
 	)
 }
 
-function doLog(pad, name, level, text) {
+function doLog(pad, name, level, text, force) {
+	if (disabled && !force) { return }
 	var d = new Date()
 	var time = d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()
 	console.log(level+' '+time+' '+name+pad, text)

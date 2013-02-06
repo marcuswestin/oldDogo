@@ -1,12 +1,20 @@
 module.exports = sendEmail
 sendEmail.configure = configure
+sendEmail.disable = disable
 
 var ses
 function configure(awsConf) {
 	ses = require('aws2js').load('ses', awsConf.accessKeyId, awsConf.accessKeySecret)
 }
 
+var disabled = false
+function disable() {
+	disabled = true
+}
+
 function sendEmail(fromEmail, toEmail, subject, text, html, callback) {
+	if (disabled) { return callback(null, null) }
+	
 	var args = {
 		'Message.Body.Text.Charset': 'UTF-8',
 		'Message.Body.Text.Data': text,

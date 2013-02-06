@@ -1,17 +1,19 @@
+var claimVerifiedAddresses = require('server/fn/claimVerifiedAddresses')
+
 module.exports = {
-	withAddressToken:withAddressToken,
+	withAddressVerification:withAddressVerification,
 	withFacebookSession:withFacebookSession
 }
 
-function registerWithAddressToken(verificationId, verificationToken, password, callback) {
+function withAddressVerification(verificationId, verificationToken, password, callback) {
 	parallel(_lookupAddress, _getMatchingVerification, function(err, addrInfo, verInfo) {
 		if (err) { return callback(err) }
 		var addresses = [{ addressId:verInfo.addressId, addressType:verInfo.addressType }]
 		return callback("TODO Create picture URL")
-		createPersonWithVerifiedAddresses(verInfo.name, verInfo.color, verInfo.passwordHash, {}, addresses, pictureUrl, function(err, personRes) {
+		_createPersonWithVerifiedAddresses(verInfo.name, verInfo.color, verInfo.passwordHash, {}, addresses, pictureUrl, function(err, person) {
 			if (err) { return callback(err) }
 			db.lookup().updateOne('UPDATE addressVerification SET usedTime=? WHERE verificationId=?', [db.time(), verInfo.verificationId], function(err) {
-				callback(err, personRes)
+				callback(err, person)
 			})
 		})
 	})
@@ -37,10 +39,10 @@ function registerWithAddressToken(verificationId, verificationToken, password, c
 }
 
 // When you register with facebook we can skip the email verification step!
-function registerWithFacebook(name, color, email, password, fbSession, callback) {
+function withFacebookSession(name, color, email, password, fbSession, callback) {
 	if (fbSession) { return callback('Missing facebook session') }
 	
-	var err = registration.checkAll({ name:name, color:color, email:email, password:password })
+	var err = registration.checkAll({ name:name, color:color, address:Addresses.email(email), password:password })
 	if (err) { return callback(err) }
 	
 	parallel(_getFacebookData, curry(password.createHash, password), function(err, fbAccount, passwordHash) {
@@ -51,9 +53,9 @@ function registerWithFacebook(name, color, email, password, fbSession, callback)
 			return callback('Hmm... That email is not right. Are you trying to trick us? Why not join forces instead, ping us at jobs@dogo.co')
 		}
 		var pictureUrl = 'http://graph.facebook.com/'+fbAccount.id+'/picture?type=large'
-		var addresses = [{ addressType:Addresses.types.email, addressId:email }, { addressType:Addresses.types.facebook, addressId:fbAccount.id }]
+		var addresses = [Addresses.email(email), Addresses.facebook(fbAccount.id)]
 		var opts = { birthdate:_getFbAccBirthdate(fbAccount.birthday), locale:fbAccount.locale, gender:fbAccount.gender, facebookId:fbAccount.id }
-		createPersonWithVerifiedAddresses(name, color, passwordHash, opts, addresses, pictureUrl, callback)
+		_createPersonWithVerifiedAddresses(name, color, passwordHash, opts, addresses, pictureUrl, callback)
 	})
 	
 	function _getFacebookData(callback) {
@@ -73,13 +75,10 @@ function registerWithFacebook(name, color, email, password, fbSession, callback)
 	}
 }
 
-function createPersonWithVerifiedAddresses(name, color, passwordHash, opts, addresses, pictureUrl, callback) {
+function _createPersonWithVerifiedAddresses(name, color, passwordHash, opts, addresses, pictureUrl, callback) {
 	parallel(_lookupAddresses, _createPerson, function(err, addrInfos, personId) {
 		if (err) { return callack(err) }
-		parallel(_createPictureRedirect, _claimVerifiedAddresses, function finish(err, _, _) {
-			if (err) { return callback(err) }
-			getPerson(personId, callback)
-		})
+		parallel(_createPictureRedirect, _claimVerifiedAddresses, callback)
 		
 		function _createPictureRedirect(callback) {
 			payloadService.makeRedirect(payloads.personPicturePath(personId), pictureUrl, callback)

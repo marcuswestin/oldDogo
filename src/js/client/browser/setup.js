@@ -171,10 +171,11 @@ function setupBrowserDebugMode() {
 	})))
 	$buttons.append(div(padded,
 		div(null, 'Add email address', button(function() {
-			Conversations.addAddresses([{ addressType:Addresses.type.email, addressId:$('#addEmailAddress').val(), name:'Test Email' }], function() {
+			var email = trim($('#addEmailAddress').val())
+			$('#addEmailAddress').val('')
+			Conversations.addAddresses([{ Addresses.email(email, 'Test Email') }], function() {
 				console.log('addedd', arguments)
 			})
-			$('#addEmailAddress').val('')
 		})),
 		input({ id:'addEmailAddress' })
 	))

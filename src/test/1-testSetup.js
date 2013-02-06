@@ -2,6 +2,12 @@ require('server/globals')
 require('./globals')
 
 var config = require('server/config/test/testConfig')
+var sendEmail = require('server/fn/sendEmail')
+var pushService = require('server/pushService')
+
+sendEmail.disable()
+log.disable()
+pushService.disable()
 
 ;(function(){
 	for (var i=0, arg; arg=process.argv[i]; i++) {
@@ -9,13 +15,25 @@ var config = require('server/config/test/testConfig')
 			require('test/enableOfflineMode')
 		}
 		if (arg == '--dogo-test-verbose=false') {
-			require('server/util/log').doLog = function() { /* ignore */ }
+			log.disable()
 		}
 		if (arg == '--dogo-test-time=false') {
 			require('server/util/makeTimer').disable()
 		}
 	}
 }())
+
+process.nextTick(function() {
+	tinyTest.run({
+		onTestStart:function(stack) { console.log("Test:".white, stack.join(' | ').cyan) },
+		onTestDone: function(stack, duration) { console.log('Done: '.white, (duration+'ms').greenLight) },
+		onTestFail: function(stack, err) { console.error("ERROR".red, stack.join(' | ').red, err) },
+		onAllDone: function(duration) {
+			console.log("All Done:".green, (duration+'ms').greenLight)
+			process.exit(0)
+		}
+	})
+})
 
 setup('Example test', function() {
 	then('run it', function(done) {
@@ -32,18 +50,6 @@ setup('API server', function() {
 	})
 	then('ping it', function(done) {
 		api.get('api/ping', done)
-	})
-})
-
-process.nextTick(function() {
-	tinyTest.run({
-		onTestStart:function(stack) { console.log("Test:".white, stack.join(' | ').cyan) },
-		onTestDone: function(stack, duration) { console.log('Done: '.white, (duration+'ms').greenLight) },
-		onTestFail: function(stack, err) { console.error("ERROR".red, stack.join(' | ').red, err) },
-		onAllDone: function(duration) {
-			console.log("All Done:".green, (duration+'ms').greenLight)
-			process.exit(0)
-		}
 	})
 })
 
