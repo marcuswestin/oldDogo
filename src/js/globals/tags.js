@@ -6,7 +6,6 @@ style = require('tags/style')
 makeScroller = require('tags/scroller')
 draggable = require('tags/draggable')
 overlay = require('tags/overlay')
-fitInputText = require('tags/util/fitInputText')
 
 viewport = require('tags/viewport')
 if (gIsPhantom || !tags.isTouch) {
@@ -38,4 +37,5 @@ ul = function() {
 	}))
 }
 
+var fitInputText = require('tags/text/fitInputText')
 $(document).on('input', 'input', fitInputText)
