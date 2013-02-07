@@ -21,6 +21,7 @@ colors.purples = purples
 
 colors.series = series
 colors.rgb = rgb
+colors.rgba = rgba
 colors.hsvToRgb = hsvToRgb
 colors.hslToRgb = hslToRgb
 colors.rgbToHsv = rgbToHsv
@@ -46,6 +47,13 @@ function getColors() {
 rgb.string = function() { return 'rgb('+this[0]+','+this[1]+','+this[2]+')'}
 function rgb(color) {
 	color.toString = rgb.string
+	return color
+}
+
+rgba.string = function() { return 'rgba('+this[0]+','+this[1]+','+this[2]+','+this[3]+')'}
+function rgba(color, alpha) {
+	if (alpha != undefined) { color[3] = alpha }
+	color.toString = rgba.string
 	return color
 }
 

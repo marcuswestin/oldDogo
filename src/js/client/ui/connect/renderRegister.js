@@ -47,6 +47,9 @@ function renderProfile(view) {
 		var pictureUrl
 		var name = view.fbMe.name
 	}
+	
+	var colorDot = div({ id:'colorDot' }, style(absolute(183,83), { width:75, height:20, borderRadius:24, border:'1px solid rgba(255,255,255,.75)', boxShadow:'inset 0 1px 1px rgba(0,0,0,.4), inset 0 -1px 1px -1px #fff' }))
+	
 	return div('profileStep',
 		div('title', 'PROFILE'),
 		
@@ -58,7 +61,7 @@ function renderProfile(view) {
 		
 		div('listMenu profile',
 			div('menuItem', input({ id:'name', value:name, placeholder:'Your Name' })),
-			div('menuItem', span('placeholder pickColor', 'Your Color'), div({ id:'colorDot' }, style(absolute(218,82), { width:40, height:20, borderRadius:24, border:'1px solid rgba(255,255,255,.75)' })), button(function() {
+			div('menuItem', span('placeholder pickColor', 'Your Color'), colorDot, button(function() {
 				var padding = 1
 				var colorMargin = 1
 				var colorWidth = 88
@@ -76,7 +79,7 @@ function renderProfile(view) {
 								renderItem:renderColor,
 								selectItem:function(c, i) {
 									overlay.hide()
-									$('#colorDot').css(transition('background', 500)).css({ background: colors.rgb(c) })
+									$('#colorDot').css(transition('background', 500)).css({ background: colors.rgba(c, .6) })
 									view.color = i+1
 								}
 							}),
