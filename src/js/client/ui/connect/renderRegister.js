@@ -61,7 +61,7 @@ function renderProfile(view) {
 		
 		div('listMenu profile',
 			div('menuItem', input({ id:'name', value:name, placeholder:'Your Name' })),
-			div('menuItem', span('placeholder pickColor', 'Your Color'), colorDot, button(function() {
+			div('menuItem', span('placeholder pickColor', 'Your Color:'), colorDot, button(function() {
 				var padding = 1
 				var colorMargin = 1
 				var colorWidth = 88
@@ -80,6 +80,7 @@ function renderProfile(view) {
 								selectItem:function(c, i) {
 									overlay.hide()
 									$('#colorDot').css(transition('background', 500)).css({ background: colors.rgba(c, .6) })
+									$('.pickColor.placeholder').css(transition('color', 500)).css({ color:'#222' })
 									view.color = i+1
 								}
 							}),
