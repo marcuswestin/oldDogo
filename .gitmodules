@@ -70,9 +70,6 @@
 [submodule "dependencies/emoji-extractor"]
 	path = dependencies/emoji-extractor
 	url = git@github.com:FlutterbyLabs/emoji-extractor.git
-[submodule "node_modules/toobusy"]
-	path = node_modules/toobusy
-	url = git@github.com:FlutterbyLabs/node-toobusy.git
 [submodule "node_modules/bcrypt"]
 	path = node_modules/bcrypt
 	url = git://github.com/ncb000gt/node.bcrypt.js.git
