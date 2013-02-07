@@ -1,3 +1,5 @@
+@import "../../style/listMenu"
+
 #connectView
 	width 100%; absolute top 0;
 	gradient(lighten(#227EBF, 25%), lighten(#227EBF, 75%));
@@ -14,41 +16,16 @@
 	.link
 		text-decoration underline; text-align center; text-shadow 0 1px rgba(255,255,255,.5); margin 0 0 20px;
 
-	input
-		border none;
-		padding 6px 8px;
-		width 200px; height 30px;
 	.stepView
 		absolute bottom 0; -webkit-transform translateX(25px);
+		.menuItem
+			input width 200px;
 		.menu.profile
 			.menuItem input, .menuItem .pickColor
 				width 165px; margin-left 74px;
 		
 		.title
 			color #555555; text-shadow 0 1px 0 rgba(232, 232, 232, 0.71); font-weight bold; margin 0 0 10px 0;
-		.menu
-			menuPadding = 12px;
-			width 270px; margin 0 auto 20px;
-			-webkit-box-shadow: 0 1px 2px -1px rgba(13,2,54,0.74); border-radius 5px;
-			.menuItem:first-child
-				border-top-left-radius 5px; border-top-right-radius 5px;
-			.menuItem:last-child
-				border-bottom-left-radius 5px; border-bottom-right-radius 5px;
-			.menuItem
-				background rgb(238,238,238); padding menuPadding;
-				border 1px solid; border-color rgb(252,252,252) rgb(208,208,208) rgb(204,204,204);
-				color #333; text-shadow 0 1px 0 #fff;
-				font-weight 300;
-			.menuItem.active
-				background rgb(221,221,221);
-				border-top-color rgb(221,221,221);
-				-webkit-box-shadow: inset 0 1px 1px 0 rgba(0,0,0,.25), inset 0 -1px 1px 0 rgba(255,255,255,1);
-			.menuItem input
-				margin -(menuPadding); background transparent; font-weight 300; width 251px;
-			.menuItem input::-webkit-input-placeholder, .menuItem .placeholder
-				color rgb(179,179,179); text-shadow 0 1px 0 #fff;
-			.menuItem .pickColor
-				padding 0 0 0 menuPadding - 3px;
 
 		.button
 			width 270px; margin 0 auto 20px; display block;

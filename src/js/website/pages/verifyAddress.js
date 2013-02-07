@@ -1,16 +1,14 @@
 require('client/globals')
 require('website/template/scrollToTop')
+var url = require('std/url')
 
 ;(function run() {
 	$('#viewport').empty().css({ minHeight:viewport.height() + 60, minWidth:viewport.width() }).append(
-		div({ id:'content' },
-			'asd'
-		)
+		div({ id:'content' })
 	)
 	
-	var url = location.toString()
-	var path = url.substr(url.indexOf(location.pathname))
-	// /verify?v=14123&t=1781x1-asdaug87q2a-soa7lg3-asda&y=email&a=narcvs%40gmail.com
+	var appUrl = url(location).setProtocol('dogo://')
+	// dogo://dogo.co/verify?v=14123&t=1781x1-asdaug87q2a-soa7lg3-asda&y=email&a=narcvs%40gmail.com
 	if (appIsMarkedAsInstalled()) {
 		attemptOpenApp()
 		setTimeout(renderUi)
@@ -25,7 +23,7 @@ require('website/template/scrollToTop')
 	
 	function attemptOpenApp() {
 		localStorage['appInstalledInfo'] = JSON.stringify({ time:new Date().getTime() })
-		openApp('dogo://handlePath'+path, onAppNotInstalled)
+		openApp(appUrl.toString(), onAppNotInstalled)
 	}
 	
 	function onAppNotInstalled() {
@@ -34,7 +32,43 @@ require('website/template/scrollToTop')
 	}
 	
 	function renderUi() {
-		$('#content').html("<div id='openDogo'>Open Dogo</div>")
+		var urlParams = appUrl.getSearchParams()
+		$('#content').empty().append(
+			div('logo', 'Dodo'),
+			div({ id:'body' },
+				div('info', 'Verify your address'),
+				div('listMenu',
+					div('menuItem', input({ value:urlParams.a, disabled:true })),
+					div('menuItem', input({ id:'password', placeholder:'Dogo Password', type:'password' }))
+				),
+				div('button', { id:'verifyButton' }, 'Verify My Address', button(function() {
+					var params = {
+						verificationToken: urlParams.t,
+						verificationId: urlParams.i,
+						password:$('#password').val()
+					}
+					if (urlParams.personId) {
+						// TODO This is a verification of an additional address
+					} else {
+						api.post('api/register/withAddressVerification', params, function(err, res) {
+							if (err) { return error(err) }
+							$('#password').disable()
+							$('#verifyButton').replaceWith(
+								div('card',
+									div('person',
+										face(res.person, { size:80 }),
+										div('name', function() {
+											var names = res.person.name.split(' ')
+											return [div('first', names.shift()), div('rest', names.pop())]
+										})
+									)
+								)
+							)
+						})
+					}
+				}))
+			)
+		)
 		$('#openDogo').on('click', attemptOpenApp)
 	}
 }())

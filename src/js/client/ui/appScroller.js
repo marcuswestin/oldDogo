@@ -54,7 +54,7 @@ function createAndRenderScroller() {
 				style(cornerSize),
 				showBackButton
 					? div('back', icons.back, backIconDragger)
-					: div('menu', icons.menu, logoIconDragger)
+					: div('listMenu', icons.menu, logoIconDragger)
 			),
 			div('corner right', style({ borderRadius:rightCornerRadius }),
 				style(translate(viewport.width() - cornerSize.width - cornerMargin.side - 1, cornerMargin.top)),

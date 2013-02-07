@@ -26,7 +26,6 @@ function withAddressVerification(verificationId, verificationToken, password, ca
 	function _getMatchingVerification(callback) {
 		lookupService.getAddressVerification(verificationId, verificationToken, function(err, verification) {
 			if (err) { return callback(err) }
-			if (verification.usedTime) { return callback('Sorry, this verification link has already been used') }
 			checkPasswordAgainstHash(password, verification.passwordHash, function(err) {
 				if (err) { return callback(err) }
 				callback(null, verification)

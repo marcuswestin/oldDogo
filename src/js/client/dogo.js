@@ -5,43 +5,6 @@ image.base += 'mobileApp/'
 var time = require('std/time')
 var payloads = require('data/payloads')
 var push = require('data/push')
-
-error = function error(err) {
-	var margin = 0
-	var cornerSize = 40
-	var message = api.error(err)
-	if (!error.$tag) {
-		error.$tag = $(div({ id:'errorNotice' },
-			style({ position:'absolute', top:20+margin, left:cornerSize+margin, width:viewport.width() - cornerSize*2 - margin*4 }),
-			div('content',
-				style({ maxHeight:240 }, scrollable.y),
-				div('close', style({ 'float':'right' }), icon('icon-circlex', 22, 23), button(function() { error.hide() })),
-				div('message')
-			)
-		)).appendTo('.tags-scroller-body')
-	}
-	setTimeout(function() {
-		error.$tag
-			.css({ visibility:'hidden' })
-			.find('.message').text(message)
-		setTimeout(function() {
-			error.$tag
-				.css(translate.y(-(error.$tag.height() + 30), 0))
-				.css({ visibility:'visible' })
-			setTimeout(function() {
-				error.$tag.css(translate.y(0, 400))
-			})
-		})
-	})
-	error.hide = function() {
-		error.$tag.css(translate.y(-(error.$tag.height() + 30)))
-	}
-}
-error.hide = function() {}
-error.handler = function(err, res) {
-	if (err) { error(err) }
-}
-
 var connect = require('client/ui/connect/connect')
 var appScroller = require('client/ui/appScroller')
 var browserModeSetup = require('client/browser/setup')

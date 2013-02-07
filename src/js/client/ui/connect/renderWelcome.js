@@ -8,7 +8,7 @@ module.exports = function renderWelcome(view) {
 	return div({ id:'connectUI1' },
 		delayed(welcomeDuration * 2, function($el) {
 			$('#connectUI1').append(div(_fadeIn,
-				div('menu',
+				div('listMenu',
 					div('menuItem', span('label', 'Register'), button(function() { gScroller.push({ step:'register' }) })),
 					div('menuItem', span('label', 'Sign In'), button(function() { gScroller.push({ step:'login' })}))
 				),

@@ -49,7 +49,7 @@ function renderProfile(view) {
 	return div('profileStep',
 		div('title', 'PROFILE'),
 		
-		div('menu', style({ position:'absolute', width:0 }),
+		div('listMenu', style({ position:'absolute', width:0 }),
 			div('menuItem', 'PIC', style({ width:62, height:62, borderRadius:px(5,0,0,5) }), button(function() {
 				
 			}))
@@ -81,7 +81,7 @@ function renderAccount(view) {
 	return div('accountStep',
 		div('title', 'ACCOUNT'),
 	
-		div('menu',
+		div('listMenu',
 			div('menuItem', input({ id:'email', value:email, placeholder:'Your Email', disabled:disable && !!email })),
 			div('menuItem', input({ id:'password', placeholder:'Pick a Password' }))
 		),

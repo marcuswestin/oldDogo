@@ -46,6 +46,8 @@ function getAddressVerification(verificationId, verificationToken, callback) {
 		+ 'FROM addressVerification WHERE verificationId=? AND verificationToken=?'
 	db.lookup().selectOne(sql, [verificationId, verificationToken], function(err, verification) {
 		if (err) { return callback(err) }
+		if (!verification) { return callback("I don't recognize this verification - please check that you have the right link.") }
+		if (verification.usedTime) { return callback('Sorry, this verification link has already been used') }
 		verification.addressType = decodeAddressTypes[verification.addressType]
 		callback(null, verification)
 	})
