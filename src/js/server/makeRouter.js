@@ -164,7 +164,7 @@ function setupRoutes(app, opts) {
 	})
 	app.post('/api/register/withAddressVerification', function(req, res) {
 		var params = getJsonParams(req, 'verificationId', 'verificationToken', 'password')
-		register.withAddressVerification(params.verificationId, params.verificationToken, params.password, curry(respond, req, res))
+		register.withAddressVerification(params.verificationId, params.verificationToken, params.password, wrapRespond(req, res, 'person'))
 	})
 	app.post('/api/session', filters.oldClients, function postSession(req, res) {
 		var params = getJsonParams(req, 'address', 'password')

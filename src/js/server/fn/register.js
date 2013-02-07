@@ -2,6 +2,7 @@ var claimVerifiedAddresses = require('server/fn/claimVerifiedAddresses')
 var checkPasswordAgainstHash = require('server/fn/checkPasswordAgainstHash')
 var createPasswordHash = require('server/fn/createPasswordHash')
 var payloads = require('data/payloads')
+var getPerson = require('server/fn/getPerson')
 
 module.exports = {
 	withAddressVerification:withAddressVerification,
@@ -17,7 +18,7 @@ function withAddressVerification(verificationId, verificationToken, password, ca
 		_createPersonWithVerifiedAddresses(verInfo.name, verInfo.color, verInfo.passwordHash, pictureUrl, addresses, opts, function(err, person) {
 			if (err) { return callback(err) }
 			db.lookup().updateOne('UPDATE addressVerification SET usedTime=? WHERE verificationId=?', [db.time(), verInfo.verificationId], function(err) {
-				callback(err, 'Ok')
+				callback(err, person)
 			})
 		})
 	})
@@ -74,8 +75,12 @@ function withFacebookSession(name, color, email, password, fbSession, callback) 
 function _createPersonWithVerifiedAddresses(name, color, passwordHash, pictureUrl, addresses, opts, callback) {
 	parallel(_lookupAddresses, _createPerson, function(err, addrInfos, personId) {
 		if (err) { return callack(err) }
-		parallel(_createPictureRedirect, _claimVerifiedAddresses, callback)
-		
+		parallel(_createPictureRedirect, _claimVerifiedAddresses, _getPerson, function(err, _, _, person) {
+			callback(err, person)
+		})
+		function _getPerson(callback) {
+			getPerson(personId, callback)
+		}
 		function _createPictureRedirect(callback) {
 			payloadService.makeRedirect(payloads.personPicturePath(personId), pictureUrl, callback)
 		}
