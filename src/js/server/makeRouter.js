@@ -1,5 +1,5 @@
 var express = require('express')
-// var toobusy = require('toobusy')
+var toobusy = require('toobusy')
 var fs = require('fs')
 var path = require('path')
 var http = require('http')
@@ -17,7 +17,7 @@ var authenticateRequest = require('server/fn/authenticateRequest')
 
 var log = makeLog('Router')
 
-// toobusy.maxLag(60) // ms, less than default value 70
+toobusy.maxLag(60) // ms, less than default value 70
 
 module.exports = function makeRouter(opts) {
 	
@@ -53,12 +53,12 @@ module.exports = function makeRouter(opts) {
 		setupDev(app)
 	} else {
 		app.use(function(req, res, next) {
-			// if (toobusy()) {
-			// 	log.warn('Server too busy')
-			// 	return res.send(503, "My server is too busy right now - try again in a moment.")
-			// } else {
+			if (toobusy()) {
+				log.warn('Server too busy')
+				return res.send(503, "My server is too busy right now - try again in a moment.")
+			} else {
 				next()
-			// }
+			}
 		})
 	}
 	
@@ -75,7 +75,7 @@ module.exports = function makeRouter(opts) {
 			process.on('SIGINT', function() {
 				log('dogo-web closing down')
 				server.close()
-				// toobusy.shutdown()
+				toobusy.shutdown()
 				process.exit()
 			})
 		}
