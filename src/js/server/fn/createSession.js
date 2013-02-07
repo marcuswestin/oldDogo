@@ -3,6 +3,7 @@ var bumpClientUidBlock = require('server/fn/bumpClientUidBlock')
 var redis = require('server/redis')
 var checkPasswordAgainstHash = require('server/fn/checkPasswordAgainstHash')
 var uuid = require('uuid')
+var log = makeLog('createSession')
 
 module.exports = function createSession(addrInfo, password, callback) {
 	if (!addrInfo || !addrInfo.addressId || !addrInfo.addressType) { return callback('Please give me an address') }
