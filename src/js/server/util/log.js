@@ -29,10 +29,11 @@ function makeLog(name) {
 	)
 }
 
+function n(number) { return number < 10 ? '0'+number : number }
 function doLog(pad, name, level, text, force) {
 	if (disabled && !force) { return }
 	var d = new Date()
-	var time = d.getHours()+':'+d.getMinutes()+':'+d.getSeconds()
+	var time = n(d.getDate())+'/'+n(d.getMonth()+1)+'/'+n(d.getFullYear())+' '+n(d.getHours())+':'+n(d.getMinutes())+':'+n(d.getSeconds())
 	console.log(level+' '+time+' '+name+pad, text)
 }
 
