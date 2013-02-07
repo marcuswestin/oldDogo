@@ -1,11 +1,10 @@
 var Conversations = require('client/conversations')
 var time = require('std/time')
-var hsvToRgb = require('client/colors/hsvToRgb')
 var payloads = require('data/payloads')
 var pictures = require('client/ui/pictures')
 var sum = require('std/sum')
-var rand = require('std/rand')
 var flatten = require('std/flatten')
+var colorSeries = require('client/colors').series()
 
 function getConversationId(conv) {
 	return 'home-conversation-'+(conv.participationId || conv)
@@ -59,28 +58,6 @@ function randomDivision() {
 	return ([1/4, 2/3, 1/2, 1/3])[rand(0, 3)]
 }
 
-var colorSeries = (function(){
-	var colors = [
-		[255,0,147],[255,106,218],[200,132,213],
-		[151,108,221],[88,88,197],[71,125,197],
-		[0,141,216],[0,169,237],[0,200,232],
-		[61,222,224],[0,205,150],[0,195,47],
-		[54,206,18],[120,203,0],[189,238,0],
-		[233,239,0],null,null,
-		[255,162,0],[255,124,0],[219,84,0],
-		[205,35,0],null, null
-	]
-	var colorIndex = rand(0, colors.length)
-	return function() {
-		var color
-		while (!color) {
-			colorIndex = (colorIndex + 1) % colors.length
-			color = colors[colorIndex]
-		}
-		return color
-	}
-}())
-
 function getCollageBackground(width, conversation) {
 	var recent = conversation.recent
 	var pictures = conversation.pictures
@@ -123,7 +100,7 @@ function getCollageBackground(width, conversation) {
 	
 	function drawRects(rects) {
 		return [style({ position:'relative' }), map(rects, function(rect) {
-			return div(style({ position:'absolute', left:rect[0], top:rect[1], width:rect[2], height:rect[3], background:rgbaString(colorSeries(), 1), zIndex:1 }), style(translate(0,0)))
+			return div(style({ position:'absolute', left:rect[0], top:rect[1], width:rect[2], height:rect[3], background:color.rgb(colorSeries()), zIndex:1 }), style(translate(0,0)))
 		})]
 	}
 	
@@ -154,7 +131,7 @@ function renderCard(conversation) {
 			face(conversation.people[0], { size:80 })
 		),
 		// http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
-		// style({ background:'rgb('+map(hsvToRgb([(Math.random() + 0.618033988749895) % 1, 0.03, 0.95]), Math.round)+')' }),
+		// style({ background:'rgb('+map(color.hsvToRgb([(Math.random() + 0.618033988749895) % 1, 0.03, 0.95]), Math.round)+')' }),
 		div('recent', renderRecent(conversation)),
 		div('highlights')
 	)

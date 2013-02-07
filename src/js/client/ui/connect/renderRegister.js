@@ -1,4 +1,5 @@
 var registration = require('data/registration')
+var colors = require('client/colors')
 
 module.exports = function renderRegister(view) {
 	return div('registerStep', steps[view.registerStep || 'facebook'](view))
@@ -57,8 +58,36 @@ function renderProfile(view) {
 		
 		div('listMenu profile',
 			div('menuItem', input({ id:'name', value:name, placeholder:'Your Name' })),
-			div('menuItem', span('placeholder pickColor', 'Your Color'), button(function() {
-				
+			div('menuItem', span('placeholder pickColor', 'Your Color'), div({ id:'colorDot' }, style(absolute(218,82), { width:40, height:20, borderRadius:24, border:'1px solid rgba(255,255,255,.75)' })), button(function() {
+				var padding = 1
+				var colorMargin = 1
+				var colorWidth = 88
+				var colorStyles = { width:colorWidth, height:40, margin:colorMargin, borderRadius:2, 'float':'left' }
+				overlay.show({
+					height:300 + padding*2,
+					width:colorWidth * 3 + padding*2 + colorMargin * 6,
+					background:'rgba(0,0,0,.15)',
+					dismissable:false,
+					content:function() {
+						return div(
+							style({ background:'#fff', borderRadius:4, padding:padding, boxShadow:'0 1px 2px rgba(0,0,0,.75)' }, translate.y(-32)),
+							list({
+								items:colors,
+								renderItem:renderColor,
+								selectItem:function(c, i) {
+									overlay.hide()
+									$('#colorDot').css(transition('background', 500)).css({ background: colors.rgb(c) })
+									view.color = i+1
+								}
+							}),
+							div('clear')
+						)
+						
+						function renderColor(c) {
+							return div(style(colorStyles, { background:colors.rgb(c) }))
+						}
+					}
+				})
 			}))
 		),
 		

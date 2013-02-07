@@ -1,5 +1,4 @@
-var rgbToHsv = require('client/colors/rgbToHsv')
-var hsvToRgb = require('client/colors/hsvToRgb')
+var colors = require('client/colors')
 var basePicker = require('./basePicker')
 
 var colorLists = [
@@ -134,7 +133,7 @@ function rgbFromPos(hsvBase, pos) {
 	var saturationRatio = 1 + (pos.distance.x / 100)
 	var valueRatio = 1 + (-pos.distance.y / 100)
 	var hsv = [hsvBase[0], hsvBase[1] * saturationRatio, hsvBase[2] * valueRatio]
-	return hsvToRgb(clipArray(hsv, 0, 1))
+	return colors.hsvToRgb(clipArray(hsv, 0, 1))
 }
 function getRgb(item) {
 	var rgbStr = $(item).find('.dot').css('background-color')
@@ -142,7 +141,7 @@ function getRgb(item) {
 	return [parseInt(parts[1]), parseInt(parts[2]), parseInt(parts[3])]
 }
 function getHsv(item) {
-	return rgbToHsv(getRgb(item))
+	return colors.rgbToHsv(getRgb(item))
 }
 rgbaString = function(rgb, alpha) {
 	return 'rgba('+map(rgb, function(c) { return Math.round(c) }).concat(alpha||0.9).join(',')+')'
