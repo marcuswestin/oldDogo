@@ -1,7 +1,8 @@
 module.exports = {
 	checkAll:checkAll,
 	checkName:checkName,
-	checkPassword:checkPassword
+	checkPassword:checkPassword,
+	checkAddress:checkAddress
 }
 
 function checkAll(params) {

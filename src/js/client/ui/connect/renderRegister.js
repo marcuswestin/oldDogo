@@ -55,7 +55,7 @@ function renderProfile(view) {
 			}))
 		),
 		
-		div('menu profile',
+		div('listMenu profile',
 			div('menuItem', input({ id:'name', value:name, placeholder:'Your Name' })),
 			div('menuItem', span('placeholder pickColor', 'Your Color'), button(function() {
 				
@@ -82,7 +82,7 @@ function renderAccount(view) {
 		div('title', 'ACCOUNT'),
 	
 		div('listMenu',
-			div('menuItem', input({ id:'email', value:email, placeholder:'Your Email', disabled:disable && !!email })),
+			div('menuItem', textarea('input', { id:'email', value:email, placeholder:'Your Email', disabled:disable && !!email })),
 			div('menuItem', input({ id:'password', placeholder:'Pick a Password' }))
 		),
 	
@@ -90,7 +90,7 @@ function renderAccount(view) {
 		div('button', 'Register Account', button(function() {
 
 			view.email = trim($('#email').val())
-			var emailError = registration.check(Addresses.email(view.email))
+			var emailError = registration.checkAddress(Addresses.email(view.email))
 			if (emailError) { return error(emailError) }
 
 			view.password = trim($('#password').val())
