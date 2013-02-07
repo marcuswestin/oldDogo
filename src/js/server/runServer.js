@@ -58,6 +58,6 @@ function runMaster(config) {
 }
 
 function runServer(config) {
-	log('starting', process.pid)
+	log.info('starting', process.pid)
 	require('server/configureServer')(config)
 }
