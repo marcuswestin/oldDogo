@@ -159,6 +159,10 @@ function startApp(info) {
 	})
 }
 
+events.on('app.didOpenUrl', function(info) {
+	alert('app.didOpenUrl ' + JSON.stringify(info))
+})
+
 if (gIsPhantom) { delete localStorage['dogo-browser-state'] }
 if (gIsPhantom || !tags.isTouch) { browserModeSetup.setup() }
 

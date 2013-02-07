@@ -294,6 +294,7 @@ function setupDev(app) {
 	app.get('/privacy', sendPage('privacy'))
 	app.get('/identity', sendPage('identity'))
 	app.get('/test', sendPage('test'))
+	app.get('/verify', sendPage('verifyAddress'))
 	
 	app.get('/app', sendFile('src/js/client/dogo.html', 'text/html'))
 	app.get('/favicon.ico', sendFile('src/graphics/website/favicon.png', 'image/png'))

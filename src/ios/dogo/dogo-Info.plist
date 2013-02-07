@@ -38,6 +38,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
+				<string>dogo</string>
 				<string>fb219049001532833</string>
 			</array>
 		</dict>

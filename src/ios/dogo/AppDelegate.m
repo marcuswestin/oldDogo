@@ -15,8 +15,17 @@
     [BTAudio setup:self];
 }
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-    // TODO THe module should be able to automaticlally access this behavior
-    return [BTFacebook handleOpenURL:url];
+    if ([BTFacebook handleOpenURL:url]) { return YES; }
+    NSLog(@"application openUrl %@ %@", url, url.scheme);
+    if ([url.scheme isEqualToString:@"dogo"]) {
+        NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
+                              url.absoluteString, @"url",
+                              sourceApplication, @"sourceApplication",
+                              nil];
+        [self notify:@"app.didOpenUrl" info:info];
+        return YES;
+    }
+    return NO;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
