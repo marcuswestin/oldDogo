@@ -16,6 +16,7 @@ setup('Email registration', function() {
 	
 	then('create image', function(done) {
 		picPath = '/tmp/dogoTestPic-'+new Date().getTime()+'.jpg'
+		// http://brunogirin.blogspot.com/2009/09/making-noise-with-imagemagick.html
 		exec('convert -size 300x300 xc: +noise Random '+picPath, function(err, stderr, stdout) {
 			check(err || stderr)
 			done()
