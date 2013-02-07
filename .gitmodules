@@ -1,6 +1,3 @@
-[submodule "node_modules/mocha"]
-	path = node_modules/mocha
-	url = https://github.com/visionmedia/mocha.git
 [submodule "dependencies/facebook-ios-sdk"]
 	path = dependencies/facebook-ios-sdk
 	url = git://github.com/facebook/facebook-ios-sdk.git

@@ -84,7 +84,6 @@ setup-client: setup-source setup-emojis
 	cd dependencies/facebook-ios-sdk && scripts/build_framework.sh
 	cd node_modules/socket.io && npm install . --production
 	cd node_modules/stylus && npm install . --production
-	cd node_modules/mocha && npm install --production .
 
 setup-emojis:
 	cd dependencies/emoji-extractor && ruby emoji_extractor.rb
@@ -94,7 +93,6 @@ setup-emojis:
 
 setup-server: setup-source
 	bash src/scripts/npm-install-modules.sh
-	cd node_modules/mocha && npm install --production .
 
 setup-source:
 	if ! grep --quiet "node_modules" ~/.gitignore; then echo "node_modules" >> ~/.gitignore; fi
