@@ -12,14 +12,14 @@ var logDebug = false
 function enableDebugLoggin() { logDebug = true }
 
 function makeLog(name) {
-	var padLength = 18
+	var padLength = 20
 	var pad = new Array(padLength-name.length).join(' ')+'-'+' '
 	
 	function logInfo() { doLog(pad, name, 'info'.blue, getArgsString(arguments)) }
 	
 	return _.extend(logInfo, {
 		info: logInfo,
-		debug: function logDebug() { logDebug && doLog(pad, name, 'debug'.cyan, getArgsString(arguments).cyan) },
+		debug: function logDebug() { logDebug && doLog(pad, name, 'dbug'.cyan, getArgsString(arguments).cyan) },
 		warn: function logWarn() { doLog(pad, name, 'WARN'.pink, getArgsString(arguments), true) },
 		error: function logError() { doLog(pad, name, 'ERRO'.red, getArgsString(arguments), true) },
 		alert: function alert() {
