@@ -299,9 +299,9 @@ function setupDev(app) {
 	app.get('/favicon.ico', sendFile('src/graphics/website/favicon.png', 'image/png'))
 		
 	app.get('/fonts/*', sendStatic('src'))
-	app.get('/lib/*', sendStatic('src'))
 	app.get('/graphics/*', sendStatic('src'))
-	app.get('/client/*', sendStatic('src'))
+	app.get('/lib/*', sendStatic('src/js'))
+	app.get('/client/*', sendStatic('src/js'))
 	app.get('/experiments*', sendExperiment)
 	
 	app.get('/stylus/*', function(req, res) {
