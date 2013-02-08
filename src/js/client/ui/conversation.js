@@ -1,6 +1,5 @@
 var composer = require('./composer')
 var once = require('std/once')
-var payloads = require('data/payloads')
 var linkify = require('lib/linkify')
 var questions = require('./questions')
 var time = require('std/time')

@@ -1,9 +1,13 @@
 module.exports = function claimVerifiedAddresses(addrInfos, personId, name, callback) {
+	log.debug('claim verified addresses', addrInfos, personId, name)
 	_claimAddressConversations(function(err) {
 		if (err) { return callback(err) }
 		asyncEach(addrInfos, {
 			parallel:addrInfos.length,
-			finish:callback,
+			finish:function(err, res) {
+				log.debug('done claiming verified addresses', err, res)
+				callback(err, res)
+			},
 			iterate:function(addrInfo, next) {
 				if (addrInfo.isNewAddress) {
 					lookupService.createVerifiedAddress(addrInfo, personId, name, next)
@@ -33,6 +37,7 @@ module.exports = function claimVerifiedAddresses(addrInfos, personId, name, call
 	
 	function _updateConversationAndParticipations(conversationId, callback) {
 		_getConversationPeople(conversationId, function(err, people) {
+			log.debug('update conversation and participations', conversationId, people, err)
 			if (err) { return next(err) }
 			if (!people.length) { return next(makeAlert('No people in conversation', conversationId)) }
 			if (find(people, function(person) { return person.personId == personId })) {

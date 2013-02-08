@@ -4,6 +4,7 @@ var redis = require('server/redis')
 var checkPasswordAgainstHash = require('server/fn/checkPasswordAgainstHash')
 var uuid = require('uuid')
 var log = makeLog('createSession')
+var getClientConfig = require('server/fn/getClientConfig')
 
 module.exports = function createSession(addrInfo, password, callback) {
 	if (!addrInfo || !addrInfo.addressId || !addrInfo.addressType) { return callback('Please give me an address') }
@@ -33,9 +34,7 @@ module.exports = function createSession(addrInfo, password, callback) {
 							authToken:authToken,
 							person:person,
 							clientUidBlock:clientUidBlock,
-							config:{
-								payloads: { bucket:gConfig.aws.s3.bucket, region:gConfig.aws.s3.region }
-							}
+							config:getClientConfig()
 						}
 						log.debug('session created', sessionInfo)
 						callback(null, sessionInfo)

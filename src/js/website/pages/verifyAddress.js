@@ -38,7 +38,7 @@ var url = require('std/url')
 			div({ id:'body' },
 				div('info', 'Verify your address'),
 				div('listMenu',
-					div('menuItem', input({ value:urlParams.a, disabled:true })),
+					div('menuItem', input({ value:urlParams.email, disabled:true })),
 					div('menuItem', input({ id:'password', placeholder:'Dogo Password', type:'password' }))
 				),
 				div('button', { id:'verifyButton' }, 'Verify My Address', button(function() {
@@ -52,24 +52,28 @@ var url = require('std/url')
 					} else {
 						api.post('api/register/withAddressVerification', params, function(err, res) {
 							if (err) { return error(err) }
-							$('#password').disable()
-							$('#verifyButton').replaceWith(
-								div('card',
-									div('person',
-										face(res.person, { size:80 }),
-										div('name', function() {
-											var names = res.person.name.split(' ')
-											return [div('first', names.shift()), div('rest', names.pop())]
-										})
-									)
-								)
-							)
+							gConfigure(res.config)
+							_renderPerson(res.person)
 						})
 					}
 				}))
 			)
 		)
-		$('#openDogo').on('click', attemptOpenApp)
+	}
+	
+	function _renderPerson(person) {
+		$('#password')[0].disabled = true
+		$('#verifyButton').replaceWith(
+			div('card',
+				div('person',
+					div('face', style({ width:80, height:80, background:'url('+payloads.personPictureUrl(person.personId)+')', backgroundSize:'80px 80px' })),
+					div('name', function() {
+						var names = person.name.split(' ')
+						return [div('first', names.shift()), div('rest', names.pop())]
+					})
+				)
+			)
+		)
 	}
 }())
 

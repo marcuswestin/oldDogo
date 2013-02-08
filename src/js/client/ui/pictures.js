@@ -1,4 +1,3 @@
-var payloads = require('data/payloads')
 var isArray = require('std/isArray')
 
 module.exports = {

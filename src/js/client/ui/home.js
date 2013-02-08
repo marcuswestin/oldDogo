@@ -1,6 +1,5 @@
 var Conversations = require('client/conversations')
 var time = require('std/time')
-var payloads = require('data/payloads')
 var pictures = require('client/ui/pictures')
 var sum = require('std/sum')
 var flatten = require('std/flatten')

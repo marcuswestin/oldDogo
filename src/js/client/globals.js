@@ -31,6 +31,7 @@ nextTick = require('std/nextTick')
 delayed = require('std/delayed')
 
 Addresses = require('data/Addresses')
+payloads = require('data/payloads')
 
 isArray = _.isArray
 
@@ -141,4 +142,8 @@ error = function error(err) {
 error.hide = function() {}
 error.handler = function(err, res) {
 	if (err) { error(err) }
+}
+
+gConfigure = function(config) {
+	payloads.configure(config.payloads)
 }

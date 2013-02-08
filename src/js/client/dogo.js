@@ -3,7 +3,6 @@ require('./globals')
 image.base += 'mobileApp/'
 
 var time = require('std/time')
-var payloads = require('data/payloads')
 var push = require('data/push')
 var connect = require('client/ui/connect/connect')
 var appScroller = require('client/ui/appScroller')
@@ -111,7 +110,7 @@ function startApp(info) {
 		}
 		
 		function onConnected() {
-			payloads.configure(sessionInfo.config.payloads)
+			gConfigure(sessionInfo.config)
 			appScroller.createAndRender()
 		}
 		

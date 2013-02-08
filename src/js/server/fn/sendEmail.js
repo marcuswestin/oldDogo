@@ -1,3 +1,5 @@
+var log = makeLog('sendEmail')
+
 module.exports = sendEmail
 sendEmail.configure = configure
 
@@ -13,7 +15,8 @@ function disable() {
 }
 
 function sendEmail(fromEmail, toEmail, subject, text, html, callback) {
-	if (disabled) { return callback(null, null) }
+	log.debug('send email', fromEmail, toEmail, subject)
+	if (disabled) { log.debug('(disabled - skipping send email)'); return callback(null, null) }
 	
 	var args = {
 		'Message.Body.Text.Charset': 'UTF-8',

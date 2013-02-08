@@ -42,7 +42,7 @@ function createAddressVerification(passwordHash, name, color, addrInfo, pictureS
 	})
 }
 function getAddressVerification(verificationId, verificationToken, callback) {
-	var sql = 'SELECT verificationId, addressId, addressType, passwordHash, color, name, verificationToken, createdTime, usedTime '
+	var sql = 'SELECT verificationId, addressId, addressType, passwordHash, color, name, verificationToken, createdTime, usedTime, pictureSecret '
 		+ 'FROM addressVerification WHERE verificationId=? AND verificationToken=?'
 	db.lookup().selectOne(sql, [verificationId, verificationToken], function(err, verification) {
 		if (err) { return callback(err) }

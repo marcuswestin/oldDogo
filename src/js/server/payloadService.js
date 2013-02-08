@@ -1,6 +1,5 @@
 var aws2js = require('aws2js')
 var uuid = require('uuid')
-var payloads = require('data/payloads')
 
 var log = makeLog('payloadService')
 
@@ -40,7 +39,7 @@ function uploadPersonPicture(pictureFile, callback) {
 	if (!pictureFile) { return callback('Missing picture') }
 	var secret = uuid.v4()
 	var path = payloads.underlyingPersonPicturePath(secret)
-	_doUpload('picture', path, pictureFile, function(err) { callback(err, secret)})
+	_doUpload('picture', path, pictureFile, function(err) { callback(err, secret) })
 }
 
 function _doUpload(type, path, file, callback) {

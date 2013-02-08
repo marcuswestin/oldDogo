@@ -1,5 +1,3 @@
-var payloads = require('data/payloads')
-
 var face = module.exports = function face(person, opts) {
 	return renderFace(person, opts)
 }

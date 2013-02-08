@@ -13,6 +13,7 @@ var createSession = require('server/fn/createSession')
 var requestVerification = require('server/fn/requestVerification')
 var register = require('server/fn/register')
 var authenticateRequest = require('server/fn/authenticateRequest')
+var getClientConfig = require('server/fn/getClientConfig')
 
 var log = makeLog('Router')
 
@@ -168,7 +169,10 @@ function setupRoutes(app, opts) {
 	})
 	app.post('/api/register/withAddressVerification', function(req, res) {
 		var params = getJsonParams(req, 'verificationId', 'verificationToken', 'password')
-		register.withAddressVerification(params.verificationId, params.verificationToken, params.password, wrapRespond(req, res, 'person'))
+		register.withAddressVerification(params.verificationId, params.verificationToken, params.password, function(err, person) {
+			if (err) { return respond(req, res, err) }
+			respond(req, res, null, { person:person, config:getClientConfig() })
+		})
 	})
 	app.post('/api/session', filters.oldClients, function postSession(req, res) {
 		var params = getJsonParams(req, 'address', 'password')

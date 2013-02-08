@@ -1,7 +1,6 @@
 var claimVerifiedAddresses = require('server/fn/claimVerifiedAddresses')
 var checkPasswordAgainstHash = require('server/fn/checkPasswordAgainstHash')
 var createPasswordHash = require('server/fn/createPasswordHash')
-var payloads = require('data/payloads')
 var getPerson = require('server/fn/getPerson')
 
 module.exports = {
@@ -72,9 +71,11 @@ function withFacebookSession(name, color, email, password, fbSession, callback) 
 }
 
 function _createPersonWithVerifiedAddresses(name, color, passwordHash, pictureUrl, addresses, opts, callback) {
+	log.debug('create person with verified addresses', name, color, passwordHash, pictureUrl, addresses, opts)
 	parallel(_lookupAddresses, _createPerson, function(err, addrInfos, personId) {
 		if (err) { return callack(err) }
 		parallel(_createPictureRedirect, _claimVerifiedAddresses, _getPerson, function(err, _, _, person) {
+			log.debug('done creating person with verified addresses', err, person)
 			callback(err, person)
 		})
 		function _getPerson(callback) {
