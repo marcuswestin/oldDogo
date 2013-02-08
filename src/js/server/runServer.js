@@ -1,11 +1,24 @@
 require('server/globals')
 
-var cluster = require('cluster')
 var log = makeLog('Run')
 
-var config = getConfig()
-if (cluster.isMaster) { runMaster(config) }
-else { runServer(config) }
+startup()
+
+function startup() {
+	var config = getConfig()
+	if (config.debug) {
+		log.debug('running in debug mode')
+		runServer(config)
+		return
+	}
+	
+	var cluster = require('cluster')
+	if (cluster.isMaster) {
+		runMaster(config, cluster)
+	} else {
+		runServer(config)
+	}
+}
 
 function getConfig() {
 	var argv = require('optimist').argv
@@ -22,10 +35,11 @@ function getConfig() {
 		config[key] = (argv[key] == 'false' ? false : argv[key])
 	}
 	if (argv.config == 'dev' || argv.config == 'test') { config.dev = true }
+	if (argv.debug) { config.debug = true }
 	return config
 }
 
-function runMaster(config) {
+function runMaster(config, cluster) {
 	var clip = require('std/clip')
 	var maxForks = config.dev ? 2 : 8
 	var numForks = clip(require('os').cpus().length, 1, maxForks)

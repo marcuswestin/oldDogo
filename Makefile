@@ -8,6 +8,9 @@ run: run-databases
 	# Run server with src/js in the node search path
 	${NODE} src/js/server/runServer.js --config=dev
 
+debug: run-databases
+	${NODE} debug src/js/server/runServer.js --config=dev --debug=true
+
 # Run all tests
 offline = false
 verbose = true
