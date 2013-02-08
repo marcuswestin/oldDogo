@@ -89,10 +89,10 @@ setup-client: setup-source setup-emojis
 	cd node_modules/stylus && npm install . --production
 
 setup-emojis:
-	cd dependencies/emoji-extractor && ruby emoji_extractor.rb
-	mkdir -p src/graphics/mobileApp/emoji
-	cp -r dependencies/emoji-extractor/images/40x40 src/graphics/mobileApp/emoji/
-	cp -r dependencies/emoji-extractor/images/64x64 src/graphics/mobileApp/emoji/
+	# cd dependencies/emoji-extractor && ruby emoji_extractor.rb
+	# mkdir -p src/graphics/mobileApp/emoji
+	# cp -r dependencies/emoji-extractor/images/40x40 src/graphics/mobileApp/emoji/
+	# cp -r dependencies/emoji-extractor/images/64x64 src/graphics/mobileApp/emoji/
 
 setup-server: setup-source
 	bash src/scripts/npm-install-modules.sh
