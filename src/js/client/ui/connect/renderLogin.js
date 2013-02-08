@@ -5,7 +5,7 @@ module.exports = function renderLogin(view) {
 	
 	// setTimeout(function() { $('#username').val('dogoUser'); $('#password').val('dogoPassword') })
 	
-	return div('loginView',
+	return div('loginView', style(translate.y(310)),
 		div('listMenu',
 			div('menuItem',
 				input('username', { id:'username', placeholder:'Email' })

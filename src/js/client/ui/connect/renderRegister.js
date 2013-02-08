@@ -51,12 +51,18 @@ function renderProfile(view) {
 	}
 	
 	var colorDot = div({ id:'colorDot' }, style(absolute(213,84), { width:71, height:20, borderRadius:24, border:'1px solid rgba(255,255,255,.75)', boxShadow:'inset 0 1px 1px rgba(0,0,0,.4), inset 0 -1px 1px -1px #fff' }))
+	var picSize = 63
+	var pad = 12
 	
 	return div('profileStep', style(translate.y(282)),
 		div('title', 'PROFILE', style({ marginLeft:LEFT })),
 		
 		div('listMenu', style({ width:0 }, absolute(LEFT, 29)),
-			div('menuItem', 'PIC', style({ width:62, height:63, borderRadius:px(5,0,0,5) }), button(function() {
+			div('menuItem', { id:'picture' }, style({ width:picSize, height:picSize, borderRadius:px(5,0,0,5) }), button(function() {
+				bridge.command('media.pick', { source:'camera', cameraDevice:'front', allowsEditing:true }, function(err, res) {
+					if (!res.mediaId) { return }
+					$('#picture').css({ background:'url(/blowtorch/media/'+res.mediaId+'.jpg) ', backgroundSize:(picSize+pad*2)+'px '+(picSize+pad*2)+'px' })
+				})
 				
 			}))
 		),
