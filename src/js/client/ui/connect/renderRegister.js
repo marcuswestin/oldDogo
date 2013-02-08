@@ -118,7 +118,7 @@ function renderProfile(view) {
 			}))
 		),
 		
-		div('button', "That's Me!", button(function() {
+		div('button', "Register Me", button(function() {
 
 			view.name = trim($('#name').val())
 			var nameError = registration.checkName(view.name)
