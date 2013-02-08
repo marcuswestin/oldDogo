@@ -96,6 +96,8 @@ setup-emojis:
 
 setup-server: setup-source
 	bash src/scripts/npm-install-modules.sh
+	ln -snf ../dependencies/blowtorch/dependencies/HandyHelpers/js-HandyHelpers node_modules/HandyHelpers
+	ln -snf ../dependencies/blowtorch/sdk/blowtorch-node-sdk node_modules/blowtorch-node-sdk
 
 setup-source:
 	if ! grep --quiet "node_modules" ~/.gitignore; then echo "node_modules" >> ~/.gitignore; fi
