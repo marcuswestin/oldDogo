@@ -40,3 +40,9 @@ ul = function() {
 
 var fitInputText = require('tags/text/fitInputText')
 $(document).on('input', 'input', fitInputText)
+$(document).on('keypress', 'input', function($e) {
+	if ($e.keyCode == 13) { $(this).blur() }
+})
+$(document).on('touchstart', 'input', function() {
+	$(this).focus()
+})
