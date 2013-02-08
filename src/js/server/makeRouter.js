@@ -158,30 +158,30 @@ var filters = (function makeFilters() {
 }())
 
 function setupRoutes(app, opts) {
-	app.post('/api/address/verification/picture', function(req, res) {
+	app.post('/api/address/verification/picture', function handleUploadVerificationPicture(req, res) {
 		var params = getMultipartParams(req, 'width', 'height')
 		var pictureFile = req.files && req.files.picture
 		payloadService.uploadPersonPicture(pictureFile, wrapRespond(req, res, 'pictureSecret'))
 	})
-	app.post('/api/address/verification', function(req, res) {
+	app.post('/api/address/verification', function handleRequestAddressVerification(req, res) {
 		var params = getJsonParams(req, 'address', 'name', 'color', 'password', 'pictureSecret')
 		requestVerification(params.address, params.name, params.color, params.password, params.pictureSecret, curry(respond, req, res))
 	})
-	app.post('/api/register/withAddressVerification', function(req, res) {
+	app.post('/api/register/withAddressVerification', function handleRegisterWithAddressVerification(req, res) {
 		var params = getJsonParams(req, 'verificationId', 'verificationToken', 'password')
 		register.withAddressVerification(params.verificationId, params.verificationToken, params.password, function(err, person) {
 			if (err) { return respond(req, res, err) }
 			respond(req, res, null, { person:person, config:getClientConfig() })
 		})
 	})
-	app.post('/api/session', filters.oldClients, function postSession(req, res) {
+	app.post('/api/session', filters.oldClients, function handlePostSession(req, res) {
 		var params = getJsonParams(req, 'address', 'password')
-		createSession(params.address, params.password, curry(respond, req, res))
+		createSession(params.address, params.password, wrapRespond(req, res, 'sessionInfo'))
 	})
 	
 	
 	
-	app.post('/api/waitlist', function(req, res) {
+	app.post('/api/waitlist', function handlePostWaitlist(req, res) {
 		var params = getJsonParams(req, 'emailAddress')
 		accountService.lookupOrCreateByEmail(params.emailAddress, function(err, person) {
 			if (err) { return respond(req, res, err) }
@@ -205,41 +205,41 @@ function setupRoutes(app, opts) {
 		})
 	})
 	
-	app.all('/api/test/gzip', function(req, res) {
+	app.all('/api/test/gzip', function handleTestGzip(req, res) {
 		var data = {"data":{"Foo":"Bar"}, "data2":[1,2,3,5]}
 		respond(req, res, null, data, 'application/json')
 	})
-	app.get('/api/test/upload', function(req, res) {
+	app.get('/api/test/upload', function handleTestGetUpload(req, res) {
 		respond(req, res, null, '<form action="/api/test/upload" enctype="multipart/form-data" method="post">'+
 	    '<input type="text" name="title"><br>'+
 	    '<input type="file" name="upload" multiple="multiple"><br>'+
 	    '<input type="submit" value="Upload">'+
 	    '</form>', 'text/html')
 	})
-	app.post('/api/test/upload', function(req, res) {
+	app.post('/api/test/upload', function handleTestPostUpload(req, res) {
 		log.debug("TODO Update files", req.files)
 	})
-	app.all('/api/ping', function(req, res) {
+	app.all('/api/ping', function handlePing(req, res) {
 		res.end('"Dogo!"')
 	})
 	// app.post('/api/register', filters.oldClients, function postRegister(req, res) {
 	// 	var params = getJsonParams(req, 'name', 'color', 'email', 'password', 'fbSession')
 	// 	accountService.register(name, color, email, password, fbSession, curry(respond, req, res))
 	// })
-	app.post('/api/login', filters.oldClients, function postSession(req, res) {
+	app.post('/api/login', filters.oldClients, function handleLogin(req, res) {
 		var params = getJsonParams(req, 'address', 'password')
 		if (params.facebookRequestId) { return respond(req, res, "Sessions for facebook requests is not ready yet. Sorry!") }
 		createSession(req, params.address, params.password, curry(respond, req, res))
 	})
-	app.get('/api/conversations', filters.oldClientsAndSession, function getConversations(req, res) {
+	app.get('/api/conversations', filters.oldClientsAndSession, function handleGetConversations(req, res) {
 		getUrlParams(req) // for logging
 		getConversations(req, wrapRespond(req, res, 'conversations'))
 	})
-	app.post('/api/addresses', filters.oldClientsAndSession, function postAddresses(req, res) {
+	app.post('/api/addresses', filters.oldClientsAndSession, function handleAddAddresses(req, res) {
 		var params = getJsonParams(req, 'newAddresses')
 		addAddresses(req, params.newAddresses, curry(respond, req, res))
 	})
-	app.post('/api/message', filters.oldClientsAndSession, function postMessage(req, res) {
+	app.post('/api/message', filters.oldClientsAndSession, function handleSendMessage(req, res) {
 		var params = getMultipartParams(req, 'toParticipationId', 'clientUid', 'type', 'payload')
 		var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
 		var payloadFile = req.files && req.files.payload
@@ -256,22 +256,22 @@ function setupRoutes(app, opts) {
 			}
 		)
 	})
-	app.get('/api/messages', filters.oldClientsAndSession, function getConversationMessages(req, res) {
+	app.get('/api/messages', filters.oldClientsAndSession, function handleGetConversationMessages(req, res) {
 		var params = getUrlParams(req, 'participationId')
 		messageService.getMessages(req.session.personId, parseInt(params.participationId), function(err, messages) {
 			respond(req, res, err, !err && { messages:messages })
 		})
 	})
-	app.post('/api/pushAuth', filters.oldClientsAndSession, function postPushAuth(req, res) {
+	app.post('/api/pushAuth', filters.oldClientsAndSession, function handlePostPushAuth(req, res) {
 		var params = getJsonParams(req, 'pushToken', 'pushType')
 		setPushAuth(req.session.personId, params.pushToken, params.pushType,
 			curry(respond, req, res))
 	})
-	app.get('/api/version/info', filters.oldClientsAndSession, function getVersionInfo(req, res) {
+	app.get('/api/version/info', filters.oldClientsAndSession, function handleGetVersionInfo(req, res) {
 		var url = null // 'http://marcus.local:9000/api/version/download/latest.tar'
 		respond(req, res, null, { url:url })
 	})
-	app.get('/api/version/download/*', filters.session, function downloadVersion(req, res) {
+	app.get('/api/version/download/*', filters.session, function handleDownloadVersion(req, res) {
 		res.writeHead(204)
 		res.end()
 		return
@@ -282,11 +282,11 @@ function setupRoutes(app, opts) {
 			respond(req, res, null, tar, 'application/x-tar')
 		})
 	})
-	app.get('/api/facebookCanvas/conversation', function getFacebookConversation(req, res) {
+	app.get('/api/facebookCanvas/conversation', function handleGetFacebookConversation(req, res) {
 		var params = getUrlParams(req, 'facebookRequestId')
 		messageService.loadFacebookRequestId(params.facebookRequestId, curry(respond, req, res))
 	})
-	app.post('/api/facebookRequests', filters.session, function saveFacebookRequest(req, res) {
+	app.post('/api/facebookRequests', filters.session, function handleSaveFacebookRequest(req, res) {
 		var params = getJsonParams(req, 'facebookRequestId', 'toPersonId', 'conversationId')
 		messageService.saveFacebookRequest(req.session.personId, params.facebookRequestId, params.toPersonId, params.conversationId, curry(respond, req, res))
 	})

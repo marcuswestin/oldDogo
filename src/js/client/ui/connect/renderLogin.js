@@ -1,23 +1,24 @@
 var trim = require('std/trim')
 var overlay = require('tags/overlay')
+var registration = require('data/registration')
+
+setTimeout(function() { gScroller.push({ 'step':'login', password:'123123', email:'narcvs@gmail.com' }) }, 500) // AUTOS
 
 module.exports = function renderLogin(view) {
-	
-	// setTimeout(function() { $('#username').val('dogoUser'); $('#password').val('dogoPassword') })
 	
 	return div('loginView', style(translate.y(310)),
 		div('listMenu',
 			div('menuItem',
-				input('username', { id:'username', placeholder:'Email' })
+				input('username', { id:'email', placeholder:'Email', value:view.email })
 			),
 			div('menuItem',
-				input('password', { id:'password', placeholder:'Password', type:'password' })
+				input('password', { id:'password', placeholder:'Password', type:'password', value:view.password })
 			)
 		),
 		div('button', 'Sign in', button(function() {
-			var username = trim($('#username').val())
-			if (!username) {
-				error('Please give me your username')
+			var email = trim($('#email').val())
+			if (!email) {
+				error('Please give me your email')
 				return
 			}
 			
@@ -28,10 +29,10 @@ module.exports = function renderLogin(view) {
 			}
 			
 			overlay(function() { return 'Loading...' })
-			api.post('api/session', { username:username, password:password }, function(err, res) {
+			api.post('api/session', { address:Addresses.email(email), password:password }, function(err, res) {
 				overlay.hide(function() {
 					if (err) { return error(err) }
-					alert(JSON.stringify(res))
+					events.fire('user.session', res.sessionInfo)
 				})
 			})
 		}))

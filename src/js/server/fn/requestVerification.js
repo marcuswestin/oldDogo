@@ -24,8 +24,10 @@ module.exports = function requestVerification(address, name, color, password, pi
 					log.error('Error sending email to SES', err.code, err.document)
 					return callback(err)
 				}
-				if (gConfig.dev) { return callback(null, { devVerifyLink:verifyLink }) }
-				else { return callback(null, {}) }
+				var params = { verificationId:verificationId }
+				if (gConfig.dev) { params.devVerifyLink = verifyLink }
+				
+				callback(null, params)
 			})
 		})
 	})

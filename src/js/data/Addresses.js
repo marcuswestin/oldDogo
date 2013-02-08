@@ -11,7 +11,19 @@ module.exports = {
 	address:address,
 	email:email,
 	facebook:facebook,
-	phone:phone
+	phone:phone,
+	
+	fromVerificationParams:fromVerificationParams
+}
+
+var types = ['phone', 'email', 'facebook']
+
+function fromVerificationParams(params) {
+	// e.g /verify?i=123&t=abc&email=narcvs%40gmail.com or /verify?i=123&t=abc&phone=%2B14124238669
+	for (var i=0; i<types.length; i++) {
+		var type = types[i]
+		if (params[type]) { return address(type, params[type]) }
+	}
 }
 
 /* Type inquires

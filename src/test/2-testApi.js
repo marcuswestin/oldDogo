@@ -44,8 +44,9 @@ setup('Email registration', function() {
 		})
 	})
 	then('login', function(done) {
-		api.post('api/session', { address:testPerson.address, password:testPerson.password }, function(err, sessionInfo) {
+		api.post('api/session', { address:testPerson.address, password:testPerson.password }, function(err, res) {
 			check(err)
+			var sessionInfo = res.sessionInfo
 			has(sessionInfo.person, { name:testPerson.name, color:testPerson.color })
 			is(sessionInfo.authToken)
 			is(sessionInfo.clientUidBlock)

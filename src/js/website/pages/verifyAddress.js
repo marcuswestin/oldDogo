@@ -1,5 +1,6 @@
 require('client/globals')
 require('website/template/scrollToTop')
+
 var url = require('std/url')
 
 ;(function run() {
@@ -38,7 +39,7 @@ var url = require('std/url')
 			div({ id:'body' },
 				div('info', 'Verify your address'),
 				div('listMenu',
-					div('menuItem', input({ value:urlParams.email, disabled:true })),
+					div('menuItem', input({ value:Addresses.fromVerificationParams(urlParams), disabled:true })),
 					div('menuItem', input({ id:'password', placeholder:'Dogo Password', type:'password' }))
 				),
 				div('button', { id:'verifyButton' }, 'Verify My Address', button(function() {

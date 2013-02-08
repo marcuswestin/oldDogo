@@ -3,7 +3,7 @@ var renderLogin = require('client/ui/connect/renderLogin')
 var renderRegister = require('client/ui/connect/renderRegister')
 
 module.exports = {
-	render: function(onDone) {
+	render: function() {
 		
 		// setTimeout(function() { gScroller.push({ step:'register', registerStep:'profile' }) }) // AUTOS
 		// setTimeout(function() { gScroller.push({ step:'register', registerStep:'facebook' }) }) // AUTOS

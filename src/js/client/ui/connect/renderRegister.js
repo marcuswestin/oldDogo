@@ -1,5 +1,6 @@
 var registration = require('data/registration')
 var colors = require('client/colors')
+var url = require('std/url')
 
 module.exports = function renderRegister(view) {
 	return div('registerStep', steps[view.registerStep || 'facebook'](view))
@@ -89,30 +90,24 @@ function renderProfile(view) {
 				var colorWidth = 88
 				var colorStyles = { width:colorWidth, height:37, margin:colorMargin, borderRadius:2, 'float':'left', boxShadow:'inset 0 1px 0 0 rgba(255,255,255,.5), inset 0 -1px 2px rgba(0,0,0,.3)' }
 				$('#name').blur()
-				overlay.show({
-					height:300 + padding*2,
-					width:colorWidth * 3 + padding*2 + colorMargin * 6,
-					// background:'rgba(0,0,0,.15)',
-					dismissable:false,
-					content:function() {
-						return div(
-							style({ background:'#fff', borderRadius:4, padding:padding, boxShadow:'0 1px 2px rgba(0,0,0,.75)' }, translate.y(-62)),
-							list({
-								items:map(colors, function(rgb, i) { return { rgb:rgb, id:i+1 } }),
-								renderItem:renderColor,
-								selectItem:function(color) {
-									overlay.hide()
-									$('#colorDot').css(transition('background', 500)).css({ background: colors.rgba(color.rgb, .6) })
-									$('.pickColor.placeholder').css(transition('color', 500)).css({ color:'#222' })
-									view.color = color.id
-								}
-							}),
-							div('clear')
-						)
-						
-						function renderColor(color) {
-							return div(style(colorStyles, { background:colors.rgb(color.rgb) }))
-						}
+				overlay.show({ height:300 + padding*2, width:colorWidth * 3 + padding*2 + colorMargin * 6, dismissable:false}, function() {
+					return div(
+						style({ background:'#fff', borderRadius:4, padding:padding, boxShadow:'0 1px 2px rgba(0,0,0,.75)' }, translate.y(-62)),
+						list({
+							items:map(colors, function(rgb, i) { return { rgb:rgb, id:i+1 } }),
+							renderItem:renderColor,
+							selectItem:function(color) {
+								overlay.hide()
+								$('#colorDot').css(transition('background', 500)).css({ background: colors.rgba(color.rgb, .6) })
+								$('.pickColor.placeholder').css(transition('color', 500)).css({ color:'#222' })
+								view.color = color.id
+							}
+						}),
+						div('clear')
+					)
+					
+					function renderColor(color) {
+						return div(style(colorStyles, { background:colors.rgb(color.rgb) }))
 					}
 				})
 			}))
@@ -129,17 +124,22 @@ function renderProfile(view) {
 	)
 }
 
+// setTimeout(function() { pictureSecretPromise = new Promise().fulfill(null, '7d005216-78f6-4bf6-bd93-44843d265f3c'); gScroller.push({ step:'register', registerStep:'account', password:'123123', email:'narcvs@gmail.com', color:1, name:'Marc Westin' }) }, 500) // AUTOS
+
+var verificationInfo = null
 function renderAccount(view) {
 	if (view.fbMe) {
 		var disable = true
 		var email = view.fbMe.email
+	} else {
+		var email = view.email
 	}
 	return div('accountStep', style(translate.y(282)),
 		div('title', 'ACCOUNT'),
 	
 		div('listMenu',
 			div('menuItem', input({ id:'email', value:email, placeholder:'Your Email', disabled:disable && !!email, type:'email' })),
-			div('menuItem', input({ id:'password', placeholder:'Pick a Password' }))
+			div('menuItem', input({ id:'password', value:view.password, placeholder:'Pick a Password' }))
 		),
 	
 		// ul('Text any email address', 'Safe account recovery'),
@@ -165,10 +165,11 @@ function renderAccount(view) {
 			
 			function _doRegister(picUploadError, pictureSecret) {
 				var params = { address:Addresses.email(view.email), password:view.password, name:view.name, color:view.color, pictureSecret:pictureSecret, fbSession:view.facebookSession }
+				verificationInfo = { password:params.password }
 				api.post('api/address/verification', params, function(err, res) {
 					overlay.hide(function() {
 						if (err) { return error(err) }
-						alert('Got ' + JSON.stringify(res))
+						verificationInfo.verificationId = res.verificationId
 					})
 				})
 			}
@@ -195,3 +196,40 @@ function renderPushNotifications(view, onDone) {
 events.on('push.registerFailed', function(info) {
 	alert("Oh no! Notifications were not enabled. Go to your settings app and enable notifications for Dogo.")
 })
+
+events.on('app.didOpenUrl', function(info) {
+	var appUrl = url(info.url)
+	if (appUrl.pathname != '/verify') { return }
+	var urlParams = appUrl.getSearchParams()
+	var address = Addresses.fromVerificationParams(urlParams)
+	var password = verificationInfo && verificationInfo.password
+	if (password) {
+		_doVerify(password, function() {  })
+	} else {
+		overlay.show({ height:100, dismissable:false }, function() {
+			return div(null,
+				input({ id:'verifyPassword', type:'password', placeholder:'password' }),
+				div('button', 'Verify ' + address.addressId, button(function() {
+					_doVerify($('#password').val())
+				}))
+			)
+		})
+	}
+	
+	function _doVerify(password, onVerified) {
+		if (gState.getSessionInfo('authToken')) {
+			// adding address
+		} else {
+			api.post('api/register/withAddressVerification', { password:verificationInfo.password, verificationId:urlParams.i, verificationToken:urlParams.t }, function(err, res) {
+				if (err) { overlay.hide(); error(err); return }
+				api.post('api/session', { address:address, password:verificationInfo.password }, function(err, res) {
+					if (err) { return error(err) }
+					overlay.hide()
+					onVerified()
+					events.fire('user.session', res.sessionInfo)
+				})
+			})
+		}
+	}
+})
+

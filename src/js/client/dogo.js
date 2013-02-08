@@ -92,26 +92,16 @@ function startApp(info) {
 		viewport.fit($('#viewport'))
 		
 		if (gIsPhantom) {
-			// api.refresh('fa48a930-5e94-4f18-b180-998728a5fe85', onConnected)
+			// api.refresh('fa48a930-5e94-4f18-b180-998728a5fe85', startLoggedInApp)
 			bridge.command('app.show', { fade:0 })
 		} else if (gState.getSessionInfo('authToken')) {
 			bridge.command('app.show', { fade:.95 })
-			onConnected()
+			startLoggedInApp(gState.getSessionInfo())
 		} else {
-			$('#appContainer').append(
-				connect.render(function() {
-					onConnected()
-					connect.slideOut()
-				})
-			)
+			$('#appContainer').append(connect.render())
 			setTimeout(function() {
 				bridge.command('app.show')
 			}, 250)
-		}
-		
-		function onConnected() {
-			gConfigure(sessionInfo.config)
-			appScroller.createAndRender()
 		}
 		
 		if (gIsPhantom) {
@@ -122,9 +112,16 @@ function startApp(info) {
 	})
 }
 
-events.on('app.didOpenUrl', function(info) {
-	alert('app.didOpenUrl ' + JSON.stringify(info))
+events.on('user.session', function(sessionInfo) {
+	gState.set('sessionInfo', sessionInfo)
+	connect.slideOut()
+	startLoggedInApp(sessionInfo)
 })
+
+function startLoggedInApp(sessionInfo) {
+	gConfigure(sessionInfo.config)
+	appScroller.createAndRender()
+}
 
 if (gIsPhantom) { delete localStorage['dogo-browser-state'] }
 if (gIsPhantom || !tags.isTouch) { browserModeSetup.setup() }

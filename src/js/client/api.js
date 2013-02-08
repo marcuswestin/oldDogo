@@ -8,7 +8,6 @@ module.exports = {
 	getAuth:getAuth,
 	getHeaders:getHeaders,
 	setHeaders:setHeaders,
-	createSession:createSession,
 	// refresh:refresh,
 	getPath:getPath,
 	getUrl:getUrl,
@@ -99,22 +98,6 @@ function handleResponse(jqXhr, url, callback, err, res) {
 		if (process) { eval(process) }
 	} catch(e) {}
 	callback && callback(err, res)
-}
-
-function createSession(opts, callback) {
-	var facebookSession = opts.facebookSession || {}
-	var params = {
-		facebookAccessToken:facebookSession.accessToken,
-		facebookExpirationDate:facebookSession.expirationDate,
-		facebookRequestId:opts.facebookRequestId
-	}
-	api.post('api/session', params, curry(handleSession, facebookSession, callback))
-}
-
-function handleSession(facebookSession, callback, err, sessionInfo) {
-	if (err) { return callback(err) }
-	gState.set('sessionInfo', sessionInfo)
-	callback(null, res.person)
 }
 
 function error(err) {
