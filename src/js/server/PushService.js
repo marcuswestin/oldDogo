@@ -1,39 +1,42 @@
 var apns = require('apn')
 var log = makeLog('PushService')
 var push = require('data/push')
-var devConfig = require('server/config/dev/devConfig').push
-var prodConfig = require('server/config/prod/prodConfig').push
 
 module.exports = {
 	sendMessagePush:sendMessagePush,
+	configure:configure,
 	disable:disable
+}
+
+var apnsConnections
+function configure(pushConf) {
+	if (pushConf.disable) { return disable() }
+	apnsConnections = {
+		sandbox: _connect({
+			certData:pushConf.apple.sandbox.certData,
+			keyData:pushConf.apple.sandbox.keyData,
+			passphrase:pushConf.apple.sandbox.passphrase,
+			gateway:'gateway.sandbox.push.apple.com',
+			port: 2195,
+			// enhanced: true,
+			cacheLength: 5,
+			errorCallback: _onApnsError
+		}),
+		prod: _connect({
+			certData:pushConf.apple.prod.certData,
+			keyData:pushConf.apple.prod.keyData,
+			passphrase:pushConf.apple.prod.passphrase,
+			gateway:'gateway.push.apple.com',
+			port: 2195,
+			// enhanced: true,
+			cacheLength: 5,
+			errorCallback: _onApnsError
+		})
+	}
 }
 
 var disabled = false
 function disable() { disabled = true }
-
-var apnsConnections = {
-	dev: _connect({
-		certData:devConfig.certData,
-		keyData:devConfig.keyData,
-		passphrase:devConfig.passphrase,
-		gateway:'gateway.sandbox.push.apple.com',
-		port: 2195,
-		// enhanced: true,
-		cacheLength: 5,
-		errorCallback: _onApnsError
-	}),
-	prod: _connect({
-		certData:prodConfig.certData,
-		keyData:prodConfig.keyData,
-		passphrase:prodConfig.passphrase,
-		gateway:'gateway.push.apple.com',
-		port: 2195,
-		// enhanced: true,
-		cacheLength: 5,
-		errorCallback: _onApnsError
-	})
-}
 
 function _connect(opts) {
 	log('Connecting to', opts.gateway+':'+opts.port)
@@ -45,14 +48,18 @@ function _onApnsError() {
 }
 
 function sendMessagePush(toPersonId, pushFromName, message, prodPush) {
-	if (disabled) { return }
+	log.debug('send message push', toPersonId, pushFromName, message, prodPush)
+	if (disabled) { log.debug('(disabled - skipping message push)'); return }
 	db.people(toPersonId).selectOne('SELECT pushJson FROM person WHERE personId=?', [toPersonId], function(err, res) {
-		if (err) { return }
+		if (err) {
+			log.error(err)
+			return
+		}
 		var pushInfoList = JSON.parse(res.pushJson)
 		var pushInfo = pushInfoList[0]
-		if (!pushInfo) { return log('Bah! No push token for', toPersonId, message.messageId) }
+		if (!pushInfo) { return log.info('No push token for', toPersonId, message.messageId) }
 		
-		if (pushInfo.type != 'ios') { return log('Unknown push type', pushInfo[0]) }
+		if (pushInfo.type != 'ios') { return log.warn('Unknown push type', pushInfo[0]) }
 		
 		var notification = new apns.Notification()
 		notification.device = new apns.Device(pushInfo[0].token)
@@ -62,8 +69,8 @@ function sendMessagePush(toPersonId, pushFromName, message, prodPush) {
 			fromFirstName:pushFromName
 		})
 		
-		log("Send push notification to person Id", toPersonId)
-		var connection = prodPush ? prodApnsConnection : devApnsConnection
+		log.debug('do send', toPersonId)
+		var connection = prodPush ? apnsConnections.prod : apnsConnections.sandbox
 		connection.sendNotification(notification)
 	})
 }

@@ -1,12 +1,6 @@
 require('./globals')
 
-var config = require('server/config/test/testConfig')
-var sendEmail = require('server/fn/sendEmail')
-var pushService = require('server/pushService')
-
-sendEmail.disable()
-pushService.disable()
-payloadService.disable()
+var config = require('server/config/testConfig')
 
 ;(function(){
 	for (var i=0, arg; arg=process.argv[i]; i++) {
@@ -23,6 +17,7 @@ payloadService.disable()
 }())
 
 process.nextTick(function() {
+	tinyTest.timeout = config.test.timeout
 	tinyTest.run({
 		onTestStart:function(stack) { console.log("Test:".white, stack.join(' | ').white) },
 		onTestDone: function(stack, duration) {

@@ -1,9 +1,9 @@
 module.exports = sendEmail
 sendEmail.configure = configure
-sendEmail.disable = disable
 
 var ses
 function configure(awsConf) {
+	if (awsConf.ses.disable) { return disable() }
 	ses = require('aws2js').load('ses', awsConf.accessKeyId, awsConf.accessKeySecret)
 }
 

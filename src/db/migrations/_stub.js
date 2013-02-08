@@ -1,5 +1,5 @@
 require('server/globals')
-var config = require('server/config/dev/devConfig')
+var config = require('server/config/devConfig')
 db.config(config.db)
 
 getData(function(stuff) {

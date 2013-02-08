@@ -58,12 +58,23 @@ function renderProfile(view) {
 		div('title', 'PROFILE', style({ marginLeft:LEFT })),
 		
 		div('listMenu', style({ width:0 }, absolute(LEFT, 29)),
-			div('menuItem', { id:'picture' }, style({ width:picSize, height:picSize, borderRadius:px(5,0,0,5) }), button(function() {
+			img('menuItem', { id:'picture' }, style({ width:picSize, height:picSize, borderRadius:px(5,0,0,5) }), button(function() {
 				bridge.command('media.pick', { source:'camera', cameraDevice:'front', allowsEditing:true }, function(err, res) {
 					if (!res.mediaId) { return }
-					$('#picture').css({ background:'url(/blowtorch/media/'+res.mediaId+'.jpg) ', backgroundSize:(picSize+pad*2)+'px '+(picSize+pad*2)+'px' })
+					view.mediaId = res.mediaId
+					$('#picture')[0].src = '/blowtorch/media/'+res.mediaId+'.jpg'
+					var params = {
+						url:api.getUrl('api/address/verification/picture'),
+						headers:api.getHeaders(),
+						jsonParams:{ width:res.width, height:res.height },
+						boundary:'______webkit',
+						parts:{ picture:res.mediaId }
+					}
+					bridge.command('media.upload', params, function(err, res) {
+						if (err) { return error(err) }
+						view.pictureSecret = res.pictureSecret
+					})
 				})
-				
 			}))
 		),
 		

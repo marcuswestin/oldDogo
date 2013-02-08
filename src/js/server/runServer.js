@@ -25,9 +25,9 @@ function getConfig() {
 	if (!argv.config) { argv.config = 'dev' }
 	
 	var configFiles = {
-		dev:'config/dev/devConfig',
-		prod:'config/prod/prodConfig',
-		test:'config/test/testConfig'
+		dev:'config/devConfig',
+		prod:'config/prodConfig',
+		test:'config/testConfig'
 	}
 	var config = require('./'+configFiles[argv.config])
 	for (var key in config) {

@@ -1,5 +1,5 @@
 var fs = require('fs')
-var shardConfig = require('server/config/shardConfig')
+var shardConfig = require('./shardConfig')
 var shardAccess = {
 	host:"localhost",
 	password:"dogopass9",
@@ -13,16 +13,13 @@ module.exports = {
 	aws: {
 		accessKeyId:'AKIAJDUJ4DPW4DE7552Q',
 		accessKeySecret:'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',
+		ses: {},
 		s3: {
 			bucket:'dogo-dev',
 			region:'us-east-1'
 		}
 	},
-	push: {
-		certData:null,
-		keyData:null,
-		passphrase:null
-	},
+	push: require('./push/config'),
 	twilio: {
 		disabled: true,
 		accountSid: null,

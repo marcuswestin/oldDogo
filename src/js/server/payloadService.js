@@ -8,8 +8,7 @@ module.exports = {
 	configure:configure,
 	makeRedirect:makeRedirect,
 	uploadPayload:uploadPayload,
-	uploadPersonPicture:uploadPersonPicture,
-	disable:disable
+	uploadPersonPicture:uploadPersonPicture
 }
 
 var disabled = false
@@ -18,6 +17,7 @@ function disable() { disabled = true }
 var s3 = null
 var s3PersmissionAcl = 'public-read'
 function configure(awsConf) {
+	if (awsConf.s3.disable) { return disable() }
 	s3 = aws2js.load('s3', awsConf.accessKeyId, awsConf.accessKeySecret)
 	s3.setBucket(awsConf.s3.bucket)
 	payloads.configure(awsConf.s3)

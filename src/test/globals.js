@@ -4,6 +4,7 @@ setup = tinyTest.setup
 then = tinyTest.then
 is = tinyTest.is
 has = tinyTest.has
+fail = tinyTest.fail
 waitFor = tinyTest.waitFor
 tap = tinyTest.tap
 count = tinyTest.count

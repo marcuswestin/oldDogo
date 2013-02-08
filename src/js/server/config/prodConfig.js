@@ -1,30 +1,27 @@
 var fs = require('fs')
 var shardConfig = require('server/config/shardConfig')
 var shardAccess = {
-	host:"localhost",
+	host:"dogo-db1.cqka8vcdrksp.us-east-1.rds.amazonaws.com",
 	password:"dogopass9",
 	user:"dogoApp"
 }
 
 module.exports = {
 	log:true,
-	dev:true,
+	dev:false,
 	port:9000,
 	aws: {
 		accessKeyId:'AKIAJDUJ4DPW4DE7552Q',
 		accessKeySecret:'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',
+		ses: {},
 		s3: {
-			bucket:'dogo-dev',
+			bucket:'dogo-prod',
 			region:'us-east-1'
 		}
 	},
-	push: {
-		certData:fs.readFileSync(__dirname + '/cert.pem'),
-		keyData:fs.readFileSync(__dirname + '/key.pem'),
-		passphrase:'dogopass3'
-	},
+	push: require('./push/config'),
 	twilio: {
-		disabled: true,
+		disabled: false,
 		accountSid: 'AC4132bb5759ca40cfaca106e6f2052a1c',
 		authToken: '52d8aefbd1cac7f644f49f0789586a3b',
 		from: '+14155992671'
