@@ -89,7 +89,8 @@ function setHeaders(headers) {
 }
 
 function getHeaders() {
-	return $.extend({ 'Authorization':getAuth() }, baseHeaders)
+	var auth = getAuth()
+	return $.extend(auth ? { 'Authorization':auth } : {}, baseHeaders)
 }
 
 function handleResponse(jqXhr, url, callback, err, res) {
