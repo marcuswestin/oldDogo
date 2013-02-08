@@ -82,7 +82,8 @@ function startApp(info) {
 			} else if (tags.isTouch) {
 				window.onerror = function windowOnError(e) { alert('ERROR ' + e) }
 				console.log = function bridgeConsoleLog() {
-					bridge.command('console.log', JSON.stringify(slice(arguments)))
+					try { bridge.command('console.log', JSON.stringify(slice(arguments))) }
+					catch(e) { bridge.command('console.log', "Error stringifying arguments") }
 				}
 			}
 		} else {
