@@ -12,7 +12,7 @@ var steps = {
 }
 
 function renderFacebook(view) {
-	return div('facebookStep',
+	return div('facebookStep', style(translate.y(310)),
 		div('button', 'Connect to Facebook', button(function() {
 			overlay.show(function() { return div(style({ background:'rgba(0,0,0,.4)' }), 'Loading...') })
 			bridge.command('facebook.connect', { permissions:['email','friends_birthday'] }, function(err, data) {
@@ -35,12 +35,14 @@ function renderFacebook(view) {
 			'Speed up registration',
 			'Text to Facebook friends'
 		),
-		link('No thanks', function() {
+		link('No thanks', delayed(function() {
 			if (!confirm('Are you quite sure?')) { return }
 			gScroller.push(merge(view, { registerStep:'profile' }))
-		})
+		}))
 	)
 }
+
+var LEFT = 25
 
 function renderProfile(view) {
 	if (view.fbMe) {
@@ -48,13 +50,13 @@ function renderProfile(view) {
 		var name = view.fbMe.name
 	}
 	
-	var colorDot = div({ id:'colorDot' }, style(absolute(183,83), { width:75, height:20, borderRadius:24, border:'1px solid rgba(255,255,255,.75)', boxShadow:'inset 0 1px 1px rgba(0,0,0,.4), inset 0 -1px 1px -1px #fff' }))
+	var colorDot = div({ id:'colorDot' }, style(absolute(213,84), { width:71, height:20, borderRadius:24, border:'1px solid rgba(255,255,255,.75)', boxShadow:'inset 0 1px 1px rgba(0,0,0,.4), inset 0 -1px 1px -1px #fff' }))
 	
-	return div('profileStep',
-		div('title', 'PROFILE'),
+	return div('profileStep', style(translate.y(282)),
+		div('title', 'PROFILE', style({ marginLeft:LEFT })),
 		
-		div('listMenu', style({ position:'absolute', width:0 }),
-			div('menuItem', 'PIC', style({ width:62, height:62, borderRadius:px(5,0,0,5) }), button(function() {
+		div('listMenu', style({ width:0 }, absolute(LEFT, 29)),
+			div('menuItem', 'PIC', style({ width:62, height:63, borderRadius:px(5,0,0,5) }), button(function() {
 				
 			}))
 		),
@@ -65,15 +67,16 @@ function renderProfile(view) {
 				var padding = 1
 				var colorMargin = 1
 				var colorWidth = 88
-				var colorStyles = { width:colorWidth, height:40, margin:colorMargin, borderRadius:2, 'float':'left' }
+				var colorStyles = { width:colorWidth, height:37, margin:colorMargin, borderRadius:2, 'float':'left', boxShadow:'inset 0 1px 0 0 rgba(255,255,255,.5), inset 0 -1px 2px rgba(0,0,0,.3)' }
+				$('#name').blur()
 				overlay.show({
 					height:300 + padding*2,
 					width:colorWidth * 3 + padding*2 + colorMargin * 6,
-					background:'rgba(0,0,0,.15)',
+					// background:'rgba(0,0,0,.15)',
 					dismissable:false,
 					content:function() {
 						return div(
-							style({ background:'#fff', borderRadius:4, padding:padding, boxShadow:'0 1px 2px rgba(0,0,0,.75)' }, translate.y(-32)),
+							style({ background:'#fff', borderRadius:4, padding:padding, boxShadow:'0 1px 2px rgba(0,0,0,.75)' }, translate.y(-62)),
 							list({
 								items:colors,
 								renderItem:renderColor,

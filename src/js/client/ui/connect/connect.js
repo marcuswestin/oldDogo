@@ -1,4 +1,3 @@
-var delayed = require('std/delayed')
 var renderWelcome = require('client/ui/connect/renderWelcome')
 var renderLogin = require('client/ui/connect/renderLogin')
 var renderRegister = require('client/ui/connect/renderRegister')
@@ -18,7 +17,7 @@ module.exports = {
 			renderView:renderView,
 			stack: [{ step:'welcome' }]
 		})
-		var welcomeDuration = 50
+		var welcomeDuration = 500
 		return div({ id:'connectView' }, brandGradient([viewport.width() / 2, 150], 50),
 			div('centered',
 				div('logoIcon', icon('logoIcon-blank', 128, 128, 48, 0, 0, 0)),
@@ -39,7 +38,7 @@ module.exports = {
 		}
 		
 		function renderView(view) {
-			return div(style({ marginTop:300 }), div('stepView', _pickViewContent()))
+			return div(div('stepView', _pickViewContent()))
 			function _pickViewContent() {
 				switch (view.step) {
 					case 'welcome': return renderWelcome(view)

@@ -28,6 +28,7 @@ find = require('std/find')
 trim = require('std/trim')
 merge = require('std/merge')
 nextTick = require('std/nextTick')
+delayed = require('std/delayed')
 
 Addresses = require('data/Addresses')
 

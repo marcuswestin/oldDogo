@@ -41,7 +41,6 @@
 		2C650CFB16A5E6CF000F381E /* appJs.html in Resources */ = {isa = PBXBuildFile; fileRef = 2C650CF716A5E6CF000F381E /* appJs.html */; };
 		2C650CFC16A5E6CF000F381E /* dev-hostname.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2C650CF816A5E6CF000F381E /* dev-hostname.txt */; };
 		2C650D8216A5E7D1000F381E /* mobileApp in Resources */ = {isa = PBXBuildFile; fileRef = 2C650D8116A5E7D1000F381E /* mobileApp */; };
-		2C650D9B16A5E894000F381E /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 2C650D9A16A5E894000F381E /* fonts */; };
 		2C6AFA0716B6E94C00C5AD0D /* NSArray+HHFunctional.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6AFA0216B6E94C00C5AD0D /* NSArray+HHFunctional.m */; };
 		2C6AFA0816B6E94C00C5AD0D /* NSArray+NSString+HHMakeStructs.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6AFA0416B6E94C00C5AD0D /* NSArray+NSString+HHMakeStructs.m */; };
 		2C6AFA0916B6E94C00C5AD0D /* UIImage+HHImages.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6AFA0616B6E94C00C5AD0D /* UIImage+HHImages.m */; };
@@ -164,7 +163,6 @@
 		2C650CF716A5E6CF000F381E /* appJs.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = appJs.html; sourceTree = "<group>"; };
 		2C650CF816A5E6CF000F381E /* dev-hostname.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "dev-hostname.txt"; sourceTree = "<group>"; };
 		2C650D8116A5E7D1000F381E /* mobileApp */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mobileApp; path = ../graphics/mobileApp; sourceTree = "<group>"; };
-		2C650D9A16A5E894000F381E /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../fonts; sourceTree = "<group>"; };
 		2C6AFA0116B6E94C00C5AD0D /* NSArray+HHFunctional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+HHFunctional.h"; sourceTree = "<group>"; };
 		2C6AFA0216B6E94C00C5AD0D /* NSArray+HHFunctional.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+HHFunctional.m"; sourceTree = "<group>"; };
 		2C6AFA0316B6E94C00C5AD0D /* NSArray+NSString+HHMakeStructs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+NSString+HHMakeStructs.h"; sourceTree = "<group>"; };
@@ -428,7 +426,6 @@
 			isa = PBXGroup;
 			children = (
 				2C650D8016A5E7C5000F381E /* graphics */,
-				2C650D9A16A5E894000F381E /* fonts */,
 				2CCAFE671569EC1C002766A1 /* sounds */,
 				2C70941F165A14F2007DDECD /* Default-568h@2x.png */,
 				2C70941D165A14EE007DDECD /* Default@2x.png */,
@@ -582,7 +579,6 @@
 				2C650CFB16A5E6CF000F381E /* appJs.html in Resources */,
 				2C650CFC16A5E6CF000F381E /* dev-hostname.txt in Resources */,
 				2C650D8216A5E7D1000F381E /* mobileApp in Resources */,
-				2C650D9B16A5E894000F381E /* fonts in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
