@@ -43,6 +43,7 @@ $(document).on('input', 'input', fitInputText)
 $(document).on('keypress', 'input', function($e) {
 	if ($e.keyCode == 13) { $(this).blur() }
 })
-$(document).on('touchstart', 'input', function() {
-	$(this).focus()
+$(document).on('touchend', 'input', function() {
+	// $('input').blur()
+	// $(this).focus()
 })
