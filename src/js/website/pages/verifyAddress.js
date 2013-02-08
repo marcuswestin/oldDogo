@@ -34,12 +34,13 @@ var url = require('std/url')
 	
 	function renderUi() {
 		var urlParams = appUrl.getSearchParams()
+		var address = Addresses.fromVerificationParams(urlParams)
 		$('#content').empty().append(
 			div('logo', 'Dodo'),
 			div({ id:'body' },
 				div('info', 'Verify your address'),
 				div('listMenu',
-					div('menuItem', input({ value:Addresses.fromVerificationParams(urlParams), disabled:true })),
+					div('menuItem', input({ value:address && address.addressId, disabled:true })),
 					div('menuItem', input({ id:'password', placeholder:'Dogo Password', type:'password' }))
 				),
 				div('button', { id:'verifyButton' }, 'Verify My Address', button(function() {
