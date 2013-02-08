@@ -44,6 +44,8 @@ function renderFacebook(view) {
 
 var LEFT = 25
 
+var Promise = require('std/Promise')
+var pictureSecretPromise
 function renderProfile(view) {
 	if (view.fbMe) {
 		var pictureUrl
@@ -61,6 +63,7 @@ function renderProfile(view) {
 			img('menuItem', { id:'picture' }, style({ width:picSize, height:picSize, borderRadius:px(5,0,0,5) }), button(function() {
 				bridge.command('media.pick', { source:'camera', cameraDevice:'front', allowsEditing:true }, function(err, res) {
 					if (!res.mediaId) { return }
+					var thisPictureSecretPromise = pictureSecretPromise = new Promise()
 					view.mediaId = res.mediaId
 					$('#picture')[0].src = '/blowtorch/media/'+res.mediaId+'.jpg'
 					var params = {
@@ -71,8 +74,8 @@ function renderProfile(view) {
 						parts:{ picture:res.mediaId }
 					}
 					bridge.command('media.upload', params, function(err, res) {
-						if (err) { return error(err) }
-						view.pictureSecret = res.pictureSecret
+						if (err) { error(err) }
+						thisPictureSecretPromise.fulfill(err, res && res.pictureSecret) // instead of view.pictureSecret as it may take a while for upload to finish
 					})
 				})
 			}))
@@ -95,20 +98,20 @@ function renderProfile(view) {
 						return div(
 							style({ background:'#fff', borderRadius:4, padding:padding, boxShadow:'0 1px 2px rgba(0,0,0,.75)' }, translate.y(-62)),
 							list({
-								items:colors,
+								items:map(colors, function(rgb, i) { return { rgb:rgb, id:i+1 } }),
 								renderItem:renderColor,
-								selectItem:function(c, i) {
+								selectItem:function(color) {
 									overlay.hide()
-									$('#colorDot').css(transition('background', 500)).css({ background: colors.rgba(c, .6) })
+									$('#colorDot').css(transition('background', 500)).css({ background: colors.rgba(color.rgb, .6) })
 									$('.pickColor.placeholder').css(transition('color', 500)).css({ color:'#222' })
-									view.color = i+1
+									view.color = color.id
 								}
 							}),
 							div('clear')
 						)
 						
-						function renderColor(c) {
-							return div(style(colorStyles, { background:colors.rgb(c) }))
+						function renderColor(color) {
+							return div(style(colorStyles, { background:colors.rgb(color.rgb) }))
 						}
 					}
 				})
@@ -131,11 +134,11 @@ function renderAccount(view) {
 		var disable = true
 		var email = view.fbMe.email
 	}
-	return div('accountStep',
+	return div('accountStep', style(translate.y(282)),
 		div('title', 'ACCOUNT'),
 	
 		div('listMenu',
-			div('menuItem', textarea('input', { id:'email', value:email, placeholder:'Your Email', disabled:disable && !!email })),
+			div('menuItem', input({ id:'email', value:email, placeholder:'Your Email', disabled:disable && !!email, type:'email' })),
 			div('menuItem', input({ id:'password', placeholder:'Pick a Password' }))
 		),
 	
@@ -153,11 +156,22 @@ function renderAccount(view) {
 			if (!confirm('Is '+view.email+' correct?')) { return }
 			
 			overlay.show(function() { return 'Loading...' })
-			api.post('api/register', { email:view.email, password:view.password, name:view.name, color:view.color, fbSession:view.facebookSession }, function(err, res) {
-				overlay.hide(function() {
-					if (err) { return error(err) }
+			
+			if (pictureSecretPromise) {
+				pictureSecretPromise.add(_doRegister)
+			} else {
+				_doRegister()
+			}
+			
+			function _doRegister(picUploadError, pictureSecret) {
+				var params = { address:Addresses.email(view.email), password:view.password, name:view.name, color:view.color, pictureSecret:pictureSecret, fbSession:view.facebookSession }
+				api.post('api/address/verification', params, function(err, res) {
+					overlay.hide(function() {
+						if (err) { return error(err) }
+						alert('Got ' + JSON.stringify(res))
+					})
 				})
-			})
+			}
 		}))
 	)
 }

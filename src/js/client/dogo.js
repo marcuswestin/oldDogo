@@ -111,7 +111,7 @@ function startApp(info) {
 		}
 		
 		function onConnected() {
-			payloads.bucket.configure(sessionInfo.config.payloads)
+			payloads.configure(sessionInfo.config.payloads)
 			appScroller.createAndRender()
 		}
 		

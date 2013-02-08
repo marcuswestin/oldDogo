@@ -8,7 +8,7 @@ module.exports = function renderWelcome(view) {
 			$('#connectUI1').append(div(_fadeIn,
 				div('listMenu',
 					div('menuItem', span('label', 'Register'), button(function() { gScroller.push({ step:'register' }) })),
-					div('menuItem', span('label', 'Sign In'), button(function() { gScroller.push({ step:'login' })}))
+					div('menuItem', span('label', 'Sign In'), button(function() { gScroller.push({ step:'login' }) }))
 				),
 				
 				div('button disabled', 'hidden', style({ visibility:'hidden' }))

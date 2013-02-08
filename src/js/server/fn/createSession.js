@@ -34,7 +34,7 @@ module.exports = function createSession(addrInfo, password, callback) {
 							person:person,
 							clientUidBlock:clientUidBlock,
 							config:{
-								payloads: gConfig.aws.s3
+								payloads: { bucket:gConfig.aws.s3.bucket, region:gConfig.aws.s3.region }
 							}
 						}
 						log.debug('session created', sessionInfo)

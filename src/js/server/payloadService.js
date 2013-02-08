@@ -20,7 +20,6 @@ function configure(awsConf) {
 	if (awsConf.s3.disable) { return disable() }
 	s3 = aws2js.load('s3', awsConf.accessKeyId, awsConf.accessKeySecret)
 	s3.setBucket(awsConf.s3.bucket)
-	payloads.configure(awsConf.s3)
 }
 
 var emptyBuffer = new Buffer(0)
@@ -38,6 +37,7 @@ function uploadPayload(personId, type, payloadFile, callback) {
 }
 
 function uploadPersonPicture(pictureFile, callback) {
+	if (!pictureFile) { return callback('Missing picture') }
 	var secret = uuid.v4()
 	var path = payloads.underlyingPersonPicturePath(secret)
 	_doUpload('picture', path, pictureFile, function(err) { callback(err, secret)})
@@ -49,6 +49,7 @@ function _doUpload(type, path, file, callback) {
 	if (disabled) { log.debug('(disabled - skipping payload upload)'); return callback() }
 	s3.putFile(path, file.path, s3PersmissionAcl, uploadHeaders, function(err, headers) {
 		if (err) { log.error("Error uploading", path, err) }
+		else { log.debug('uploaded', path) }
 		callback(err)
 	})
 }

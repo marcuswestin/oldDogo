@@ -157,10 +157,14 @@ var filters = (function makeFilters() {
 }())
 
 function setupRoutes(app, opts) {
-	app.all('/api/address/verification', function(req, res) {
-		var params = getMultipartParams(req, 'address', 'name', 'color', 'password')
+	app.post('/api/address/verification/picture', function(req, res) {
+		var params = getMultipartParams(req, 'width', 'height')
 		var pictureFile = req.files && req.files.picture
-		requestVerification(params.address, params.name, params.color, params.password, pictureFile, curry(respond, req, res))
+		payloadService.uploadPersonPicture(pictureFile, wrapRespond(req, res, 'pictureSecret'))
+	})
+	app.post('/api/address/verification', function(req, res) {
+		var params = getJsonParams(req, 'address', 'name', 'color', 'password', 'pictureSecret')
+		requestVerification(params.address, params.name, params.color, params.password, params.pictureSecret, curry(respond, req, res))
 	})
 	app.post('/api/register/withAddressVerification', function(req, res) {
 		var params = getJsonParams(req, 'verificationId', 'verificationToken', 'password')

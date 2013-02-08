@@ -10,6 +10,7 @@ module.exports = {
 	log:true,
 	dev:false,
 	port:9000,
+	serverUrl:'https://dogo.co',
 	aws: {
 		accessKeyId:'AKIAJDUJ4DPW4DE7552Q',
 		accessKeySecret:'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',

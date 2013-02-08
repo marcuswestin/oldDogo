@@ -37,5 +37,5 @@ function url(personId, type, payload) {
 }
 
 function base(bucket, region) {
-	return 'http://'+(bucket || payloads.bucket)+'.s3-website-'+(region || payloads.bucket)+'.amazonaws.com'
+	return 'http://'+(bucket || payloads.bucket)+'.s3-website-'+(region || payloads.region)+'.amazonaws.com'
 }

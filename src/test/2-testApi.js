@@ -10,28 +10,33 @@ setup('Ping', function() {
 })
 
 setup('Email registration', function() {
-	var testPerson = { name:'Joe Doe', color:1, password:'foobarcat', address:Addresses.email('foo@dogo.co') }
-	var devVerificationUrl = null
+	var testPerson = { name:'Joe Doe', color:1, password:'foobarcat', address:Addresses.email('test@dogo.co') }
+	var devVerifyLink = null
 	var picPath = null
 	
-	then('create image', function(done) {
+	then('upload picture', function(done) {
 		picPath = '/tmp/dogoTestPic-'+new Date().getTime()+'.jpg'
 		// http://brunogirin.blogspot.com/2009/09/making-noise-with-imagemagick.html
-		exec('convert -size 300x300 xc: +noise Random '+picPath, function(err, stderr, stdout) {
+		var size = 640
+		exec('convert -size '+size+'x'+size+' xc: +noise Random '+picPath, function(err, stderr, stdout) {
 			check(err || stderr)
-			done()
+			var picData = fs.readFileSync(picPath)
+			api.jsonMultipart('api/address/verification/picture', { width:size, height:size }, { picture:picData }, function(err, res) {
+				check(err)
+				is(testPerson.pictureSecret = res.pictureSecret)
+				done()
+			})
 		})
 	})
 	then('request verification', function(done) {
-		var picData = fs.readFileSync(picPath)
-		api.jsonMultipart('api/address/verification', testPerson, { picture:picData }, function(err, res) {
+		api.post('api/address/verification', testPerson, function(err, res) {
 			check(err)
-			is(devVerificationUrl = res.devVerificationUrl)
+			is(devVerifyLink = res.devVerifyLink)
 			done()
 		})
 	})
 	then('register with verification', function(done) {
-		var verParams = url(devVerificationUrl).getSearchParams()
+		var verParams = url(devVerifyLink).getSearchParams()
 		api.post('api/register/withAddressVerification', { password:testPerson.password, verificationToken:verParams.t, verificationId:verParams.i }, function(err, res) {
 			check(err)
 			has(res.person, { name:testPerson.name, color:testPerson.color })

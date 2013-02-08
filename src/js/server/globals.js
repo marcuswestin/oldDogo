@@ -17,6 +17,7 @@ parallel = require('std/parallel')
 curry = require('std/curry')
 time = require('std/time')
 trim = require('std/trim')
+isArray = require('std/isArray')
 
 Addresses = require('data/Addresses')
 
