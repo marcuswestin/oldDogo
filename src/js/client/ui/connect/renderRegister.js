@@ -12,6 +12,8 @@ var steps = {
 	profile:renderProfile
 }
 
+// setTimeout(function() { gScroller.push({ step:'register', registerStep:'facebook' }) }, 500) // AUTOS
+
 function renderFacebook(view) {
 	return div('facebookStep', style(translate.y(310)),
 		div('button', 'Connect to Facebook', button(function() {
@@ -51,17 +53,18 @@ function renderProfile(view) {
 	if (view.fbMe) {
 		var pictureUrl
 		var name = view.fbMe.name
+		var fbPic = { src:face.facebookUrl(view.fbMe.id) }
 	}
 	
 	var colorDot = div({ id:'colorDot' }, style(absolute(213,84), { width:71, height:20, borderRadius:24, border:'1px solid rgba(255,255,255,.75)', boxShadow:'inset 0 1px 1px rgba(0,0,0,.4), inset 0 -1px 1px -1px #fff' }))
-	var picSize = 63
+	var picSize = 75
 	var pad = 12
 	
 	return div('profileStep', style(translate.y(282)),
 		div('title', 'PROFILE', style({ marginLeft:LEFT })),
 		
 		div('listMenu', style({ width:0 }, absolute(LEFT, 29)),
-			img('menuItem', { id:'picture' }, style({ width:picSize, height:picSize, borderRadius:px(5,0,0,5) }), button(function() {
+			img('menuItem', { id:'picture' }, fbPic, style({ padding:px(5, 6, 7), width:picSize, height:picSize, borderRadius:px(5,0,0,5) }), button(function() {
 				bridge.command('media.pick', { source:'camera', cameraDevice:'front', allowsEditing:true }, function(err, res) {
 					if (!res.mediaId) { return }
 					var thisPictureSecretPromise = pictureSecretPromise = new Promise()

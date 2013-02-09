@@ -2,7 +2,7 @@ var trim = require('std/trim')
 var overlay = require('tags/overlay')
 var registration = require('data/registration')
 
-setTimeout(function() { gScroller.push({ 'step':'login', password:'123123', email:'narcvs@gmail.com' }) }, 500) // AUTOS
+// setTimeout(function() { gScroller.push({ 'step':'login', password:'123123', email:'narcvs@gmail.com' }) }, 500) // AUTOS
 
 module.exports = function renderLogin(view) {
 	

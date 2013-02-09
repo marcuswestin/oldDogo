@@ -6,6 +6,10 @@ face.mine = function myFace(opts) {
 	return renderFace(gState.me(), opts)
 }
 
+face.facebookUrl = function(address) {
+	return 'https://graph.facebook.com/'+(address.addressId || address)+'/picture?type=large'
+}
+
 function renderFace(person, opts) {
 	return div('face', style(face.style(person, opts)), opts && opts.style && style(opts.style))
 }
@@ -18,7 +22,7 @@ face.style = function(person, opts) {
 
 	var ratio = window.devicePixelRatio || 1
 	var pixelSize = opts.size*ratio
-	var imageUrl = getUrl(person, pixelSize)
+	var imageUrl = getUrl(person)
 	var params = { url:imageUrl, cache:'y', resize:pixelSize+'x'+pixelSize, mimeType:'image/jpeg' }
 	if (opts.radius) { params.radius = opts.radius }
 	return {
@@ -27,10 +31,10 @@ face.style = function(person, opts) {
 	}
 }
 
-function getUrl(address, pixelSize) {
+function getUrl(address) {
 	if (address.personId) {
 		return payloads.personPictureUrl(address.personId)
 	} else if (Addresses.isFacebook(address)) {
-		return 'http://graph.facebook.com/'+address.addressId+'/picture'+(pixelSize > 50 ? '?type=large' : '')
+		return face.facebookurl(address.addressId)
 	}
 }
