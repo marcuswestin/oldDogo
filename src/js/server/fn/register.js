@@ -55,13 +55,11 @@ function withFacebookSession(name, color, address, password, fbSession, pictureS
 		var pictureUrl = pictureSecret ? payloads.underlyingPersonPictureUrl(pictureSecret) : 'http://graph.facebook.com/'+fbAccount.id+'/picture?type=large'
 		var addresses = [address, Addresses.facebook(fbAccount.id)]
 		var opts = { birthdate:_getFbAccBirthdate(fbAccount.birthday), locale:fbAccount.locale, gender:fbAccount.gender, facebookId:fbAccount.id }
-		_createPersonWithVerifiedAddresses(name, color, passwordHash, pictureUrl, addresses, opts, function(err, person) {
-			callback(err, { person:person, config:getClientConfig() })
-		})
+		_createPersonWithVerifiedAddresses(name, color, passwordHash, pictureUrl, addresses, opts, callback)
 	})
 	
 	function _getFacebookData(callback) {
-		facebook.get('/me?fields=id,birthday,email', { access_token:fbSession.access_token }, callback)
+		facebook.get('/me?fields=id,birthday,email', { access_token:fbSession.accessToken }, callback)
 	}
 	
 	function _getFbAccBirthdate(birthday) {

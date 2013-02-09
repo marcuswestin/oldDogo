@@ -45,15 +45,7 @@ setup('Email registration', function() {
 		})
 	})
 	then('login', function(done) {
-		api.post('api/session', { address:testPerson.address, password:testPerson.password }, function(err, res) {
-			check(err)
-			var sessionInfo = res.sessionInfo
-			has(sessionInfo.person, { name:testPerson.name, color:testPerson.color })
-			is(sessionInfo.authToken)
-			is(sessionInfo.clientUidBlock)
-			is(sessionInfo.config)
-			done()
-		})
+		api.post('api/session', { address:testPerson.address, password:testPerson.password }, _checkSession(testPerson.name, testPerson.color, done))
 	})
 })
 
@@ -77,20 +69,21 @@ setup('Facebook registration', function() {
 		})
 	})
 	then('register with fb session', function(done) {
-		api.post('api/register/withFacebookSession', { name:fbMe.name, color:color, password:password, address:Addresses.email(fbMe.email), fbSession:fbSession }, function(err, res) {
-			has(res.person, { name:fbMe.name, color:color })
-			done()
-		})
+		api.post('api/register/withFacebookSession', { name:fbMe.name, color:color, password:password, address:Addresses.email(fbMe.email), fbSession:fbSession }, done)
 	})
 	then('login', function(done) {
-		api.post('api/session', { address:Addresses.email(fbMe.email), password:password }, function(err, res) {
-			check(err)
-			var sessionInfo = res.sessionInfo
-			has(sessionInfo.person, { name:fbMe.name, color:color })
-			is(sessionInfo.authToken)
-			is(sessionInfo.clientUidBlock)
-			is(sessionInfo.config)
-			done()
-		})
+		api.post('api/session', { address:Addresses.email(fbMe.email), password:password }, _checkSession(fbMe.name, color, done))
 	})
 })
+
+function _checkSession(name, color, done) {
+	return function(err, res) {
+		check(err)
+		var sessionInfo = res.sessionInfo
+		has(sessionInfo.person, { name:name, color:color })
+		is(sessionInfo.authToken)
+		is(sessionInfo.clientUidBlock)
+		is(sessionInfo.config)
+		done()
+	}
+}

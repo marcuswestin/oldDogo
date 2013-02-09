@@ -38,11 +38,10 @@ function email(emailAddress, name) { return address('email', emailAddress, name)
 function facebook(facebookId, name) { return address('facebook', facebookId, name) }
 function phone(phoneNumber, name) { return address('phone', phoneNumber, name) }
 function address(addressType, addressId, name) {
-	var addrInfo = { addressType:addressType, addressId:addressId, toString:addressToString }
+	var addrInfo = { addressType:addressType, addressId:addressId }
 	if (name) { addrInfo.name = name }
 	return addrInfo
 }
-function addressToString() { return this.addressId }
 
 /* Address format checks.
  ************************/

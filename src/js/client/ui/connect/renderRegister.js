@@ -157,19 +157,26 @@ function renderAccount(view) {
 			if (passwordError) { return error(passwordError) }
 			
 			if (view.fbMe) {
+				overlay.show(function() { return 'Uploading picture...' })
 				pictureSecretPromise.add(_registerWithFacebookSession)
 			} else {
-				if (!confirm('Is '+view.email+' correct?')) { return }
-				pictureSecretPromise.add(_requestAddressVerification)
+				setTimeout(function() { // for the confirm call to be async to button.
+					if (!confirm('Is '+view.email+' correct?')) { return }
+					pictureSecretPromise.add(_requestAddressVerification)
+				})
 			}
 			
 			function _registerWithFacebookSession(pictureSecret) {
 				overlay.show(function() { return 'Loading...' })
-				var params = { address:Addresses.email(view.email), password:view.password, name:view.name, color:view.color, pictureSecret:pictureSecret, fbSession:view.fbSession }
+				var address = Addresses.email(view.email)
+				var params = { address:address, password:view.password, name:view.name, color:view.color, pictureSecret:pictureSecret, fbSession:view.fbSession }
 				api.post('api/register/withFacebookSession', params, function(err, res) {
-					overlay.hide(function() {
-						if (err) { return error(err) }
-						events.fire('user.session', res.sessionInfo)
+					if (err) { overlay.hide(); error(err); return }
+					api.post('api/session', { address:address, password:view.password }, function(err, res) {
+						overlay.hide(function() {
+							if (err) { return error(err) }
+							events.fire('user.session', res.sessionInfo)
+						})
 					})
 				})
 			}
