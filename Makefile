@@ -4,7 +4,7 @@
 setup: setup-server setup-client reset-db	
 
 # Run local server
-run: run-databases
+run: run-databases secrets/dev
 	# Run server with src/js in the node search path
 	${NODE} src/js/server/runServer.js --config=dev
 
@@ -49,17 +49,28 @@ fly-dev: fly-build
 
 # Encrypted configs
 ###################
-encrypt-secrets:
-	tar -cvf secrets.tar secrets
-	bcrypt -s0 secrets.tar
+secrets/dev:
+	bcrypt -r secrets/dev.tar.bfe # Encrypted with dogopass
+	tar -xf secrets/dev.tar
+	rm secrets/dev.tar
 
-secrets:
-	bcrypt secrets.tar.bfe
+secrets/prod:
+	bcrypt -r secrets/prod.tar.bfe # Encrypted with my gmailpass
+	tar -xf secrets/prod.tar
+	rm secrets/prod.tar
+
+encrypt-prod:
+	tar -cf secrets/prod.tar secrets/prod
+	bcrypt secrets/prod.tar
+
+encrypt-dev:
+	tar -cf secrets/dev.tar secrets/dev
+	bcrypt secrets/dev.tar
 
 # Less common commands
 ######################
 # Run prod server
-run-prod:
+run-prod: secrets/prod
 	${NODE} src/js/server/runServer.js --config=prod
 
 # Deploy dogo api server to prod

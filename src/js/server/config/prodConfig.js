@@ -1,9 +1,10 @@
 var fs = require('fs')
 var shardConfig = require('server/config/shardConfig')
+var secrets = require('./secrets').prod()
 var shardAccess = {
 	host:"dogo-db1.cqka8vcdrksp.us-east-1.rds.amazonaws.com",
-	password:"dogopass9",
-	user:"dogoApp"
+	password:secrets.db.password,
+	user:secrets.db.user
 }
 
 module.exports = {
@@ -12,21 +13,15 @@ module.exports = {
 	port:9000,
 	serverUrl:'https://dogo.co',
 	aws: {
-		accessKeyId:'AKIAJDUJ4DPW4DE7552Q',
-		accessKeySecret:'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',
+		accessKeyId:secrets.aws.accessKeyId,
+		accessKeySecret:secrets.aws.accessKeySecret,
 		ses: {},
 		s3: {
 			bucket:'dogo-prod',
 			region:'us-east-1'
 		}
 	},
-	push: require('./push/config'),
-	twilio: {
-		disabled: false,
-		accountSid: 'AC4132bb5759ca40cfaca106e6f2052a1c',
-		authToken: '52d8aefbd1cac7f644f49f0789586a3b',
-		from: '+14155992671'
-	},
+	push: secrets.push,
 	dbShards: {
 		people: [
 			shardConfig.shard('People', 1, shardAccess)
@@ -43,5 +38,11 @@ module.exports = {
 		lookup: [
 			shardConfig.lookupShard(shardAccess)
 		]
+	},
+	facebook: secrets.facebook,
+	twilio: {
+		accountSid: secrets.twilio.accountSid,
+		authToken: secrets.twilio.authToken,
+		from: '+14155992671'
 	}
 }

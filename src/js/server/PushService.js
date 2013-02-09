@@ -8,24 +8,25 @@ module.exports = {
 	disable:disable
 }
 
-var apnsConnections
+var apnsConnections = {}
 function configure(pushConf) {
 	if (pushConf.disable) { return disable() }
-	apnsConnections = {
-		sandbox: _connect({
-			certData:pushConf.apple.sandbox.certData,
-			keyData:pushConf.apple.sandbox.keyData,
-			passphrase:pushConf.apple.sandbox.passphrase,
-			gateway:'gateway.sandbox.push.apple.com',
-			port: 2195,
-			// enhanced: true,
-			cacheLength: 5,
-			errorCallback: _onApnsError
-		}),
-		prod: _connect({
-			certData:pushConf.apple.prod.certData,
-			keyData:pushConf.apple.prod.keyData,
-			passphrase:pushConf.apple.prod.passphrase,
+	apnsConnections.sandbox = _connect({
+		certData:pushConf.apple.sandbox.certData,
+		keyData:pushConf.apple.sandbox.keyData,
+		passphrase:pushConf.apple.sandbox.passphrase,
+		gateway:'gateway.sandbox.push.apple.com',
+		port: 2195,
+		// enhanced: true,
+		cacheLength: 5,
+		errorCallback: _onApnsError
+	})
+	
+	if (pushConf.apple.production) {
+		apnsConnections.production = _connect({
+			certData:pushConf.apple.production.certData,
+			keyData:pushConf.apple.production.keyData,
+			passphrase:pushConf.apple.production.passphrase,
 			gateway:'gateway.push.apple.com',
 			port: 2195,
 			// enhanced: true,
