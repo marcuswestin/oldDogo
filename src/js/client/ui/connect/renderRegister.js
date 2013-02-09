@@ -17,7 +17,7 @@ var steps = {
 function renderFacebook(view) {
 	return div('facebookStep', style(translate.y(310)),
 		div('button', 'Connect to Facebook', button(function() {
-			overlay.show(function() { return div(style({ background:'rgba(0,0,0,.4)' }), 'Loading...') })
+			overlay.show('Loading...')
 			bridge.command('facebook.connect', { permissions:['email','friends_birthday'] }, function(err, data) {
 				if (err || !data.facebookSession || !data.facebookSession.accessToken) {
 					overlay.hide(function() {
@@ -156,8 +156,10 @@ function renderAccount(view) {
 			var passwordError = registration.checkPassword(view.password)
 			if (passwordError) { return error(passwordError) }
 			
+			$('input').blur()
+			
 			if (view.fbMe) {
-				overlay.show(function() { return 'Uploading picture...' })
+				overlay.show('Uploading picture...')
 				pictureSecretPromise.add(_registerWithFacebookSession)
 			} else {
 				setTimeout(function() { // for the confirm call to be async to button.
@@ -167,7 +169,7 @@ function renderAccount(view) {
 			}
 			
 			function _registerWithFacebookSession(pictureSecret) {
-				overlay.show(function() { return 'Loading...' })
+				overlay.show('Loading...')
 				var address = Addresses.email(view.email)
 				var params = { address:address, password:view.password, name:view.name, color:view.color, pictureSecret:pictureSecret, fbSession:view.fbSession }
 				api.post('api/register/withFacebookSession', params, function(err, res) {
@@ -182,14 +184,13 @@ function renderAccount(view) {
 			}
 			
 			function _requestAddressVerification(pictureSecret) {
-				overlay.show(function() { return 'Loading...' })
+				overlay.show('Loading...')
 				var params = { address:Addresses.email(view.email), password:view.password, name:view.name, color:view.color, pictureSecret:pictureSecret }
 				verificationInfo = { password:params.password }
 				api.post('api/address/verification', params, function(err, res) {
-					overlay.hide(function() {
-						if (err) { return error(err) }
-						verificationInfo.verificationId = res.verificationId
-					})
+					if (err) { return error(err) }
+					verificationInfo.verificationId = res.verificationId
+					overlay.show({ dismissable:false }, function() { return 'Check '+view.email+' for a verification link - then you are done.' })
 				})
 			}
 		}))
@@ -223,16 +224,15 @@ events.on('app.didOpenUrl', function(info) {
 	var address = Addresses.fromVerificationParams(urlParams)
 	var password = verificationInfo && verificationInfo.password
 	if (password) {
-		_doVerify(password, function() {  })
+		overlay.show('Verifying '+address.addressId+'...')
+		_doVerify(password, function() { })
 	} else {
-		overlay.show({ height:100, dismissable:false }, function() {
-			return div(null,
-				input({ id:'verifyPassword', type:'password', placeholder:'password' }),
-				div('button', 'Verify ' + address.addressId, button(function() {
-					_doVerify($('#password').val())
-				}))
-			)
-		})
+		overlay.show(div(
+			input({ id:'verifyPassword', type:'password', placeholder:'password' }),
+			div('button', 'Verify ' + address.addressId, button(function() {
+				_doVerify($('#password').val())
+			}))
+		))
 	}
 	
 	function _doVerify(password, onVerified) {
@@ -240,7 +240,7 @@ events.on('app.didOpenUrl', function(info) {
 			// adding address
 		} else {
 			api.post('api/register/withAddressVerification', { password:verificationInfo.password, verificationId:urlParams.i, verificationToken:urlParams.t }, function(err, res) {
-				if (err) { overlay.hide(); error(err); return }
+				if (err) { return error(err); }
 				api.post('api/session', { address:address, password:verificationInfo.password }, function(err, res) {
 					if (err) { return error(err) }
 					overlay.hide()

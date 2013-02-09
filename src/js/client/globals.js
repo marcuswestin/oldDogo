@@ -39,6 +39,8 @@ isArray = _.isArray
 gHeadHeight = 0
 gKeyboardHeight = 216
 
+$.fn.size = function() { var $this = $(this); return { width:$this.width(), height:$this.height() } }
+
 eventEmitter = function(dataClass, data) {
 	var events = create(eventEmitter.proto, { dataClass:dataClass, data:data })
 	Object.defineProperty(data, 'events', { value:events, writable:false, enumerable:false, configurable:false })
@@ -110,6 +112,7 @@ BT = {
 }
 
 error = function error(err) {
+	overlay.hide()
 	var margin = 0
 	var cornerSize = 40
 	var message = api.error(err)
