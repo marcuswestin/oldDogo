@@ -39,7 +39,7 @@
 	url = git@github.com:marcuswestin/tags.js.git
 [submodule "node_modules/aws2js"]
 	path = node_modules/aws2js
-	url = https://github.com/SaltwaterC/aws2js.git
+	url = https://github.com/marcuswestin/aws2js.git
 [submodule "node_modules/express"]
 	path = node_modules/express
 	url = https://github.com/visionmedia/express.git
