@@ -47,6 +47,10 @@ setup('Email registration', function() {
 	then('login', function(done) {
 		api.post('api/session', { address:testPerson.address, password:testPerson.password }, _checkSession(testPerson.name, testPerson.color, done))
 	})
+	then('login with changed address case', function(done) {
+		testPerson.address.addressId = testPerson.address.addressId.toUpperCase()
+		api.post('api/session', { address:testPerson.address, password:testPerson.password }, _checkSession(testPerson.name, testPerson.color, done))
+	})
 })
 
 setup('Facebook registration', function() {
