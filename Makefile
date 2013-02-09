@@ -47,6 +47,15 @@ icons:
 fly-dev: fly-build
 	bash src/scripts/testFly.sh "fly-dev build" "dev"
 
+# Encrypted configs
+###################
+encrypt-secrets:
+	tar -cvf secrets.tar secrets
+	bcrypt -s0 secrets.tar
+
+secrets:
+	bcrypt secrets.tar.bfe
+
 # Less common commands
 ######################
 # Run prod server
