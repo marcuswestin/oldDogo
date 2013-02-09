@@ -2,6 +2,9 @@ var claimVerifiedAddresses = require('server/fn/claimVerifiedAddresses')
 var checkPasswordAgainstHash = require('server/fn/checkPasswordAgainstHash')
 var createPasswordHash = require('server/fn/createPasswordHash')
 var getPerson = require('server/fn/getPerson')
+var getClientConfig = require('server/fn/getClientConfig')
+var registration = require('data/registration')
+var facebook = require('server/util/facebook')
 
 module.exports = {
 	withAddressVerification:withAddressVerification,
@@ -17,7 +20,7 @@ function withAddressVerification(verificationId, verificationToken, password, ca
 		_createPersonWithVerifiedAddresses(verInfo.name, verInfo.color, verInfo.passwordHash, pictureUrl, addresses, opts, function(err, person) {
 			if (err) { return callback(err) }
 			db.lookup().updateOne('UPDATE addressVerification SET usedTime=? WHERE verificationId=?', [db.time(), verInfo.verificationId], function(err) {
-				callback(err, person)
+				callback(err, { person:person, config:getClientConfig() })
 			})
 		})
 	})
@@ -34,23 +37,27 @@ function withAddressVerification(verificationId, verificationToken, password, ca
 }
 
 // When you register with facebook we can skip the email verification step!
-function withFacebookSession(name, color, email, password, fbSession, callback) {
-	if (fbSession) { return callback('Missing facebook session') }
+function withFacebookSession(name, color, address, password, fbSession, pictureSecret, callback) {
+	if (!fbSession) { return callback('Missing facebook session') }
 	
-	var err = registration.checkAll({ name:name, color:color, address:Addresses.email(email), password:password })
+	if (!Addresses.isEmail(address)) { return callback('Expected an email address') }
+	
+	var err = registration.checkAll({ name:name, color:color, address:address, password:password })
 	if (err) { return callback(err) }
 	
 	parallel(_getFacebookData, curry(createPasswordHash, password), function(err, fbAccount, passwordHash) {
 		if (err) { return callback(err) }
 		if (!fbAccount || !fbAccount.id) { return callback('I could not connect to your Facebook account') }
-		if (!fbAccount.email == email) {
-			log.alert('Facebook register email mismatch', email, name, fbAccount)
+		if (fbAccount.email != address.addressId) {
+			log.alert('Facebook register email mismatch', address, name, fbAccount)
 			return callback('Hmm... That email is not right. Are you trying to trick us? Why not join forces instead, ping us at jobs@dogo.co')
 		}
-		var pictureUrl = 'http://graph.facebook.com/'+fbAccount.id+'/picture?type=large'
-		var addresses = [Addresses.email(email), Addresses.facebook(fbAccount.id)]
+		var pictureUrl = pictureSecret ? payloads.underlyingPersonPictureUrl(pictureSecret) : 'http://graph.facebook.com/'+fbAccount.id+'/picture?type=large'
+		var addresses = [address, Addresses.facebook(fbAccount.id)]
 		var opts = { birthdate:_getFbAccBirthdate(fbAccount.birthday), locale:fbAccount.locale, gender:fbAccount.gender, facebookId:fbAccount.id }
-		_createPersonWithVerifiedAddresses(name, color, passwordHash, pictureUrl, addresses, opts, callback)
+		_createPersonWithVerifiedAddresses(name, color, passwordHash, pictureUrl, addresses, opts, function(err, person) {
+			callback(err, { person:person, config:getClientConfig() })
+		})
 	})
 	
 	function _getFacebookData(callback) {
@@ -73,7 +80,7 @@ function withFacebookSession(name, color, email, password, fbSession, callback) 
 function _createPersonWithVerifiedAddresses(name, color, passwordHash, pictureUrl, addresses, opts, callback) {
 	log.debug('create person with verified addresses', name, color, passwordHash, pictureUrl, addresses, opts)
 	parallel(_lookupAddresses, _createPerson, function(err, addrInfos, personId) {
-		if (err) { return callack(err) }
+		if (err) { return callback(err) }
 		parallel(_createPictureRedirect, _claimVerifiedAddresses, _getPerson, function(err, _, _, person) {
 			log.debug('done creating person with verified addresses', err, person)
 			callback(err, person)

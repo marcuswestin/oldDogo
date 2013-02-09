@@ -48,7 +48,7 @@ function renderFacebook(view) {
 var LEFT = 25
 
 var Promise = require('std/Promise')
-var pictureSecretPromise
+var pictureSecretPromise = new Promise().fulfill() // we fulfill it right away to account for the no-picture-selected case
 function renderProfile(view) {
 	if (view.fbMe) {
 		var pictureUrl
@@ -79,7 +79,7 @@ function renderProfile(view) {
 					}
 					bridge.command('media.upload', params, function(err, res) {
 						if (err) { error(err) }
-						thisPictureSecretPromise.fulfill(err, res && res.pictureSecret) // instead of view.pictureSecret as it may take a while for upload to finish
+						thisPictureSecretPromise.fulfill(res && res.pictureSecret) // instead of view.pictureSecret as it may take a while for upload to finish
 					})
 				})
 			}))
@@ -156,18 +156,27 @@ function renderAccount(view) {
 			var passwordError = registration.checkPassword(view.password)
 			if (passwordError) { return error(passwordError) }
 			
-			if (!confirm('Is '+view.email+' correct?')) { return }
-			
-			overlay.show(function() { return 'Loading...' })
-			
-			if (pictureSecretPromise) {
-				pictureSecretPromise.add(_doRegister)
+			if (view.fbMe) {
+				pictureSecretPromise.add(_registerWithFacebookSession)
 			} else {
-				_doRegister()
+				if (!confirm('Is '+view.email+' correct?')) { return }
+				pictureSecretPromise.add(_requestAddressVerification)
 			}
 			
-			function _doRegister(picUploadError, pictureSecret) {
-				var params = { address:Addresses.email(view.email), password:view.password, name:view.name, color:view.color, pictureSecret:pictureSecret, fbSession:view.facebookSession }
+			function _registerWithFacebookSession(pictureSecret) {
+				overlay.show(function() { return 'Loading...' })
+				var params = { address:Addresses.email(view.email), password:view.password, name:view.name, color:view.color, pictureSecret:pictureSecret, fbSession:view.fbSession }
+				api.post('api/register/withFacebookSession', params, function(err, res) {
+					overlay.hide(function() {
+						if (err) { return error(err) }
+						events.fire('user.session', res.sessionInfo)
+					})
+				})
+			}
+			
+			function _requestAddressVerification(pictureSecret) {
+				overlay.show(function() { return 'Loading...' })
+				var params = { address:Addresses.email(view.email), password:view.password, name:view.name, color:view.color, pictureSecret:pictureSecret }
 				verificationInfo = { password:params.password }
 				api.post('api/address/verification', params, function(err, res) {
 					overlay.hide(function() {

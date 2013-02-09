@@ -13,7 +13,6 @@ var createSession = require('server/fn/createSession')
 var requestVerification = require('server/fn/requestVerification')
 var register = require('server/fn/register')
 var authenticateRequest = require('server/fn/authenticateRequest')
-var getClientConfig = require('server/fn/getClientConfig')
 
 var log = makeLog('Router')
 
@@ -169,10 +168,11 @@ function setupRoutes(app, opts) {
 	})
 	app.post('/api/register/withAddressVerification', function handleRegisterWithAddressVerification(req, res) {
 		var params = getJsonParams(req, 'verificationId', 'verificationToken', 'password')
-		register.withAddressVerification(params.verificationId, params.verificationToken, params.password, function(err, person) {
-			if (err) { return respond(req, res, err) }
-			respond(req, res, null, { person:person, config:getClientConfig() })
-		})
+		register.withAddressVerification(params.verificationId, params.verificationToken, params.password, curry(respond, req, res))
+	})
+	app.post('/api/register/withFacebookSession', function handleRegisterWithFacebookSession(req, res) {
+		var params = getJsonParams(req, 'address', 'name', 'color', 'password', 'fbSession', 'pictureSecret')
+		register.withFacebookSession(params.name, params.color, params.address, params.password, params.fbSession, params.pictureSecret, curry(respond, req, res))
 	})
 	app.post('/api/session', filters.oldClients, function handlePostSession(req, res) {
 		var params = getJsonParams(req, 'address', 'password')

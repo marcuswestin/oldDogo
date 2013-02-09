@@ -2,6 +2,7 @@ require('./1-testSetup')
 var url = require('std/url')
 var exec = require('child_process').exec
 var fs = require('fs')
+var facebook = require('server/util/facebook')
 
 setup('Ping', function() {
 	then('ping it', function(done) {
@@ -48,6 +49,44 @@ setup('Email registration', function() {
 			check(err)
 			var sessionInfo = res.sessionInfo
 			has(sessionInfo.person, { name:testPerson.name, color:testPerson.color })
+			is(sessionInfo.authToken)
+			is(sessionInfo.clientUidBlock)
+			is(sessionInfo.config)
+			done()
+		})
+	})
+})
+
+setup('Facebook registration', function() {
+	var fbSession
+	var fbMe
+	var password = '123123'
+	var color = 1
+	then('check that register with changed email fails', function(done) {
+		facebook.get('/oauth/access_token', {}, function(err, _fbSession) {
+			check(err)
+			fbSession = _fbSession
+			facebook.get('/me?fields=id,birthday,email', {}, function(err, _fbMe) {
+				check(err)
+				fbMe = _fbMe
+				api.post('api/register/withFacebookSession', { name:fbMe.name, color:color, password:password, address:Addresses.email('spoofed@gmail.com'), fbSession:fbSession }, function(err, res) {
+					is(err)
+					done()
+				})
+			})
+		})
+	})
+	then('register with fb session', function(done) {
+		api.post('api/register/withFacebookSession', { name:fbMe.name, color:color, password:password, address:Addresses.email(fbMe.email), fbSession:fbSession }, function(err, res) {
+			has(res.person, { name:fbMe.name, color:color })
+			done()
+		})
+	})
+	then('login', function(done) {
+		api.post('api/session', { address:Addresses.email(fbMe.email), password:password }, function(err, res) {
+			check(err)
+			var sessionInfo = res.sessionInfo
+			has(sessionInfo.person, { name:fbMe.name, color:color })
 			is(sessionInfo.authToken)
 			is(sessionInfo.clientUidBlock)
 			is(sessionInfo.config)
