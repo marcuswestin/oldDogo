@@ -10,6 +10,14 @@ var browserModeSetup = require('client/browser/setup')
 gAppInfo = {}
 
 events.on('app.start', function onAppStart(info) {
+	var lightFontWeight = tags.isTouch ? 400 : 100
+	var css = 'html, button, input, select, textarea, *, #viewport { font-weight:'+lightFontWeight+' }'
+	var style = document.createElement('style')
+	style.type = 'text/css'
+	if (style.styleSheet) { style.styleSheet.cssText = css }
+	else { style.appendChild(document.createTextNode(css)) }
+	document.getElementsByTagName('head')[0].appendChild(style)
+	
 	gAppInfo = info
 	api.setHeaders({ 'x-dogo-mode':gAppInfo.config.mode, 'x-dogo-client':gAppInfo.client })
 	startApp(info)
