@@ -1,5 +1,4 @@
 var uuid = require('uuid')
-var time = require('std/time')
 var facebook = require('server/util/facebook')
 var log = makeLog('session')
 var bcrypt = require('bcrypt')

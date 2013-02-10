@@ -33,7 +33,7 @@ function path(personId, secret, type) {
 }
 
 function url(personId, type, payload) {
-	return base(payload.bucket, payload.region) + payloads.path(personId, secret, type)
+	return base(payload.bucket, payload.region) + payloads.path(personId, payload.secret, type)
 }
 
 function base(bucket, region) {

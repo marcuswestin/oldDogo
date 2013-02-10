@@ -1,7 +1,6 @@
 var trim = require('std/trim')
 var placeholder = 'Say something :)'
 var drawer = require('./drawer')
-var time = require('std/time')
 var pasteHtmlAtInputCaret = require('client/util/pasteHtmlAtInputCaret')
 
 var currentConversation = null

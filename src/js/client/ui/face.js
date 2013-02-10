@@ -35,6 +35,6 @@ function getUrl(address) {
 	if (address.personId) {
 		return payloads.personPictureUrl(address.personId)
 	} else if (Addresses.isFacebook(address)) {
-		return face.facebookurl(address.addressId)
+		return face.facebookUrl(address.addressId)
 	}
 }

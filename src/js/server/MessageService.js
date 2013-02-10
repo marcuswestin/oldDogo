@@ -234,37 +234,36 @@ function _notifyParticipants(message) {
 	}
 }
 
-function getMessages(personId, participationId, callback) {
-	// This could be sped up by checking conversation.participantsJson instead of selecting from participation
-	db.people(participationId).selectOne(
-		'SELECT conversationId FROM participation WHERE personId=? AND participationId=?',
-		[personId, participationId],
-		function(err, res) {
+function getMessages(personId, participationId, conversationId, callback) {
+	log.debug('get messages', personId, participationId, conversationId)
+	parallel(_checkPermission, _getMessages, function(err, _, messages) {
+		callback(err, messages)
+	})
+	
+	function _checkPermission(callback) {
+		var sql = 'SELECT conversationId FROM participation WHERE personId=? AND participationId=? AND conversationId=?'
+		db.people(participationId).selectOne(sql, [personId, participationId, conversationId], function(err, res) {
 			if (err) { return callback(err) }
 			if (!res) { return callback('Unknown conversation') }
-			var conversationId = res.conversationId
-			log.debug('get messages', personId, participationId, conversationId)
-			if (!conversationId) {
-				callback(null, [])
-				// no messages sent yet
-			} else {
-				_selectMessages(conversationId, function(err, messages) {
-					if (err) { return callback(err) }
-					callback(null, messages)
-					var lastMessage = messages[messages.length - 1]
-					if (!lastMessage) { return }
-					// Update the lastReadTime
-					db.people(participationId).updateOne(
-						'UPDATE participation SET lastReadTime=? WHERE personId=? AND participationId=?',
-						[db.time(), personId, participationId],
-						function(err) {
-							if (err) { log.error('Could not update participation lastReadTime', personId, participationId, conversationId, err) }
-						}
-					)
-				})
-			}
-		}
-	)
+			callback(null, null)
+		})
+	}
+	
+	function _getMessages(callback) {
+		_selectMessages(conversationId, function(err, messages) {
+			if (err) { return callback(err) }
+			callback(null, messages)
+			_updateParticipationLastRead(messages[messages.length - 1])
+		})
+	}
+	
+	function _updateParticipationLastRead(lastMessage) {
+		if (!lastMessage) { return }
+		var sql = 'UPDATE participation SET lastReadTime=? WHERE personId=? AND participationId=?'
+		db.people(participationId).updateOne(sql, [db.time(), personId, participationId], function(err) {
+			if (err) { log.error('Could not update participation lastReadTime', personId, participationId, conversationId, err) }
+		})
+	}
 }
 
 function saveFacebookRequest(personId, facebookRequestId, toPersonId, conversationId, callback) {
@@ -295,6 +294,7 @@ function loadFacebookRequestId(facebookRequestId, callback) {
 }
 
 function _selectMessages(conversationId, callback) {
+	log.debug('select messages', conversationId)
 	var selectMessageSql = [
 		'SELECT messageId, fromPersonId, clientUid, conversationId, type, sentTime, payloadJson',
 		'FROM message WHERE conversationId=? ORDER BY messageId DESC LIMIT 50'

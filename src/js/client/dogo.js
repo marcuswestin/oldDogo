@@ -2,7 +2,6 @@ require('./globals')
 
 image.base += 'mobileApp/'
 
-var time = require('std/time')
 var push = require('data/push')
 var connect = require('client/ui/connect/connect')
 var appScroller = require('client/ui/appScroller')

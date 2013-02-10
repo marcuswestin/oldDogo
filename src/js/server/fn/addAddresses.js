@@ -11,7 +11,7 @@ module.exports = function addAddresses(req, newAddresses, callback) {
 			var sql = 'INSERT INTO participation SET personId=?, peopleJson=?'
 			db.people(personId).insert(sql, [personId, JSON.stringify(people)], function(err, participationId) {
 				if (err) { return next(err) }
-				next(null, { participationId:participationId, people:people })
+				next(null, { participationId:participationId, people:people, recent:[], pictures:[] })
 			})
 		},
 		finish:function(err, newConversations) {

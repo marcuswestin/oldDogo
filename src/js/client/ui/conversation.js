@@ -2,7 +2,6 @@ var composer = require('./composer')
 var once = require('std/once')
 var linkify = require('lib/linkify')
 var questions = require('./questions')
-var time = require('std/time')
 var pictures = require('client/ui/pictures')
 
 module.exports = {
@@ -70,13 +69,15 @@ function scrollDown(duration, amount) {
 	}
 }
 
+function getMessageId(message) { return message.fromPersonId + '-' + message.clientUid }
+
 function getMessagesList() {
 	if (getMessagesList._list) { return getMessagesList._list }
 	var drewLoading = false
 	getMessagesList._list = list('messagesList', {
 		onSelect:selectMessage,
 		renderItem:renderMessage,
-		getItemId:function(message) { return message.fromPersonId + '-' + message.clientUid },
+		getItemId:getMessageId,
 		renderEmpty:function() {
 			if (drewLoading) { return div('ghostTown', 'Start the conversation', br(), 'Draw something!') }
 			drewLoading = true
@@ -114,8 +115,9 @@ function selectMessage(message) {
 
 function refreshMessages(scrollToBottom) {
 	if (!view) { return }
+	if (!view.conversation.conversationId) { return getMessagesList().append([]) } // no messages yet
 	var wasCurrentView = view
-	api.get('api/messages', { participationId:view.conversation.participationId }, function refreshRenderMessages(err, res) {
+	api.get('api/messages', { conversationId:view.conversation.conversationId, participationId:view.conversation.participationId }, function refreshRenderMessages(err, res) {
 		if (wasCurrentView != view) { return }
 		if (err) { return error(err) }
 		var messagesList = getMessagesList()
@@ -216,7 +218,7 @@ gRenderMessageBubble = function(message, conversation, opts) {
 				style(translate(opts.pictureSize[0] / 2 - 25/2, opts.pictureSize[1] / 2 - 25/2)),
 				style({ width:0, height:0 })
 			)
-			var pictureUrl = pictures.displayUrl(message, { resize:[262*2, 180*2] })
+			var pictureUrl = pictures.displayUrl(message, { resize:[opts.pictureSize[0]*2, opts.pictureSize[1]*2] })
 			var background = opts.lazy ? { pictureUrl:pictureUrl } : style({ backgroundImage:'url('+pictureUrl+')' })
 			return [
 				loadingClock,

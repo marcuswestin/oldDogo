@@ -17,7 +17,7 @@ var state = module.exports = {
 	},
 	load:function(key, callback) {
 		if (state.cache[key]) {
-			callback(state.cache[key])
+			nextTick(function() { callback(state.cache[key]) })
 		} else {
 			bridge.command('state.load', { key:key }, function(err, res) {
 				state.cache[key] = res

@@ -257,8 +257,8 @@ function setupRoutes(app, opts) {
 		)
 	})
 	app.get('/api/messages', filters.oldClientsAndSession, function handleGetConversationMessages(req, res) {
-		var params = getUrlParams(req, 'participationId')
-		messageService.getMessages(req.session.personId, parseInt(params.participationId), function(err, messages) {
+		var params = getUrlParams(req, 'participationId', 'conversationId')
+		messageService.getMessages(req.session.personId, parseInt(params.participationId), parseInt(params.conversationId), function(err, messages) {
 			respond(req, res, err, !err && { messages:messages })
 		})
 	})
