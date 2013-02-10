@@ -1,7 +1,7 @@
 module.exports = function renderCard(conversation) {
 	return div('card',
 		// div('gradient'),
-		_getCollageBackground(310, conversation),
+		// _getCollageBackground(310, conversation),
 		div('person',
 			face(conversation.people[0], { size:80 })
 		),
@@ -51,7 +51,7 @@ function renderRecent(conversation) {
 					dynamics:false,
 					face:28,
 					arrow:true,
-					pictureSize:[203, 90],
+					pictureSize:[210, 90],
 					maxHeight:100
 				}))
 			)

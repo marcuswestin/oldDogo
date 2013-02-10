@@ -49,48 +49,6 @@ bubbleBorderRadius = 14px;
 			text-overflow ellipsis;
 			white-space nowrap;
 
-.messageContainer
-	margin-top 4px;
-	font-size 14px;
-	.messageBubble
-		// -webkit-box-shadow: 0 1px 1px 1px rgba(7, 39, 61, 0.4), inset 0 1px 1px 0px rgba(7, 39, 61, 0.4)
-		margin 3px 0; display inline-block;
-		.arrow
-			display inline-block; 
-			display none;
-			margin-top 10px;
-		.textContent
-			max-width 198px;
-		.pictureContent
-			border-radius bubbleBorderRadius - 3px;
-			-webkit-box-shadow: inset 0px 1px 1px 1px rgba(0, 0, 0, 0.4);
-	.textMessage, .audioMessage
-		.messageBubble
-			margin-top 5px;
-	.face
-		conversationFaceStyle();
-	.fromThem
-		margin-right 36px;
-		.face
-			float left;
-		.arrow
-			float left; margin-left -7px
-		.messageBubble
-			fromThemGradient(1, 1); margin-left 8px;
-	.fromThem.pictureMessage
-		margin 0 -2px 0 0;
-	.fromMe
-		margin-left 30px;
-		.face
-			float right;
-		.arrow
-			float right; margin-right -6px;
-		.messageBubble
-			float right; fromMeGradient(1, 1); margin-right 4px;
-			color #000;
-	.fromMe.pictureMessage
-		margin 0 0 0 -2px;
-
 .messageBubble
 	border-radius bubbleBorderRadius; // blueDropShadow();
 	word-wrap break-word;
@@ -98,11 +56,11 @@ bubbleBorderRadius = 14px;
 		light(); padding 4px 10px 5px; // text-shadow 0 2px 1px rgba(255, 255, 255, 0.81);
 
 #conversationView
-	padding 20px 0 50px 0;
+	padding 20px 0 45px 0;
 	.personName
-		padding 12px 0 6px; font-size 22px; color rgb(29,112,171); text-shadow 0 1px 0 blueShadowColor(.3); text-align center;
+		font-size 22px; color rgb(29,112,171); text-shadow 0 1px 0 blueShadowColor(.3); text-align center;
 	.messagesList
-		padding 4px;
+		// padding 4px;
 	.dogo-info
 		blueNotice()
 		margin 8px 0 8px -4px; padding 4px 0 10px 0; border-width 1px 0; border-style solid;

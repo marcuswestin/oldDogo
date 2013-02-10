@@ -131,7 +131,7 @@ function renderProfile(view) {
 
 var verificationInfo = null
 function renderAccount(view) {
-	if (view.fbMe) {
+	if (view.fbMe && view.fbMe.email && !Addresses.isFacebookProxyEmail(view.fbMe.email)) {
 		var disable = true
 		var email = view.fbMe.email
 	} else {
@@ -158,7 +158,7 @@ function renderAccount(view) {
 			
 			$('input').blur()
 			
-			if (view.fbMe) {
+			if (view.fbMe && view.fbMe.email && !Addresses.isFacebookProxyEmail(view.fbMe.email)) {
 				overlay.show('Uploading picture...')
 				pictureSecretPromise.add(_registerWithFacebookSession)
 			} else {

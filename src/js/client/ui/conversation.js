@@ -33,7 +33,7 @@ function renderConversation(_view) {
 	gScroller.getCurrentView().on('scroll', onScroll)
 
 	return div({ id:'conversationView' },
-		div('personName', function() {
+		div('personName', style({ padding:px(12, 0, 10 + spacing) }),  function() {
 			var names = view.conversation.people[0].name.split(' ')
 			if (names.length > 1) {
 				return names[0] + ' ' + names[names.length-1][0] // first name plus first letter of last name
@@ -165,34 +165,48 @@ function arrowImage(name, size) {
 }
 
 function renderMessage(message) {
-	return gRenderMessageBubble(message, view.conversation, { dynamics:true, face:40, arrow:true, lazy:true })
+	return gRenderMessageBubble(message, view.conversation, { dynamics:true, face:40, arrow:true, lazy:false })
 }
 
-var pictureMargin = 4
+var light = '#5699CF'
+var dark = '#305F84'
+
+var lastMessageFromId = null
 gRenderMessageBubble = function(message, conversation, opts) {
 	opts = options(opts, {
 		dynamics:true,
 		face:30,
 		arrow:true,
 		lazy:false,
-		pictureSize: [254, 172],
+		pictureSize: [viewport.width() - spacing*2, viewport.width() - spacing*2],
 		maxHeight:null
 	})
 	var me = gState.me()
+	var isNewPerson = (lastMessageFromId != message.fromPersonId)
+	lastMessageFromId = message.fromPersonId
 	var fromMe = (message.fromPersonId == me.personId)
 	var classes = [message.type+'Message', fromMe ? 'fromMe' : 'fromThem']
-	return [div('messageContainer',
+	var person = (fromMe ? me : conversation.people[0])
+	var faceSize = 32
+	var floatRight = { 'float':'right' }
+	var floatLeft = { 'float':'left' }
+	if (isNewPerson) {
+		var dx = fromMe ? -spacing : spacing
+		var personParts = [
+			face(person, { size:faceSize }),
+			div('name', person.name.split(' ')[0], style(translate(dx, -(spacing + 2)), { display:'inline-block', fontSize:18, color:dark }))
+		]
+		if (fromMe) { personParts.reverse() }
+		var personHeader = isNewPerson && div('person',
+			style({ height:32, overflow:'hidden', padding:px(spacing/2, spacing) }),
+			personParts,
+			fromMe && style({ textAlign:'right' })
+		)
+	}
+	return [div('messageContainer', style(translate(0,0), { textAlign:fromMe ? 'right' : 'left' }),
 		div(classes.join(' '),
-			opts.face ? face(fromMe ? me : conversation.people[0], { size:opts.face }) : null,
-			div('messageBubble',
-				opts.arrow && div('arrow', style({
-					background:image.background(fromMe ? 'bubbleArrow-right' : 'bubbleArrow-left', 5, 10),
-					width:5, height:10,
-					backgroundSize:px(5, 10)
-				})),
-				opts.maxHeight != null && style({ maxHeight:opts.maxHeight }),
-				message.preview ? renderPreview(message, opts) : renderContent(message, opts)
-			)
+			personHeader,
+			renderContent(message, opts)
 		)
 	), div('clear')]
 	
@@ -219,18 +233,16 @@ gRenderMessageBubble = function(message, conversation, opts) {
 				style({ width:0, height:0 })
 			)
 			var pictureUrl = pictures.displayUrl(message, { resize:[opts.pictureSize[0]*2, opts.pictureSize[1]*2] })
-			var background = opts.lazy ? { pictureUrl:pictureUrl } : style({ backgroundImage:'url('+pictureUrl+')' })
+			// var background = opts.lazy ? { pictureUrl:pictureUrl } : style({ backgroundImage:'url('+pictureUrl+')' })
 			return [
 				loadingClock,
-				div('pictureContent',
-					background, style(translate(0,0)),
-					style({
-						width:opts.pictureSize[0],
-						height:opts.pictureSize[1],
-						margin:pictureMargin,
-						backgroundSize:px(opts.pictureSize[0], opts.pictureSize[1])
-					})
-				)
+				img('pictureContent', { src:pictureUrl }, style(translate(0,0), {
+					display:'block',
+					width:opts.pictureSize[0],
+					height:opts.pictureSize[1],
+					padding:px(spacing / 2, spacing),
+					backgroundSize:px(opts.pictureSize[0], opts.pictureSize[1])
+				}))
 			]
 		}
 	}
@@ -248,11 +260,10 @@ gRenderMessageBubble = function(message, conversation, opts) {
 			var scaledSize = map(picSize, function(size) { return size * ratio })
 			var scaledOffset = map([(opts.pictureSize[0]-scaledSize[0]) / 2, (opts.pictureSize[1]-scaledSize[1]) / 2], Math.round)
 			return div('pictureContent',
-				style(translate(0,0)),
 				style({
 					width:opts.pictureSize[0],
 					height:opts.pictureSize[1],
-					margin:pictureMargin,
+					marginTop:spacing,
 					backgroundImage:'url('+message.preview.base64Data+')',
 					backgroundSize: px(scaledSize),
 					backgroundPosition: px(scaledOffset)
@@ -262,7 +273,11 @@ gRenderMessageBubble = function(message, conversation, opts) {
 	}
 
 	function renderTextContent(payload, opts) {
-		return div('textContent', linkify(payload.body).join(''))
+		var margin = faceSize + spacing
+		return div('textContent',
+			linkify(payload.body).join(''),
+			style({ padding:px(spacing / 2, spacing), margin:(fromMe ? px(0,0,0,margin) : px(0,margin,0,0)) })
+		)
 	}
 
 	function renderAudioContent(payload, opts) {
@@ -299,7 +314,7 @@ events.on('message.sending', function(message) {
 	})
 })
 
-events.on('message.sent', function(serverResponse) {
+events.on('message.sent', function onConversationMessageSent(serverResponse) {
 	var message = serverResponse.message
 	if (!view || view.conversation.conversationId != message.conversationId) { return }
 	// cacheMessage(message)
@@ -324,7 +339,7 @@ function promptInvite(message) {
 				// face.mine({ size:faceSize, style:{ 'float':'left' } }),
 				'Send via Facebook',
 				face(view.conversation.people[0], { size:faceSize, style:{ 'float':'right' } }),
-				button(function() {
+				button(function sendViaFacebook() {
 				// TODO events.on('facebook.dialogDidComplete', function() { ... })
 				// https://developers.facebook.com/docs/reference/dialogs/requests/
 				// https://developers.facebook.com/docs/mobile/ios/build/
@@ -347,7 +362,7 @@ function promptInvite(message) {
 						// frictionless:'1'
 					}
 				})
-				events.once('facebook.dialogCompleteWithUrl', function(info) {
+				events.once('facebook.dialogCompleteWithUrl', function facebookDialogCompleteWithUrl(info) {
 					var url = parseUrl(info.url)
 					var params = { conversationId:conversation.conversationId, personId:conversation.people[0].personId, facebookRequestId:url.getSearchParam('request') }
 					api.post('api/facebookRequests', params, error.handler)

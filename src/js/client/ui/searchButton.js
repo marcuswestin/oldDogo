@@ -11,19 +11,9 @@ events.on('app.start', function() {
 	sizes.padding = viewport.width() - sizes.result*numCols
 })
 
-var getFace = (function() {
-	var faces = {}
-	return function(facebookId) {
-		if (!faces[facebookId]) {
-			faces[facebookId] = $(face(facebookId, { size:sizes.result }))[0]
-		}
-		return faces[facebookId]
-	}
-}())
-
 function render() {
 	var searchItems = map(gState.get('conversations'), function(conversation) {
-		var names = conversation.summary.people[0].name.split(' ')
+		var names = conversation.people[0].name.split(' ')
 		return { names:names, conversation:conversation }
 	})
 	
@@ -33,12 +23,12 @@ function render() {
 		items:defaultResults,
 		renderItem:renderResult,
 		onSelect:selectResult,
-		renderEmpty:renderEmpty,
-		onUpdated:function() {
-			searchList.find('.faceHolder').replaceWith(function() {
-				return getFace($(this).attr('facebookId'))
-			})
-		}
+		renderEmpty:renderEmpty
+		// onUpdated:function() {
+		// 	searchList.find('.faceHolder').replaceWith(function() {
+		// 		return getFace($(this).attr('facebookId'))
+		// 	})
+		// }
 	})
 	
 	registerTextInputEventListeners(searchItems, defaultResults, searchList)
@@ -71,9 +61,9 @@ function render() {
 
 	function renderResult(result, i) {
 		var classNames = 'result'
-		return div(classNames, style({ width:sizes.result, height:sizes.result }),
-			div('faceHolder', { facebookId:result.conversation.summary.people[0].facebookId }),
-			div('names', result.conversation.summary.people[0].name)
+		return div(classNames, style({ width:sizes.result - 3, height:sizes.result }),
+			div(face(result.conversation.people[0], { size:sizes.result })),
+			div('names', result.conversation.people[0].name)
 		)
 	}
 	

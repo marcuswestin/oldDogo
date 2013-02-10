@@ -13,10 +13,15 @@ module.exports = {
 	facebook:facebook,
 	phone:phone,
 	
+	isFacebookProxyEmail:isFacebookProxyEmail,
 	fromVerificationParams:fromVerificationParams
 }
 
 var types = ['phone', 'email', 'facebook']
+
+function isFacebookProxyEmail(email) {
+	return /@proxymail.facebook.com/.test(email)
+}
 
 function fromVerificationParams(params) {
 	// e.g /verify?i=123&t=abc&email=narcvs%40gmail.com or /verify?i=123&t=abc&phone=%2B14124238669

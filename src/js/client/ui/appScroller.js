@@ -9,10 +9,10 @@ module.exports = {
 }
 
 var icons = icon.preload({
-	back: ['glyphish/xtras-white/36-circle-west', 28, 28, 6, 10, 6, 11],
+	back: ['glyphish/xtras-white/36-circle-west', 28, 28, 8, 12, 6, 11],
 	menu: ['glyphish/white/19-gear', 26, 26, 7, 9],
 	// search: ['glyphish/white/112-group', 32, 21, 11, 8, 13, 12]
-	search: ['glyphish/white/06-magnify', 24, 24, 8, 12]
+	search: ['glyphish/white/06-magnify', 24, 24, 10, 14]
 })
 
 function createAndRenderScroller() {
@@ -39,7 +39,7 @@ function createAndRenderScroller() {
 		var isHome = (gScroller.stack.length == 1)
 		var stackIsAboveHome = (gScroller.stack.length > 1)
 		var showBackButton = (opts.viewBelow && stackIsAboveHome)
-		var cornerMargin = { top:24, side:4 }
+		var cornerMargin = { top:28, side:8 }
 		var title = null
 		if (view.conversation) {
 			var names = view.conversation.people[0].name.split(' ')
@@ -57,7 +57,7 @@ function createAndRenderScroller() {
 					: div('listMenu', icons.menu, logoIconDragger)
 			),
 			div('corner right', style({ borderRadius:rightCornerRadius }),
-				style(translate(viewport.width() - cornerSize.width - cornerMargin.side - 1, cornerMargin.top)),
+				style(translate(viewport.width() - cornerSize.width - cornerMargin.side, cornerMargin.top)),
 				style(cornerSize),
 				div('search', icons.search, searchIconDragger)
 			)
@@ -69,9 +69,9 @@ events.on('statusBar.wasTapped', function() {
 	$(gScroller.getCurrentView()).animate({ scrollTop:0 }, 300)
 })
 
-var cornerSize = { width:43, height:40 }
-var leftCornerRadius = px(4)//px(6,0,3,0)
-var rightCornerRadius = px(4)//px(0,6,0,3)
+var cornerSize = { width:48, height:44 }
+var leftCornerRadius = px(1)//px(6,0,3,0)
+var rightCornerRadius = px(1)//px(0,6,0,3)
 
 var backIconDragger = (function makeBackIconDragger() {
 	function getDampening(dx) {

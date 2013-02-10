@@ -156,3 +156,5 @@ error.handler = function(err, res) {
 gConfigure = function(config) {
 	payloads.configure(config.payloads)
 }
+
+spacing = 8
