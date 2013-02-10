@@ -4,7 +4,7 @@ var fs = require('fs'),
 	path = require('path')
 
 var dir = __dirname+'/../../build/dogo-ios-build'
-var minify = true
+var minify = false
 
 exec('rm -rf '+dir, function() {
 	exec('mkdir -p '+dir, function() {
