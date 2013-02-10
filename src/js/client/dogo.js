@@ -63,6 +63,11 @@ events.on('push.notification', function onPushNotification(info) {
 	}
 })
 
+events.on('app.error', function(info) {
+	if (info.message.match(/Message: SYNTAX_ERR: DOM Exception 12/)) { return } // jquery on startup
+	api.post('api/log/app/error', info, function(){})
+})
+
 function startApp(info) {
 	gIsDev = info.config.serverHost != 'dogoapp.com'
 	gState.load('sessionInfo', function onStateLoaded(sessionInfo) {
@@ -78,14 +83,14 @@ function startApp(info) {
 			if (gIsPhantom) {
 				// do nothing
 			} else if (tags.isTouch) {
-				window.onerror = function windowOnError(e) { alert('ERROR ' + e) }
+				// window.onerror = function windowOnError(e) { alert('ERROR ' + e) }
 				console.log = function bridgeConsoleLog() {
 					try { bridge.command('console.log', JSON.stringify(slice(arguments))) }
 					catch(e) { bridge.command('console.log', "Error stringifying arguments") }
 				}
 			}
 		} else {
-			window.onerror = function windowOnError(e) { console.log("ERROR", e) }
+			// window.onerror = function windowOnError(e) { console.log("ERROR", e) }
 		}
 		
 		viewport.fit($('#viewport'))

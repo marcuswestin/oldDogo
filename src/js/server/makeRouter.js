@@ -178,7 +178,10 @@ function setupRoutes(app, opts) {
 		var params = getJsonParams(req, 'address', 'password')
 		createSession(params.address, params.password, wrapRespond(req, res, 'sessionInfo'))
 	})
-	
+	app.post('/api/log/app/error', function handleLogAppError(req, res) {
+		var params = getJsonParams(req, 'message')
+		log.info("App error", params.message)
+	})
 	
 	
 	app.post('/api/waitlist', function handlePostWaitlist(req, res) {

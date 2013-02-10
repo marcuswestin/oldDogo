@@ -1,7 +1,5 @@
 require('../globals')
 
-window.onerror = function(e) { alert('error ' + e) }
-
 var drawer = require('../ui/drawer')
 
 var $buttons = $(div())
