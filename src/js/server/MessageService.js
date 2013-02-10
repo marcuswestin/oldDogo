@@ -19,55 +19,49 @@ function sendMessage(personId, participationId, clientUid, type, payload, payloa
 	payload = Messages.payload.cleanForUpload(type, payload)
 	if (!payload) { return callback('That message is malformed') }
 	
-	db.people(personId).selectOne(
-		'SELECT conversationId, peopleJson, participationId FROM participation WHERE personId=? AND participationId=?',
-		[personId, participationId],
-		function(err, participation) {
+	var sql = 'SELECT conversationId, peopleJson, participationId FROM participation WHERE personId=? AND participationId=?'
+	db.people(personId).selectOne(sql, [personId, participationId], function(err, participation) {
+		if (err) { return callback(err) }
+		if (!participation) { return callback("I couldn't find that conversation") }
+		parallel(_getOrCreateConversation, _uploadPayload, function(err, conversationId, payload) {
 			if (err) { return callback(err) }
-			if (!participation) { return callback("I couldn't find that conversation") }
-			parallel(_getOrCreateConversation, _uploadPayload, function(err, conversationId, payload) {
+			log.debug('create message with conversation and payload', conversationId, payload)
+			_createMessage(conversationId, payload, function(err, message) {
 				if (err) { return callback(err) }
-				log.debug('create message with conversation and payload', conversationId, payload)
-				_createMessage(conversationId, payload, function(err, message) {
-					if (err) { return callback(err) }
-					callback(null, message)
-					_notifyParticipants(message)
-				})
+				callback(null, message)
+				_notifyParticipants(message, prodPush)
 			})
-			
-			function _uploadPayload(next) {
-				if (type != 'picture' && type != 'audio') { return next(null, payload) }
-				payloadService.uploadPayload(personId, type, payloadFile, function(err, secret) {
-					if (!err) { payload.secret = secret }
-					return next(err, payload)
-				})
-			}
-			
-			function _getOrCreateConversation(proceed) {
-				if (participation.conversationId) {
-					proceed(null, participation.conversationId)
-				} else {
-					_createConversation(personId, participation, proceed)
-				}
-			}
-			
-			function _createMessage(conversationId, payload, callback) {
-				log.debug('create message', conversationId, payload)
-				db.conversations(conversationId).insert(
-					'INSERT INTO message SET sentTime=?, fromPersonId=?, clientUid=?, conversationId=?, type=?, payloadJson=?',
-					[db.time(), personId, clientUid, conversationId, Messages.types[type], JSON.stringify(payload)],
-					function(err, messageId) {
-						if (err) { return callback(err) }
-						var newMessage = {
-							id:messageId, fromPersonId:personId, conversationId:conversationId, clientUid:clientUid,
-							sentTime:db.time(), type:type, payload:payload
-						}
-						callback(null, newMessage)
-					}
-				)
+		})
+		
+		function _uploadPayload(next) {
+			if (type != 'picture' && type != 'audio') { return next(null, payload) }
+			payloadService.uploadPayload(personId, type, payloadFile, function(err, secret) {
+				if (!err) { payload.secret = secret }
+				return next(err, payload)
+			})
+		}
+		
+		function _getOrCreateConversation(proceed) {
+			if (participation.conversationId) {
+				proceed(null, participation.conversationId)
+			} else {
+				_createConversation(personId, participation, proceed)
 			}
 		}
-	)
+		
+		function _createMessage(conversationId, payload, callback) {
+			log.debug('create message', conversationId, payload)
+			var sql = 'INSERT INTO message SET sentTime=?, fromPersonId=?, clientUid=?, conversationId=?, type=?, payloadJson=?'
+			db.conversations(conversationId).insert(sql, [db.time(), personId, clientUid, conversationId, Messages.types[type], JSON.stringify(payload)], function(err, messageId) {
+				if (err) { return callback(err) }
+				var newMessage = {
+					id:messageId, fromPersonId:personId, conversationId:conversationId, clientUid:clientUid,
+					sentTime:db.time(), type:type, payload:payload
+				}
+				callback(null, newMessage)
+			})
+		}
+	})
 }
 
 function _createConversation(personId, participation, callback) {
@@ -165,71 +159,62 @@ function _createConversation(personId, participation, callback) {
 	}
 }
 
-function _notifyParticipants(message) {
-	db.conversations(message.conversationId).selectOne(
-		'SELECT peopleJson FROM conversation WHERE conversationId=?',
-		[message.conversationId],
-		function(err, res) {
-			if (err) { return callback(err) }
+function _notifyParticipants(message, prodPush) {
+	var sql = 'SELECT peopleJson FROM conversation WHERE conversationId=?'
+	db.conversations(message.conversationId).selectOne(sql, [message.conversationId], function(err, res) {
+		if (err) { return callback(err) }
 
-			var pushFromName
-			var people = jsonList(res.peopleJson)
-			var recipientsPersonIds = filter(people, function(person) {
-				var isMe = (person.personId == message.fromPersonId)
-				if (isMe) {
-					pushFromName = person.name.split(' ')[0]
-					return null
-				} else {
-					return person.personId
-				}
-			})
-			log.debug('push notifications', recipientsPersonIds)
-			each(recipientsPersonIds, function(recipientPersonId) {
-				pushService.sendMessagePush(recipientPersonId, pushFromName, message, prodPush)
-			})
-			log.debug('update participation summaries', people)
-			_updateParticipations(people, message)
-		}
-	)
+		var pushFromName
+		var people = jsonList(res.peopleJson)
+		var recipientPeople = filter(people, function(person) {
+			var isMe = (person.personId == message.fromPersonId)
+			if (isMe) {
+				pushFromName = person.name.split(' ')[0]
+				return false
+			} else {
+				return true
+			}
+		})
+		log.debug('push notifications', recipientPeople)
+		each(recipientPeople, function(person) {
+			pushService.sendMessagePush(person.personId, pushFromName, message, prodPush)
+		})
+		log.debug('update participation summaries', people)
+		_updateParticipations(people, message)
+	})
 	
 	function _updateParticipations(people, message) {
 		each(people, function(person) {
 			log.debug('update participation', person)
 			var personId = person.personId
 			if (!personId) { return }
-			db.people(personId).selectOne(
-				"SELECT peopleJson, recentJson, picturesJson, lastReceivedTime FROM participation WHERE personId=? AND conversationId=?",
-				[personId, message.conversationId],
-				function(err, participation) {
-					var recent = jsonList(participation.recentJson)
-					if (recent.length >= 3) { recent.shift() }
-					recent.push(message)
+			var sql = "SELECT peopleJson, recentJson, picturesJson, lastReceivedTime FROM participation WHERE personId=? AND conversationId=?"
+			db.people(personId).selectOne(sql, [personId, message.conversationId], function(err, participation) {
+				var recent = jsonList(participation.recentJson)
+				if (recent.length >= 3) { recent.shift() }
+				recent.push(message)
 
-					var pictures = jsonList(participation.picturesJson)
-					if (message.type == 'picture') {
-						if (pictures.length >= 6) {
-							var i = Math.floor(Math.random() * 7)
-							if (i != 7) { // 1 in 7 chance of skipping the picture
-								pictures[i] = message
-							}
-						} else {
-							pictures.push(message)
+				var pictures = jsonList(participation.picturesJson)
+				if (message.type == 'picture') {
+					if (pictures.length >= 6) {
+						var i = Math.floor(Math.random() * 7)
+						if (i != 7) { // 1 in 7 chance of skipping the picture
+							pictures[i] = message
 						}
+					} else {
+						pictures.push(message)
 					}
-
-					var isMyParticipation = (personId == message.fromPersonId)
-					var lastReceivedTime = (isMyParticipation ? participation.lastReceivedTime : db.time())
-					var recentJson = JSON.stringify(recent)
-					var picturesJson = JSON.stringify(pictures)
-					db.people(personId).updateOne(
-						'UPDATE participation SET lastMessageTime=?, lastReceivedTime=?, recentJson=?, picturesJson=? WHERE personId=? AND conversationId=?',
-						[db.time(), lastReceivedTime, recentJson, picturesJson, personId, message.conversationId],
-						function(err, res) {
-							if (err) { log.error("Error updating participation", err, personId, message.conversationId) }
-						}
-					)
 				}
-			)
+
+				var isMyParticipation = (personId == message.fromPersonId)
+				var lastReceivedTime = (isMyParticipation ? participation.lastReceivedTime : db.time())
+				var recentJson = JSON.stringify(recent)
+				var picturesJson = JSON.stringify(pictures)
+				var sql = 'UPDATE participation SET lastMessageTime=?, lastReceivedTime=?, recentJson=?, picturesJson=? WHERE personId=? AND conversationId=?'
+				db.people(personId).updateOne(sql, [db.time(), lastReceivedTime, recentJson, picturesJson, personId, message.conversationId], function(err, res) {
+					if (err) { log.error("Error updating participation", err, personId, message.conversationId) }
+				})
+			})
 		})
 	}
 }

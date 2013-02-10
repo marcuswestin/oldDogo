@@ -56,7 +56,7 @@ function sendMessagePush(toPersonId, pushFromName, message, prodPush) {
 			log.error(err)
 			return
 		}
-		var pushInfoList = JSON.parse(res.pushJson)
+		var pushInfoList = jsonList(res.pushJson)
 		var pushInfo = pushInfoList[0]
 		if (!pushInfo) { return log.info('No push token for', toPersonId, message.messageId) }
 		
