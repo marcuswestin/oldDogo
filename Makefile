@@ -116,12 +116,12 @@ setup-emojis:
 	# cp -r dependencies/emoji-extractor/images/64x64 src/graphics/mobileApp/emoji/
 
 setup-server: setup-source
-	if ! grep --quiet "Host github.com" ~/.ssh/config; then echo "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config; fi
 	bash src/scripts/npm-install-modules.sh
 
 setup-source:
 	if ! grep --quiet "node_modules" ~/.gitignore; then echo "node_modules" >> ~/.gitignore; fi
 	if ! grep --quiet ".__npm_installed__" ~/.gitignore; then echo ".__npm_installed__" >> ~/.gitignore; fi
+	if ! grep --quiet "Host github.com" ~/.ssh/config; then echo "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config; fi
 	git config --global core.excludesfile ~/.gitignore
 	git submodule init; git submodule sync; git submodule update
 	mkdir -p node_modules

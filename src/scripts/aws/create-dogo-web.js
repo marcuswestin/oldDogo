@@ -7,7 +7,7 @@ runInstances(numInstances, function(reservationId, instanceIds) {
 	waitForPublicDns(reservationId, instanceIds, function(instanceInfos) {
 		var instanceIds = map(instanceInfos, function(instanceInfo) { return instanceInfo.instanceId })
 		var hostnames = map(instanceInfos, function(instanceInfo) { return instanceInfo.hostname })
-		console.log('Instances:', instanceIds)
+		console.log('Instances:', instanceIds.join(' '))
 		console.log('Hostnames:', hostnames.join(' '))
 		process.exit(0)
 	})
@@ -41,7 +41,8 @@ function waitForPublicDns(reservationId, instanceIds, callback) {
 	function _checkAddresses() {
 		getInstanceInfos(instanceIds, function(err, instanceInfos) {
 			check(err)
-			var instancesWithHostname = filter(function(instanceInfos) { return instance.hostname })
+			console.log("GOT", instanceInfos, filter(instanceInfos, function(instanceInfo) { return instanceInfo.hostname }))
+			var instancesWithHostname = filter(instanceInfos, function(instanceInfo) { return instanceInfo.hostname })
 			log("Instances with public DNS:", instancesWithHostname.length, 'out of', instanceIds.length)
 			if (instancesWithHostname.length == instanceIds.length) {
 				callback(instanceInfos)

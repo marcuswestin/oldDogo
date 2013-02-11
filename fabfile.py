@@ -71,6 +71,7 @@ def _run_dogo_api():
 
 def _run_nginx():
 	sudo("cp %s/src/js/server/config/nginx.conf /etc/nginx/nginx.conf" % src_dir)
+	sudo('/etc/init.d/nginx start')
 	sudo('/etc/init.d/nginx reload')
 
 def _update_website():
