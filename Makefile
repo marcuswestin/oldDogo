@@ -49,23 +49,23 @@ fly-dev: fly-build
 
 # Encrypted configs
 ###################
-secrets/dev:
+secrets/dev: secrets/dev.tar.bfe
 	bcrypt -r secrets/dev.tar.bfe # Encrypted with dogopass
 	tar -xf secrets/dev.tar
 	rm secrets/dev.tar
 
-secrets/prod:
+secrets/prod: secrets/prod.tar.bfe
 	bcrypt -r secrets/prod.tar.bfe # Encrypted with my gmailpass
 	tar -xf secrets/prod.tar
 	rm secrets/prod.tar
 
 encrypt-prod:
 	tar -cf secrets/prod.tar secrets/prod
-	bcrypt secrets/prod.tar
+	bcrypt secrets/prod.tar # Encrypt with my gmailpass
 
 encrypt-dev:
 	tar -cf secrets/dev.tar secrets/dev
-	bcrypt secrets/dev.tar
+	bcrypt secrets/dev.tar # Encrypt with dogopass
 
 # Less common commands
 ######################
@@ -116,6 +116,7 @@ setup-emojis:
 	# cp -r dependencies/emoji-extractor/images/64x64 src/graphics/mobileApp/emoji/
 
 setup-server: setup-source
+	echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 	bash src/scripts/npm-install-modules.sh
 
 setup-source:

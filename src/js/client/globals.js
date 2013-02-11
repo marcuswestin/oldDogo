@@ -1,5 +1,4 @@
 require('lib/jquery-1.8.1')
-require('HandyHelpers/Array+Util')
 
 require('globals/environment')
 require('globals/tags')

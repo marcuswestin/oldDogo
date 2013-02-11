@@ -1,4 +1,3 @@
-require('HandyHelpers/Array+Util')
 require('node-color/color')
 
 _ = require('underscore')
