@@ -54,7 +54,7 @@ def deploy_nginx_conf(git_hash):
 def _update_src_dir(git_hash):
 	do('if [ ! -d %s ]; then git clone git@github.com:marcuswestin/dogo.git %s; fi' % (src_dir, src_dir))
 	with go(src_dir):
-		do('git pull origin design-convo-flat1')
+		do('git pull origin master')
 		do('git checkout %s' % git_hash)
 		do('make setup-server')
 
