@@ -79,21 +79,21 @@ push-api:
 	make deploy-dogo-api
 deploy-dogo-api: ${FAB}
 	echo "BUILDING AND DEPLOYING ${GIT_REV}"
-	fab deploy_dogo_api:${GIT_REV} -H dogo-web1
+	fab deploy_dogo_api:${GIT_REV} -H ${HOSTNAMES}
 
 # Deploy dogo website to prod
 push-web:
 	gitpush
 	make deploy-dogo-website
 deploy-dogo-website: ${FAB}
-	fab deploy_dogo_website:${GIT_REV} -H dogo-web1
+	fab deploy_dogo_website:${GIT_REV} -H ${HOSTNAMES}
 
 # Deploy nginx conf to prod, and reload nginx
 push-nginx:
 	gitpush
 	make deploy-nginx-conf
 deploy-nginx-conf: ${FAB}
-	fab deploy_nginx_conf:${GIT_REV} -H dogo-web1
+	fab deploy_nginx_conf:${GIT_REV} -H ${HOSTNAMES}
 
 # Setup
 #######
@@ -180,6 +180,7 @@ MYSQL = /usr/local/bin/mysql.server
 BREW = /usr/local/bin/brew
 PHANTOMJS = /usr/local/bin/phantomjs
 FAV = /usr/local/bin/fab
+HOSTNAMES = `${NODE} src/scripts/aws/getAllHostnames.js`
 
 ${REDIS}: ${BREW}
 	${BREW} install redis

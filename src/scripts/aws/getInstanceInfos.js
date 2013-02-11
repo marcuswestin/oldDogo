@@ -1,3 +1,5 @@
+require('./globals')
+
 module.exports = function getInstanceInfos(instanceIds, callback) {
 	var describeInstancesParams = {}
 	each(instanceIds, function(instanceIds, i) { describeInstancesParams['InstanceId.'+i] = instanceIds })

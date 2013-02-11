@@ -67,7 +67,7 @@ def _run_dogo_api():
 	with go(src_dir):
 		do('make secrets/prod')
 		do('make secrets/dev')
-		sudo_do('nohup make run-prod')
+		sudo_do('nohup make run-prod &')
 
 def _run_nginx():
 	sudo("cp %s/src/js/server/config/nginx.conf /etc/nginx/nginx.conf" % src_dir)
