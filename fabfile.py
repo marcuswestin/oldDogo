@@ -63,9 +63,10 @@ def _note_deploy(component, git_hash):
 	deploy_note = "%s: %s" % (component, build_info)
 	append(deploy_notes, deploy_note)
 
-def run_dogo_api():
+def _run_dogo_api():
 	with go(src_dir):
 		do('make secrets/prod')
+		do('make secrets/dev')
 		sudo_do('nohup make run-prod')
 
 def _run_nginx():

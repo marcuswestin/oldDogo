@@ -6,10 +6,17 @@ module.exports = function getInstanceInfos(instanceIds, callback) {
 		if (err) { return callback(err) }
 		log('DescribeInstances response:', JSON.stringify(res))
 		
-		var reservation = find(setItems(res.reservationSet), function(reservation) { return reservation.reservationId == reservationId })
-		var instanceInfos = map(setItems(reservation.instancesSet), function(instance) {
-			var hostname = (instance.dnsName == 'string' ? instance.dnsName : null)
-			return { instanceId:instance.instanceId, hostname:hostname }
+		var reservations = setItems(res.reservationSet)
+		// if (reservationId) {
+		// 	reservations = [find(reservations, function(reservation) { return reservation.reservationId == reservationId })]
+		// }
+		
+		var instanceInfos = []
+		each(reservations, function(reservation) {
+			each(setItems(reservation.instancesSet), function(instance) {
+				var hostname = (typeof instance.dnsName == 'string' ? instance.dnsName : null)
+				instanceInfos.push({ instanceId:instance.instanceId, hostname:hostname })
+			})
 		})
 		callback(null, instanceInfos)
 	})

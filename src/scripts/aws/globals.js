@@ -12,14 +12,21 @@ log = console.log
 // log = function(){} // ignore logging
 
 check = function(err) {
-	if (err) {
-		if (err.document) {
-			each(err.document.Errors, function(Error) { console.log("AWS Error", Error) })
+	if (!err) { return }
+	if (err.document) {
+		each(err.document.Errors, function(Error) { console.log("AWS Error", Error) })
+		if (err.document.Error) {
+			console.log("AWS Error", err.document.Error)
 		}
-		throw new Error(err)
+	} else {
+		console.log("Error", err)
 	}
+	throw err
 }
 
 setItems = function(set) {
-	return isArray(set.item) ? set.item : [set.item] // STUPID!!!
+	// STUPID!!!
+	var set = set.item || set.member
+	return isArray(set) ? set : [set]
 }
+

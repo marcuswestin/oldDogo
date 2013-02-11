@@ -70,7 +70,7 @@ encrypt-dev:
 # Less common commands
 ######################
 # Run prod server
-run-prod: secrets/prod
+run-prod:
 	${NODE} src/js/server/runServer.js --config=prod
 
 # Deploy dogo api server to prod
@@ -116,7 +116,7 @@ setup-emojis:
 	# cp -r dependencies/emoji-extractor/images/64x64 src/graphics/mobileApp/emoji/
 
 setup-server: setup-source
-	echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+	if ! grep --quiet "Host github.com" ~/.ssh/config; then echo "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config; fi
 	bash src/scripts/npm-install-modules.sh
 
 setup-source:
