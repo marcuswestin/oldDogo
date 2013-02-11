@@ -1,7 +1,7 @@
 # Common commands 
 #################
 # Setup all dependencies
-setup: setup-server setup-client reset-db	
+setup: setup-server setup-dev reset-db	
 
 # Run local server
 run: run-databases secrets/dev
@@ -101,7 +101,8 @@ deploy-nginx-conf: ${FAB}
 reset-db: run-databases
 	node src/scripts/resetDb.js
 
-setup-client: setup-source setup-emojis
+setup-dev: setup-source setup-server setup-emojis
+	ln -snf ../dependencies/blowtorch/sdk/blowtorch-node-sdk node_modules/blowtorch-node-sdk
 	cd node_modules/require && npm install --production .
 	cd dependencies/blowtorch && make setup
 	cd dependencies/facebook-ios-sdk && scripts/build_framework.sh
@@ -116,8 +117,6 @@ setup-emojis:
 
 setup-server: setup-source
 	bash src/scripts/npm-install-modules.sh
-	ln -snf ../dependencies/blowtorch/dependencies/HandyHelpers/js-HandyHelpers node_modules/HandyHelpers
-	ln -snf ../dependencies/blowtorch/sdk/blowtorch-node-sdk node_modules/blowtorch-node-sdk
 
 setup-source:
 	if ! grep --quiet "node_modules" ~/.gitignore; then echo "node_modules" >> ~/.gitignore; fi
