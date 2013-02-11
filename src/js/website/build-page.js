@@ -34,7 +34,7 @@ module.exports = function buildPage(name, opts, callback) {
 	if (opts.combine) {
 		var script = html.match(/<script src="\/require\/([^"]+)"><\/script>/i)
 		if (script) {
-			var filePath = 'src/'+script[1]+'.js'
+			var filePath = script[1]+'.js'
 			var compiledJs = combine.compileJs(filePath, { minify:opts.minify })
 			
 			var BACKREFERENCE_WORKAROUND = '____________backreference_workaround________'

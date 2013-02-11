@@ -7,11 +7,11 @@ var buildPage = require('website/build-page')
 
 var dstDir = 'build/website'
 var buildDir = '/tmp/dogo-build-website'
-var minify = true
+var minify = false
 
 console.log("Compiling static website pages...")
 
-var copyCommands = map(['graphics','fonts','lib'], function(dir) {
+var copyCommands = map(['graphics','fonts','js/lib'], function(dir) {
 	return 'cp -r src/'+dir+' '+buildDir
 }).join(' && ')
 
