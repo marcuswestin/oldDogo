@@ -58,10 +58,9 @@ function withFacebookSession(name, color, address, password, fbSession, pictureS
 		var opts = { birthdate:_getFbAccBirthdate(fbAccount.birthday), locale:fbAccount.locale, gender:fbAccount.gender, facebookId:fbAccount.id }
 		_createPersonWithVerifiedAddresses(name, color, passwordHash, pictureUrl, addresses, opts, callback)
 	})
-	
+
 	function _getFacebookData(callback) {
-		log.debug('_getFacebookData')
-		return callback('_getFacebookData simulate fail')
+		log('_getFacebookData')
 		facebook.get('/me?fields=id,birthday,email', { access_token:fbSession.accessToken }, function(err, res) {
 			log.debug('_getFacebookData done')
 			callback(err, res)
