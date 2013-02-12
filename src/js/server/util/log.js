@@ -9,11 +9,11 @@ function makeLog(name) {
 	var padLength = 20
 	var pad = new Array(padLength-name.length).join(' ')+'-'+' '
 	
-	function logInfo() { doLog(pad, name, 'info'.blue, getArgsString(arguments)) }
+	function logDebug() { doLog(pad, name, 'dbug'.cyan, getArgsString(arguments).cyan) }
 	
-	return _.extend(logInfo, {
-		info: logInfo,
-		debug: function logDebug() { doLog(pad, name, 'dbug'.cyan, getArgsString(arguments).cyan) },
+	return _.extend(logDebug, {
+		info: function logInfo() { doLog(pad, name, 'info'.blue, getArgsString(arguments)) },
+		debug: logDebug,
 		warn: function logWarn() { doLog(pad, name, 'WARN'.pink, getArgsString(arguments).pink, true) },
 		error: function logError() { doLog(pad, name, 'ERRO'.red, getArgsString(arguments).red, true) },
 		alert: function alert() {
