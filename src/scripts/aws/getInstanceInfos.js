@@ -3,10 +3,10 @@ require('./globals')
 module.exports = function getInstanceInfos(instanceIds, callback) {
 	var describeInstancesParams = {}
 	each(instanceIds, function(instanceIds, i) { describeInstancesParams['InstanceId.'+i] = instanceIds })
-	log('DescribeInstances', describeInstancesParams)
+	log('DescribeInstances', instanceIds)
 	ec2.request('DescribeInstances', describeInstancesParams, function(err, res) {
 		if (err) { return callback(err) }
-		log('DescribeInstances response:', JSON.stringify(res))
+		// log('DescribeInstances response:', JSON.stringify(res))
 		
 		var reservations = setItems(res.reservationSet)
 		// if (reservationId) {

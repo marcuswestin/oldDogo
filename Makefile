@@ -52,7 +52,6 @@ fly-dev: fly-build
 secrets/dev: secrets/dev.tar.bfe
 	bcrypt -r secrets/dev.tar.bfe
 	tar -xf secrets/dev.tar
-	rm secrets/dev.tar
 
 encrypt-prod:
 	tar -cf secrets/prod.tar secrets/prod
@@ -72,14 +71,17 @@ run-prod:
 push-api:
 	gitpush
 	make deploy-api
-deploy-api: ${FAB}
+deploy-api: secrets/dev.tar secrets/prod.tar ${FAB}
 	echo "BUILDING AND DEPLOYING ${GIT_REV}"
 	# Decrypt tar for transfer
-	bcrypt -r secrets/dev.tar.bfe # dev password
-	bcrypt -r secrets/prod.tar.bfe # PROD PASSWORD
 	fab -H ${HOSTNAMES} -P deploy_dogo_api:${GIT_REV}
-	rm secrets/dev.tar
-	rm secrets/prod.tar
+secrets/dev.tar: secrets/dev.tar.bfe
+	bcrypt -r secrets/dev.tar.bfe # dev password
+secrets/prod.tar: secrets/prod.tar.bfe
+	bcrypt -r secrets/prod.tar.bfe # PROD PASSWORD
+
+ec2-instance: secrets/dev.tar secrets/prod.tar
+	./node src/scripts/aws/createDogoWebInstance.js
 
 # Deploy dogo website to prod
 push-website:
