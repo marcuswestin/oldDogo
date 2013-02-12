@@ -33,7 +33,7 @@ module.exports = function makeRouter(opts) {
 	opts.apiMaintainance = true
 	if (opts.apiMaintainance) {
 		app.use(function(req, res, next) {
-			if (req.url.match(/^\/api\//) && req.url != '/api/ping' && !req.url.match(/^\/api\/test/)) {
+			if (req.url.match(/^\/api\//) && req.url != '/api/ping' && req.url != '/api/time' && !req.url.match(/^\/api\/test/)) {
 				respond(req, res, "My server is down for maintainance. Please try again soon!")
 			} else {
 				next()
@@ -224,6 +224,9 @@ function setupRoutes(app, opts) {
 	})
 	app.all('/api/ping', function handlePing(req, res) {
 		res.end('"Dogo!"')
+	})
+	app.all('/api/time', function handlePing(req, res) {
+		res.end(new Date().getTime().toString())
 	})
 	// app.post('/api/register', filters.oldClients, function postRegister(req, res) {
 	// 	var params = getJsonParams(req, 'name', 'color', 'email', 'password', 'fbSession')
