@@ -186,10 +186,13 @@ function setupRoutes(app, opts) {
 	
 	app.post('/api/waitlist', function handlePostWaitlist(req, res) {
 		var params = getJsonParams(req, 'emailAddress')
-		respond(req, res, null, "Great, thanks! We'll be in touch.")
 		var message = 'Waitlisted: '+params.emailAddress
 		sendEmail('Dogo Waitlist <welcome@dogo.co>', 'narcvs@gmail.com', message, message, message, function(err) {
-			if (err) { log.error('waitlist email error', err, params) }
+			if (err) {
+				log.error('Waitlist failed', params, err)
+				return respond(req, res, "I was unable to store your email address. Please try again.")
+			}
+			respond(req, res, null, "Great, thanks! We'll be in touch.")
 		})
 	})
 	
