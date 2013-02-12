@@ -59,7 +59,11 @@ function withFacebookSession(name, color, address, password, fbSession, pictureS
 	})
 	
 	function _getFacebookData(callback) {
-		facebook.get('/me?fields=id,birthday,email', { access_token:fbSession.accessToken }, callback)
+		log.debug('_getFacebookData')
+		facebook.get('/me?fields=id,birthday,email', { access_token:fbSession.accessToken }, function(err, res) {
+			log.debug('_getFacebookData done')
+			callback(err, res)
+		})
 	}
 	
 	function _getFbAccBirthdate(birthday) {
