@@ -1,9 +1,9 @@
 module.exports = function renderCard(conversation) {
-	return div('card',
+	return div('card', style({ margin:spacing, background:'#fff' }),
 		// div('gradient'),
 		// _getCollageBackground(310, conversation),
 		div('person',
-			face(conversation.people[0], { size:80 })
+			face(conversation.people[0], { size:64 })
 		),
 		// http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
 		// style({ background:'rgb('+map(color.hsvToRgb([(Math.random() + 0.618033988749895) % 1, 0.03, 0.95]), Math.round)+')' }),
@@ -24,7 +24,7 @@ function renderRecent(conversation) {
 	}
 
 	function renderName(person) {
-		return div('name', function() {
+		return div('headName', function() {
 			var names = person.name.split(' ')
 			return [div('first', names.shift()), div('rest', names.pop())]
 		})
@@ -51,7 +51,7 @@ function renderRecent(conversation) {
 					dynamics:false,
 					face:28,
 					arrow:true,
-					pictureSize:[210, 90],
+					pictureSize:[168, 90],
 					maxHeight:100
 				}))
 			)

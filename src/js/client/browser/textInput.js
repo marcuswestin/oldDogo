@@ -13,7 +13,7 @@ var topBarOffset = 0
 function setup() {
 	$(document)
 		.on('focus', '[contentEditable=true]', function() {
-			shiftWebView(-keyboardHeight)
+			shiftWebView(-(keyboardHeight-20))
 			showFakeKeyboard()
 		})
 		.on('blur', '[contentEditable=true]', function() {

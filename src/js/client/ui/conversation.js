@@ -27,13 +27,14 @@ function renderConversation(_view) {
 	
 	view = _view
 	$ui = {}
-
+	lastMessageFromId = null
+	
 	var messages = []
 	
 	gScroller.getCurrentView().on('scroll', onScroll)
 
 	return div({ id:'conversationView' },
-		div('personName', style({ padding:px(12, 0, 10 + spacing) }),  function() {
+		div('personName', style({ padding:px(12 + spacing, 0, 10 + spacing) }),  function() {
 			var names = view.conversation.people[0].name.split(' ')
 			if (names.length > 1) {
 				return names[0] + ' ' + names[names.length-1][0] // first name plus first letter of last name
@@ -184,10 +185,10 @@ gRenderMessageBubble = function(message, conversation, opts) {
 	var me = gState.me()
 	var isNewPerson = (lastMessageFromId != message.fromPersonId)
 	lastMessageFromId = message.fromPersonId
-	var fromMe = (message.fromPersonId == me.personId)
+	var fromMe = !(message.fromPersonId == me.personId)
 	var classes = [message.type+'Message', fromMe ? 'fromMe' : 'fromThem']
 	var person = (fromMe ? me : conversation.people[0])
-	var faceSize = 32
+	var faceSize = 34
 	var floatRight = { 'float':'right' }
 	var floatLeft = { 'float':'left' }
 	if (isNewPerson) {
@@ -197,10 +198,17 @@ gRenderMessageBubble = function(message, conversation, opts) {
 			div('name', person.name.split(' ')[0], style(translate(dx, -(spacing + 2)), { display:'inline-block', fontSize:18, color:dark }))
 		]
 		if (fromMe) { personParts.reverse() }
+		var arrowSize = 22
 		var personHeader = isNewPerson && div('person',
-			style({ height:32, overflow:'hidden', padding:px(spacing/2, spacing) }),
+			style({ height:32+arrowSize/2, overflow:'hidden', padding:px(spacing/2, spacing) }),
 			personParts,
-			fromMe && style({ textAlign:'right' })
+			fromMe && style({ textAlign:'right' }),
+			div(
+				style({ width:0,height:0, border:(arrowSize/2)+'px solid #fff', borderColor:'transparent transparent #fff transparent' }),
+				fromMe
+					? style(translate(viewport.width() - arrowSize - spacing*2 - 6, -(arrowSize/2 + 1)))
+					: style(translate(6, -(arrowSize/2 + 1)))
+			)
 		)
 	}
 	return [div('messageContainer', style(translate(0,0), { textAlign:fromMe ? 'right' : 'left' }),
@@ -237,10 +245,12 @@ gRenderMessageBubble = function(message, conversation, opts) {
 			return [
 				loadingClock,
 				img('pictureContent', { src:pictureUrl }, style(translate(0,0), {
+					background:'#fff',
 					display:'block',
 					width:opts.pictureSize[0],
 					height:opts.pictureSize[1],
-					padding:px(spacing / 2, spacing),
+					padding:px(spacing / 2, 0),
+					margin:px(0, spacing),
 					backgroundSize:px(opts.pictureSize[0], opts.pictureSize[1])
 				}))
 			]
@@ -274,9 +284,9 @@ gRenderMessageBubble = function(message, conversation, opts) {
 
 	function renderTextContent(payload, opts) {
 		var margin = faceSize + spacing
-		return div('textContent',
+		return div('textContent', style({ display:'block', fontSize:17 }),
 			linkify(payload.body).join(''),
-			style({ padding:px(spacing / 2, spacing), margin:(fromMe ? px(0,0,0,margin) : px(0,margin,0,0)) })
+			style({ padding:px(spacing / 2, spacing), margin:px(0, spacing), background:'#fff' })
 		)
 	}
 

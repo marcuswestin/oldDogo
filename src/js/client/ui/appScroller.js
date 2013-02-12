@@ -39,7 +39,7 @@ function createAndRenderScroller() {
 		var isHome = (gScroller.stack.length == 1)
 		var stackIsAboveHome = (gScroller.stack.length > 1)
 		var showBackButton = (opts.viewBelow && stackIsAboveHome)
-		var cornerMargin = { top:28, side:8 }
+		var cornerMargin = { top:20 + spacing, side:spacing }
 		var title = null
 		if (view.conversation) {
 			var names = view.conversation.people[0].name.split(' ')
@@ -70,8 +70,8 @@ events.on('statusBar.wasTapped', function() {
 })
 
 var cornerSize = { width:48, height:44 }
-var leftCornerRadius = px(1)//px(6,0,3,0)
-var rightCornerRadius = px(1)//px(0,6,0,3)
+var leftCornerRadius = px(6)//px(6,0,3,0)
+var rightCornerRadius = px(6)//px(0,6,0,3)
 
 var backIconDragger = (function makeBackIconDragger() {
 	function getDampening(dx) {

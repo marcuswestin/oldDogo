@@ -5,7 +5,7 @@ var pasteHtmlAtInputCaret = require('client/util/pasteHtmlAtInputCaret')
 
 var currentConversation = null
 
-var toolsHeight = 43
+var toolsHeight = 45
 var glassContentWidth
 
 var icons = icon.preload({
@@ -36,6 +36,7 @@ var composer = module.exports = {
 		glassContentWidth = viewport.width() - closeWidth - sendWidth
 		var toolsOffset = 3
 		var toolsSectionStyle = style({ width:viewport.width(), height:toolsHeight })
+		var buttonStyle = style({ width:26, margin:px(0,0,0,spacing) })
 		return div({ id:'composer' },
 			style({ height:toolsHeight, width:viewport.width() }),
 			div(repeatImage.x('optionsGlassBorder', 1, 1), style({ width:'100%' })),
@@ -65,21 +66,22 @@ var composer = module.exports = {
 					div('tools', toolsSectionStyle,
 						style(translate.y(toolsOffset - 1)),
 						style({ height:toolsHeight - 2 - toolsOffset }),
-						div('button tool write', icons.chat, button(function() {
+						div('button tool write', icons.chat, buttonStyle, button(function() {
 							selectText()
 						})),
-						div('button tool photo', icons.camera, button(function() {
+						div('button tool photo', icons.camera, buttonStyle, button(function() {
 							selectPhoto()
-						})),
-						div('button tool voice', icons.voice, button(function() {
-							selectVoice()
-						})),
-						div('button tool location', icons.mapMarker, button(function() {
-							selectLocation()
-						})),
-						div('button tool draw', icons.palette, button(function() {
-							selectDraw()
 						}))
+						// ,
+						// div('button tool voice', icons.voice, buttonStyle, button(function() {
+						// 	selectVoice()
+						// })),
+						// div('button tool location', icons.mapMarker, buttonStyle, button(function() {
+						// 	selectLocation()
+						// })),
+						// div('button tool draw', icons.palette, buttonStyle, button(function() {
+						// 	selectDraw()
+						// }))
 					)
 				)
 			)
@@ -109,7 +111,7 @@ var hideTextInput = function() {}
 function selectText() {
 	var fadeDuration = 150
 	var uniqueId = tags.id()
-	var optionsHeight = 43
+	var optionsHeight = 38
 
 	slideTools.out(gKeyboardHeight + optionsHeight, renderTextInput, renderKeyboards, sendTextMessage, optionsHeight) // the webview will slide with the keyboard as well
 	$('#'+uniqueId).focus()
@@ -121,7 +123,7 @@ function selectText() {
 	}
 	
 	function renderTextInput(width) {
-		var padding = 4
+		var padding = 8
 		$('#appContainer').append(div('textInputArea', { id:uniqueId, contentEditable:'true' },
 			style(scrollable.y),
 			style(transition('opacity', fadeDuration)),
