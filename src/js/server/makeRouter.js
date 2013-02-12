@@ -423,7 +423,6 @@ function respondCss(req, res, err, content) {
 
 function respond(req, res, err, content, contentType) {
 	try {
-	log.debug('respond', req.method, req.url, err)
 	var code = 200, headers = {}
 	if (err) {
 		if (err === true) {
@@ -458,6 +457,7 @@ function respond(req, res, err, content, contentType) {
 		} else if (req.url.match(/\.js$/)) {
 			contentType = 'application/javascript'
 		}
+		log.debug('respond', req.method, req.url, err)
 	}
 	
 	if (!contentType) {
