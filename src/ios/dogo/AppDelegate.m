@@ -137,7 +137,10 @@
     NSDictionary* headers = [data objectForKey:@"headers"];
     NSDictionary* params = [data objectForKey:@"params"];
     NSString* boundary = [data objectForKey:@"boundary"];
-    NSDictionary* attachments = [NSDictionary dictionaryWithObject:payload forKey:@"payload"];
+    NSDictionary* attachments = nil;
+    if (payload) {
+        attachments = [NSDictionary dictionaryWithObject:payload forKey:@"payload"];
+    }
     [BTNet post:url json:params attachments:attachments headers:headers boundary:boundary responseCallback:responseCallback];
 }
 
