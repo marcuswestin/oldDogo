@@ -1,5 +1,5 @@
 // Also see https://gist.github.com/pguillory/729616
-var output = require('fs').createWriteStream('output-'+Math.random()+'.log', { flags:'a' })
+var output = require('fs').createWriteStream('output-'+process.pid+'.log', { flags:'w' })
 process.stdout.write = process.stderr.write = function(data, encoding) {
 	output.write(data)
 }
