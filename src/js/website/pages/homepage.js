@@ -16,11 +16,7 @@ $(function() {
 			}
 			api.post('api/waitlist', { emailAddress:emailAddress }, function(err, res) {
 				if (err) { return alert('Oops! '+api.error(err)) }
-				if (res.waitlistedSince) {
-					alert(emailAddress+' was waitlisted '+res.waitlistedSince)
-				} else {
-					alert("You've been waitlisted! We'll be in touch soon.")
-				}
+				alert(res)
 			})
 		}, 50)
 	})
