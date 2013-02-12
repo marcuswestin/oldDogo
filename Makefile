@@ -6,7 +6,9 @@ setup: setup-server setup-dev reset-db
 # Run local server
 run: run-databases secrets/dev
 	# Run server with src/js in the node search path
-	${NODE} src/js/server/runServer.js --config=dev
+	- killall node
+	dtach -n /tmp/dogo.dtach ${NODE} src/js/server/runServer.js --config=dev
+	tail -fn 100 output.log
 
 debug: run-databases
 	${NODE} debug src/js/server/runServer.js --config=dev --debug=true
@@ -65,7 +67,7 @@ encrypt-dev:
 ######################
 # Run prod server
 run-prod:
-	${NODE} src/js/server/runServer.js --config=prod
+	dtach -n /tmp/dogo.dtach ${NODE} src/js/server/runServer.js --config=dev
 
 # Deploy dogo api server to prod
 push-api:

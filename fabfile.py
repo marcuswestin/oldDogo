@@ -71,8 +71,7 @@ def run_dogo_api():
 	with go(src_dir):
 		with settings(warn_only=True):
 			sudo_do('killall -q node')
-			sudo_do('rm -f /tmp/dogo.dtach')
-		do('dtach -n /tmp/dogo.dtach make run-prod')
+		do('make run-prod')
 
 def _run_nginx():
 	sudo("cp %s/src/js/server/config/nginx.conf /etc/nginx/nginx.conf" % src_dir)
