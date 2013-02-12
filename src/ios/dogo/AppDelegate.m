@@ -42,7 +42,7 @@
 #else
         NSString* scheme = @"https:";
         NSString* port = nil;
-        NSString* host = @"dogoapp.com";
+        NSString* host = @"dogo.co";
 //        [WebViewJavascriptBridge enableLogging];
 #endif
         

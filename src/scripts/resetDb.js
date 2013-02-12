@@ -1,6 +1,8 @@
 var mysql = require('mysql')
-var client = mysql.createClient({ host:'localhost', port:3306, user:'root' })
+var secrets = require('server/config/secrets').dev()
 var asyncMap = require('std/asyncMap')
+
+var client = mysql.createClient({ host:secrets.db.host, port:3306, user:secrets.db.admin.user, password:secrets.db.admin.password })
 
 client.query('SHOW DATABASES', function(err, results) {
 	if (err) { throw err }

@@ -7,10 +7,6 @@ module.exports = function configureServer(config) {
 	var pushService = require('server/PushService')
 	var payloads = require('data/payloads')
 	
-	if (config.dev) {
-		require('server/util/log').enableDebugLoggin()
-	}
-	
 	db.configure(config.dbShards)
 	payloadService.configure(config.aws)
 	payloads.configure(config.aws.s3)
