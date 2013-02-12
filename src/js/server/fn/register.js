@@ -38,7 +38,6 @@ function withAddressVerification(verificationId, verificationToken, password, ca
 
 // When you register with facebook we can skip the email verification step!
 function withFacebookSession(name, color, address, password, fbSession, pictureSecret, callback) {
-	log('register with fb session', name, color, address, fbSession, pictureSecret)
 	if (!fbSession) { return callback('Missing facebook session') }
 	
 	if (!Addresses.isEmail(address)) { return callback('Expected an email address') }
@@ -46,6 +45,7 @@ function withFacebookSession(name, color, address, password, fbSession, pictureS
 	var err = registration.checkAll({ name:name, color:color, address:address, password:password })
 	if (err) { return callback(err) }
 	
+	log('register with fb session', name, color, address, fbSession, pictureSecret)
 	parallel(_getFacebookData, curry(createPasswordHash, password), function(err, fbAccount, passwordHash) {
 		if (err) { return callback(err) }
 		if (!fbAccount || !fbAccount.id) { return callback('I could not connect to your Facebook account') }
