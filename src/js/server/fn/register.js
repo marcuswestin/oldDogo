@@ -61,6 +61,7 @@ function withFacebookSession(name, color, address, password, fbSession, pictureS
 	
 	function _getFacebookData(callback) {
 		log.debug('_getFacebookData')
+		return callback('_getFacebookData simulate fail')
 		facebook.get('/me?fields=id,birthday,email', { access_token:fbSession.accessToken }, function(err, res) {
 			log.debug('_getFacebookData done')
 			callback(err, res)
