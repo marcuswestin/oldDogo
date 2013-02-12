@@ -26,8 +26,8 @@ intended 0.95
 - Store facebook request ids in DB
 - New color palette
 - Ability to modify exact color by dragging on color picker
-- Website up at https://dogoapp.com
-- Get messages and respond with https://dogoapp.com/facebook_canvas
+- Website up at https://dogo.co
+- Get messages and respond with https://dogo.co/facebook_canvas
 - Improved text input styles
 - Better conversation caching
 - Lots of little things

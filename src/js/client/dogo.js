@@ -77,7 +77,7 @@ events.on('app.error', function(info) {
 })
 
 function startApp(info) {
-	gIsDev = info.config.serverHost != 'dogoapp.com'
+	gIsDev = info.config.serverHost != 'dogo.co'
 	gState.load('sessionInfo', function onStateLoaded(sessionInfo) {
 		gState.load('isDevInfo2', function onModeLoaded(isDevInfo) {
 			if (!isDevInfo || isDevInfo.isDev == null) {

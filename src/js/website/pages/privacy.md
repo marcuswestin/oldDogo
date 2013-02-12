@@ -82,4 +82,4 @@ Contacting Dogo:
 ----------------
 Please also feel free to contact us if you have any questions about Dogo's Privacy Policy or the information practices of this Site.
 
-You may contact us as follows: [support@dogoapp.com](mailto:support@dogoapp.com)
+You may contact us as follows: [support@dogo.co](mailto:support@dogo.co)

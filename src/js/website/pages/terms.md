@@ -7,9 +7,9 @@ Dogo Terms of Service
 Date of Last Revision: August 12, 2012
 --------------------------------------
 
-###Welcome to dogoapp.com
+###Welcome to dogo.co
 
-Flutterby Labs, Inc. ("Dogo," "dogoapp.com", "we," "us," "our") provides its services (described below) to you through its website located at dogoapp.com ("Site"), mobile applications and related services (collectively, such services, including any new features and applications, and the Site, the "Service(s)"), subject to the following Terms of Service (as amended from time to time, the "Terms of Service"). We reserve the right, at our sole discretion, to change or modify portions of these Terms of Service at any time without further notice. You should periodically visit this page to review the current Terms of Service so you are aware of any revision to which you are bound. If we do this, we will upload the changes to these Terms of Service on this page and will indicate at the top of this page the date these terms were last revised. Your continued use of the Site after any such changes constitutes your acceptance of the new Terms of Service. If you do not agree to abide by these or any future Terms of Service, do not use or access (or continue to use or access) the Service. It is your responsibility to regularly check the Site to determine if there have been changes to these Terms of Service and to review such changes. 
+Flutterby Labs, Inc. ("Dogo," "dogo.co", "we," "us," "our") provides its services (described below) to you through its website located at dogo.co ("Site"), mobile applications and related services (collectively, such services, including any new features and applications, and the Site, the "Service(s)"), subject to the following Terms of Service (as amended from time to time, the "Terms of Service"). We reserve the right, at our sole discretion, to change or modify portions of these Terms of Service at any time without further notice. You should periodically visit this page to review the current Terms of Service so you are aware of any revision to which you are bound. If we do this, we will upload the changes to these Terms of Service on this page and will indicate at the top of this page the date these terms were last revised. Your continued use of the Site after any such changes constitutes your acceptance of the new Terms of Service. If you do not agree to abide by these or any future Terms of Service, do not use or access (or continue to use or access) the Service. It is your responsibility to regularly check the Site to determine if there have been changes to these Terms of Service and to review such changes. 
 
 In addition, when using certain services, you shall be subject to any additional terms applicable to such services that may be uploaded on the Service from time to time, including, without limitation, the [Privacy Policy](/privacy). All such terms are hereby incorporated by reference into these Terms of Service. 
 
@@ -102,7 +102,7 @@ You represent and warrant that (i) you are not located in a country that is subj
 If you have any questions, complaints or claims with respect to the Apple-Enabled Software, they should be directed to Dogo as follows:
 
 - Email
-	- [support@dogoapp.com](mailto:support@dogoapp.com)
+	- [support@dogo.co](mailto:support@dogo.co)
 - Mailing address:
 	- Flutterby Labs
 	<br>316 Pettis Ave
@@ -151,4 +151,4 @@ At Dogo, we respect the privacy of our users. For details please see our [Privac
 
 Questions? Concerns? Suggestions?
 -----------------------------------
-Please contact us at [support@dogoapp.com](mailto:support@dogoapp.com) to report any violations of these Terms of Service or to pose any questions regarding this Terms of Service or the Service.
+Please contact us at [support@dogo.co](mailto:support@dogo.co) to report any violations of these Terms of Service or to pose any questions regarding this Terms of Service or the Service.
