@@ -212,8 +212,9 @@ var Shard = proto(connectionBase,
 		},
 		_returnConnection: function(conn) {
 			if (this._queue.length) {
-				var fn = this._queue.shift(), self = this
-				process.nextTick(function() { fn.call(self, conn) })
+				var fn = this._queue.shift()
+				var self = this
+				process.nextTick(function() { fn.call(self, null, conn) })
 			} else {
 				this._pool.push(conn)
 			}
