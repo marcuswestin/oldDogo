@@ -38,6 +38,10 @@ function getArgsString(args) {
 		if (arg == null) { return arg }
 		if (typeof arg == 'string' || typeof arg == 'number') { return arg }
 		if (arg.stack) { return arg.stack }
+		if (arg.document) {
+			if (arg.document.Error) { return 'AWS Error: '+JSON.stringify(arg.document.Error) }
+			if (arg.document.Errors) { return 'AWS Errors: '+JSON.stringify(arg.document.Errors) }
+		}
 		return JSON.stringify(arg)
 	}
 }
