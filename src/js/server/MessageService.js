@@ -190,6 +190,8 @@ function _notifyParticipants(message, prodPush) {
 			if (!personId) { return }
 			var sql = "SELECT peopleJson, recentJson, picturesJson, lastReceivedTime FROM participation WHERE personId=? AND conversationId=?"
 			db.people(personId).selectOne(sql, [personId, message.conversationId], function(err, participation) {
+				if (err) { return callback(err) }
+				if (!participation) { return callback('Unknown converstaion participation') }
 				var recent = jsonList(participation.recentJson)
 				if (recent.length >= 3) { recent.shift() }
 				recent.push(message)
