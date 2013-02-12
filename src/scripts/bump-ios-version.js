@@ -1,7 +1,7 @@
 var fs = require('fs')
 var semver = require('semver')
 
-var filename = __dirname+'/../client/ios/dogo/dogo-Info.plist'
+var filename = __dirname+'/../ios/dogo/dogo-Info.plist'
 var type = process.argv[2]
 
 if (!type) {
