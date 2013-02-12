@@ -1,13 +1,9 @@
 var log = module.exports = makeLog('Global')
 log.disable = disable
 log.makeLog = makeLog
-log.enableDebugLoggin = enableDebugLoggin
 
 var disabled = false
 function disable() { disabled = true }
-
-var logDebug = false
-function enableDebugLoggin() { logDebug = true }
 
 function makeLog(name) {
 	var padLength = 20
@@ -17,7 +13,7 @@ function makeLog(name) {
 	
 	return _.extend(logInfo, {
 		info: logInfo,
-		debug: function logDebug() { logDebug && doLog(pad, name, 'dbug'.cyan, getArgsString(arguments).cyan) },
+		debug: function logDebug() { doLog(pad, name, 'dbug'.cyan, getArgsString(arguments).cyan) },
 		warn: function logWarn() { doLog(pad, name, 'WARN'.pink, getArgsString(arguments).pink, true) },
 		error: function logError() { doLog(pad, name, 'ERRO'.red, getArgsString(arguments).red, true) },
 		alert: function alert() {
