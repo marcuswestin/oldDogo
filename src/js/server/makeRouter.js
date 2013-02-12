@@ -30,7 +30,7 @@ module.exports = function makeRouter(opts) {
 		next()
 	})
 
-	opts.apiMaintainance = true
+	// opts.apiMaintainance = true
 	if (opts.apiMaintainance) {
 		app.use(function(req, res, next) {
 			if (req.url.match(/^\/api\//) && req.url != '/api/ping' && req.url != '/api/time' && !req.url.match(/^\/api\/test/)) {
