@@ -32,5 +32,13 @@ function sendEmail(fromEmail, toEmail, subject, text, html, callback) {
 		args['Destination.ToAddresses.member.'+(index+1)] = email
 	})
 	
-	ses.request('SendEmail', args, callback)
+	ses.request('SendEmail', args, function(err) {
+		if (err) {
+			each(err.document.Errors, function(Error) { console.log("AWS Error", Error) })
+			if (err.document.Error) {
+				console.log("AWS Error", err.document.Error)
+			}
+		}
+		callback(err)
+	})
 }

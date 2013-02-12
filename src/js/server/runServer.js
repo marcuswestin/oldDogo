@@ -59,6 +59,7 @@ function runMaster(config, cluster) {
 	
 	require('server/fn/sendSms').configure(config.twilio) // log.alert depends on sendSms
 	
+	log.info('fork', numForks, 'processes')
 	for (var i = 0; i < numForks; i++) {
 		cluster.fork()
 	}

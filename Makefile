@@ -67,7 +67,7 @@ encrypt-dev:
 ######################
 # Run prod server
 run-prod:
-	dtach -n /tmp/dogo.dtach ${NODE} src/js/server/runServer.js --config=dev
+	dtach -n /tmp/dogo.dtach ${NODE} src/js/server/runServer.js --config=prod
 
 # Deploy dogo api server to prod
 push-api:
