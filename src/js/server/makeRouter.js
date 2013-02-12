@@ -186,25 +186,10 @@ function setupRoutes(app, opts) {
 	
 	app.post('/api/waitlist', function handlePostWaitlist(req, res) {
 		var params = getJsonParams(req, 'emailAddress')
-		accountService.lookupOrCreateByEmail(params.emailAddress, function(err, person) {
-			if (err) { return respond(req, res, err) }
-			db.insert('INSERT INTO waitlistEvent SET personId=?, userAgent=?', [person.personId, req.headers['user-agent']], function(err) {
-				if (err) { log.warn("COULD NOT INSERT WAITLIST EVENT", params.emailAddress, person.personId, req.headers)}
-			})
-			if (person.waitlistedTime) {
-				respond(req, res, null, { person:person, waitlistedSince:time.ago(person.waitlistedTime * time.seconds) })
-				log.alert('Repeat waitlister', params.emailAddress)
-			} else {
-				person.waitlistedTime = db.time()
-				db.updateOne('UPDATE person SET waitlistedTime=? WHERE personId=?', [person.waitlistedTime, person.personId], function(err) {
-					if (err) {
-						log.alert('Error creating new waitlister', params.emailAddress)
-						return respond(req, res, err)
-					}
-					respond(req, res, null, { person:person, waitlistedSince:null })
-					log.alert('New waitlister', params.emailAddress)
-				})
-			}
+		respond(req, res, "Great, thanks! We'll be in touch.")
+		var message = 'Waitlisted: '+params.emailAddress
+		sendEmail('Dogo Waitlist <welcome@dogo.co>', 'narcvs@gmail.com', message, message, message, function(err) {
+			if (err) { log.error('waitlist email error', err, params) }
 		})
 	})
 	
