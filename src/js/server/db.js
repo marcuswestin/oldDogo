@@ -192,7 +192,9 @@ var Shard = proto(connectionBase,
 			this._takeConnection(function(err, conn) {
 				if (err) { return callback(err) }
 				var self = this
+				log('query', query)
 				conn.query(query, args, function(err) {
+					log('query done', query)
 					self._returnConnection(conn)
 					callback.apply(self, arguments)
 				})
