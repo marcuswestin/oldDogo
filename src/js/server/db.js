@@ -66,7 +66,7 @@ var connectionBase = {
 	},
 	selectOne: function(query, args, callback) {
 		var stackError = new Error()
-		this.query(query, args, function(err, rows) {
+		this._query(query, args, function(err, rows) {
 			if (err) { onDbError('selectOne', err, stackError, query, args) }
 			if (!err && rows.length > 1) {
 				log.warn('selectOne got multiple rows', query, args, stack)
@@ -77,24 +77,25 @@ var connectionBase = {
 	},
 	select:function(query, args, callback) {
 		var stackError = new Error()
-		this.query(query, args, function(err, rows) {
+		this._query(query, args, function(err, rows) {
 			if (err) { onDbError('select', err, stackError, query, args) }
 			callback(err, !err && rows)
 		})
 	},
 	insert:function(query, args, callback) {
 		var stackError = new Error()
-		this.query(query, args, function(err, info) {
+		this._query(query, args, function(err, info) {
+			if (err) { onDbError('insert', err, stackError, query, args) }
 			if (!err && !info.insertId) {
-				err = onDbError('query', new Error('Did not receive an insertId'), stackError, query, args)
+				err = onDbError('insert', new Error('Did not receive an insertId'), stackError, query, args)
 			}
 			callback(err, !err && info.insertId)
 		})
 	},
 	insertIgnoreId:function(query, args, callback) {
 		var stackError = new Error()
-		this.query(query, args, function(err) {
-			if (err) { onDbError('insert', err, stackError, query, args) }
+		this._query(query, args, function(err) {
+			if (err) { onDbError('insertIgnoreId', err, stackError, query, args) }
 			callback(err)
 		})
 	},
@@ -114,7 +115,7 @@ var connectionBase = {
 	
 	updateOne:function(query, args, callback) {
 		var stackError = new Error()
-		this.query(query, args, function(err, info) {
+		this._query(query, args, function(err, info) {
 			if (err) { onDbError('updateOne', err, stackError, query, args) }
 			if (!err && info.affectedRows != 1) {
 				var errorMessage = 'updateOne affected '+info.affectedRows+' rows'
@@ -128,7 +129,7 @@ var connectionBase = {
 
 function onDbError(method, err, stackError, query, args) {
 	err.stack = stackError.stack // make it easy to see where the calling code came from
-	log.error(method, err.message, query, args)
+	log.error(method, query, args, err.message || err)
 	return err
 }
 
@@ -193,15 +194,15 @@ var Shard = proto(connectionBase,
 				var self = this
 				conn.query(query, args, function(err) {
 					self._returnConnection(conn)
-					callback.apply(this, arguments)
+					callback.apply(self, arguments)
 				})
 			})
 		},
 		_takeConnection: function(fn) {
 			if (!this._pool.length) {
 				if (this._queue.length >= this.config.maxQueueSize) {
-					log.warn('Database queue full', this.config.database, this.config.host, this.config.port)
-					fn("Database queue is full ("+this.config.database+")", null)
+					log.warn('Database queue full', this.config.shardName, this.config.host, this.config.port)
+					fn("Database queue is full ("+this.config.shardName+")", null)
 				} else {
 					this._queue.push(fn)
 				}
