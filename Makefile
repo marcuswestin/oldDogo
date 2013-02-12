@@ -50,22 +50,17 @@ fly-dev: fly-build
 # Encrypted configs
 ###################
 secrets/dev: secrets/dev.tar.bfe
-	bcrypt -r secrets/dev.tar.bfe # Encrypted with dogopass
+	bcrypt -r secrets/dev.tar.bfe
 	tar -xf secrets/dev.tar
 	rm secrets/dev.tar
 
-secrets/prod: secrets/prod.tar.bfe
-	bcrypt -r secrets/prod.tar.bfe # Encrypted with my gmailpass
-	tar -xf secrets/prod.tar
-	rm secrets/prod.tar
-
 encrypt-prod:
 	tar -cf secrets/prod.tar secrets/prod
-	bcrypt secrets/prod.tar # Encrypt with my gmailpass
+	bcrypt secrets/prod.tar # PROD PASSWORD
 
 encrypt-dev:
 	tar -cf secrets/dev.tar secrets/dev
-	bcrypt secrets/dev.tar # Encrypt with dogopass
+	bcrypt secrets/dev.tar # dev password
 
 # Less common commands
 ######################
@@ -76,10 +71,15 @@ run-prod:
 # Deploy dogo api server to prod
 push-api:
 	gitpush
-	make deploy-dogo-api
-deploy-dogo-api: ${FAB}
+	make deploy-api
+deploy-api: ${FAB}
 	echo "BUILDING AND DEPLOYING ${GIT_REV}"
+	# Decrypt tar for transfer
+	bcrypt -r secrets/dev.tar.bfe # dev password
+	bcrypt -r secrets/prod.tar.bfe # PROD PASSWORD
 	fab -H ${HOSTNAMES} -P deploy_dogo_api:${GIT_REV}
+	rm secrets/dev.tar
+	rm secrets/prod.tar
 
 # Deploy dogo website to prod
 push-website:

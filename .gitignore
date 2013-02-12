@@ -10,4 +10,6 @@ phantom-screen.png
 node_modules
 src/graphics/mobileApp/emoji
 secrets/dev
+secrets/dev.tar
 secrets/prod
+secrets/prod.tar

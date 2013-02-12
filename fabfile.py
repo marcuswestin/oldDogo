@@ -56,6 +56,11 @@ def _update_src_dir(git_hash):
 		do('git pull origin master')
 		do('git checkout %s' % git_hash)
 		do('make setup-server')
+		# Transfer secrets
+		put('secrets/dev.tar', '%s/secrets/dev.tar' % src_dir)
+		do('tar -xf %s/secrets/dev.tar' % src_dir)
+		put('secrets/prod.tar', '%s/secrets/prod.tar' % src_dir)
+		do('tar -xf %s/secrets/prod.tar' % src_dir)
 
 def _note_deploy(component, git_hash):
 	build_info = do("cd %s && git log %s --format=%s | head -n 1" % (src_dir, git_hash, '%cD:%h'))
@@ -64,8 +69,6 @@ def _note_deploy(component, git_hash):
 
 def run_dogo_api():
 	with go(src_dir):
-		do('make secrets/prod')
-		do('make secrets/dev')
 		with settings(warn_only=True):
 			sudo_do('killall -q node')
 			sudo_do('rm -f /tmp/dogo.dtach')
