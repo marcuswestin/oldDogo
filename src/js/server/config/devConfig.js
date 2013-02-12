@@ -17,7 +17,7 @@ module.exports = {
 		accessKeySecret:secrets.aws.accessKeySecret,
 		ses: {},
 		s3: {
-			bucket:'dogo-dev',
+			bucket:'dogo-co-dev',
 			region:'us-east-1'
 		}
 	},

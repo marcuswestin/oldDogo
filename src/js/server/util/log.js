@@ -41,6 +41,7 @@ function getArgsString(args) {
 		if (arg.document) {
 			if (arg.document.Error) { return 'AWS Error: '+JSON.stringify(arg.document.Error) }
 			if (arg.document.Errors) { return 'AWS Errors: '+JSON.stringify(arg.document.Errors) }
+			if (arg.document) { return 'AWS Document: '+JSON.stringify(arg.document) }
 		}
 		return JSON.stringify(arg)
 	}
