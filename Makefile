@@ -99,7 +99,7 @@ deploy-nginx-conf: ${FAB}
 #######
 # Reset local development database
 reset-db: run-databases
-	node src/scripts/resetDb.js
+	${NODE} src/scripts/resetDb.js
 
 setup-dev: setup-source setup-server setup-emojis
 	ln -snf ../dependencies/blowtorch/sdk/blowtorch-node-sdk node_modules/blowtorch-node-sdk

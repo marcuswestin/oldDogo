@@ -2,7 +2,7 @@ var fs = require('fs')
 var shardConfig = require('server/config/shardConfig')
 var secrets = require('./secrets').prod()
 var shardAccess = {
-	host:"dogo-db1.cqka8vcdrksp.us-east-1.rds.amazonaws.com",
+	host:secrets.db.host,
 	password:secrets.db.password,
 	user:secrets.db.user
 }

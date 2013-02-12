@@ -2,22 +2,22 @@ var fs = require('fs')
 var mysql = require('mysql')
 var map = require('std/map')
 var asyncEach = require('std/asyncEach')
+var secrets = require('server/config/secrets').dev()
 
 var peopleSchema = fs.readFileSync('src/db/people-schema.sql').toString()
 var conversationsSchema = fs.readFileSync('src/db/conversations-schema.sql').toString()
 var lookupSchema = fs.readFileSync('src/db/lookup-schema.sql').toString()
 
-var client = mysql.createClient({ host:'localhost', port:3306, user:'root', password:'' })
-// var client = mysql.createClient({ host:, port:3306, user:, password: }) // rds master user
+var client = mysql.createClient({ host:secrets.db.host, port:3306, user:secrets.db.admin.user, password:secrets.db.admin.password })
 
 var peopleShards = map([1,2,3,4], function(shardIndex) { return 'dogoPeople'+shardIndex })
 var conversationsShards = map([1,2,3,4], function(shardIndex) { return 'dogoConversations'+shardIndex })
 var lookupShard = 'dogoLookup'
 
-var user = { name:'dogoApp', password:'dogopass9' } // also in config/[prod|dev]/
-createUser(user.name, user.password, function(err) {
+var appUser = { name:secrets.db.user, password:secrets.db.password }
+createUser(appUser.name, appUser.password, function(err) {
 	if (err) { throw err }
-	_createDatabase('dogoLookup', user.name, lookupSchema, function() {
+	_createDatabase('dogoLookup', appUser.name, lookupSchema, function() {
 		_createDatabases(peopleShards, peopleSchema, function() {
 			_createDatabases(conversationsShards, conversationsSchema, function() {
 				console.log("All done!")
@@ -32,7 +32,7 @@ createUser(user.name, user.password, function(err) {
 function _createDatabases(shards, schema, callback) {
 	asyncEach(shards, {
 		iterate: function(shard, next) {
-			_createDatabase(shard, user.name, schema, next)
+			_createDatabase(shard, appUser.name, schema, next)
 		},
 		finish:function(err) {
 			if (err) { throw err }
