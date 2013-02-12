@@ -86,7 +86,7 @@ function setupProdProxy(app) {
 		delete req.headers['host']
 		log("Proxy to prod", req.method, req.url)
 		var options = {
-			host:   'dogoapp.com',
+			host:   'dogo.co',
 			port:   443,
 			path:   req.url,
 			method: req.method,

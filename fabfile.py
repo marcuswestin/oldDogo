@@ -21,14 +21,15 @@ sudo_do = local if isLocal else sudo
 
 def setup_dogo_web(git_hash):
 	# Intentionally remote-only
-	sudo('DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential make nginx bcrypt redis-server libssl-dev curl git-core libxml2-dev nodejs npm imagemagick') # ? mysql-client-core-5.5
+	sudo('DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential make nginx bcrypt redis-server dtach libssl-dev curl git-core libxml2-dev nodejs npm imagemagick') # ? mysql-client-core-5.5
 	put('secrets/prod/github-private-key-id_rsa', '~/.ssh/id_rsa')
 	run('chmod 600 ~/.ssh/id_rsa')
+	do('echo "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config')
 	_update_src_dir(git_hash)
 	_run_nginx()
 	_update_website()
 	_note_deploy('setup', git_hash)
-	_run_dogo_api()
+	run_dogo_api()
 
 def deploy_dogo_website(git_hash):
 	_update_src_dir(git_hash)
@@ -38,9 +39,7 @@ def deploy_dogo_website(git_hash):
 def deploy_dogo_api(git_hash):
 	_update_src_dir(git_hash)
 	# build_info = do("cd %s && git log %s --format=%s | head -n 1" % (src_dir, git_hash, '%h-%ct'))
-	with settings(warn_only=True):
-		sudo_do('killall -q node')
-	_run_dogo_api()
+	run_dogo_api()
 	_note_deploy('dogo-api', git_hash)
 
 def deploy_nginx_conf(git_hash):
@@ -63,11 +62,14 @@ def _note_deploy(component, git_hash):
 	deploy_note = "%s: %s" % (component, build_info)
 	append(deploy_notes, deploy_note)
 
-def _run_dogo_api():
+def run_dogo_api():
 	with go(src_dir):
 		do('make secrets/prod')
 		do('make secrets/dev')
-		sudo_do('nohup make run-prod &')
+		with settings(warn_only=True):
+			sudo_do('killall -q node')
+			sudo_do('rm -f /tmp/dogo.dtach')
+		do('dtach -n /tmp/dogo.dtach make run-prod')
 
 def _run_nginx():
 	sudo("cp %s/src/js/server/config/nginx.conf /etc/nginx/nginx.conf" % src_dir)

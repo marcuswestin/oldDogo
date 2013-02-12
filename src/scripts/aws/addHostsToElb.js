@@ -1,8 +1,8 @@
 require('./globals')
 var getInstanceInfos = require('./getInstanceInfos')
 
-var instanceIds = process.argv.slice(2)
-
+var instanceIds = process.argv[2].split(',')
+console.log("Add instances to ELB:", instanceIds)
 getInstanceInfos(instanceIds, function(err, instanceInfos) {
 	var params = { 'LoadBalancerName':'DogoCoSsl' }
 	each(instanceInfos, function(instanceInfo, i) {

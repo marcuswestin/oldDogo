@@ -8,7 +8,7 @@ var conversationsSchema = fs.readFileSync('src/db/conversations-schema.sql').toS
 var lookupSchema = fs.readFileSync('src/db/lookup-schema.sql').toString()
 
 var client = mysql.createClient({ host:'localhost', port:3306, user:'root', password:'' })
-// var client = mysql.createClient({ host:'dogo-db1.cqka8vcdrksp.us-east-1.rds.amazonaws.com', port:3306, user:'dogo_rw', password: }) // rds master user
+// var client = mysql.createClient({ host:, port:3306, user:, password: }) // rds master user
 
 var peopleShards = map([1,2,3,4], function(shardIndex) { return 'dogoPeople'+shardIndex })
 var conversationsShards = map([1,2,3,4], function(shardIndex) { return 'dogoConversations'+shardIndex })

@@ -79,21 +79,21 @@ push-api:
 	make deploy-dogo-api
 deploy-dogo-api: ${FAB}
 	echo "BUILDING AND DEPLOYING ${GIT_REV}"
-	fab deploy_dogo_api:${GIT_REV} -H ${HOSTNAMES}
+	fab -H ${HOSTNAMES} -P deploy_dogo_api:${GIT_REV}
 
 # Deploy dogo website to prod
-push-web:
+push-website:
 	gitpush
 	make deploy-dogo-website
 deploy-dogo-website: ${FAB}
-	fab deploy_dogo_website:${GIT_REV} -H ${HOSTNAMES}
+	fab -H ${HOSTNAMES} -P deploy_dogo_website:${GIT_REV}
 
 # Deploy nginx conf to prod, and reload nginx
 push-nginx:
 	gitpush
 	make deploy-nginx-conf
 deploy-nginx-conf: ${FAB}
-	fab deploy_nginx_conf:${GIT_REV} -H ${HOSTNAMES}
+	fab -H ${HOSTNAMES} -P deploy_nginx_conf:${GIT_REV}
 
 # Setup
 #######
@@ -121,7 +121,6 @@ setup-server: setup-source
 setup-source:
 	if ! grep --quiet "node_modules" ~/.gitignore; then echo "node_modules" >> ~/.gitignore; fi
 	if ! grep --quiet ".__npm_installed__" ~/.gitignore; then echo ".__npm_installed__" >> ~/.gitignore; fi
-	if ! grep --quiet "Host github.com" ~/.ssh/config; then echo "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config; fi
 	git config --global core.excludesfile ~/.gitignore
 	git submodule init; git submodule sync; git submodule update
 	mkdir -p node_modules
