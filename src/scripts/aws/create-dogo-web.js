@@ -1,14 +1,14 @@
 require('./globals')
 var getInstanceInfos = require('./getInstanceInfos')
 
-var numInstances = 1
+var numInstances = 2
 log("Launch", numInstances, 'DogoWeb instances')
 runInstances(numInstances, function(reservationId, instanceIds) {
 	waitForPublicDns(reservationId, instanceIds, function(instanceInfos) {
 		var instanceIds = map(instanceInfos, function(instanceInfo) { return instanceInfo.instanceId })
 		var hostnames = map(instanceInfos, function(instanceInfo) { return instanceInfo.hostname })
-		console.log('Instances:', instanceIds.join(' '))
-		console.log('Hostnames:', hostnames.join(' '))
+		console.log('Instances:', instanceIds.join(','))
+		console.log('Hostnames:', hostnames.join(','))
 		process.exit(0)
 	})
 })
