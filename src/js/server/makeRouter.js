@@ -457,7 +457,6 @@ function respond(req, res, err, content, contentType) {
 		} else if (req.url.match(/\.js$/)) {
 			contentType = 'application/javascript'
 		}
-		log.debug('respond', req.method, req.url, err)
 	}
 	
 	if (!contentType) {
@@ -481,6 +480,9 @@ function respond(req, res, err, content, contentType) {
 		headers['Content-Length'] = Buffer.isBuffer(content) ? content.length : Buffer.byteLength(content, 'utf8')
 		if (contentType == 'application/json') {
 			headers['Cache-Control'] = 'no-cache'
+		}
+		if (!Buffer.isBuffer(content)) {
+			log.debug('respond', req.method, req.url, contentType, content.substr(0, 400))
 		}
 	} else {
 		headers['Content-Type'] = contentType
