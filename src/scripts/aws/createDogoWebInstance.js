@@ -2,7 +2,7 @@ require('./globals')
 var spawn = require('child_process').spawn
 var getInstanceInfos = require('./getInstanceInfos')
 
-var numInstances = 2
+var numInstances = 1
 log("Launch", numInstances, 'DogoWeb instances')
 runInstances(numInstances, function(reservationId, instanceIds) {
 	waitForPublicDns(reservationId, instanceIds, function(instanceInfos) {
