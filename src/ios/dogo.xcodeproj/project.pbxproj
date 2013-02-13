@@ -18,6 +18,10 @@
 		2C2153B916C9947F00255CFB /* UIImage+HHImages.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2153B316C9947F00255CFB /* UIImage+HHImages.m */; };
 		2C2568AC16AE0DF9007C60B7 /* Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2568AB16AE0DF9007C60B7 /* Base64.m */; };
 		2C256F7C16B0BB4E007C60B7 /* UIColor+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C256F7B16B0BB4E007C60B7 /* UIColor+Util.m */; };
+		2C409AC116CB4EB6006C49F9 /* opensans-italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2C409ABD16CB4EB6006C49F9 /* opensans-italic.ttf */; };
+		2C409AC216CB4EB6006C49F9 /* opensans-light-italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2C409ABE16CB4EB6006C49F9 /* opensans-light-italic.ttf */; };
+		2C409AC316CB4EB6006C49F9 /* opensans-light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2C409ABF16CB4EB6006C49F9 /* opensans-light.ttf */; };
+		2C409AC416CB4EB6006C49F9 /* opensans.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2C409AC016CB4EB6006C49F9 /* opensans.ttf */; };
 		2C650B3016A5DCAD000F381E /* BTAudio.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650AD016A5DCAD000F381E /* BTAudio.m */; };
 		2C650B4116A5DCAD000F381E /* BTFacebook.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650AF616A5DCAD000F381E /* BTFacebook.m */; };
 		2C650B4216A5DCAD000F381E /* BTImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650AF816A5DCAD000F381E /* BTImage.m */; };
@@ -95,6 +99,10 @@
 		2C2568AB16AE0DF9007C60B7 /* Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Base64.m; sourceTree = "<group>"; };
 		2C256F7A16B0BB4E007C60B7 /* UIColor+Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+Util.h"; sourceTree = "<group>"; };
 		2C256F7B16B0BB4E007C60B7 /* UIColor+Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Util.m"; sourceTree = "<group>"; };
+		2C409ABD16CB4EB6006C49F9 /* opensans-italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "opensans-italic.ttf"; sourceTree = "<group>"; };
+		2C409ABE16CB4EB6006C49F9 /* opensans-light-italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "opensans-light-italic.ttf"; sourceTree = "<group>"; };
+		2C409ABF16CB4EB6006C49F9 /* opensans-light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "opensans-light.ttf"; sourceTree = "<group>"; };
+		2C409AC016CB4EB6006C49F9 /* opensans.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = opensans.ttf; sourceTree = "<group>"; };
 		2C650ACF16A5DCAD000F381E /* BTAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTAudio.h; sourceTree = "<group>"; };
 		2C650AD016A5DCAD000F381E /* BTAudio.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTAudio.m; sourceTree = "<group>"; };
 		2C650AF516A5DCAD000F381E /* BTFacebook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTFacebook.h; sourceTree = "<group>"; };
@@ -249,6 +257,18 @@
 				2C2568AB16AE0DF9007C60B7 /* Base64.m */,
 			);
 			path = Base64;
+			sourceTree = "<group>";
+		};
+		2C409ABC16CB4EB6006C49F9 /* fonts */ = {
+			isa = PBXGroup;
+			children = (
+				2C409ABD16CB4EB6006C49F9 /* opensans-italic.ttf */,
+				2C409ABE16CB4EB6006C49F9 /* opensans-light-italic.ttf */,
+				2C409ABF16CB4EB6006C49F9 /* opensans-light.ttf */,
+				2C409AC016CB4EB6006C49F9 /* opensans.ttf */,
+			);
+			name = fonts;
+			path = ../fonts;
 			sourceTree = "<group>";
 		};
 		2C650ACD16A5DCAD000F381E /* blowtorch-ios-modules */ = {
@@ -431,6 +451,7 @@
 		2CD1A01E153FB6B0008949F2 = {
 			isa = PBXGroup;
 			children = (
+				2C409ABC16CB4EB6006C49F9 /* fonts */,
 				2C650D8016A5E7C5000F381E /* graphics */,
 				2CCAFE671569EC1C002766A1 /* sounds */,
 				2C70941F165A14F2007DDECD /* Default-568h@2x.png */,
@@ -587,6 +608,10 @@
 				2C650D8216A5E7D1000F381E /* mobileApp in Resources */,
 				2C2153B416C9947F00255CFB /* .gitignore in Resources */,
 				2C2153B816C9947F00255CFB /* README.md in Resources */,
+				2C409AC116CB4EB6006C49F9 /* opensans-italic.ttf in Resources */,
+				2C409AC216CB4EB6006C49F9 /* opensans-light-italic.ttf in Resources */,
+				2C409AC316CB4EB6006C49F9 /* opensans-light.ttf in Resources */,
+				2C409AC416CB4EB6006C49F9 /* opensans.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
