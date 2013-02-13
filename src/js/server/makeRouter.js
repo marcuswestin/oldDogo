@@ -477,7 +477,7 @@ function respond(req, res, err, content, contentType) {
 	
 	if (contentType.match(/^(text|application)/)) {
 		headers['Content-Type'] = contentType+'; charset=utf-8'
-		headers['Content-Length'] = Buffer.isBuffer(content) ? content.length : Buffer.byteLength(content, 'utf8')
+		// headers['Content-Length'] = Buffer.isBuffer(content) ? content.length : Buffer.byteLength(content, 'utf8')
 		if (contentType == 'application/json') {
 			headers['Cache-Control'] = 'no-cache'
 		}
@@ -486,7 +486,7 @@ function respond(req, res, err, content, contentType) {
 		}
 	} else {
 		headers['Content-Type'] = contentType
-		headers['Content-Length'] = content.length
+		// headers['Content-Length'] = content.length
 	}
 	
 	res.writeHead(code, headers)
