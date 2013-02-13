@@ -22,6 +22,9 @@ test: reset-db ${PHANTOMJS}
 test-quick:
 	make test offline=true verbose=true time=false
 
+hostnames:
+	./node src/scripts/aws/getAllHostnames.js
+
 icons:
 	# app meta resources
 	cp src/graphics/pixelmator/App-Icon.png src/ios/logo@2x.png && convert src/ios/logo@2x.png -resize 57x57 src/ios/logo.png

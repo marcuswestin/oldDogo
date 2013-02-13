@@ -49,18 +49,15 @@
 	<string>219049001532833</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>UIAppFonts</key>
-	<array>
-		<string>fonts/opensans-light.ttf</string>
-		<string>fonts/opensans.ttf</string>
-		<string>fonts/opensans-light-italic.ttf</string>
-		<string>fonts/opensans-italic.ttf</string>
-	</array>
 	<key>UIPrerenderedIcon</key>
 	<true/>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
+	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>opensans-light.ttf</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
