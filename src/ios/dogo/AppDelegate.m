@@ -82,11 +82,11 @@
         [res respondWithData:data mimeType:nil];
     }];
     
-    [WebViewProxy handleRequestsWithHost:self.serverHost pathPrefix:@"/fonts/" handler:^(NSURLRequest* req, WVPResponse *res) {
-        NSString* path = [req.URL.path substringFromIndex:1];
-        NSData* data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:path ofType:nil]];
-        [res respondWithData:data mimeType:nil];
-    }];
+//    [WebViewProxy handleRequestsWithHost:self.serverHost pathPrefix:@"/fonts/" handler:^(NSURLRequest* req, WVPResponse *res) {
+//        NSString* path = [req.URL.path substringFromIndex:1];
+//        NSData* data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:path ofType:nil]];
+//        [res respondWithData:data mimeType:nil];
+//    }];
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
