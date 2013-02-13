@@ -240,13 +240,13 @@ function setupRoutes(app, opts) {
 		messageService.sendMessage(req.session.personId,
 			params.toParticipationId, params.clientUid,
 			params.type, params.payload, payloadFile, prodPush,
-			function(err, message) {
+			function(err, result) {
 				if (payloadFile) {
 					fs.unlink(payloadFile.path, function(err) {
 						if (err) { log.warn('Unable to unlink data file', payloadFile, err) }
 					})
 				}
-				respond(req, res, err, { message:message })
+				respond(req, res, err, result)
 			}
 		)
 	})

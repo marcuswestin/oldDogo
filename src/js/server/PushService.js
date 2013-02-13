@@ -49,7 +49,7 @@ function _onApnsError() {
 }
 
 function sendMessagePush(toPersonId, pushFromName, message, prodPush) {
-	log.debug('send message push', toPersonId, pushFromName, message, prodPush)
+	log.info('send message push', toPersonId, pushFromName, message, prodPush)
 	if (disabled) { log.debug('(disabled - skipping message push)'); return }
 	db.people(toPersonId).selectOne('SELECT pushJson FROM person WHERE personId=?', [toPersonId], function(err, res) {
 		if (err) {
@@ -63,7 +63,7 @@ function sendMessagePush(toPersonId, pushFromName, message, prodPush) {
 		if (pushInfo.type != 'ios') { return log.warn('Unknown push type', pushInfo[0]) }
 		
 		var notification = new apns.Notification()
-		notification.device = new apns.Device(pushInfo[0].token)
+		notification.device = new apns.Device(pushInfo.token)
 		notification.payload = push.encodeMessage({
 			message:message,
 			toPersonId:toPersonId,

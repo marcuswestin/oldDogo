@@ -28,7 +28,7 @@ function sendMessage(personId, participationId, clientUid, type, payload, payloa
 			log.debug('create message with conversation and payload', conversationId, payload)
 			_createMessage(conversationId, payload, function(err, message) {
 				if (err) { return callback(err) }
-				callback(null, message)
+				callback(null, { message:message, promptInvite:false })
 				_notifyParticipants(message, prodPush)
 			})
 		})

@@ -213,10 +213,6 @@ function renderPushNotifications(view, onDone) {
 	)
 }
 
-events.on('push.registerFailed', function(info) {
-	alert("Oh no! Notifications were not enabled. Go to your settings app and enable notifications for Dogo.")
-})
-
 events.on('app.didOpenUrl', function(info) {
 	var appUrl = url(info.url)
 	if (appUrl.pathname != '/verify') { return }

@@ -5,7 +5,7 @@ list = require('tags/list')
 style = require('tags/style')
 makeScroller = require('tags/scroller')
 draggable = require('tags/draggable')
-overlay = require('tags/overlay')
+overlay = ovarlay = require('tags/overlay')
 overlay.defaultElement = $('#viewport')
 
 viewport = require('tags/viewport')

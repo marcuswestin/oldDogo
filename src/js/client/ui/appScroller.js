@@ -39,7 +39,7 @@ function createAndRenderScroller() {
 		var isHome = (gScroller.stack.length == 1)
 		var stackIsAboveHome = (gScroller.stack.length > 1)
 		var showBackButton = (opts.viewBelow && stackIsAboveHome)
-		var cornerMargin = { top:20 + spacing, side:spacing }
+		var cornerMargin = { top:20 + spacing/2, side:spacing/2 }
 		var title = null
 		if (view.conversation) {
 			var names = view.conversation.people[0].name.split(' ')

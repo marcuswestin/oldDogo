@@ -64,11 +64,11 @@ function runMaster(config, cluster) {
 		cluster.fork()
 	}
 	var count = 0
-	cluster.on('death', function(worker) {
-		log(worker.pid, 'died')
-		if (worker.exitCode) {
-			onBadDeath(worker.exitCode)
-			log.warn("bad worker exit code", worker.exitCode)
+	cluster.on('exit', function(worker, code, signal) {
+		log(worker.process.pid, 'died')
+		if (worker.process.exitCode) {
+			onBadDeath(worker.process.exitCode)
+			log.warn("bad worker exit code", worker.process.exitCode)
 		}
 		count++
 		setTimeout(function() {
@@ -80,5 +80,10 @@ function runMaster(config, cluster) {
 
 function runServer(config) {
 	log.info('starting', process.pid)
+	process.on('uncaughtException', function(err) {
+		log.error('Uncaught exception', err)
+		output.on('close', function() { process.exit(-1) })
+		output.end()
+	})
 	require('server/configureServer')(config)
 }

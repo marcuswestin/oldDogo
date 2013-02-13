@@ -5,7 +5,7 @@ var pasteHtmlAtInputCaret = require('client/util/pasteHtmlAtInputCaret')
 
 var currentConversation = null
 
-var toolsHeight = 45
+var toolsHeight = 48
 var glassContentWidth
 
 var icons = icon.preload({
@@ -13,7 +13,7 @@ var icons = icon.preload({
 	chat: ['glyphish/white/286-speechbubble', 24, 24],
 	camera: ['glyphish/white/86-camera', 24, 18, 0, 0, 1],
 	palette: ['glyphish/white/98-palette', 24, 20],
-	close: ['icon-circlex', 22, 23, 8, 9, 6],
+	close: ['icon-circlex', 22, 23, 11, 12, 10],
 	voice: ['glyphish/white/66-microphone', 12, 24, 0, 0, 0, 0],
 	location: ['glyphish/white/193-location-arrow', 24, 24],
 	mapMarker: ['glyphish/white/07-map-marker', 16, 26, 0, 0, 4, 0]
@@ -31,12 +31,12 @@ var composer = module.exports = {
 	render: function(view) {
 		currentConversation = view.conversation
 		
-		var closeWidth = 50
+		var closeWidth = 44
 		var sendWidth = 60
-		glassContentWidth = viewport.width() - closeWidth - sendWidth
+		glassContentWidth = viewport.width() - closeWidth - sendWidth - spacing
 		var toolsOffset = 3
 		var toolsSectionStyle = style({ width:viewport.width(), height:toolsHeight })
-		var buttonStyle = style({ width:26, margin:px(0,0,0,spacing) })
+		var buttonStyle = style({ width:26, margin:px(0,0,0,spacing/2) })
 		return div({ id:'composer' },
 			style({ height:toolsHeight, width:viewport.width() }),
 			div(repeatImage.x('optionsGlassBorder', 1, 1), style({ width:'100%' })),
@@ -57,14 +57,16 @@ var composer = module.exports = {
 							null // Center will be populated with slideTools.out(function contentFn() { ... })
 						),
 						div('sendMessage',
-							style({ position:'absolute', top:0, width:sendWidth, textAlign:'center' }),
-							style(translate.x(closeWidth + glassContentWidth)),
-							div('button send', 'Send', style({ marginTop:7 }), button(function() { slideTools.sendFn() }))
+							style(
+								{ position:'absolute', top:0, width:sendWidth, textAlign:'center' },
+								translate.x(closeWidth + glassContentWidth + spacing)
+							),
+							div('button send', 'Send', style({ marginTop:spacing/2, padding:px(8,8,10) }), button(function() { slideTools.sendFn() }))
 						)
 					),
 					// the list of tools animate down to reveal
 					div('tools', toolsSectionStyle,
-						style(translate.y(toolsOffset - 1)),
+						style(translate(0, spacing/2)),
 						style({ height:toolsHeight - 2 - toolsOffset }),
 						div('button tool write', icons.chat, buttonStyle, button(function() {
 							selectText()
@@ -111,7 +113,7 @@ var hideTextInput = function() {}
 function selectText() {
 	var fadeDuration = 150
 	var uniqueId = tags.id()
-	var optionsHeight = 38
+	var optionsHeight = 18
 
 	slideTools.out(gKeyboardHeight + optionsHeight, renderTextInput, renderKeyboards, sendTextMessage, optionsHeight) // the webview will slide with the keyboard as well
 	$('#'+uniqueId).focus()
@@ -185,7 +187,7 @@ function selectText() {
 	function sendTextMessage() {
 		var message = trim($('#appContainer .textInputArea').text())
 		if (!message) { return }
-		$('#appContainer .textInputArea').html('')
+		$('#appContainer .textInputArea').html('').focus()
 		sendMessage('text', { body:message })
 	}
 	
@@ -235,7 +237,7 @@ events.on('message.selected', function() {
 var slideTools = {
 	duration:275,
 	out: function(height, glassBarContentFn, canvasContentFn, sendFn, translation) {
-		if (!translation) { translation = height }
+		if (translation == null) { translation = height }
 		translation += 2 // 2 px border image
 		slideTools.sendFn = sendFn
 		$('#composer')

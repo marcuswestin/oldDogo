@@ -56,7 +56,7 @@ bubbleBorderRadius = 14px;
 		light(); padding 4px 10px 5px; // text-shadow 0 2px 1px rgba(255, 255, 255, 0.81);
 
 #conversationView
-	padding 20px 0 50px 0;
+	padding 20px 0 56px 0;
 	.personName
 		font-size 22px; color rgb(29,112,171); text-shadow 0 1px 0 blueShadowColor(.3); text-align center;
 	.messagesList
@@ -96,14 +96,11 @@ toolBorder()
 	border-color rgba(255,255,255,1) rgba(255,255,255,.75) rgba(255,255,255,.7) rgba(255,255,255,.9);
 
 #composer
-	// alpha = .6
-	// twoTone(
-	// 	rgba(255,255,255, .45), rgba(appBackgroundTo, .35),
-	// 	rgba(184, 215, 255, 0.8), rgba(71, 152, 255, 0.5));
+	background:-webkit-linear-gradient(top, rgba(255,255,255,0.50), rgba(213, 238, 255, 0.18) 50%, rgba(163,218,255,0.15) 50%, rgba(152,214,255,0.40));
 	
 	.tools
 		.tool
-			border-radius 6px; height 18px; width 27px; padding 8px 14px 11px;
+			border-radius 6px; height 18px; width 27px; padding 9px 15px 12px;
 			// box-shadow 0 1px 0px rgba(18, 110, 175, 0.74);
 			// toolBorder();
 			opacity .96;

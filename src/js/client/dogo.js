@@ -30,10 +30,6 @@ events.on('app.start', function onAppStart(info) {
 	}
 })
 
-events.on('push.registered', function onPushRegistered(info) {
-	api.post('api/pushAuth', { token:info.deviceToken, type:'ios' })
-})
-
 events.on('app.didBecomeActive', function onAppDidBecomeActive() {
 	bridge.command('app.setIconBadgeNumber', { number:0 })
 })
@@ -56,18 +52,16 @@ events.on('push.notification', function onPushNotification(info) {
 	
 	if (data.message) {
 		var message = data.message
-		loadPersonById(message.fromPersonId, function(person) {
-			if (info.didBringAppIntoForeground) {
-				loadConversation(message.fromPersonId, function(convo) {
-					var view = { conversation:convo }
-					gScroller.set({ view:view, index:1, render:true, animate:false })
-					events.fire('push.message', payload, info)
-				})
-			} else {
-				events.fire('push.message', data, info)
-				bridge.command('device.vibrate')
-			}
-		})
+		if (info.didBringAppIntoForeground) {
+			loadConversation(message.fromPersonId, function(convo) {
+				var view = { conversation:convo }
+				gScroller.set({ view:view, index:1, render:true, animate:false })
+				events.fire('push.message', payload, info)
+			})
+		} else {
+			events.fire('push.message', data, info)
+			bridge.command('device.vibrate')
+		}
 	}
 })
 

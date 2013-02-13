@@ -12,10 +12,29 @@ function _updateButtons(permissionsAsked) {
 	if (!permissionsAsked.facebookFriends) {
 		buttons.push(div('button', buttonStyle, 'Add FB Friends', button(_addFacebookFriends(permissionsAsked))))
 	}
-	if (!permissionsAsked.addressBook) {
-		buttons.push(div('button', buttonStyle, 'Add Phone Contacts', button(_addPhoneContacts(permissionsAsked))))
+	if (!permissionsAsked.pushNotifications) {
+		buttons.push(div('button', buttonStyle, 'Enable Notifications', button(_enableNotifications(permissionsAsked))))
 	}
+	// if (!permissionsAsked.addressBook) {
+	// 	buttons.push(div('button', buttonStyle, 'Add Phone Contacts', button(_addPhoneContacts(permissionsAsked))))
+	// }
 	$('#permissionButtons').empty().append(div(style({ textAlign:'center', padding:4 }), buttons))
+}
+
+function _enableNotifications(permissionsAsked) {
+	return function() {
+		ovarlay.show('Enabling notifications...')
+		bridge.command('push.register', function(err, info) {
+			if (err) { return error('Please enable notifications for Dogo in the Settings App') }
+			api.post('api/pushAuth', { pushToken:info.deviceToken, pushType:'ios' }, function(err) {
+				if (err) { return error(err) }
+				permissionsAsked.pushNotifications = new Date().getTime()
+				gState.set('permissionsAsked', permissionsAsked)
+				_updateButtons(permissionsAsked)
+				overlay.hide()
+			})
+		})
+	}
 }
 
 function _addPhoneContacts(permissionsAsked) {

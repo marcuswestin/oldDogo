@@ -34,7 +34,8 @@ function renderConversation(_view) {
 	gScroller.getCurrentView().on('scroll', onScroll)
 
 	return div({ id:'conversationView' },
-		div('personName', style({ padding:px(12 + spacing, 0, 10 + spacing) }),  function() {
+		div('personName', style({ padding:px(12 + spacing, 0, spacing * 2) }),  function() {
+			return div(null, 'hi', style({ visibility:'hidden' }))
 			var names = view.conversation.people[0].name.split(' ')
 			if (names.length > 1) {
 				return names[0] + ' ' + names[names.length-1][0] // first name plus first letter of last name
@@ -158,69 +159,71 @@ function checkScrollBounds() {
 	}
 }
 
-function arrowImage(name, size) {
-	var url = image.url(name)
-	return div('arrow', style({ width:size[0], height:size[1],
-		background:'url('+url+') transparent no-repeat', backgroundSize:size[0]+'px '+size[1]+'px'
-	}))
-}
-
 function renderMessage(message) {
 	return gRenderMessageBubble(message, view.conversation, { dynamics:true, face:40, arrow:true, lazy:false })
 }
 
-var light = '#5699CF'
-var dark = '#305F84'
+light = [86,153,207]
+dark = [48,95,132]
 
 var lastMessageFromId = null
 gRenderMessageBubble = function(message, conversation, opts) {
+	var faceSize = 40
+	var messageWidth = viewport.width() // - spacing - faceSize
+	var picSize = messageWidth - spacing * 4
 	opts = options(opts, {
 		dynamics:true,
 		face:30,
 		arrow:true,
 		lazy:false,
-		pictureSize: [viewport.width() - spacing*2, viewport.width() - spacing*2],
+		pictureSize: [picSize, picSize],
 		maxHeight:null
 	})
 	var me = gState.me()
 	var isNewPerson = (lastMessageFromId != message.fromPersonId)
 	lastMessageFromId = message.fromPersonId
-	var fromMe = !(message.fromPersonId == me.personId)
+	var fromMe = (message.fromPersonId == me.personId)
 	var classes = [message.type+'Message', fromMe ? 'fromMe' : 'fromThem']
 	var person = (fromMe ? me : conversation.people[0])
-	var faceSize = 34
 	var floatRight = { 'float':'right' }
 	var floatLeft = { 'float':'left' }
 	if (isNewPerson) {
-		var dx = fromMe ? -spacing : spacing
+		var dx = spacing * 1.5 * (fromMe ? -1 : 1)
 		var personParts = [
 			face(person, { size:faceSize }),
-			div('name', person.name.split(' ')[0], style(translate(dx, -(spacing + 2)), { display:'inline-block', fontSize:18, color:dark }))
+			div('name', person.name.split(' ')[0], style(
+				translate(dx, -14), {
+				display:'inline-block', fontSize:20,
+				color:'#fff', textShadow:'0 1px 0 '+colors.rgba(light, 1)
+			}))
 		]
 		if (fromMe) { personParts.reverse() }
-		var arrowSize = 22
-		var personHeader = isNewPerson && div('person',
-			style({ height:32+arrowSize/2, overflow:'hidden', padding:px(spacing/2, spacing) }),
-			personParts,
-			fromMe && style({ textAlign:'right' }),
-			div(
-				style({ width:0,height:0, border:(arrowSize/2)+'px solid #fff', borderColor:'transparent transparent #fff transparent' }),
-				fromMe
-					? style(translate(viewport.width() - arrowSize - spacing*2 - 6, -(arrowSize/2 + 1)))
-					: style(translate(6, -(arrowSize/2 + 1)))
+		var arrowSize = spacing * 2
+		var arrowOffset = (faceSize - arrowSize) / 2
+		var personHeader = isNewPerson && div('newSection',
+			// height:faceSize+arrowSize/2+spacing/2, 
+			// style({ padding:px(spacing * 1.5, spacing, spacing / 2) }),
+			style({ margin:px(spacing * 2, spacing, 0) }),
+			div('person',
+				style({ height:faceSize, overflow:'hidden' }, fromMe && { textAlign:'right' }),
+				personParts
+			),
+			div('cardSpacer', style({ height:spacing * 2, overflow:'hidden' }),
+				div('cardArrow', style({ display:'inline-block', width:0, height:0, border:(arrowSize/2)+'px solid #fff', borderColor:'transparent transparent #fff transparent' },
+					fromMe
+						? translate(-arrowOffset, -6)
+						: translate(arrowOffset, -6)
+				)),
+				div('cardTop', style({ height:spacing, background:'#fff' }, translate.y(-spacing*1.5 + 1)))
 			)
 		)
 	}
-	return [div('messageContainer', style(translate(0,0), { textAlign:fromMe ? 'right' : 'left' }),
+	return [div('messageContainer', style(translate(0,0), { textAlign:fromMe ? 'right' : 'left', 'float':fromMe?'right':'left', width:messageWidth }),
 		div(classes.join(' '),
 			personHeader,
 			renderContent(message, opts)
 		)
 	), div('clear')]
-	
-	function renderArrow() {
-		return messageIsFromMe ? arrowImage('bubbleArrow-right', [5,10]) : arrowImage('bubbleArrow-left', [6,10])
-	}
 	
 	function renderDynamics() {
 		var showYesNoResponder = (message._wasPushed && !message._questionAnswered && questions.hasYesNoQuestion(message.body))
@@ -249,7 +252,7 @@ gRenderMessageBubble = function(message, conversation, opts) {
 					display:'block',
 					width:opts.pictureSize[0],
 					height:opts.pictureSize[1],
-					padding:px(spacing / 2, 0),
+					padding:px(0, spacing, spacing),
 					margin:px(0, spacing),
 					backgroundSize:px(opts.pictureSize[0], opts.pictureSize[1])
 				}))
@@ -271,12 +274,15 @@ gRenderMessageBubble = function(message, conversation, opts) {
 			var scaledOffset = map([(opts.pictureSize[0]-scaledSize[0]) / 2, (opts.pictureSize[1]-scaledSize[1]) / 2], Math.round)
 			return div('pictureContent',
 				style({
+					background:'#fff',
+					display:'block',
 					width:opts.pictureSize[0],
 					height:opts.pictureSize[1],
-					marginTop:spacing,
-					backgroundImage:'url('+message.preview.base64Data+')',
-					backgroundSize: px(scaledSize),
-					backgroundPosition: px(scaledOffset)
+					padding:px(0, spacing, spacing),
+					margin:px(0, spacing),
+					backgroundSize:px(scaledSize),
+					backgroundPosition: px(scaledOffset),
+					backgroundImage:'url('+message.preview.base64Data+')'
 				})
 			)
 		}
@@ -286,7 +292,7 @@ gRenderMessageBubble = function(message, conversation, opts) {
 		var margin = faceSize + spacing
 		return div('textContent', style({ display:'block', fontSize:17 }),
 			linkify(payload.body).join(''),
-			style({ padding:px(spacing / 2, spacing), margin:px(0, spacing), background:'#fff' })
+			style({ padding:px(0, spacing, spacing), margin:px(0, spacing), background:'#fff' })
 		)
 	}
 
@@ -327,10 +333,9 @@ events.on('message.sending', function(message) {
 events.on('message.sent', function onConversationMessageSent(serverResponse) {
 	var message = serverResponse.message
 	if (!view || view.conversation.conversationId != message.conversationId) { return }
-	// cacheMessage(message)
-	if (view.conversation.people[0].memberSince) { return }
-	if (false && serverResponse.disableInvite) { return }
-	promptInvite(message)
+	if (serverResponse.promptInvite) {
+		promptInvite(message)
+	}
 })
 
 events.on('app.willEnterForeground', function() {
