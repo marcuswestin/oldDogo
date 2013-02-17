@@ -169,8 +169,8 @@ dark = [48,95,132]
 var lastMessageFromId = null
 gRenderMessageBubble = function(message, conversation, opts) {
 	var faceSize = 40
-	var messageWidth = viewport.width() // - spacing - faceSize
-	var picSize = messageWidth - spacing * 4
+	var messageWidth = viewport.width()
+	var picSize = viewport.width() - spacing * 4
 	opts = options(opts, {
 		dynamics:true,
 		face:30,
@@ -190,7 +190,7 @@ gRenderMessageBubble = function(message, conversation, opts) {
 	if (isNewPerson) {
 		var dx = spacing * 1.5 * (fromMe ? -1 : 1)
 		var personParts = [
-			face(person, { size:faceSize }),
+			face(person, { size:faceSize, style:{ borderRadius:px(1) } }),
 			div('name', person.name.split(' ')[0], style(
 				translate(dx, -14), {
 				display:'inline-block', fontSize:20,
@@ -211,10 +211,10 @@ gRenderMessageBubble = function(message, conversation, opts) {
 			div('cardSpacer', style({ height:spacing * 2, overflow:'hidden' }),
 				div('cardArrow', style({ display:'inline-block', width:0, height:0, border:(arrowSize/2)+'px solid #fff', borderColor:'transparent transparent #fff transparent' },
 					fromMe
-						? translate(-arrowOffset, -6)
-						: translate(arrowOffset, -6)
+						? translate(-arrowOffset, -5)
+						: translate(arrowOffset, -5)
 				)),
-				div('cardTop', style({ height:spacing, background:'#fff' }, translate.y(-spacing*1.5 + 1)))
+				div('cardTop', style({ height:spacing, background:'#fff', borderRadius:px(1,1,0,0) }, translate.y(-spacing*1.5 + 1)))
 			)
 		)
 	}
@@ -247,15 +247,21 @@ gRenderMessageBubble = function(message, conversation, opts) {
 			// var background = opts.lazy ? { pictureUrl:pictureUrl } : style({ backgroundImage:'url('+pictureUrl+')' })
 			return [
 				loadingClock,
-				img('pictureContent', { src:pictureUrl }, style(translate(0,0), {
-					background:'#fff',
-					display:'block',
-					width:opts.pictureSize[0],
-					height:opts.pictureSize[1],
-					padding:px(0, spacing, spacing),
-					margin:px(0, spacing),
-					backgroundSize:px(opts.pictureSize[0], opts.pictureSize[1])
-				}))
+				img('pictureContent', { src:pictureUrl }, style(
+					translate(0,0),
+					// translate(fromMe ? -(40) : 0, 0),
+					{
+						background:'#fff',
+						display:'block',
+						width:opts.pictureSize[0],
+						height:opts.pictureSize[1],
+						// padding:px(0, fromMe ? spacing : 0, 0, fromMe ? 0 : spacing),
+						padding:px(0, spacing),
+						margin:px(0, spacing),
+						backgroundSize:px(opts.pictureSize[0], opts.pictureSize[1])
+					}
+				)),
+				div('spacing', style({ height:spacing, background:'#fff', margin:px(0, spacing) }))
 			]
 		}
 	}
