@@ -51,7 +51,12 @@ isArray = require('std/isArray')
 graphic = require('ui/graphic')
 icon = require('ui/icon')
 
-gradient = function gradient(from, to) { return '-webkit-linear-gradient('+from+', '+to+')' }
+gradient = function gradient(from, to) {
+	return '-webkit-linear-gradient('+from+', '+to+')'
+}
+radialGradient = function radialGradient(center, from, to, extent) {
+	return '-webkit-radial-gradient('+center+', circle cover, '+from+' 0%, '+to+' '+extent+')'
+}
 px = function px(pixels) {
 	if (!isArray(pixels)) { pixels = slice(arguments) }
 	return map(pixels, function(arg) {

@@ -10,15 +10,15 @@ module.exports = {
 		// setTimeout(function() { gScroller.push({ step:'login' }) }) // AUTOS
 		
 		gScroller = makeScroller({
-			numViews:5,
 			duration:400,
 			alwaysBounce:false,
 			renderHead:renderHead,
 			renderView:renderView,
-			stack: [{ step:'welcome' }]
+			stack: [{ step:'welcome' }],
+			headHeight:0
 		})
 		var welcomeDuration = 500
-		return div({ id:'connectView' }, brandGradient([viewport.width() / 2, 150], 50),
+		return div({ id:'connectView' },
 			div('centered',
 				div('logoIcon', icon('logoIcon-blank', 128, 128, 48, 0, 0, 0)),
 				div({ id:'logoName' }, icon('logoName', 166, 72, 64, 0, 0, 0), style(translate(0, 0, 1000))),
