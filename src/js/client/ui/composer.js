@@ -370,13 +370,13 @@ function sendMessage(type, messageData) {
 	var clientUid = gState.nextClientUid()
 	var conversation = currentConversation
 	
-	var message = eventEmitter('message', {
+	var message = {
 		toParticipationId:conversation.participationId,
 		fromPersonId:gState.me().personId,
 		clientUid:clientUid,
 		type:type,
 		payload:{}
-	})
+	}
 	
 	var commandData = {
 		method:"POST",
@@ -413,7 +413,6 @@ function sendMessage(type, messageData) {
 		conversation.lastMessage = res.message
 		conversation.lastSentMessage = res.message
 		events.fire('message.sent', res, conversation)
-		message.events.fire('sent', res.message)
 	}
 }
 

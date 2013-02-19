@@ -290,6 +290,8 @@ function setupDev(app) {
 	var combine = require('combine')
 	var buildPage = require('website/build-page')
 	
+	app.get('/dev', sendFile('src/js/client/dev/devClient.html', 'text/html'))
+	
 	app.get('/', sendPage('homepage'))
 	app.all(/^\/facebook_canvas*/, sendPage('facebook_canvas'))
 	app.get('/terms', sendPage('terms'))
@@ -466,6 +468,8 @@ function respond(req, res, err, content, contentType) {
 			contentType = 'image/png'
 		} else if (req.url.match(/\.ttf$/)) {
 			contentType = 'font/opentype'
+		} else if (req.url.match(/\.css$/)) {
+			contentType = 'text/css'
 		} else {
 			contentType = 'application/json'
 		}

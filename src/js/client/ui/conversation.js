@@ -331,9 +331,6 @@ events.on('push.message', function(data) {
 
 events.on('message.sending', function(message) {
 	onNewMessage(message)
-	message.events.on('sent', function(response) {
-		// Show that the message was succesfully sent
-	})
 })
 
 events.on('message.sent', function onConversationMessageSent(serverResponse) {

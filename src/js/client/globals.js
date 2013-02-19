@@ -1,27 +1,26 @@
-require('lib/jquery-1.8.1')
+require('lib/jquery-2.0.0b1')
 
-require('globals/environment')
-require('globals/tags')
-require('globals/brand')
-
-events = require('./events')
-gState = require('./state')
+tags = require('tags')
+require('tags/jquery-tags')
+button = require('tags/button')
+list = require('tags/list')
+style = require('tags/style')
+makeScroller = require('tags/scroller')
+draggable = require('tags/draggable')
+overlay = ovarlay = require('tags/overlay')
+viewport = require('tags/viewport')
+link = require('tags/link')
 
 options = require('std/options')
 create = require('std/create')
 proto = require('std/proto')
 map = require('std/map')
-api = require('client/api')
-bridge = require('client/bridge')
-face = require('client/ui/face')
 bind = require('std/bind')
 each = require('std/each')
 slice = require('std/slice')
 curry = require('std/curry')
 filter = require('std/filter')
 flatten = require('std/flatten')
-paint = require('client/ui/paint')
-_ = require('underscore')
 parseUrl = require('std/url')
 clip = require('std/clip')
 find = require('std/find')
@@ -33,81 +32,56 @@ parallel = require('std/parallel')
 rand = require('std/rand')
 sum = require('std/sum')
 time = require('std/time')
+
+events = require('client/events')
+gState = require('client/state')
+api = require('client/api')
+bridge = require('client/bridge')
+face = require('client/ui/face')
+paint = require('client/ui/paint')
 colors = require('client/colors')
 
 Addresses = require('data/Addresses')
-payloads = require('data/payloads')
+Payloads = require('data/Payloads')
 
-isArray = _.isArray
+isArray = require('std/isArray')
 
-gHeadHeight = 0
-gKeyboardHeight = 216
+graphic = require('ui/graphic')
+icon = require('ui/icon')
 
-$.fn.size = function() { var $this = $(this); return { width:$this.width(), height:$this.height() } }
-
-eventEmitter = function(dataClass, data) {
-	var events = create(eventEmitter.proto, { dataClass:dataClass, data:data })
-	Object.defineProperty(data, 'events', { value:events, writable:false, enumerable:false, configurable:false })
-	return data
-}
-eventEmitter.proto = {
-	on: function on(signal, callback) {
-		var listenersClass = eventEmitter.listeners[this.dataClass]
-		if (!listenersClass) {
-			listenersClass = eventEmitter.listeners[this.dataClass] = {}
-		}
-		var signalListeners = listenersClass[signal]
-		if (!signalListeners) {
-			signalListeners = listenersClass[signal] = {}
-		}
-		var id = this._getDataId()
-		var instanceListeners = signalListeners[id]
-		if (!instanceListeners) {
-			instanceListeners = signalListeners[id] = []
-		}
-		instanceListeners.push(callback)
-	},
-	fire: function fire(signal, info) {
-		var listenersClass = eventEmitter.listeners[this.dataClass]
-		if (!listenersClass) { return }
-		var signalListeners = listenersClass[signal]
-		if (!signalListeners) { return }
-		var id = this._getDataId()
-		var instanceListeners = signalListeners[id]
-		each(instanceListeners, this, function(callback) {
-			callback.call(this, info)
-		})
-	},
-	_getDataId:function() {
-		return (this.dataClass == 'message' ? this.data.clientUid : null)
-	}
-}
-eventEmitter.listeners = {}
-
-unique = function() {
-	return 'u'+(unique.current++)
-}
-unique.current = 1
-
-link = function(className, title, path) {
-	if (arguments.length == 2) {
-		path = title
-		title = className
-		className = ''
-	}
-	if (typeof path == 'function') {
-		return div('link '+className, title, button(path))
-	} else {
-		return a('link '+className, title, { href:(gAppInfo.config.serverUrl + path), target:'_blank' })
-	}
-}
-
-px = function(pixels) {
+gradient = function gradient(from, to) { return '-webkit-linear-gradient('+from+', '+to+')' }
+px = function px(pixels) {
 	if (!isArray(pixels)) { pixels = slice(arguments) }
 	return map(pixels, function(arg) {
 		return arg+'px'
 	}).join(' ')
 }
+
+overlay.defaultElement = $('#viewport')
+link.defaultTarget = '_blank'
+
+div = tags('div')
+span = tags('span')
+br = function() { return { __tagHTML:'<br />' } }
+a = tags('a')
+input = tags('input')
+img = tags('img')
+canvas = tags('canvas')
+label = tags('label')
+
+translate = style.translate
+transition = style.transition
+scrollable = style.scrollable
+absolute = function(left, top) { return { position:'absolute', left:left, top:top } }
+
+var ulTag = tags('ul')
+var li = tags('li')
+ul = function() {
+	return ulTag(map(arguments, function(content) {
+		return li('tags-ul-li', content)
+	}))
+}
+
 
 BT = {
 	url:function(module, path, params) {
