@@ -291,6 +291,7 @@ function setupDev(app) {
 	var buildPage = require('website/build-page')
 	
 	app.get('/dev', sendFile('src/js/client/dev/devClient.html', 'text/html'))
+	app.get('/phone', sendFile('src/js/client/phone/phoneClient.html', 'text/html'))
 	
 	app.get('/', sendPage('homepage'))
 	app.all(/^\/facebook_canvas*/, sendPage('facebook_canvas'))
@@ -300,7 +301,7 @@ function setupDev(app) {
 	app.get('/test', sendPage('test'))
 	app.get('/verify', sendPage('verifyAddress'))
 	
-	app.get('/app', sendFile('src/js/client/dogo.html', 'text/html'))
+	app.get('/app', sendFile('src/js/client/phone/phoneClient.html', 'text/html'))
 	app.get('/favicon.ico', sendFile('src/graphics/website/favicon.png', 'image/png'))
 		
 	app.get('/fonts/*', sendStatic('src'))

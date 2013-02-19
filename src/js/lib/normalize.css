@@ -394,3 +394,12 @@ table {
     border-collapse: collapse;
     border-spacing: 0;
 }
+
+
+/* ================
+   Dogo additions
+   ================ */
+
+html, button, input, select, textarea {
+	line-height: 20px; font-family: "Open Sans"; font-size: 16px; font-weight: 100;
+}

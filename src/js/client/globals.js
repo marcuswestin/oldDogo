@@ -1,4 +1,4 @@
-require('lib/jquery-2.0.0b1')
+require('lib/jquery-1.8.1')
 
 tags = require('tags')
 require('tags/jquery-tags')

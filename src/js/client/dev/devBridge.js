@@ -14,6 +14,9 @@ function setupDevBridge() {
 }
 
 var commandHandlers = {
+	'app.show': function(data, callback) {
+		console.log('SHOW APP')
+	},
 	// 'push.register': function(data, callback) {
 	// 	callback(null)
 	// },

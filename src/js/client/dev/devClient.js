@@ -4,7 +4,6 @@ require('client/phone/phoneClient')
 var devBridge = require('./devBridge')
 var devButtons = require('./devButtons') 
 
-units = unit = 8
 gHeadHeight = unit
 gKeyboardHeight = 216
 
@@ -12,7 +11,7 @@ gKeyboardHeight = 216
 viewport.height = function() { return 480 }
 viewport.width = function() { return 320 }
 
-startDevClient()
+$(startDevClient)
 
 function startDevClient() {
 	
@@ -36,7 +35,7 @@ function startDevClient() {
 
 function buildDevClient() {
 	$('body')
-		.css({ background:gradient('#222', '#333') })
+		.css({ background:gradient('#111', '#161616'), overflow:'hidden' })
 		.append(
 			div(style({ position:'absolute', top:0, left:0, width:'100%' }),
 				button(function(){}),
@@ -60,8 +59,9 @@ function buildDevClient() {
 		)
 }
 
+layoutDevClient.top = function() { return Math.max(20, $(window).height() / 2 - viewport.height()/2) }
 function layoutDevClient() {
-	var viewportTop = Math.max(20, $(window).height() / 2 - viewport.height()/2)
+	var viewportTop = layoutDevClient.top()
 	var size = { width:$(window).width(), height:$(window).height() }
 	$('body').css(size)
 	$('#viewport').css(translate.y(viewportTop))
