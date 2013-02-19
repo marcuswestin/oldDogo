@@ -29,7 +29,6 @@
 		2C650C2716A5DFA1000F381E /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C650C2616A5DFA1000F381E /* FacebookSDK.framework */; };
 		2C650C4916A5DFD1000F381E /* FacebookSDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 2C650C4816A5DFD1000F381E /* FacebookSDKResources.bundle */; };
 		2C650CB616A5E459000F381E /* BTAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650C6316A5E459000F381E /* BTAppDelegate.m */; };
-		2C650CB716A5E459000F381E /* BTCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650C6516A5E459000F381E /* BTCache.m */; };
 		2C650CB816A5E459000F381E /* BTIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650C6716A5E459000F381E /* BTIndex.m */; };
 		2C650CB916A5E459000F381E /* BTModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650C6916A5E459000F381E /* BTModule.m */; };
 		2C650CBA16A5E459000F381E /* BTNet.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650C6B16A5E459000F381E /* BTNet.m */; };
@@ -59,6 +58,7 @@
 		2CAE30591556262500742518 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CAE30581556262500742518 /* AudioToolbox.framework */; };
 		2CC5C23E169FB874005050DB /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CC5C23D169FB874005050DB /* AVFoundation.framework */; };
 		2CCAFE691569EC1C002766A1 /* vibrate.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2CCAFE681569EC1C002766A1 /* vibrate.wav */; };
+		2CCE3DDA16D416B900538F39 /* BTCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE3DD916D416B900538F39 /* BTCache.m */; };
 		2CD132781567B639002386F3 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD132771567B639002386F3 /* CFNetwork.framework */; };
 		2CD132AA1567B827002386F3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD132791567B63F002386F3 /* SystemConfiguration.framework */; };
 		2CD133E81567C2D9002386F3 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD133E61567C2C0002386F3 /* Security.framework */; };
@@ -68,6 +68,7 @@
 		2CD1A038153FB6B0008949F2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2CD1A036153FB6B0008949F2 /* InfoPlist.strings */; };
 		2CD1A03A153FB6B0008949F2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1A039153FB6B0008949F2 /* main.m */; };
 		2CD1A03E153FB6B1008949F2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1A03D153FB6B1008949F2 /* AppDelegate.m */; };
+		2CF9B06716D408C100966C87 /* BTFiles.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CF9B06616D408C100966C87 /* BTFiles.m */; };
 		2CFF879515D2B6FB00F73150 /* UIDeviceHardware.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CFF879415D2B6FB00F73150 /* UIDeviceHardware.m */; };
 /* End PBXBuildFile section */
 
@@ -146,8 +147,6 @@
 		2C650C4816A5DFD1000F381E /* FacebookSDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = FacebookSDKResources.bundle; path = "../../dependencies/facebook-ios-sdk/build/FacebookSDK.framework/Versions/A/Resources/FacebookSDKResources.bundle"; sourceTree = "<group>"; };
 		2C650C6216A5E459000F381E /* BTAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTAppDelegate.h; sourceTree = "<group>"; };
 		2C650C6316A5E459000F381E /* BTAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTAppDelegate.m; sourceTree = "<group>"; };
-		2C650C6416A5E459000F381E /* BTCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTCache.h; sourceTree = "<group>"; };
-		2C650C6516A5E459000F381E /* BTCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTCache.m; sourceTree = "<group>"; };
 		2C650C6616A5E459000F381E /* BTIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTIndex.h; sourceTree = "<group>"; };
 		2C650C6716A5E459000F381E /* BTIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTIndex.m; sourceTree = "<group>"; };
 		2C650C6816A5E459000F381E /* BTModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTModule.h; sourceTree = "<group>"; };
@@ -191,6 +190,8 @@
 		2CAE30581556262500742518 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		2CC5C23D169FB874005050DB /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		2CCAFE681569EC1C002766A1 /* vibrate.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = vibrate.wav; sourceTree = "<group>"; };
+		2CCE3DD816D416B900538F39 /* BTCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTCache.h; sourceTree = "<group>"; };
+		2CCE3DD916D416B900538F39 /* BTCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTCache.m; sourceTree = "<group>"; };
 		2CD132771567B639002386F3 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		2CD132791567B63F002386F3 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		2CD1327B1567B645002386F3 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -205,6 +206,8 @@
 		2CD1A03B153FB6B1008949F2 /* dogo-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "dogo-Prefix.pch"; sourceTree = "<group>"; };
 		2CD1A03C153FB6B1008949F2 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2CD1A03D153FB6B1008949F2 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		2CF9B06516D408C100966C87 /* BTFiles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTFiles.h; sourceTree = "<group>"; };
+		2CF9B06616D408C100966C87 /* BTFiles.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTFiles.m; sourceTree = "<group>"; };
 		2CFF879315D2B6FB00F73150 /* UIDeviceHardware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDeviceHardware.h; sourceTree = "<group>"; };
 		2CFF879415D2B6FB00F73150 /* UIDeviceHardware.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDeviceHardware.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -275,12 +278,16 @@
 			isa = PBXGroup;
 			children = (
 				2C650ACE16A5DCAD000F381E /* BTAudio */,
+				2CCE3DD816D416B900538F39 /* BTCache.h */,
+				2CCE3DD916D416B900538F39 /* BTCache.m */,
 				2C650AF516A5DCAD000F381E /* BTFacebook.h */,
 				2C650AF616A5DCAD000F381E /* BTFacebook.m */,
 				2C650AF716A5DCAD000F381E /* BTImage.h */,
 				2C650AF816A5DCAD000F381E /* BTImage.m */,
 				2C650AF916A5DCAD000F381E /* BTTextInput.h */,
 				2C650AFA16A5DCAD000F381E /* BTTextInput.m */,
+				2CF9B06516D408C100966C87 /* BTFiles.h */,
+				2CF9B06616D408C100966C87 /* BTFiles.m */,
 			);
 			name = "blowtorch-ios-modules";
 			path = "../../dependencies/blowtorch/sdk/blowtorch-ios-modules";
@@ -339,8 +346,6 @@
 			children = (
 				2C650C6216A5E459000F381E /* BTAppDelegate.h */,
 				2C650C6316A5E459000F381E /* BTAppDelegate.m */,
-				2C650C6416A5E459000F381E /* BTCache.h */,
-				2C650C6516A5E459000F381E /* BTCache.m */,
 				2C650C6616A5E459000F381E /* BTIndex.h */,
 				2C650C6716A5E459000F381E /* BTIndex.m */,
 				2C650C6816A5E459000F381E /* BTModule.h */,
@@ -630,7 +635,6 @@
 				2C650B4216A5DCAD000F381E /* BTImage.m in Sources */,
 				2C650B4316A5DCAD000F381E /* BTTextInput.m in Sources */,
 				2C650CB616A5E459000F381E /* BTAppDelegate.m in Sources */,
-				2C650CB716A5E459000F381E /* BTCache.m in Sources */,
 				2C650CB816A5E459000F381E /* BTIndex.m in Sources */,
 				2C650CB916A5E459000F381E /* BTModule.m in Sources */,
 				2C650CBA16A5E459000F381E /* BTNet.m in Sources */,
@@ -651,6 +655,8 @@
 				2C2153B616C9947F00255CFB /* NSArray+NSString+HHMakeStructs.m in Sources */,
 				2C2153B716C9947F00255CFB /* NSString+HHUriEncoding.m in Sources */,
 				2C2153B916C9947F00255CFB /* UIImage+HHImages.m in Sources */,
+				2CF9B06716D408C100966C87 /* BTFiles.m in Sources */,
+				2CCE3DDA16D416B900538F39 /* BTCache.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -17,6 +17,19 @@ var commandHandlers = {
 	'app.show': function(data, callback) {
 		console.log('SHOW APP')
 	},
+	'BTFiles.writeJsonDocument': function(data, callback) {
+		nextTick(function() {
+			localStorage[data.filename] = JSON.stringify(data.jsonValue)
+		})
+	},
+	'BTFiles.readJsonDocument': function(data, callback) {
+		nextTick(function() {
+			var jsonValue
+			try { jsonValue = JSON.parse(localStorage['dogo-browser-state']) } catch(e) { jsonValue = {} }
+			callback(null, jsonValue)
+		})
+	},
+	
 	// 'push.register': function(data, callback) {
 	// 	callback(null)
 	// },
@@ -42,23 +55,10 @@ var commandHandlers = {
 	// 'app.restart': function(data, callback) {
 	// 	location.reload()
 	// },
-	// 'state.set': function(data, callback) {
-	// 	setTimeout(function() {
-	// 		try { var state = JSON.parse(localStorage['dogo-browser-state']) } catch(e) { var state = {} }
-	// 		state[data.key] = data.value;
-	// 		localStorage['dogo-browser-state'] = JSON.stringify(state)
-	// 	})
-	// },
 	// 'state.clear': function(data, callback) {
 	// 	setTimeout(function() {
 	// 		localStorage.clear()
 	// 		callback()
-	// 	})
-	// },
-	// 'state.load': function(data, callback) {
-	// 	setTimeout(function() {
-	// 		try { var state = JSON.parse(localStorage['dogo-browser-state']) } catch(e) { var state = {} }
-	// 		callback(null, state[data.key])
 	// 	})
 	// },
 	// 'index.build': function(data, callback) {

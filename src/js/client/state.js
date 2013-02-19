@@ -1,8 +1,8 @@
 var state = module.exports = {
 	cache: {},
-	set: function(key, value) {
+	set: function(filename, value) {
 		state.cache[key] = value
-		bridge.command('state.set', { key:key, value:value })
+		bridge.command('BTFiles.writeJsonDocument', { key:key, value:value })
 	},
 	clear: function() {
 		state.cache = {}
