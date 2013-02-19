@@ -2,8 +2,6 @@ module.exports = {
 	setup:setupDevButtons
 }
 
-// setTimeout(toggleUnitGrid, 50) // AUTOS Toggle Unit Grid
-
 function setupDevButtons() {
 	var $buttons = $(div(style({ position:'absolute', top:0, left:0 })))
 	var padded = style({ padding:10, color:'#fff', cursor:'pointer' })
@@ -49,25 +47,6 @@ function toggleSplasScreen() {
 		setTimeout(function() { $('#splashScreen').css({ opacity:1 }) })
 	}
 	splashShowing = !splashShowing
-}
-
-var unitGridShowing = false
-function toggleUnitGrid() {
-	if (unitGridShowing) {
-		$('#unitGrid').remove()
-	} else {
-		var numX = viewport.width() / units - 1
-		var numY = viewport.height() / units - 1
-		$('#viewport').append(div({ id:'unitGrid' }, style(absolute(0,0)),
-			map(new Array(numX), function(_, x) {
-				return div(style({ width:1, background:'red', opacity:.5, height:viewport.height() }, absolute(x*unit + unit, 0)))
-			}),
-			map(new Array(numY), function(_, y) {
-				return div(style({ width:viewport.width(), background:'red', opacity:.5, height:1 }, absolute(0, y*unit + unit)))
-			})
-		))
-	}
-	unitGridShowing = !unitGridShowing
 }
 
 function addEmailAddress() {

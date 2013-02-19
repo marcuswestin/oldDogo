@@ -400,6 +400,6 @@ table {
    Dogo additions
    ================ */
 
-html, button, input, select, textarea {
-	line-height: 20px; font-family: "Open Sans"; font-size: 16px; font-weight: 100;
+html, button, input, select, textarea, p, span {
+	line-height: 20px; font-family: "Open Sans"; font-size: 16px; font-weight: 100; /* background:rgba(0,255,0,.3); */
 }
