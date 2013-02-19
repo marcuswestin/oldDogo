@@ -4,7 +4,7 @@ require('client/phone/phoneClient')
 var devBridge = require('./devBridge')
 var devButtons = require('./devButtons') 
 
-unit = 8
+units = unit = 8
 gHeadHeight = unit
 gKeyboardHeight = 216
 
@@ -16,13 +16,13 @@ startDevClient()
 
 function startDevClient() {
 	
-	devBridge.setup()
-	devButtons.setup()
-	
 	buildDevClient()
 	layoutDevClient()
 	$(window).resize(layoutDevClient)
 	setTimeout(loadFbSdk, 400)
+	
+	devBridge.setup()
+	devButtons.setup()
 	
 	bridge.eventHandler('app.start', {
 		client:'0.98.0-browser',
