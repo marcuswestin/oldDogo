@@ -31,7 +31,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if ([super application:application didFinishLaunchingWithOptions:launchOptions]) {
         
-//#define DEV
+#define DEV
 #ifdef DEV
         NSString* scheme = @"http:";
         NSString* port = @"9000";
