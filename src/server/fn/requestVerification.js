@@ -3,15 +3,15 @@ var registration = require('data/registration')
 var createPasswordHash = require('server/fn/createPasswordHash')
 var url = require('std/url')
 
-module.exports = function requestVerification(address, name, color, password, pictureSecret, callback) {
-	var error = registration.checkAll({ name:name, color:color, address:address, password:password })
+module.exports = function requestVerification(address, name, password, pictureSecret, callback) {
+	var error = registration.checkAll({ name:name, address:address, password:password })
 	if (error) { return callback(error) }
 	
 	if (!Addresses.isEmail(address)) { return callback("Unimplemented: requestVerification for type "+address.addressType) }
 	
 	parallel(_lookupAddress, _hashPassword, function(err, addrInfo, passwordHash) {
 		if (err) { return callback(err) }
-		lookupService.createAddressVerification(passwordHash, name, color, address, pictureSecret, function(err, verificationId, verificationToken) {
+		lookupService.createAddressVerification(passwordHash, name, address, pictureSecret, function(err, verificationId, verificationToken) {
 			if (err) { return callback(err) }
 			var verifyParams = { i:verificationId, t:verificationToken }
 			verifyParams[address.addressType] = address.addressId

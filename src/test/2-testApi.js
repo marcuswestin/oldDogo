@@ -11,7 +11,7 @@ setup('Ping', function() {
 })
 
 setup('Email registration', function() {
-	var testPerson = { name:'Joe Doe', color:1, password:'foobarcat', address:Addresses.email('test@dogo.co') }
+	var testPerson = { name:'Joe Doe', password:'foobarcat', address:Addresses.email('test@dogo.co') }
 	var devVerifyLink = null
 	var picPath = null
 	
@@ -40,16 +40,16 @@ setup('Email registration', function() {
 		var verParams = url(devVerifyLink).getSearchParams()
 		api.post('api/register/withAddressVerification', { password:testPerson.password, verificationToken:verParams.t, verificationId:verParams.i }, function(err, res) {
 			check(err)
-			has(res.person, { name:testPerson.name, color:testPerson.color })
+			has(res.person, { name:testPerson.name })
 			done()
 		})
 	})
 	then('login', function(done) {
-		api.post('api/session', { address:testPerson.address, password:testPerson.password }, _checkSession(testPerson.name, testPerson.color, done))
+		api.post('api/session', { address:testPerson.address, password:testPerson.password }, _checkSession(testPerson.name, done))
 	})
 	then('login with changed address case', function(done) {
 		testPerson.address.addressId = testPerson.address.addressId.toUpperCase()
-		api.post('api/session', { address:testPerson.address, password:testPerson.password }, _checkSession(testPerson.name, testPerson.color, done))
+		api.post('api/session', { address:testPerson.address, password:testPerson.password }, _checkSession(testPerson.name, done))
 	})
 })
 
@@ -57,7 +57,6 @@ setup('Facebook registration', function() {
 	var fbSession
 	var fbMe
 	var password = '123123'
-	var color = 1
 	then('check that register with changed email fails', function(done) {
 		facebook.get('/oauth/access_token', {}, function(err, _fbSession) {
 			check(err)
@@ -65,7 +64,7 @@ setup('Facebook registration', function() {
 			facebook.get('/me?fields=id,birthday,email', {}, function(err, _fbMe) {
 				check(err)
 				fbMe = _fbMe
-				api.post('api/register/withFacebookSession', { name:fbMe.name, color:color, password:password, address:Addresses.email('spoofed@gmail.com'), fbSession:fbSession }, function(err, res) {
+				api.post('api/register/withFacebookSession', { name:fbMe.name, password:password, address:Addresses.email('spoofed@gmail.com'), fbSession:fbSession }, function(err, res) {
 					is(err)
 					done()
 				})
@@ -73,18 +72,18 @@ setup('Facebook registration', function() {
 		})
 	})
 	then('register with fb session', function(done) {
-		api.post('api/register/withFacebookSession', { name:fbMe.name, color:color, password:password, address:Addresses.email(fbMe.email), fbSession:fbSession }, done)
+		api.post('api/register/withFacebookSession', { name:fbMe.name, password:password, address:Addresses.email(fbMe.email), fbSession:fbSession }, done)
 	})
 	then('login', function(done) {
-		api.post('api/session', { address:Addresses.email(fbMe.email), password:password }, _checkSession(fbMe.name, color, done))
+		api.post('api/session', { address:Addresses.email(fbMe.email), password:password }, _checkSession(fbMe.name, done))
 	})
 })
 
-function _checkSession(name, color, done) {
+function _checkSession(name, done) {
 	return function(err, res) {
 		check(err)
 		var sessionInfo = res.sessionInfo
-		has(sessionInfo.person, { name:name, color:color })
+		has(sessionInfo.person, { name:name })
 		is(sessionInfo.authToken)
 		is(sessionInfo.clientUidBlock)
 		is(sessionInfo.config)

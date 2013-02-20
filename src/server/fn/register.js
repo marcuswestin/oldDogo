@@ -17,7 +17,7 @@ function withAddressVerification(verificationId, verificationToken, password, ca
 		var addresses = [{ addressId:verInfo.addressId, addressType:verInfo.addressType }]
 		var pictureUrl = payloads.underlyingPersonPictureUrl(verInfo.pictureSecret)
 		var opts = {}
-		_createPersonWithVerifiedAddresses(verInfo.name, verInfo.color, verInfo.passwordHash, pictureUrl, addresses, opts, function(err, person) {
+		_createPersonWithVerifiedAddresses(verInfo.name, verInfo.passwordHash, pictureUrl, addresses, opts, function(err, person) {
 			if (err) { return callback(err) }
 			db.lookup().updateOne('UPDATE addressVerification SET usedTime=? WHERE verificationId=?', [db.time(), verInfo.verificationId], function(err) {
 				callback(err, { person:person, config:getClientConfig() })
@@ -37,15 +37,15 @@ function withAddressVerification(verificationId, verificationToken, password, ca
 }
 
 // When you register with facebook we can skip the email verification step!
-function withFacebookSession(name, color, address, password, fbSession, pictureSecret, callback) {
+function withFacebookSession(name, address, password, fbSession, pictureSecret, callback) {
 	if (!fbSession) { return callback('Missing facebook session') }
 	
 	if (!Addresses.isEmail(address)) { return callback('Expected an email address') }
 	
-	var err = registration.checkAll({ name:name, color:color, address:address, password:password })
+	var err = registration.checkAll({ name:name, address:address, password:password })
 	if (err) { return callback(err) }
 	
-	log('register with fb session', name, color, address, fbSession, pictureSecret)
+	log('register with fb session', name, address, fbSession, pictureSecret)
 	parallel(_getFacebookData, curry(createPasswordHash, password), function(err, fbAccount, passwordHash) {
 		if (err) { return callback(err) }
 		if (!fbAccount || !fbAccount.id) { return callback('I could not connect to your Facebook account') }
@@ -56,7 +56,7 @@ function withFacebookSession(name, color, address, password, fbSession, pictureS
 		var pictureUrl = pictureSecret ? payloads.underlyingPersonPictureUrl(pictureSecret) : 'http://graph.facebook.com/'+fbAccount.id+'/picture?type=large'
 		var addresses = [address, Addresses.facebook(fbAccount.id)]
 		var opts = { birthdate:_getFbAccBirthdate(fbAccount.birthday), locale:fbAccount.locale, gender:fbAccount.gender, facebookId:fbAccount.id }
-		_createPersonWithVerifiedAddresses(name, color, passwordHash, pictureUrl, addresses, opts, callback)
+		_createPersonWithVerifiedAddresses(name, passwordHash, pictureUrl, addresses, opts, callback)
 	})
 
 	function _getFacebookData(callback) {
@@ -80,8 +80,8 @@ function withFacebookSession(name, color, address, password, fbSession, pictureS
 	}
 }
 
-function _createPersonWithVerifiedAddresses(name, color, passwordHash, pictureUrl, addresses, opts, callback) {
-	log.debug('create person with verified addresses', name, color, passwordHash, pictureUrl, addresses, opts)
+function _createPersonWithVerifiedAddresses(name, passwordHash, pictureUrl, addresses, opts, callback) {
+	log.debug('create person with verified addresses', name, passwordHash, pictureUrl, addresses, opts)
 	parallel(_lookupAddresses, _createPerson, function(err, addrInfos, personId) {
 		if (err) { return callback(err) }
 		parallel(_createPictureRedirect, _claimVerifiedAddresses, _getPerson, function(err, _, _, person) {
@@ -102,8 +102,8 @@ function _createPersonWithVerifiedAddresses(name, color, passwordHash, pictureUr
 		var emailAddressesJson = JSON.stringify(filter(addresses, Addresses.isEmail))
 		var phoneNumbersJson = JSON.stringify(filter(addresses, Addresses.isPhone))
 		db.people.randomShard().insert(
-			'INSERT INTO person SET joinedTime=?, name=?, color=?, passwordHash=?, birthdate=?, locale=?, gender=?, facebookId=?, emailAddressesJson=?, phoneNumbersJson=?',
-			[db.time(), name, color, passwordHash, opts.birthdate, opts.locale, opts.gender, opts.facebookId, emailAddressesJson, phoneNumbersJson],
+			'INSERT INTO person SET joinedTime=?, name=?, passwordHash=?, birthdate=?, locale=?, gender=?, facebookId=?, emailAddressesJson=?, phoneNumbersJson=?',
+			[db.time(), name, passwordHash, opts.birthdate, opts.locale, opts.gender, opts.facebookId, emailAddressesJson, phoneNumbersJson],
 			callback
 		)
 	}

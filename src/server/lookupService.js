@@ -37,19 +37,19 @@ function createVerifiedAddress(addrInfo, personId, name, callback) {
 	var addressId = normalizeAddressId(addressType, addrInfo.addressId)
 	db.lookup().insertIgnoreId(sql, [name, personId, db.time(), db.time(), addressId, addressType], callback)
 }
-function createAddressVerification(passwordHash, name, color, addrInfo, pictureSecret, callback) {
+function createAddressVerification(passwordHash, name, addrInfo, pictureSecret, callback) {
 	log.debug('create address verification', addrInfo, name)
 	var verificationToken = uuid.v4()
-	var sql = 'INSERT INTO addressVerification SET verificationToken=?, passwordHash=?, name=?, color=?, addressId=?, addressType=?, pictureSecret=?, createdTime=?'
+	var sql = 'INSERT INTO addressVerification SET verificationToken=?, passwordHash=?, name=?, addressId=?, addressType=?, pictureSecret=?, createdTime=?'
 	var addressType = encodeAddressTypes[addrInfo.addressType]
 	var addressId = normalizeAddressId(addressType, addrInfo.addressId)
-	var values = [verificationToken, passwordHash, name, color, addressId, addressType, pictureSecret, db.time()]
+	var values = [verificationToken, passwordHash, name, addressId, addressType, pictureSecret, db.time()]
 	db.lookup().insert(sql, values, function(err, verificationId) {
 		callback(err, verificationId, verificationToken)
 	})
 }
 function getAddressVerification(verificationId, verificationToken, callback) {
-	var sql = 'SELECT verificationId, addressId, addressType, passwordHash, color, name, verificationToken, createdTime, usedTime, pictureSecret '
+	var sql = 'SELECT verificationId, addressId, addressType, passwordHash, name, verificationToken, createdTime, usedTime, pictureSecret '
 		+ 'FROM addressVerification WHERE verificationId=? AND verificationToken=?'
 	db.lookup().selectOne(sql, [verificationId, verificationToken], function(err, verification) {
 		if (err) { return callback(err) }

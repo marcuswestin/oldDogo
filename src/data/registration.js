@@ -8,13 +8,8 @@ module.exports = {
 function checkAll(params) {
 	var error
 	if (error = checkName(params.name)) { return error }
-	if (error = checkColor(params.color)) { return error }
 	if (error = checkAddress(params.address)) { return error }
 	if (error = checkPassword(params.password)) { return error }
-}
-
-function checkColor(color) {
-	'Color check not yet implemented'
 }
 
 function checkName(name) {

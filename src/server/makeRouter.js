@@ -163,16 +163,16 @@ function setupRoutes(app, opts) {
 		payloadService.uploadPersonPicture(pictureFile, wrapRespond(req, res, 'pictureSecret'))
 	})
 	app.post('/api/address/verification', function handleRequestAddressVerification(req, res) {
-		var params = getJsonParams(req, 'address', 'name', 'color', 'password', 'pictureSecret')
-		requestVerification(params.address, params.name, params.color, params.password, params.pictureSecret, curry(respond, req, res))
+		var params = getJsonParams(req, 'address', 'name', 'password', 'pictureSecret')
+		requestVerification(params.address, params.name, params.password, params.pictureSecret, curry(respond, req, res))
 	})
 	app.post('/api/register/withAddressVerification', function handleRegisterWithAddressVerification(req, res) {
 		var params = getJsonParams(req, 'verificationId', 'verificationToken', 'password')
 		register.withAddressVerification(params.verificationId, params.verificationToken, params.password, curry(respond, req, res))
 	})
 	app.post('/api/register/withFacebookSession', function handleRegisterWithFacebookSession(req, res) {
-		var params = getJsonParams(req, 'address', 'name', 'color', 'password', 'fbSession', 'pictureSecret')
-		register.withFacebookSession(params.name, params.color, params.address, params.password, params.fbSession, params.pictureSecret, curry(respond, req, res))
+		var params = getJsonParams(req, 'address', 'name', 'password', 'fbSession', 'pictureSecret')
+		register.withFacebookSession(params.name, params.address, params.password, params.fbSession, params.pictureSecret, curry(respond, req, res))
 	})
 	app.post('/api/session', filters.oldClients, function handlePostSession(req, res) {
 		var params = getJsonParams(req, 'address', 'password')
@@ -217,8 +217,8 @@ function setupRoutes(app, opts) {
 		res.end(new Date().getTime().toString())
 	})
 	// app.post('/api/register', filters.oldClients, function postRegister(req, res) {
-	// 	var params = getJsonParams(req, 'name', 'color', 'email', 'password', 'fbSession')
-	// 	accountService.register(name, color, email, password, fbSession, curry(respond, req, res))
+	// 	var params = getJsonParams(req, 'name', 'email', 'password', 'fbSession')
+	// 	accountService.register(name, email, password, fbSession, curry(respond, req, res))
 	// })
 	app.post('/api/login', filters.oldClients, function handleLogin(req, res) {
 		var params = getJsonParams(req, 'address', 'password')

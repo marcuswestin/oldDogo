@@ -6,6 +6,7 @@ var filename = 'DogoSessionInfo'
 var sessionInfo = module.exports = {
 	load:load,
 	nextClientUid:nextClientUid,
+	save:save,
 	checkNewVersion:checkNewVersion
 }
 
@@ -15,6 +16,10 @@ function load(callback) {
 		for (var key in document) { sessionInfo[key] = document[key] }
 		callback(err, null)
 	})
+}
+
+function save(sessionInfoObj, callback) {
+	documents.write(filename, sessionInfoObj, callback)
 }
 
 function nextClientUid() {
@@ -27,7 +32,7 @@ function nextClientUid() {
 	}
 	
 	var newClientUid = uidBlock.start = uidBlock.start + 1
-	documents.write(filename, sessionInfoDocument, function(err) {
+	sessionInfo.save(sessionInfoDocument, function(err) {
 		if (err) { return error('Could not write session document') }
 	})
 	

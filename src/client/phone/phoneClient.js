@@ -100,5 +100,14 @@ function getPhoneView(view) {
 			toggleUnitGrid()
 			doubleTapStart = null
 		}
+		if ((tags.eventPos($e).y - doubleTapStart.y) < -100) {
+			sessionInfo.save({}, function(err) {
+				if (err) { return error(err) }
+				documents.write('viewStack', [], function(err) {
+					if (err) { return error(err) }
+					bridge.command('app.restart')
+				})
+			})
+		}
 	})
 }())

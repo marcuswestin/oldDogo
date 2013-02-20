@@ -14,8 +14,12 @@ function url(name, width, height) {
 	return graphics.base + name + size + scale + '.png'
 }
 
-function background(name, width, height) {
-	return 'url('+graphics.url(name, width, height)+')'
+function background(name, width, height, offsetX, offsetY) {
+	return {
+		background:'transparent '+(offsetX || 0)+'px '+(offsetY || 0)+'px no-repeat',
+		backgroundImage:'url('+graphics.url(name, width, height)+')',
+		backgroundSize:px(width, height)
+	}
 }
 
 function graphic(name, width, height) {
@@ -24,13 +28,10 @@ function graphic(name, width, height) {
 	// if (paddingBottom == null) { paddingBottom = paddingTop }
 	// if (paddingLeft == null) { paddingLeft = paddingRight }
 	var styles = slice(arguments, 3)
-	return div(style({
+	return div(style(graphics.background(name, width, height), {
 		display:'inline-block',
 		width:width,
 		height:height,
-		background:'transparent 0 0 no-repeat',
-		backgroundImage:graphics.background(name, width, height),
-		backgroundSize:px(width, height)
 		// padding:px(paddingTop, paddingRight, paddingBottom, paddingLeft)
 	}), styles && style.apply(this, styles))
 }

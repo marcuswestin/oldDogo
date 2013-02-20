@@ -105,7 +105,7 @@ error = function error(err) {
 			style({ position:'absolute', top:20+margin, left:cornerSize+margin, width:viewport.width() - cornerSize*2 - margin*4 }),
 			div('content',
 				style({ maxHeight:240 }, scrollable.y),
-				div('close', style({ 'float':'right' }), icon('icon-circlex', 22, 23), button(function() { error.hide() })),
+				div('close', style({ 'float':'right' }), 'X', button(function() { error.hide() })),
 				div('message')
 			)
 		)).appendTo('#viewport')
@@ -161,16 +161,20 @@ toggleUnitGrid = function() {
 	unitGridShowing = !unitGridShowing
 }
 
+fullWidth = fillWidth = { width:'100%' }
+
 events.on('app.start', function() {
-	menuItemArrow = div(graphics.graphic('listMenuArrow', 16, 16), style({ position:'absolute', right:units*5.5 }, translate.y(3)))
+	listMenuArrow = div(graphics.graphic('listMenuArrow', 16, 16), style({ 'float':'right' }, translate(0, 3)))
+	connectButton = [style({ display:'block', padding:px(unit*1.5), margin:px(2*unit, 4*unit), border:'1px solid rgba(255,255,255,.5)' }), listMenuArrow]
 })
 
-fullWidth = { width:'100%' }
-
+listMenuIcon = function(graphicName) {
+	return graphics.graphic(graphicName, 20, 20, translate.y(2), { 'float':'left', margin:px(0,unit/2) })
+}
 listMenuContent = function(graphicName, label) {
 	return [
-		graphics.graphic(graphicName, 20, 20, translate.y(1), { position:'absolute', left:units*5.5 }),
-		menuItemArrow,
-		span(style({ paddingLeft:unit*3 }), label)
+		listMenuIcon(graphicName),
+		listMenuArrow,
+		span(style({ paddingLeft:unit }), label)
 	]
 }

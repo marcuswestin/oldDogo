@@ -11,12 +11,13 @@ module.exports = {
 		// setTimeout(function() { gScroller.push({ step:'register', registerStep:'facebook' }) }) // AUTOS
 		// setTimeout(function() { gScroller.push({ step:'login' }) }) // AUTOS
 		
+		if (!viewStack || !viewStack.length) { viewStack = [{ step:'welcome' }] }
 		gScroller = makeScroller({
 			duration:400,
 			alwaysBounce:false,
 			renderHead:renderHead,
 			renderBody:renderBody,
-			stack: viewStack || [{ step:'welcome' }],
+			stack: viewStack,
 			headHeight:0
 		})
 		return div({ id:'connectView' },

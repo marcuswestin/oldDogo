@@ -5,7 +5,6 @@ CREATE TABLE person (
 	name VARCHAR(255) DEFAULT NULL,
 	birthdate DATE DEFAULT NULL,
 	gender ENUM('male','female') DEFAULT NULL,
-	color TINYINT UNSIGNED NOT NULL,
 	-- addresses
 	facebookId BIGINT UNSIGNED DEFAULT NULL,
 	phoneNumbersJson VARCHAR(1024) DEFAULT NULL,

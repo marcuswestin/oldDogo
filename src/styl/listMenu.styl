@@ -1,5 +1,5 @@
 .listMenu
-	margin 0 4*unit 4*unit;
+	margin 0 4*unit;
 	-webkit-box-shadow: 0 1px 2px -1px rgba(13,2,54,0.74); border-radius 5px;
 	.menuItem:first-child
 		border-top-left-radius 5px; border-top-right-radius 5px;
@@ -7,7 +7,7 @@
 		border-bottom-left-radius 5px; border-bottom-right-radius 5px;
 	.menuItem
 		background rgb(248,248,248);
-		padding (unit*1.5 - 1px) (unit*2) (unit*1.5 + 3px);
+		padding (unit*1.5 - 1px) (unit) (unit*1.5 + 3px);
 		border 1px solid; border-color rgb(252,252,252) rgb(208,208,208) rgb(204,204,204);
 		color #333; text-shadow 0 1px 0 #fff;
 	.menuItem.active
@@ -19,8 +19,10 @@
 		-webkit-box-shadow: inset 0 1px 1px 0 rgba(0,0,0,0.25), inset 0 -1px 1px 0 #fff;
 	.menuItem input
 		border none; padding 8px 8px 4px; height 30px; display block;
-		margin -(12px); background transparent; width 251px; text-shadow 0 1px 0 #fff;
+		margin (-(unit*1.5px)) 0 (-(unit*1.5px)) unit*3; background transparent; width 194px; text-shadow 0 1px 0 #fff;
 	.menuItem input::-webkit-input-placeholder, .menuItem .placeholder
 		color rgb(179,179,179); text-shadow 0 1px 0 #fff; font-family "Open Sans"; font-weight 400;
+	.menuItem input[disabled], .menuItem input:disabled
+		color #111; opacity 1;
 	.menuItem .pickColor
 		padding 0 0 0 9px;
