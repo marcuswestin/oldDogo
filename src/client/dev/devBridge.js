@@ -17,9 +17,13 @@ var commandHandlers = {
 	'app.show': function(data, callback) {
 		console.log('SHOW APP')
 	},
+	'app.restart': function(data, callback) {
+		nextTick(function() { location.reload() })
+	},
 	'BTFiles.writeJsonDocument': function(data, callback) {
 		nextTick(function() {
 			localStorage[data.filename] = JSON.stringify(data.jsonValue)
+			callback && callback()
 		})
 	},
 	'BTFiles.readJsonDocument': function(data, callback) {

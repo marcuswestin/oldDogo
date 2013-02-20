@@ -44,10 +44,10 @@ module.exports = {
 			return div(div('stepView', _pickViewContent()))
 			function _pickViewContent() {
 				switch (view.step) {
-					case 'welcome': return renderWelcome(view, welcomeDuration)
 					case 'register': return renderRegister(view)
 					case 'login': return renderLogin(view)
-					default: return ['Unknown view', JSON.stringify(view)]
+					case 'welcome':
+					default: return renderWelcome(view, welcomeDuration)
 				}
 			}
 		}

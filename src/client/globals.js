@@ -160,6 +160,15 @@ toggleUnitGrid = function() {
 	}
 	unitGridShowing = !unitGridShowing
 }
+clearState = function() {
+	sessionInfo.save({}, function(err) {
+		if (err) { return error(err) }
+		documents.write('viewStack', [], function(err) {
+			if (err) { return error(err) }
+			bridge.command('app.restart')
+		})
+	})
+}
 
 fullWidth = fillWidth = { width:'100%' }
 

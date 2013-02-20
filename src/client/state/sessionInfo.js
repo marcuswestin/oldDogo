@@ -19,7 +19,11 @@ function load(callback) {
 }
 
 function save(sessionInfoObj, callback) {
-	documents.write(filename, sessionInfoObj, callback)
+	documents.write(filename, sessionInfoObj, function(err) {
+		callback && callback(err)
+		if (err) { return error(err) }
+		events.fire('user.session', sessionInfoObj)
+	})
 }
 
 function nextClientUid() {

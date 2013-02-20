@@ -35,7 +35,7 @@ module.exports = function renderLogin(view) {
 			api.post('api/session', { address:Addresses.email(email), password:password }, function(err, res) {
 				overlay.hide(function() {
 					if (err) { return error(err) }
-					events.fire('user.session', res.sessionInfo)
+					sessionInfo.save(res.sessionInfo)
 				})
 			})
 		}))

@@ -6,21 +6,17 @@ function setupDevButtons() {
 	var $buttons = $(div(style({ position:'absolute', top:0, left:0 })))
 	var padded = style({ padding:10, color:'#fff', cursor:'pointer' })
 	// each([-180, -90, 0, 90, 180], function(deg) { $buttons.append(div(padded, 'Rotate: ', deg, button(rotateDevice))) })
-	// $buttons.append(div(padded, 'Clear state', button(clearState)))
 	// $buttons.append(div(padded, 'Run Usage tests', button(runUsageTests)))
 	// $buttons.append(div(padded, 'Run Connect tests', button(runConnectTests)))
 	// $buttons.append(div(padded, 'Toggle Splash Screen', button(toggleSplashScreen)))
 	$buttons.append(div(padded, 'Toggle 2xUnit Grid', button(toggleUnitGrid)))
+	$buttons.append(div(padded, 'Clear state', button(clearState)))
 	// $buttons.append(div(padded, div(null, 'Add email address', button(addEmailAddress), input({ id:'addEmailAddress' }))))
 	$('body').append($buttons)
 }
 
 function rotateDevice() {
 	events.fire('device.rotated', { deg:deg })
-}
-
-function clearState() {
-	gState.clear()
 }
 
 function runUsageTests() {
