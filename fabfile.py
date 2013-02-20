@@ -74,7 +74,7 @@ def run_dogo_api():
 		do('make run-prod')
 
 def _run_nginx():
-	sudo("cp %s/src/js/server/config/nginx.conf /etc/nginx/nginx.conf" % src_dir)
+	sudo("cp %s/src/server/config/nginx.conf /etc/nginx/nginx.conf" % src_dir)
 	sudo('/etc/init.d/nginx start')
 	sudo('/etc/init.d/nginx reload')
 

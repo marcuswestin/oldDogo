@@ -5,13 +5,13 @@ setup: setup-server setup-dev reset-db
 
 # Run local server
 run: run-databases secrets/dev
-	# Run server with src/js in the node search path
+	# Run server with src in the node search path
 	- killall node
-	dtach -n /tmp/dogo.dtach ${NODE} src/js/server/runServer.js --config=dev
+	dtach -n /tmp/dogo.dtach ${NODE} src/server/runServer.js --config=dev
 	tail -fn 100 output.log
 
 debug: run-databases
-	${NODE} debug src/js/server/runServer.js --config=dev --debug=true
+	${NODE} debug src/server/runServer.js --config=dev --debug=true
 
 # Run all tests
 offline = false
@@ -70,7 +70,7 @@ encrypt-dev:
 ######################
 # Run prod server
 run-prod:
-	dtach -n /tmp/dogo.dtach ${NODE} src/js/server/runServer.js --config=prod
+	dtach -n /tmp/dogo.dtach ${NODE} src/server/runServer.js --config=prod
 
 # Deploy dogo api server to prod
 push-api:
@@ -136,7 +136,7 @@ setup-source:
 ############
 ios-client:
 	# Blagh! It would be better to use ${NODE} src/scripts/build-client.js, but xcode doesn't take it :/
-	export NODE_PATH=`pwd`/src/js && /usr/local/bin/node src/scripts/build-client.js
+	export NODE_PATH=`pwd`/src && /usr/local/bin/node src/scripts/build-client.js
 	hostname > build/dogo-ios-build/dev-hostname.txt
 
 fly-build: ios-client
@@ -163,7 +163,7 @@ GIT_REV=`git rev-parse --verify HEAD`
 .PHONY: test
 
 run-databases: ${REDIS} ${MYSQL}
-	if [ `ps ax | grep redis-server | grep -v grep | wc -l` -eq 0 ]; then ${REDIS} ./src/js/server/config/redis.conf & > /dev/null; fi
+	if [ `ps ax | grep redis-server | grep -v grep | wc -l` -eq 0 ]; then ${REDIS} ./src/server/config/redis.conf & > /dev/null; fi
 	if [ `ps ax | grep mysql | grep -v grep | wc -l` -eq 0 ]; then ${MYSQL} start; fi
 
 check-git-dirty:

@@ -11,14 +11,14 @@ var minify = false
 
 console.log("Compiling static website pages...")
 
-var copyCommands = map(['graphics','fonts','js/lib'], function(dir) {
+var copyCommands = map(['graphics','fonts','lib'], function(dir) {
 	return 'cp -r src/'+dir+' '+buildDir
 }).join(' && ')
 
 exec('rm -rf '+buildDir+' && mkdir -p '+buildDir+'/pages && '+copyCommands, function(err, stderr, stdout) {
 	if (err) { throw err }
 	if (stdout) { throw stdout }
-	var pages = fs.readdirSync('src/js/website/pages')
+	var pages = fs.readdirSync('src/website/pages')
 	;(function next() {
 		if (!pages.length) {
 			return exec('mkdir -p '+dstDir+' && rm -rf '+dstDir+' && mv '+buildDir+' '+dstDir, function(err) {
