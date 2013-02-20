@@ -73,6 +73,8 @@ events.on('user.session', function renderSignedInApp(sessionInfo, viewStack) {
 	)
 })
 
+events.on('device.rotated', function() {})
+
 function renderHead(view) {
 	return getPhoneView(view).renderHead(view)
 }
