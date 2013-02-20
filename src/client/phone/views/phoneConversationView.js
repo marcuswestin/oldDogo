@@ -1,3 +1,5 @@
+var tools = require('./phoneConversationTools')
+
 module.exports = {
 	renderHead:renderHead,
 	renderBody:renderBody,
@@ -15,12 +17,20 @@ function renderHead(view) {
 }
 
 var list
+var conversation
 function renderBody(view) {
-	Conversations.readMessages(view.conversation, _addMessages)
-	Conversations.fetchMessages(view.conversation, _addMessages)
-	function _addMessages(err, messages) {
-		if (err) { return error(err) }
-		list.append(messages)
+	conversation = view.conversation
+	if (conversation.conversationId) {
+		Conversations.readMessages(conversation, _addMessages)
+		Conversations.fetchMessages(conversation, _addMessages)
+		function _addMessages(err, messages) {
+			if (err) { return error(err) }
+			list.append(messages)
+		}
+	} else {
+		nextTick(function() {
+			list.empty().empty()
+		})
 	}
 	
 	return div(style({ paddingTop:unit*8 }),
@@ -38,7 +48,16 @@ function renderBody(view) {
 }
 
 function renderFoot(view) {
-	
+	var toolStyle = { display:'inline-block', margin:px(unit/4) }
+	return div(
+		style(unitMargin(0, 1/2), {
+			width:viewport.width()-unit, height:unit*5.5, background:'#fff',
+			boxShadow:'0 -1px 2px rgba(0,0,0,.55), -1px 0 1px rgba(0,0,0,.55), 1px 0 1px rgba(0,0,0,.55)'
+		}),
+		div(
+			div(style(toolStyle), graphic('pen', 40, 40), button(tools.selectText))
+		)
+	)
 }
 
 /* Messages

@@ -38,7 +38,7 @@ function readMessages(conversation, callback) {
 }
 
 function fetchMessages(conversation, callback) {
-	api.get('api/messages', { conversationId:conversation.conversationId }, function(err, res) {
+	api.get('api/messages', { conversationId:conversation.conversationId, participationId:conversation.participationId }, function(err, res) {
 		if (err) { return callback(err) }
 		var messages = res.messages
 		if (messages.length) {
