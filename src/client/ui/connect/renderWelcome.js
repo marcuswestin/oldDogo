@@ -1,6 +1,3 @@
-var parallel = require('std/parallel')
-var Conversations = require('client/conversations')
-
 module.exports = function renderWelcome(view, welcomeDuration) {
 	return div({ id:'connectUI1' }, style({ position:'absolute', bottom:4*units, width:viewport.width() }),
 		delayed(welcomeDuration, function() {

@@ -1,4 +1,3 @@
-var Conversations = require('client/conversations')
 var pictures = require('client/ui/pictures')
 var flatten = require('std/flatten')
 var homePermissionButtons = require('./homePermissionButtons')

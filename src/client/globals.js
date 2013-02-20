@@ -35,9 +35,10 @@ time = require('std/time')
 isArray = require('std/isArray')
 
 events = require('client/events')
-documents = require('client/state/documents')
-caches = require('client/state/caches')
+Documents = require('client/state/Documents')
+Caches = require('client/state/Caches')
 sessionInfo = require('client/state/sessionInfo')
+Conversations = require('client/state/Conversations')
 api = require('client/api')
 bridge = require('client/bridge')
 face = require('client/ui/face')
@@ -79,6 +80,7 @@ translate = style.translate
 transition = style.transition
 scrollable = style.scrollable
 absolute = function(left, top) { return { position:'absolute', left:left, top:top } }
+fixed = function(left, top) { return { position:'fixed', left:left, top:top } }
 
 var ulTag = tags('ul')
 var li = tags('li')
@@ -163,7 +165,7 @@ toggleUnitGrid = function() {
 clearState = function() {
 	sessionInfo.save({}, function(err) {
 		if (err) { return error(err) }
-		documents.write('viewStack', [], function(err) {
+		Documents.write('viewStack', [], function(err) {
 			if (err) { return error(err) }
 			bridge.command('app.restart')
 		})
@@ -186,4 +188,19 @@ listMenuContent = function(graphicName, label) {
 		listMenuArrow,
 		span(style({ paddingLeft:unit }), label)
 	]
+}
+
+radius = function() { return { borderRadius:px.apply(this, arguments) } }
+floatLeft = { 'float':'left' }
+floatRight = { 'float':'right' }
+unitPadding = function() { return { padding:px.apply(this, map(arguments, function(p) { return p*unit })) } }
+unitMargin = function() { return { margin:px.apply(this, map(arguments, function(p) { return p*unit })) } }
+fullHeight = { height:'100%' }
+
+appHead = function(left, center, right) {
+	return div(style(absolute(unit/2, unit*3), radius(1), { textAlign:'center', width:viewport.width() - unit, height:unit*5, background:'rgba(0,0,244,0.5)' }),
+		div(style(floatLeft, radius(2), { width:unit*6, height:unit*4, margin:unit/2 }), left),
+		div(style(floatRight, radius(2), { width:unit*6, height:unit*4, margin:unit/2 }), right),
+		div(style({ textAlign:'center' }), center)
+	)
 }

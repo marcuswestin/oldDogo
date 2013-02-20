@@ -11,7 +11,7 @@ var sessionInfo = module.exports = {
 }
 
 function load(callback) {
-	documents.read(filename, function(err, document) {
+	Documents.read(filename, function(err, document) {
 		sessionInfoDocument = document
 		for (var key in document) { sessionInfo[key] = document[key] }
 		callback(err, null)
@@ -19,7 +19,7 @@ function load(callback) {
 }
 
 function save(sessionInfoObj, callback) {
-	documents.write(filename, sessionInfoObj, function(err) {
+	Documents.write(filename, sessionInfoObj, function(err) {
 		callback && callback(err)
 		if (err) { return error(err) }
 		events.fire('user.session', sessionInfoObj)

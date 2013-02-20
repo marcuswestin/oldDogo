@@ -6,6 +6,7 @@
 #import "BTAudio.h"
 #import "BTFiles.h"
 #import "Base64.h"
+#import "BTCache.h"
 
 @implementation AppDelegate
 
@@ -15,6 +16,7 @@
     [BTImage setup:self];
     [BTFacebook setup:self];
     [BTAudio setup:self];
+    [BTCache setup:self];
 }
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
     if ([BTFacebook handleOpenURL:url]) { return YES; }
@@ -74,15 +76,17 @@
     }
 }
 
-- (void)setupNetHandlers {
-    [super setupNetHandlers];
-
-    NSString* graphicsPrefix = @"/graphics/";
-    [WebViewProxy handleRequestsWithHost:self.serverHost pathPrefix:graphicsPrefix handler:^(NSURLRequest *req, WVPResponse *res) {
-        NSString* path = [req.URL.path substringFromIndex:graphicsPrefix.length];
-        NSData* data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:path ofType:nil]];
-        [res respondWithData:data mimeType:nil];
-    }];
+- (void)setupNetHandlers:(BOOL)useLocalBuild {
+    [super setupNetHandlers:useLocalBuild];
+    
+    if (useLocalBuild) {
+        NSString* graphicsPrefix = @"/graphics/";
+        [WebViewProxy handleRequestsWithHost:self.serverHost pathPrefix:graphicsPrefix handler:^(NSURLRequest *req, WVPResponse *res) {
+            NSString* path = [req.URL.path substringFromIndex:graphicsPrefix.length];
+            NSData* data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:path ofType:nil]];
+            [res respondWithData:data mimeType:nil];
+        }];
+    }
     
 //    [WebViewProxy handleRequestsWithHost:self.serverHost pathPrefix:@"/fonts/" handler:^(NSURLRequest* req, WVPResponse *res) {
 //        NSString* path = [req.URL.path substringFromIndex:1];
@@ -105,8 +109,8 @@
 
 
 // Commands
-- (void)setupBridgeHandlers {
-    [super setupBridgeHandlers];
+- (void)setupBridgeHandlers:(BOOL)useLocalBuild {
+    [super setupBridgeHandlers:useLocalBuild];
     [self registerHandler:@"net.request" handler:^(id data, BTResponseCallback responseCallback) {
         [BTNet request:data responseCallback:responseCallback];
     }];

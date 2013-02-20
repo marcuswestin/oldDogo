@@ -23,8 +23,7 @@ function get(path, params, callback) {
 }
 
 function getAuth() {
-	var authToken = window.gState && gState.getSessionInfo('authToken')
-	return authToken ? 'Basic '+base64.encode(authToken) : null
+	return sessionInfo.authToken ? 'Basic '+base64.encode(sessionInfo.authToken) : null
 }
 
 function getPath(path) {

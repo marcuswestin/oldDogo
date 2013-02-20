@@ -2,7 +2,8 @@ require('client/globals')
 
 var connect = require('client/ui/connect/connect')
 var phoneViews = {
-	home: require('client/phone/views/phoneHomeView')
+	home: require('client/phone/views/phoneHomeView'),
+	conversation: require('client/phone/views/phoneConversationView')
 }
 
 units = unit = 8
@@ -29,7 +30,8 @@ events.on('app.start', startPhoneClient)
 
 bridge.init()
 
-function startPhoneClient() {
+function startPhoneClient(appInfo) {
+	gAppInfo = appInfo
 	var background = radialGradient('50% -70px', '#90C7E8', '#007BC2', '300px')
 	$('#viewport')
 		.append(div({ id:'centerFrame' }, style(viewport.size(), { background:background })))
@@ -39,7 +41,7 @@ function startPhoneClient() {
 }
 
 function renderPhoneClient() {
-	parallel(sessionInfo.load, curry(documents.read, 'viewStack'), function(err, _, viewStack) {
+	parallel(sessionInfo.load, curry(Documents.read, 'viewStack'), function(err, _, viewStack) {
 		if (err) { return error('There was an error starting the app. Please re-install it. Sorry.') }
 
 		if (sessionInfo.authToken) {
@@ -53,7 +55,7 @@ function renderPhoneClient() {
 
 makeScroller.onViewChanging = function onViewChanging() {
 	events.fire('view.changing')
-	documents.write('viewStack', gScroller.stack)
+	Documents.write('viewStack', gScroller.stack)
 }
 
 events.on('user.session', function renderSignedInApp(sessionInfo, viewStack) {
@@ -85,7 +87,7 @@ function renderFoot(view) {
 }
 
 function getPhoneView(view) {
-	return phoneViews.home
+	return phoneViews[view.view] || phoneViews.home
 }
 
 ;(function detectDevSwipe() {

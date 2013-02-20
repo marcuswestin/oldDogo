@@ -6,6 +6,8 @@ var registration = require('data/registration')
 
 module.exports = function renderLogin(view) {
 	
+	setTimeout(function() { $('#email').val('marcus.westin@gmail.com'); $('#password').val('123123') })
+	
 	return div('loginView', style(translate.y(310)),
 		div('listMenu',
 			div('menuItem',

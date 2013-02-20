@@ -20,27 +20,22 @@ var commandHandlers = {
 	'app.restart': function(data, callback) {
 		nextTick(function() { location.reload() })
 	},
-	'BTFiles.writeJsonDocument': function(data, callback) {
-		nextTick(function() {
-			localStorage[data.filename] = JSON.stringify(data.jsonValue)
-			callback && callback()
-		})
+	'BTFiles.writeJsonDocument': _writeJson,
+	'BTFiles.writeJsonCache': _writeJson,
+	'BTFiles.readJsonDocument': _readJson,
+	'BTFiles.readJsonCache': _readJson,
+	'facebook.connect': function(data, callback) {
+		var params = { scope:data.permissions.join(',') }
+		FB.login(function(response) { callback(null, { facebookSession:response.authResponse }) }, params)
 	},
-	'BTFiles.readJsonDocument': function(data, callback) {
-		nextTick(function() {
-			var jsonValue
-			try { jsonValue = JSON.parse(localStorage[data.filename]) } catch(e) { jsonValue = null }
-			callback(null, jsonValue)
-		})
+	'facebook.request': function(data, callback) {
+		FB.api(data.path, function(response) { callback(null, response) })
 	},
+	'push.register': function(data, callback) { callback(null, { deviceToken:'DEV_BRIDGE_FAKE_TOKEN' }) },
 	
+	'_':function(){}
 	// 'push.register': function(data, callback) {
 	// 	callback(null)
-	// },
-	// 'facebook.connect': function(data, callback) {
-	// 	FB.login(function(response) {
-	// 		callback(null, { facebookSession:response.authResponse })
-	// 	}, { scope:data.permissions.join(',') })
 	// },
 	// 'facebook.request': function(data, callback) {
 	// 	FB.api(data.path, function(response) {
@@ -99,4 +94,18 @@ var commandHandlers = {
 	// 	data.url = api.getUrl('api/messageDev')
 	// 	api.sendRequest(data, callback)
 	// }
+}
+
+function _writeJson(data, callback) {
+	nextTick(function() {
+		localStorage[data.filename] = JSON.stringify(data.jsonValue)
+		callback && callback()
+	})
+}
+function _readJson(data, callback) {
+	nextTick(function() {
+		var jsonValue
+		try { jsonValue = JSON.parse(localStorage[data.filename]) } catch(e) { jsonValue = null }
+		callback(null, jsonValue)
+	})
 }
