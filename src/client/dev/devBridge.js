@@ -25,7 +25,7 @@ var commandHandlers = {
 	'BTFiles.readJsonDocument': function(data, callback) {
 		nextTick(function() {
 			var jsonValue
-			try { jsonValue = JSON.parse(localStorage['dogo-browser-state']) } catch(e) { jsonValue = {} }
+			try { jsonValue = JSON.parse(localStorage[data.filename]) } catch(e) { jsonValue = null }
 			callback(null, jsonValue)
 		})
 	},

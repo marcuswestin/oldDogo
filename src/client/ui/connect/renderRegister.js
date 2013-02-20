@@ -15,33 +15,45 @@ var steps = {
 // setTimeout(function() { gScroller.push({ step:'register', registerStep:'facebook' }) }, 500) // AUTOS
 
 function renderFacebook(view) {
-	return div('facebookStep', style(translate.y(310)),
-		div('button', 'Connect to Facebook', button(function() {
-			overlay.show('Loading...')
-			bridge.command('facebook.connect', { permissions:['email','friends_birthday'] }, function(err, data) {
-				if (err || !data.facebookSession || !data.facebookSession.accessToken) {
-					overlay.hide(function() {
-						return error('I was unable to connect to your Facebook')
-					})
-				}
+	return div('facebookStep', style(fullWidth, { position:'absolute', bottom:0 }),
+		div(style({ color:'#fff', textShadow:'0 1px 0 rgba(0,0,0,.2)', margin:px(0, 2*unit, 0, 2*unit) }),
+			ul(
+				'Speed up registration',
+				'Skip email verification',
+				'Message with Facebook friends'
+			)
+		),
+		
+		div('listMenu',
+			div('menuItem',
+				listMenuContent('listMenuFacebook', 'Speed up Registration'),
+				button(function() {
+					overlay.show('Loading...')
+					bridge.command('facebook.connect', { permissions:['email','friends_birthday'] }, function(err, data) {
+						if (err || !data.facebookSession || !data.facebookSession.accessToken) {
+							overlay.hide(function() {
+								return error('I was unable to connect to your Facebook')
+							})
+						}
 				
-				bridge.command('facebook.request', { path:'/me' }, function(err, fbMe) {
-					overlay.hide(function() {
-						if (err) { return error('I was unable to connect to your Facebook') }
+						bridge.command('facebook.request', { path:'/me' }, function(err, fbMe) {
+							overlay.hide(function() {
+								if (err) { return error('I was unable to connect to your Facebook') }
 						
-						gScroller.push(merge(view, { registerStep:'profile', fbMe:fbMe, fbSession:data.facebookSession }))
+								gScroller.push(merge(view, { registerStep:'profile', fbMe:fbMe, fbSession:data.facebookSession }))
+							})
+						})
 					})
 				})
-			})
-		})),
-		ul(
-			'Speed up registration',
-			'Text to Facebook friends'
+			)
 		),
-		link('No thanks', delayed(function() {
-			if (!confirm('Are you quite sure?')) { return }
-			gScroller.push(merge(view, { registerStep:'profile' }))
-		}))
+		
+		div(style({ margin:px(-unit, 0, unit*4.5), textAlign:'center' }),
+			link('No thanks >', delayed(function() {
+				if (!confirm('Are you quite sure?')) { return }
+				gScroller.push(merge(view, { registerStep:'profile' }))
+			}))
+		)
 	)
 }
 

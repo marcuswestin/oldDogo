@@ -5,7 +5,7 @@ var renderRegister = require('client/ui/connect/renderRegister')
 var welcomeDuration = 150
 
 module.exports = {
-	render: function() {
+	render: function(viewStack) {
 		
 		// setTimeout(function() { gScroller.push({ step:'register', registerStep:'profile' }) }) // AUTOS
 		// setTimeout(function() { gScroller.push({ step:'register', registerStep:'facebook' }) }) // AUTOS
@@ -16,7 +16,7 @@ module.exports = {
 			alwaysBounce:false,
 			renderHead:renderHead,
 			renderBody:renderBody,
-			stack: [{ step:'welcome' }],
+			stack: viewStack || [{ step:'welcome' }],
 			headHeight:0
 		})
 		return div({ id:'connectView' },
@@ -31,10 +31,12 @@ module.exports = {
 
 		
 		function renderHead(view) {
-			// if (view.step == 'welcome') { return '' }
-			// return div('button', '<-', style(absolute(10, 30)), style({ padding:px(6, 8) }), button(function() {
-			// 	gScroller.pop()
-			// }))
+			if (view.step == 'welcome') { return '' }
+			return div('button',
+				style(absolute(4*units, 17.5*units), { padding:0, width:5*units, height:5*units }),
+				graphic('backArrow', 16, 16, translate.y(1.5*unit)),
+				button(function() { gScroller.pop() })
+			)
 		}
 		
 		function renderBody(view) {

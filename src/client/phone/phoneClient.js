@@ -13,7 +13,7 @@ unit5 = unit*5
 
 graphics.base += 'phone/'
 
-setTimeout(function() { toggleUnitGrid() }, 200) // AUTOS toggle unit grid
+// setTimeout(function() { toggleUnitGrid() }, 200) // AUTOS toggle unit grid
 
 var fitInputText = require('tags/text/fitInputText')
 $(document).on('input', 'input', fitInputText)
@@ -39,26 +39,31 @@ function startPhoneClient() {
 }
 
 function renderPhoneClient() {
-	sessionInfo.load(function(err) {
+	parallel(sessionInfo.load, curry(documents.read, 'viewStack'), function(err, _, viewStack) {
 		if (err) { return error('There was an error starting the app. Please re-install it. Sorry.') }
-		
+
 		if (sessionInfo.authToken) {
-			events.fire('user.session', sessionInfo)
+			events.fire('user.session', sessionInfo, viewStack)
 		} else {
-			$('#centerFrame').empty().append(connect.render)
+			$('#centerFrame').empty().append(connect.render(viewStack))
 		}
 		bridge.command('app.show', { fade:.95 })
 	})
 }
 
-events.on('user.session', function renderSignedInApp() {
+makeScroller.onViewChanging = function onViewChanging() {
+	events.fire('view.changing')
+	documents.write('viewStack', gScroller.stack)
+}
+
+events.on('user.session', function renderSignedInApp(sessionInfo, viewStack) {
 	gScroller = makeScroller({
 		headHeight:0,
-		onViewChanging:function onViewChanging() { events.fire('view.changing') },
 		duration:300,
 		renderHead:renderHead,
 		renderBody:renderBody,
-		renderFoot:renderFoot
+		renderFoot:renderFoot,
+		stack:viewStack
 	})
 	
 	$('#centerFrame').empty().append(

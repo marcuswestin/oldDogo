@@ -160,3 +160,17 @@ toggleUnitGrid = function() {
 	}
 	unitGridShowing = !unitGridShowing
 }
+
+events.on('app.start', function() {
+	menuItemArrow = div(graphics.graphic('listMenuArrow', 16, 16), style({ position:'absolute', right:units*5.5 }, translate.y(3)))
+})
+
+fullWidth = { width:'100%' }
+
+listMenuContent = function(graphicName, label) {
+	return [
+		graphics.graphic(graphicName, 20, 20, translate.y(1), { position:'absolute', left:units*5.5 }),
+		menuItemArrow,
+		span(style({ paddingLeft:unit*3 }), label)
+	]
+}
