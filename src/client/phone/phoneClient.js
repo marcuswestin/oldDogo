@@ -12,6 +12,8 @@ unit3 = unit*3
 unit4 = unit*4
 unit5 = unit*5
 
+keyboardHeight = 216
+
 graphics.base += 'phone/'
 
 // setTimeout(function() { toggleUnitGrid() }, 200) // AUTOS toggle unit grid

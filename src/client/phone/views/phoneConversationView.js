@@ -47,11 +47,14 @@ function renderBody(view) {
 	}
 }
 
+events.on('app.start', function() {
+	footHeight = unit*5.5
+})
 function renderFoot(view) {
 	var toolStyle = { display:'inline-block', margin:px(unit/4) }
 	return div(
 		style(unitMargin(0, 1/2), {
-			width:viewport.width()-unit, height:unit*5.5, background:'#fff',
+			width:viewport.width()-unit, height:footHeight, background:'#fff',
 			boxShadow:'0 -1px 2px rgba(0,0,0,.55), -1px 0 1px rgba(0,0,0,.55), 1px 0 1px rgba(0,0,0,.55)'
 		}),
 		div(

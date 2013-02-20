@@ -36,27 +36,26 @@ function startDevClient() {
 function buildDevClient() {
 	$('body')
 		.css({ background:gradient('#111', '#161616'), overflow:'hidden' })
-		.append(
-			div(style({ position:'absolute', top:0, left:0, width:'100%' }),
-				button(function(){}),
-				img({ id:'mockStatusBar', src:'/graphics/mockPhone/iphoneStatusBar.png' },
-					style({ width:320, display:'block', margin:'0 auto', position:'relative', zIndex:1, opacity:.6
-				})),
-				img({ id:'mockPhone', src:'/graphics/mockPhone/iphone4.png' },
+		.append(div(style({ position:'absolute', top:0, left:0, width:'100%' }),
+			div({ id:'mockPhone' }, style({ width:380, margin:'0 auto' }),
+				img({ src:'/graphics/mockPhone/iphone4-top.png' }, button(function(){}),
+					style({ display:'block', position:'relative', zIndex:1 })
+				),
+				img({ src:'/graphics/mockPhone/iphoneStatusBar.png' }, button(function(){}),
+					style({ position:'absolute', zIndex:1, opacity:.6 }, translate.x(32))
+				),
+				div({ id:'devClientViewportFrame' },
+					style(viewport.size(), translate.x(32), { position:'absolute', overflow:'hidden' }),
+					div({ id:'viewport' }, style(viewport.size()))
+				),
+				img({ src:'/graphics/mockPhone/iphone4-middle.png' }, button(function(){}),
 					style({ margin:'0px auto', display:'block' })
+				),
+				img({ src:'/graphics/mockPhone/iphone4-bottom.png' }, button(function(){}),
+					style({ margin:'0 auto', display:'block', position:'relative' })
 				)
 			)
-		)
-		.append(
-			div({ id:'viewport' }, style(viewport.size(), { margin:'0 auto' }))
-		)
-		.append(
-			div({ id:'mockPhoneBottom' },
-				style({ position:'absolute', left:0, width:'100%' }),
-				button(function(){}),
-				img({ src:'/graphics/mockPhone/iphone4-bottom.png' }, style({ margin:'0 auto', display:'block' }))
-			)
-		)
+		))
 }
 
 layoutDevClient.top = function() { return Math.max(20, $(window).height() / 2 - viewport.height()/2) }
@@ -64,10 +63,7 @@ function layoutDevClient() {
 	var viewportTop = layoutDevClient.top()
 	var size = { width:$(window).width(), height:$(window).height() }
 	$('body').css(size)
-	$('#viewport').css(translate.y(viewportTop))
 	$('#mockPhone').css({ marginTop:(viewportTop-155)+'px' })
-	$('#mockStatusBar').css({ top:viewportTop })
-	$('#mockPhoneBottom').css({ top:viewportTop + viewport.height() })
 }
 
 function loadFbSdk() {

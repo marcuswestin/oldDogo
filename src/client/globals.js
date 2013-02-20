@@ -172,8 +172,6 @@ clearState = function() {
 	})
 }
 
-fullWidth = fillWidth = { width:'100%' }
-
 events.on('app.start', function() {
 	listMenuArrow = div(graphics.graphic('listMenuArrow', 16, 16), style({ 'float':'right' }, translate(0, 3)))
 	connectButton = [style({ display:'block', padding:px(unit*1.5), margin:px(2*unit, 4*unit), border:'1px solid rgba(255,255,255,.5)' }), listMenuArrow]
@@ -204,7 +202,9 @@ floatLeft = { 'float':'left' }
 floatRight = { 'float':'right' }
 unitPadding = function() { return { padding:px.apply(this, map(arguments, function(p) { return p*unit })) } }
 unitMargin = function() { return { margin:px.apply(this, map(arguments, function(p) { return p*unit })) } }
-fullHeight = { height:'100%' }
+fullHeight = fillHeight = { height:'100%' }
+fullWidth = fillWidth = { width:'100%' }
+
 
 markFirstCall = function(fn) {
 	var firstCall = true
