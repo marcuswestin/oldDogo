@@ -5,6 +5,8 @@ var cacheName = 'Conversations'
 module.exports = {
 	read:readConversations,
 	fetch:fetchConversations,
+	readMessages:readMessages,
+	fetchMessages:fetchMessages,
 	addAddresses:addAddresses
 }
 
@@ -24,6 +26,25 @@ function fetchConversations(callback) {
 			Caches.write(cacheName, { conversations:conversations })
 		}
 		callback(null, conversations)
+	})
+}
+
+function readMessages(conversation, callback) {
+	Caches.read(cacheName+'-'+conversation.conversationId, function(err, data) {
+		if (err) { return callback(err) }
+		var messages = (data && data.messages) || []
+		callback(null, messages)
+	})
+}
+
+function fetchMessages(conversation, callback) {
+	api.get('api/messages', { conversationId:conversation.conversationId }, function(err, res) {
+		if (err) { return callback(err) }
+		var messages = res.messages
+		if (messages.length) {
+			Caches.write(cacheName+'-'+conversation.conversationId, { messages:messages })
+		}
+		callback(null, messages)
 	})
 }
 

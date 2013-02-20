@@ -11,8 +11,8 @@ module.exports = function renderPermissionButtons() {
 function _updateButtons(permissionsAsked) {
 	if (!permissionsAsked) { permissionsAsked = {} }
 	var permissionButton
-	var buttonSpace = 5.5 * unit + 1
-	var buttonStyle = style(unitPadding(1.15, 0, 1.35), unitMargin(.5), fixed(0, 8*unit), {
+	var buttonSpace = 5 * unit + 1
+	var buttonStyle = style(unitPadding(1.15, 0, 1.35), unitMargin(.5), fixed(0, 8.5*unit), {
 		display:'block', width:viewport.width()-unit*1, boxShadow:'0 1px 1px rgba(0,0,0,.5)'
 	})
 	if (!permissionButton && !permissionsAsked.pushNotifications) {

@@ -3,7 +3,7 @@ require('lib/jquery-1.8.1')
 tags = require('tags')
 require('tags/jquery-tags')
 button = require('tags/button')
-list = require('tags/list')
+makeList = require('tags/list')
 style = require('tags/style')
 makeScroller = require('tags/scroller')
 draggable = require('tags/draggable')
@@ -206,10 +206,11 @@ unitPadding = function() { return { padding:px.apply(this, map(arguments, functi
 unitMargin = function() { return { margin:px.apply(this, map(arguments, function(p) { return p*unit })) } }
 fullHeight = { height:'100%' }
 
-appHead = function(left, center, right) {
-	return div(style(absolute(unit/2, unit*3), radius(1), { textAlign:'center', width:viewport.width() - unit, height:unit*5, background:'rgba(0,0,244,0.5)' }),
-		div(style(floatLeft, radius(2), { width:unit*6, height:unit*4, margin:unit/2 }), left),
-		div(style(floatRight, radius(2), { width:unit*6, height:unit*4, margin:unit/2 }), right),
-		div(style({ textAlign:'center' }), center)
-	)
+markFirstCall = function(fn) {
+	var firstCall = true
+	return function() {
+		var res = fn.apply(this, [firstCall].concat(slice(arguments, 0)))
+		firstCall = false
+		return res
+	}
 }

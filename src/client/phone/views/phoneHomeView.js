@@ -18,34 +18,29 @@ function renderHead() {
 
 var cardList
 function renderBody() {
-	Conversations.read(function(err, conversations) {
+	Conversations.read(_addConversations)
+	Conversations.fetch(_addConversations)
+	function _addConversations(err, conversations) {
 		if (err) { return error(err) }
 		cardList.append(conversations)
-		Conversations.fetch(function(err, conversations) {
-			if (err) { return error(err) }
-			cardList.append(conversations)
-		})
-	})
+	}
 
 	var drewLoading = false
 	return div(style({ paddingTop:unit*8 }),
 		div(permissionButtons),
-		div(style({ height:unit/2 })),
-		cardList = list({
-			onSelect:_selectCard,
+		div(style({ height:unit * 1.5 })),
+		cardList = makeList({
+			selectItem:_selectCard,
 			getItemId:_getCardId,
 			renderItem:_renderCard,
-			renderEmpty:function renderEmptyHome() {
-				nextTick(function() { drewLoading = true })
-				return div('info', style({ marginTop:19.5*unit }),
-					drewLoading
-						? "Add your friends with the button above"
-						: "Fetching conversations..."
-				)
-			}
+			renderEmpty:markFirstCall(_renderEmpty)
 		}),
 		div(style({ height:1 }))
 	)
+	
+	function _renderEmpty(firstCall) {
+		return div('info', style({ marginTop:19.5*unit }), firstCall ? "Fetching conversations..." : "Add your friends with the button above")
+	}
 }
 
 function renderFoot() {}
