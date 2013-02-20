@@ -102,8 +102,7 @@ function getPhoneView(view) {
 		if ((tags.eventPos($e).y - doubleTapStart.y) > 100) {
 			toggleUnitGrid()
 			doubleTapStart = null
-		}
-		if ((tags.eventPos($e).y - doubleTapStart.y) < -100) {
+		} else if ((tags.eventPos($e).y - doubleTapStart.y) < -100) {
 			clearState()
 			doubleTapStart = null
 		}
