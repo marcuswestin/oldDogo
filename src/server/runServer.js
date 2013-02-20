@@ -1,7 +1,8 @@
 // Also see https://gist.github.com/pguillory/729616
 var output = require('fs').createWriteStream('output.log', { flags:'a' })
+var lastWriteFlushed
 process.stdout.write = process.stderr.write = function(data, encoding) {
-	output.write(data)
+	lastWriteFlushed = output.write(data)
 }
 
 require('server/globals')
@@ -81,9 +82,9 @@ function runMaster(config, cluster) {
 function runServer(config) {
 	log.info('starting', process.pid)
 	process.on('uncaughtException', function(err) {
-		log.error('Uncaught exception', err)
-		output.on('close', function() { process.exit(-1) })
-		output.end()
+		log.error('Uncaught exception', err, '\n')
+		if (lastWriteFlushed) { process.exit(-1) }
+		else { output.on('drain', function() { process.exit(-1) }) }
 	})
 	require('server/configureServer')(config)
 }

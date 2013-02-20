@@ -8,7 +8,6 @@ function setupDevBridge() {
 			callback = data
 			data = null
 		}
-		console.log('dev bridge', command, data)
 		commandHandlers[command](data, callback)
 	}
 }

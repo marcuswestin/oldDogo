@@ -188,6 +188,7 @@ function setupRoutes(app, opts) {
 	app.post('/api/log/app/console', function handleAppConsoleLog(req, res) {
 		var params = getJsonParams(req, 'args')
 		clientLog.debug((' '+clientLog.getArgsString(params.args)+' ').bgWhite.black)
+		res.end('OK')
 	})
 	
 	app.post('/api/waitlist', function handlePostWaitlist(req, res) {
