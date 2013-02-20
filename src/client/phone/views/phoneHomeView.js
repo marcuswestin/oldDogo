@@ -29,7 +29,8 @@ function renderBody() {
 
 	var drewLoading = false
 	return div(style({ paddingTop:unit*8 }),
-		div(style(unitMargin(1/2)), permissionButtons),
+		div(permissionButtons),
+		div(style({ height:unit/2 })),
 		cardList = list({
 			onSelect:_selectCard,
 			getItemId:_getCardId,
