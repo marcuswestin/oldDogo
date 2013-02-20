@@ -54,7 +54,6 @@ function renderPhoneClient() {
 }
 
 makeScroller.onViewChanging = function onViewChanging() {
-	events.fire('view.changing')
 	Documents.write('viewStack', gScroller.stack)
 }
 

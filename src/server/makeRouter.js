@@ -156,6 +156,7 @@ var filters = (function makeFilters() {
 	}
 }())
 
+
 function setupRoutes(app, opts) {
 	app.post('/api/address/verification/picture', function handleUploadVerificationPicture(req, res) {
 		var params = getMultipartParams(req, 'width', 'height')
@@ -183,6 +184,11 @@ function setupRoutes(app, opts) {
 		log.info("App error", params.message)
 	})
 	
+	var clientLog = makeLog('Client.log')
+	app.post('/api/log/app/console', function handleAppConsoleLog(req, res) {
+		var params = getJsonParams(req, 'args')
+		clientLog.debug((' '+clientLog.getArgsString(params.args)+' ').bgWhite.black)
+	})
 	
 	app.post('/api/waitlist', function handlePostWaitlist(req, res) {
 		var params = getJsonParams(req, 'emailAddress')

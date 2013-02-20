@@ -177,6 +177,15 @@ fullWidth = fillWidth = { width:'100%' }
 events.on('app.start', function() {
 	listMenuArrow = div(graphics.graphic('listMenuArrow', 16, 16), style({ 'float':'right' }, translate(0, 3)))
 	connectButton = [style({ display:'block', padding:px(unit*1.5), margin:px(2*unit, 4*unit), border:'1px solid rgba(255,255,255,.5)' }), listMenuArrow]
+
+	events.on('app.error', function(info) {
+		api.post('api/log/app/error', info, function(){})
+	})
+	var oldLog = console.log
+	console.log = function() {
+		oldLog.apply(console, arguments)
+		api.post('api/log/app/console', { args:slice(arguments, 0) }, function(){})
+	}
 })
 
 listMenuIcon = function(graphicName) {

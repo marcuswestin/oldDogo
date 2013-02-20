@@ -20,7 +20,8 @@ function makeLog(name) {
 			var message = getArgsString(arguments)
 			doLog(pad, name.red, 'ALRT'.red, message.red, true)
 			require('server/fn/sendSms').alertAdmin(('ALERT! '+message).substr(0, 160))
-		}
+		},
+		getArgsString:getArgsString
 	})
 }
 
