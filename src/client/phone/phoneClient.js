@@ -87,3 +87,18 @@ function renderFoot(view) {
 function getPhoneView(view) {
 	return phoneViews.home
 }
+
+;(function detectDevSwipe() {
+	var doubleTapStart
+	$('body').on('touchstart', function onBodyTouchStart($e) {
+		if ($e.originalEvent.touches.length != 2) { return }
+		doubleTapStart = tags.eventPos($e)
+	})
+	$('body').on('touchmove', function onBodyTouchMove($e) {
+		if (!doubleTapStart) { return }
+		if ((tags.eventPos($e).y - doubleTapStart.y) > 100) {
+			toggleUnitGrid()
+			doubleTapStart = null
+		}
+	})
+}())
