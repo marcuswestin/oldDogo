@@ -4,11 +4,13 @@
 #import "BTImage.h"
 #import "BTFacebook.h"
 #import "BTAudio.h"
+#import "BTFiles.h"
 #import "Base64.h"
 
 @implementation AppDelegate
 
 - (void)setupModules {
+    [BTFiles setup:self];
     [BTTextInput setup:self];
     [BTImage setup:self];
     [BTFacebook setup:self];

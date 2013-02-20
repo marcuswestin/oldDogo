@@ -49,7 +49,6 @@
 		2C650CFA16A5E6CF000F381E /* appCss.css in Resources */ = {isa = PBXBuildFile; fileRef = 2C650CF616A5E6CF000F381E /* appCss.css */; };
 		2C650CFB16A5E6CF000F381E /* appJs.html in Resources */ = {isa = PBXBuildFile; fileRef = 2C650CF716A5E6CF000F381E /* appJs.html */; };
 		2C650CFC16A5E6CF000F381E /* dev-hostname.txt in Resources */ = {isa = PBXBuildFile; fileRef = 2C650CF816A5E6CF000F381E /* dev-hostname.txt */; };
-		2C650D8216A5E7D1000F381E /* mobileApp in Resources */ = {isa = PBXBuildFile; fileRef = 2C650D8116A5E7D1000F381E /* mobileApp */; };
 		2C709418165A14DA007DDECD /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C709417165A14DA007DDECD /* logo.png */; };
 		2C70941C165A14E9007DDECD /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C70941B165A14E9007DDECD /* Default.png */; };
 		2C70941E165A14EE007DDECD /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C70941D165A14EE007DDECD /* Default@2x.png */; };
@@ -59,6 +58,7 @@
 		2CC5C23E169FB874005050DB /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CC5C23D169FB874005050DB /* AVFoundation.framework */; };
 		2CCAFE691569EC1C002766A1 /* vibrate.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2CCAFE681569EC1C002766A1 /* vibrate.wav */; };
 		2CCE3DDA16D416B900538F39 /* BTCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE3DD916D416B900538F39 /* BTCache.m */; };
+		2CCE3DDC16D44BD500538F39 /* phone in Resources */ = {isa = PBXBuildFile; fileRef = 2CCE3DDB16D44BD500538F39 /* phone */; };
 		2CD132781567B639002386F3 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD132771567B639002386F3 /* CFNetwork.framework */; };
 		2CD132AA1567B827002386F3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD132791567B63F002386F3 /* SystemConfiguration.framework */; };
 		2CD133E81567C2D9002386F3 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD133E61567C2C0002386F3 /* Security.framework */; };
@@ -181,7 +181,6 @@
 		2C650CF616A5E6CF000F381E /* appCss.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = appCss.css; sourceTree = "<group>"; };
 		2C650CF716A5E6CF000F381E /* appJs.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = appJs.html; sourceTree = "<group>"; };
 		2C650CF816A5E6CF000F381E /* dev-hostname.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "dev-hostname.txt"; sourceTree = "<group>"; };
-		2C650D8116A5E7D1000F381E /* mobileApp */ = {isa = PBXFileReference; lastKnownFileType = folder; name = mobileApp; path = ../graphics/mobileApp; sourceTree = "<group>"; };
 		2C709417165A14DA007DDECD /* logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logo.png; sourceTree = "<group>"; };
 		2C70941B165A14E9007DDECD /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		2C70941D165A14EE007DDECD /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
@@ -192,6 +191,7 @@
 		2CCAFE681569EC1C002766A1 /* vibrate.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = vibrate.wav; sourceTree = "<group>"; };
 		2CCE3DD816D416B900538F39 /* BTCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTCache.h; sourceTree = "<group>"; };
 		2CCE3DD916D416B900538F39 /* BTCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTCache.m; sourceTree = "<group>"; };
+		2CCE3DDB16D44BD500538F39 /* phone */ = {isa = PBXFileReference; lastKnownFileType = folder; name = phone; path = ../graphics/phone; sourceTree = "<group>"; };
 		2CD132771567B639002386F3 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		2CD132791567B63F002386F3 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		2CD1327B1567B645002386F3 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -440,7 +440,7 @@
 		2C650D8016A5E7C5000F381E /* graphics */ = {
 			isa = PBXGroup;
 			children = (
-				2C650D8116A5E7D1000F381E /* mobileApp */,
+				2CCE3DDB16D44BD500538F39 /* phone */,
 			);
 			name = graphics;
 			sourceTree = "<group>";
@@ -610,13 +610,13 @@
 				2C650CFA16A5E6CF000F381E /* appCss.css in Resources */,
 				2C650CFB16A5E6CF000F381E /* appJs.html in Resources */,
 				2C650CFC16A5E6CF000F381E /* dev-hostname.txt in Resources */,
-				2C650D8216A5E7D1000F381E /* mobileApp in Resources */,
 				2C2153B416C9947F00255CFB /* .gitignore in Resources */,
 				2C2153B816C9947F00255CFB /* README.md in Resources */,
 				2C409AC116CB4EB6006C49F9 /* opensans-italic.ttf in Resources */,
 				2C409AC216CB4EB6006C49F9 /* opensans-light-italic.ttf in Resources */,
 				2C409AC316CB4EB6006C49F9 /* opensans-light.ttf in Resources */,
 				2C409AC416CB4EB6006C49F9 /* opensans.ttf in Resources */,
+				2CCE3DDC16D44BD500538F39 /* phone in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
