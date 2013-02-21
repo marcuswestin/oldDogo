@@ -9,6 +9,8 @@ module.exports = {
 /* Head, body, foot
  ******************/
 function renderHead(view) {
+	// setTimeout(function() { tools.selectText(view.conversation) }, 250) // AUTOS
+	
 	return appHead(
 		div(style(), 'left', button(function() { gScroller.pop() })),
 		div(style(unitPadding(1)), view.conversation.people[0].name),
@@ -77,7 +79,7 @@ function _renderMessage(message) {
 	var isNewPerson = (lastPersonId != message.fromPersonId)
 	lastPersonId = message.fromPersonId
 	var isMe = (message.fromPersonId == sessionInfo.person.personId)
-	var person = (isMe ? sessionInfo.person : view.conversation.people[0])
+	var person = (isMe ? sessionInfo.person : conversation.people[0])
 	return (isNewPerson
 		? [div(style(unitMargin(1,1,0), unitPadding(1,1,0), { minHeight:unit*6, background:'#f3f3f3' }),
 			div(style(floatRight, { fontSize:12, marginRight:unit/2, color:'#fff', textShadow:'0 -1px 0 rgba(0,0,0,.25)' }),

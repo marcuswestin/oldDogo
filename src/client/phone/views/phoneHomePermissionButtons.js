@@ -4,7 +4,7 @@ var permissionsAsked
 module.exports = function renderPermissionButtons() {
 	Documents.read(documentName, function(err, _permissionsAsked) {
 		if (err) { return error(err) }
-		_permissionsAsked = {}
+		// _permissionsAsked = {}
 		permissionsAsked = _permissionsAsked || {}
 		_updateButtons()
 	})
