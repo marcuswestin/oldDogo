@@ -159,7 +159,7 @@ function renderAccount(view) {
 					api.post('api/session', { address:address, password:view.password }, function(err, res) {
 						overlay.hide(function() {
 							if (err) { return error(err) }
-							sessionInfo.save(res.sessionInfo)
+							sessionInfo.save(res.sessionInfo, error)
 						})
 					})
 				})
@@ -223,7 +223,7 @@ events.on('app.didOpenUrl', function(info) {
 					if (err) { return error(err) }
 					overlay.hide()
 					onVerified()
-					sessionInfo.save(res.sessionInfo)
+					sessionInfo.save(res.sessionInfo, error)
 				})
 			})
 		}

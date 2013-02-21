@@ -7,6 +7,7 @@
 #import "BTFiles.h"
 #import "Base64.h"
 #import "BTCache.h"
+#import "BTAddressBook.h"
 
 @implementation AppDelegate
 
@@ -17,6 +18,7 @@
     [BTFacebook setup:self];
     [BTAudio setup:self];
     [BTCache setup:self];
+    [BTAddressBook setup:self];
 }
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
     if ([BTFacebook handleOpenURL:url]) { return YES; }

@@ -8,6 +8,9 @@ module.exports = {
 	isFacebook:isFacebook,
 	isPhone:isPhone,
 	
+	normalizeEmail:normalizeEmail,
+	normalizePhone:normalizePhone,
+	
 	address:address,
 	email:email,
 	facebook:facebook,
@@ -29,6 +32,18 @@ function fromVerificationParams(params) {
 		var type = types[i]
 		if (params[type]) { return address(type, params[type]) }
 	}
+}
+
+/* Normalization
+ ***************/
+
+function normalizeEmail(email) {
+	return email.toLowerCase()
+}
+function normalizePhone(phone) {
+	phone = phone.replace(/[^\d\+]/g, '')
+	if (phone[0] != '+') { phone = '+1'+phone } // TODO localization
+	return phone
 }
 
 /* Type inquires

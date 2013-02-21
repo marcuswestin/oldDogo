@@ -59,6 +59,8 @@
 		2CCAFE691569EC1C002766A1 /* vibrate.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2CCAFE681569EC1C002766A1 /* vibrate.wav */; };
 		2CCE3DDA16D416B900538F39 /* BTCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE3DD916D416B900538F39 /* BTCache.m */; };
 		2CCE3DDC16D44BD500538F39 /* phone in Resources */ = {isa = PBXBuildFile; fileRef = 2CCE3DDB16D44BD500538F39 /* phone */; };
+		2CCE3DDF16D6866700538F39 /* BTAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CCE3DDE16D6866700538F39 /* BTAddressBook.m */; };
+		2CCE3DE116D687A000538F39 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CCE3DE016D687A000538F39 /* AddressBook.framework */; };
 		2CD132781567B639002386F3 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD132771567B639002386F3 /* CFNetwork.framework */; };
 		2CD132AA1567B827002386F3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD132791567B63F002386F3 /* SystemConfiguration.framework */; };
 		2CD133E81567C2D9002386F3 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CD133E61567C2C0002386F3 /* Security.framework */; };
@@ -192,6 +194,9 @@
 		2CCE3DD816D416B900538F39 /* BTCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTCache.h; sourceTree = "<group>"; };
 		2CCE3DD916D416B900538F39 /* BTCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTCache.m; sourceTree = "<group>"; };
 		2CCE3DDB16D44BD500538F39 /* phone */ = {isa = PBXFileReference; lastKnownFileType = folder; name = phone; path = ../graphics/phone; sourceTree = "<group>"; };
+		2CCE3DDD16D6866600538F39 /* BTAddressBook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTAddressBook.h; sourceTree = "<group>"; };
+		2CCE3DDE16D6866700538F39 /* BTAddressBook.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTAddressBook.m; sourceTree = "<group>"; };
+		2CCE3DE016D687A000538F39 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		2CD132771567B639002386F3 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		2CD132791567B63F002386F3 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		2CD1327B1567B645002386F3 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -217,6 +222,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2CCE3DE116D687A000538F39 /* AddressBook.framework in Frameworks */,
 				2CC5C23E169FB874005050DB /* AVFoundation.framework in Frameworks */,
 				2C18849A1687C2950071A3CE /* Social.framework in Frameworks */,
 				2C1884981687C28D0071A3CE /* Accounts.framework in Frameworks */,
@@ -288,6 +294,8 @@
 				2C650AFA16A5DCAD000F381E /* BTTextInput.m */,
 				2CF9B06516D408C100966C87 /* BTFiles.h */,
 				2CF9B06616D408C100966C87 /* BTFiles.m */,
+				2CCE3DDD16D6866600538F39 /* BTAddressBook.h */,
+				2CCE3DDE16D6866700538F39 /* BTAddressBook.m */,
 			);
 			name = "blowtorch-ios-modules";
 			path = "../../dependencies/blowtorch/sdk/blowtorch-ios-modules";
@@ -456,6 +464,7 @@
 		2CD1A01E153FB6B0008949F2 = {
 			isa = PBXGroup;
 			children = (
+				2CCE3DE016D687A000538F39 /* AddressBook.framework */,
 				2C409ABC16CB4EB6006C49F9 /* fonts */,
 				2C650D8016A5E7C5000F381E /* graphics */,
 				2CCAFE671569EC1C002766A1 /* sounds */,
@@ -657,6 +666,7 @@
 				2C2153B916C9947F00255CFB /* UIImage+HHImages.m in Sources */,
 				2CF9B06716D408C100966C87 /* BTFiles.m in Sources */,
 				2CCE3DDA16D416B900538F39 /* BTCache.m in Sources */,
+				2CCE3DDF16D6866700538F39 /* BTAddressBook.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

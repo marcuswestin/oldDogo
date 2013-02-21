@@ -56,7 +56,7 @@ function addAddresses(newAddresses, callback) {
 		var allConversations = localConversations.concat(newConversations)
 		Caches.write(cacheName, { conversations:allConversations })
 		callback()
-		events.fire('conversations.new', { allConversations:allConversations })
+		events.fire('conversations.new', { newConversations:newConversations })
 	})
 	
 	function _postNewAddresses(callback) {

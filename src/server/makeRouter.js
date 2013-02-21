@@ -137,7 +137,7 @@ var filters = (function makeFilters() {
 		req.authorization = req.headers.authorization || req.param('authorization')
 		authenticateRequest(req, function(err, personId) {
 			if (err) {
-				log('bad auth', req.authorization)
+				log('bad auth', req.authorization, req.method, req.url)
 				return next(err)
 			}
 			if (!personId) {

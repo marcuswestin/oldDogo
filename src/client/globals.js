@@ -64,7 +64,6 @@ px = function px(pixels) {
 	}).join(' ')
 }
 
-overlay.defaultElement = $('#viewport')
 link.defaultTarget = '_blank'
 
 div = tags('div')
@@ -164,7 +163,7 @@ toggleUnitGrid = function() {
 	unitGridShowing = !unitGridShowing
 }
 clearState = function() {
-	sessionInfo.save({}, function(err) {
+	sessionInfo.clear(function(err) {
 		if (err) { return error(err) }
 		Documents.write('viewStack', [], function(err) {
 			if (err) { return error(err) }
@@ -174,6 +173,8 @@ clearState = function() {
 }
 
 events.on('app.start', function() {
+	overlay.defaultElement = $('#viewport')
+	
 	listMenuArrow = div(graphics.graphic('listMenuArrow', 16, 16), style({ 'float':'right' }, translate(0, 3)))
 	connectButton = [style({ display:'block', padding:px(unit*1.5), margin:px(2*unit, 4*unit), border:'1px solid rgba(255,255,255,.5)' }), listMenuArrow]
 

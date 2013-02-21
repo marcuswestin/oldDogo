@@ -22,7 +22,7 @@ function renderBody() {
 	Conversations.fetch(_addConversations)
 	function _addConversations(err, conversations) {
 		if (err) { return error(err) }
-		cardList.append(conversations)
+		cardList.append(conversations.slice(0, 5))
 	}
 
 	var drewLoading = false
@@ -71,5 +71,5 @@ function _getCardId(convo) {
  ********/
 events.on('conversations.new', function(info) {
 	if (!cardList) { return }
-	cardList.append(info.allConversations)
+	cardList.append(info.newConversations.slice(0, 5))
 })

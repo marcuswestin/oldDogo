@@ -1,28 +1,37 @@
-var documents = require('./documents')
-
-var sessionInfoDocument = null
-var filename = 'DogoSessionInfo'
-
 var sessionInfo = module.exports = {
 	load:load,
 	getClientUid:getClientUid,
 	save:save,
+	clear:clear,
 	checkNewVersion:checkNewVersion
 }
 
+var sessionInfoDocument = null
+var filename = 'DogoSessionInfo'
+var properties = ['authToken', 'person', 'clientUidBlock', 'config']
+
 function load(callback) {
 	Documents.read(filename, function(err, document) {
-		sessionInfoDocument = document
-		for (var key in document) { sessionInfo[key] = document[key] }
-		callback(err, null)
+		if (err) { return callback(err) }
+		_setDocument(document)
+		callback()
 	})
 }
 
-function save(sessionInfoObj, callback) {
-	Documents.write(filename, sessionInfoObj, function(err) {
-		callback && callback(err)
-		if (err) { return error(err) }
-		events.fire('user.session', sessionInfoObj)
+function save(document, callback) {
+	Documents.write(filename, document, function(err) {
+		if (err) { return callback(err) }
+		_setDocument(document)
+		callback()
+		events.fire('user.session', document)
+	})
+}
+
+function clear(callback) {
+	Documents.write(filename, {}, function(err) {
+		if (err) { return callback(err) }
+		_setDocument(null)
+		callback()
 	})
 }
 
@@ -34,16 +43,25 @@ function getClientUid(callback) {
 	
 	var newClientUid = uidBlock.start = uidBlock.start + 1
 	Documents.write(filename, sessionInfoDocument, function(err) {
-		callback(err, newClientUid)
+		if (err) { return callback(err) }
+		callback(null, newClientUid)
 	})
 }
 
 function checkNewVersion() {
-	api.get('api/version/info', function(err, res) {
-		if (err || !res.url) { return }
-		bridge.command('version.download', { url:res.url, headers:api.getHeaders() }, function(err) {
-			if (err) { alert('upgrade failed ' + err) }
-			else { alert("upgrade done") }
-		})
+	// api.get('api/version/info', function(err, res) {
+	// 	if (err || !res.url) { return }
+	// 	bridge.command('version.download', { url:res.url, headers:api.getHeaders() }, function(err) {
+	// 		if (err) { alert('upgrade failed ' + err) }
+	// 		else { alert("upgrade done") }
+	// 	})
+	// })
+}
+
+function _setDocument(document) {
+	sessionInfoDocument = document
+	if (!document) { return }
+	each(properties, function(key) {
+		sessionInfo[key] = document[key]
 	})
 }
