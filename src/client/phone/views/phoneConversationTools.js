@@ -70,7 +70,7 @@ function _renderText(canvasHeight) {
 	}
 	
 	function _showTextFormatting() {
-		tooltip.show({ width:unit*25, height:unit*5, element:'.textFormatting' }, function() {
+		tooltip.show({ width:unit*25, height:unit*5, element:'.textFormatting', offset:[0,unit*4] }, function() {
 			var styles = { width:unit*5.5, margin:px(unit/2, unit/4) }
 			return div(style(fillWidth, fillHeight, radius(5), { background:'#fff', border:'1px solid #ccc' }),
 				div('button', style(styles, bold), 'b', _textStyler('bold')),
