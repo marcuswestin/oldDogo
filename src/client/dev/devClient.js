@@ -10,6 +10,10 @@ gKeyboardHeight = 216
 // In dev mode Fake the viewport width and height to be an iPhone
 viewport.height = function() { return 480 }
 viewport.width = function() { return 320 }
+viewport.pos = function() {
+	var offset = $('#viewport').offset()
+	return tags.makePos(offset.left, offset.top)
+}
 
 $(startDevClient)
 

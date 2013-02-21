@@ -8,6 +8,7 @@ style = require('tags/style')
 makeScroller = require('tags/scroller')
 draggable = require('tags/draggable')
 overlay = ovarlay = require('tags/overlay')
+tooltip = require('tags/tooltip')
 viewport = require('tags/viewport')
 link = require('tags/link')
 
@@ -80,6 +81,10 @@ transition = style.transition
 scrollable = style.scrollable
 absolute = function(left, top) { return { position:'absolute', left:left, top:top } }
 fixed = function(left, top) { return { position:'fixed', left:left, top:top } }
+
+bold = { fontWeight:'bold' }
+italic = { fontStyle:'italic' }
+underline = { textDecoration:'underline' }
 
 var ulTag = tags('ul')
 var li = tags('li')

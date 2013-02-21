@@ -24,6 +24,7 @@ function selectText(_conversation) {
 
 var id
 function _renderText(canvasHeight) {
+	// setTimeout(_showTextFormatting, 400) // AUTOS
 	id = tags.id()
 	Documents.read('TextDraft-'+conversation.conversationId, function(err, data) {
 		if (err) { return error(err) }
@@ -39,15 +40,19 @@ function _renderText(canvasHeight) {
 			}
 		}) 
 	})
-	return div(style({ height:canvasHeight+keyboardHeight, background:'#fff'}),
+	return div(style({ height:canvasHeight+keyboardHeight, background:'#fff' }),
 		div({ id:id, contentEditable:'true' }, style(unitPadding(1), scrollable.y, {
 				position:'absolute', bottom:0, '-webkit-user-select':'auto', maxHeight:26*units,
 				width:viewport.width()-unit*2, background:'#fff', boxShadow:'0 -2px 3px -1px rgba(0,0,0,.5)',
 			})
 		),
-		div(style({ height:unit*4, padding:px(unit/2) }, translate.y(-unit/4)),
+		
+		div(style({ height:unit*4, textAlign:'center' }, unitPadding(1/2), translate.y(-unit/4)),
 			div(style(floatLeft), graphic('close', 32, 32), button(_closeText)),
-			div('button', style(floatRight), 'Send', button(_sendText))
+			div('button', style(floatRight), 'Send', button(_sendText)),
+			div('textFormatting', style({ color:'#333', display:'inline-block' }, unitPadding(1/2)), button(_showTextFormatting),
+				span(style(bold), 'b'), span(style(italic), 'i'), span(style(underline), 'u')
+			)
 		)
 	)
 	
@@ -62,6 +67,24 @@ function _renderText(canvasHeight) {
 	function _sendText() {
 		sendMessage('text', { body:$('#'+id).text() })
 		$('#'+id).text('').focus()
+	}
+	
+	function _showTextFormatting() {
+		tooltip.show({ width:unit*25, height:unit*5, element:'.textFormatting' }, function() {
+			var styles = { width:unit*5.5, margin:px(unit/2, unit/4) }
+			return div(style(fillWidth, fillHeight, radius(5), { background:'#fff', border:'1px solid #ccc' }),
+				div('button', style(styles, bold), 'b', _textStyler('bold')),
+				div('button', style(styles, italic), 'i', _textStyler('italic')),
+				div('button', style(styles, underline), 'u', _textStyler('underline'))
+			)
+		})
+		
+		function _textStyler(styleType) {
+			return button(function() {
+				document.execCommand(styleType, false, null)
+				tooltip.hide()
+			})
+		}
 	}
 }
 
