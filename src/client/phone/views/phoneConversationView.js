@@ -78,15 +78,23 @@ function _renderMessage(message) {
 	lastPersonId = message.fromPersonId
 	var isMe = (message.fromPersonId == sessionInfo.person.personId)
 	var person = (isMe ? sessionInfo.person : view.conversation.people[0])
-	return div(style(unitMargin(0, 1, 1), radius(2), unitPadding(1/2), { background:'#ccc' }),
-		isNewPerson && div(style({ height:unit*6 }),
-			face(person, { size:unit*5 }, floatLeft),
-			div(style({ height:unit*5 }, unitMargin(0,4,0,1/2), floatLeft),
+	return (isNewPerson
+		? [div(style(unitMargin(1,1,0), unitPadding(1,1,0), { minHeight:unit*6, background:'#f3f3f3' }),
+			div(style(floatRight, { fontSize:12, marginRight:unit/2, color:'#fff', textShadow:'0 -1px 0 rgba(0,0,0,.25)' }),
+				time.ago.brief(message.sentTime * time.seconds)
+			),
+			face(person, { size:unit*5 }, floatLeft, unitMargin(0,1/2,0,0)),
+			div(style(),
 				person.name
 			),
-			div(style(floatRight, { fontSize:12, marginRight:unit/2, color:'#fff', textShadow:'0 -1px 0 rgba(0,0,0,.25)' }), time.ago.brief(message.sentTime * time.seconds))
-		),
-		message.payload.body
+			div(style(unitMargin(1/4,0,0,0), unitPadding(0,0,1/2)),
+				message.payload.body + 'asdah alsiuda lsiudhlaisudhlaisuhd laiushdl iadh alsiuda lsiudhlaisudhlaisuhd laiushdl iadh'
+			)
+		)
+		]
+		: div(style(unitMargin(0, 1), unitPadding(0,0,1/2,1), { background:'#f3f3f3' }),
+			message.payload.body
+		)
 	)
 }
 
