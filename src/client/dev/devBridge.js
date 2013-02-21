@@ -8,6 +8,9 @@ function setupDevBridge() {
 			callback = data
 			data = null
 		}
+		if (!commandHandlers[command]) {
+			return console.log("WARN", 'Unknown bridge command', command)
+		}
 		commandHandlers[command](data, callback)
 	}
 }
@@ -23,6 +26,11 @@ var commandHandlers = {
 	'BTFiles.writeJsonCache': _writeJson,
 	'BTFiles.readJsonDocument': _readJson,
 	'BTFiles.readJsonCache': _readJson,
+	
+	'BTAddressBook.getAllEntries':function(data, callback) {
+		nextTick(function() { callback(null, { entries:[] }) })
+	},
+	
 	'facebook.connect': function(data, callback) {
 		var params = { scope:data.permissions.join(',') }
 		FB.login(function(response) { callback(null, { facebookSession:response.authResponse }) }, params)
