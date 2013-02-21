@@ -98,6 +98,7 @@ BT = {
 }
 
 error = function error(err) {
+	if (err == undefined) { return }
 	overlay.hide()
 	var margin = 0
 	var cornerSize = 40
@@ -214,3 +215,5 @@ markFirstCall = function(fn) {
 		return res
 	}
 }
+
+after = function(duration, fn) { setTimeout(fn, duration) }

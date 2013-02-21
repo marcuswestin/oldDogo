@@ -37,7 +37,7 @@ function startPhoneClient(appInfo) {
 	var background = radialGradient('50% -70px', '#90C7E8', '#007BC2', '300px')
 	$('#viewport')
 		.append(div({ id:'centerFrame' }, style(viewport.size(), { background:background })))
-		.append(div({ id:'southFrame' }, style({ width:viewport.width(), height:0 })))
+		.append(div({ id:'southFrame' }, style({ width:viewport.width(), height:0, position:'absolute', top:viewport.height() })))
 	
 	renderPhoneClient()
 }
