@@ -65,7 +65,9 @@ function _renderText(canvasHeight) {
 	}
 	
 	function _sendText() {
-		sendMessage('text', { body:$('#'+id).text() })
+		var text = trim($('#'+id).text())
+		if (!text) { return }
+		sendMessage('text', { body:text })
 		$('#'+id).text('').focus()
 	}
 	
