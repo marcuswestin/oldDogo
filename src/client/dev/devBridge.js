@@ -31,6 +31,10 @@ var commandHandlers = {
 		FB.api(data.path, function(response) { callback(null, response) })
 	},
 	'push.register': function(data, callback) { callback(null, { deviceToken:'DEV_BRIDGE_FAKE_TOKEN' }) },
+	'text.send': function(data, callback) {
+		data.url = api.getUrl('api/messageDev')
+		api.sendRequest(data, callback)
+	},
 	
 	'_':function(){}
 	// 'push.register': function(data, callback) {

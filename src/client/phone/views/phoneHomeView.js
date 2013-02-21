@@ -26,7 +26,7 @@ function renderBody() {
 	}
 
 	var drewLoading = false
-	return div(style({ paddingTop:unit*8 }),
+	return div(style({ paddingTop:unit*7.75 }),
 		div(permissionButtons),
 		div(style({ height:unit * 1.5 })),
 		cardList = makeList({
@@ -49,7 +49,7 @@ function renderFoot() {}
  *******/
 function _renderCard(convo) {
 	var person = convo.people[0]
-	return div(style(unitMargin(0, 1, 1), unitPadding(1/2), radius(2), { background:'white' }),
+	return div(style(unitMargin(0, 3/4, 3/4), unitPadding(1/2), radius(2), { background:'white' }),
 		face(person, { size:unit*7 }, floatLeft),
 		div(style(floatLeft, unitPadding(0, 1)),
 			div(style(unitPadding(0, 0, 1/2), { fontWeight:600 }), person.name.split(' ')[0]),

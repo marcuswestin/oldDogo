@@ -5,7 +5,7 @@ var filename = 'DogoSessionInfo'
 
 var sessionInfo = module.exports = {
 	load:load,
-	nextClientUid:nextClientUid,
+	getClientUid:getClientUid,
 	save:save,
 	checkNewVersion:checkNewVersion
 }
@@ -26,21 +26,16 @@ function save(sessionInfoObj, callback) {
 	})
 }
 
-function nextClientUid() {
+function getClientUid(callback) {
 	var uidBlock = sessionInfoDocument.clientUidBlock
 	if (uidBlock.start == uidBlock.end) {
-		nextTick(function() {
-			error("We're sorry, you must re-install the app to send more messages. Our bad!")
-		})
-		throw new Error("Ran out of UIDs")
+		return callback("We're sorry, you must re-install the app to send more messages. Our bad!")
 	}
 	
 	var newClientUid = uidBlock.start = uidBlock.start + 1
-	sessionInfo.save(sessionInfoDocument, function(err) {
-		if (err) { return error('Could not write session document') }
+	Documents.write(filename, sessionInfoDocument, function(err) {
+		callback(err, newClientUid)
 	})
-	
-	return newClientUid
 }
 
 function checkNewVersion() {

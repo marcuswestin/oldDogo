@@ -33,23 +33,20 @@ function renderBody(view) {
 		})
 	}
 	
-	return div(style({ paddingTop:unit*8 }),
+	return div(style({ paddingTop:unit*9.5 }),
 		list = makeList({
 			selectItem:_selectMessage,
 			renderItem:_renderMessage,
 			getItemId: _getMessageId,
 			renderEmpty:markFirstCall(_renderEmpty)
-		})
+		}),
+		div(style({ height:unit*5.5 }))
 	)
 	
 	function _renderEmpty(firstCall) {
 		return div('info', style({ paddingTop:19.5*unit }), firstCall ? 'Fetching messages...' : 'Start the conversation!')
 	}
 }
-
-events.on('app.start', function() {
-	footHeight = unit*5.5
-})
 
 function renderFoot(view) {
 	var toolStyle = { display:'inline-block', margin:px(unit/4) }
@@ -66,7 +63,6 @@ function renderFoot(view) {
 
 /* Messages
  **********/
-
 function _getMessageId(message) {
 	return message.fromPersonId + '-' + message.clientUid
 }
@@ -76,5 +72,16 @@ function _selectMessage(message) {
 }
 
 function _renderMessage(message) {
-	return div(style(unitMargin(0, unit, unit), radius(2), { background:'#fff' }))
+	return div(style(unitMargin(0, 1, 1), radius(2), unitPadding(1/2), { background:'#fff' }), message.payload.body)
 }
+
+/* Events
+ ********/
+
+events.on('app.start', function() {
+	footHeight = unit*5.5
+})
+
+events.on('message.sending', function(message) {
+	list.append(message)
+})
