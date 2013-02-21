@@ -71,13 +71,27 @@ function _selectMessage(message) {
 	console.log('Select', message)
 }
 
+var lastPersonId
+events.on('view.changing', function() { lastPersonId = null })
 function _renderMessage(message) {
-	return div(style(unitMargin(0, 1, 1), radius(2), unitPadding(1/2), { background:'#fff' }), message.payload.body)
+	var isNewPerson = (lastPersonId != message.fromPersonId)
+	lastPersonId = message.fromPersonId
+	var isMe = (message.fromPersonId == sessionInfo.person.personId)
+	var person = (isMe ? sessionInfo.person : view.conversation.people[0])
+	return div(style(unitMargin(0, 1, 1), radius(2), unitPadding(1/2), { background:'#ccc' }),
+		isNewPerson && div(style({ height:unit*6 }),
+			face(person, { size:unit*5 }, floatLeft),
+			div(style({ height:unit*5 }, unitMargin(0,4,0,1/2), floatLeft),
+				person.name
+			),
+			div(style(floatRight, { fontSize:12, marginRight:unit/2, color:'#fff', textShadow:'0 -1px 0 rgba(0,0,0,.25)' }), time.ago.brief(message.sentTime * time.seconds))
+		),
+		message.payload.body
+	)
 }
 
 /* Events
  ********/
-
 events.on('app.start', function() {
 	footHeight = unit*5.5
 })

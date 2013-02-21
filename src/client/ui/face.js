@@ -33,7 +33,7 @@ face.style = function(person, opts) {
 
 function getUrl(address) {
 	if (address.personId) {
-		return payloads.personPictureUrl(address.personId)
+		return Payloads.personPictureUrl(address.personId)
 	} else if (Addresses.isFacebook(address)) {
 		return face.facebookUrl(address.addressId)
 	}
