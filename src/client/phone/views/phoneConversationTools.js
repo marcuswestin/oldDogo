@@ -1,6 +1,7 @@
 module.exports = {
 	selectText:selectTool(_textTool),
-	selectCamera:selectTool(_cameraTool)
+	selectCamera:selectTool(_cameraTool),
+	selectMicrophone:selectTool(_microphoneTool)
 }
 
 var duration = 300
@@ -102,20 +103,20 @@ function _textTool(toolHeight, barHeight) {
 _cameraTool.getHeight = function() { return viewport.width() }
 function _cameraTool(toolHeight, barHeight) {
 	var camPad = unit/2
-	var camSize = viewport.width() - camPad*2
+	var camSize = toolHeight - camPad*2
 	var barHeight = unit * 5
 	after(duration, function() {
 		bridge.command('BTCamera.show', { position:[unit/2, viewport.height()-camSize-camPad-20, camSize, camSize] })
 	})
 	return div('cameraTool',
-		div(style({ width:viewport.width(), height:barHeight, background:"#fff" }),
+		div('bar', style({ width:viewport.width(), height:barHeight, background:"#fff" }),
 			div('button', 'close', style(unitPadding(1)), button(function() {
 				bridge.command('BTCamera.hide', function() {
 					_hideCurrentTool()
 				})
 			})),
 			div('button', 'Send', style(floatRight, unitPadding(1)), button(function() {
-				// nextTick(function() { alert("Todo: send pic") })
+				console.log("Send pic")
 			}))
 		),
 		div('overlay', style({ width:camSize, height:camSize, border:camPad+'px solid #fff' }),
@@ -123,6 +124,38 @@ function _cameraTool(toolHeight, barHeight) {
 		)
 	)
 }
+
+/* Voice tool
+ ************/
+_microphoneTool.getHeight = function() { return unit * 14 }
+function _microphoneTool(toolHeight, barHeight) {
+	var pad = unit/2
+	return div('microphoneTool',
+		div('bar', style({ width:viewport.width(), height:barHeight, background:'#fff' }),
+			div('button', 'Close', button(function() {
+				_hideCurrentTool()
+			})),
+			div('button', 'Hi', button(function() {
+				console.log("Hi pitch")
+			})),
+			div('button', 'Play', button(function() {
+				console.log("Play")
+			})),
+			div('button', 'Lo', button(function() {
+				console.log("Lo pitch")
+			})),
+			div('button', 'Send', style(floatRight), button(function() {
+				console.log("Play audio")
+			}))
+		),
+		div('overlay', style({ width:viewport.width()-pad*2, height:toolHeight-pad*2, border:pad+'px solid #fff' }),
+			div('button', 'Hold to Talk', style(translate(40,40)), button(function() {
+				console.log("Do record")
+			}))
+		)
+	)
+}
+
 
 /* Utilities for the tools
  *************************/

@@ -59,7 +59,8 @@ function renderFoot(view) {
 		}),
 		div(
 			div(style(toolStyle), graphic('pen', 40, 40), button(function() { tools.selectText(conversation) })),
-			div(style(toolStyle), 'Cam', button(function() { tools.selectCamera(conversation) }))
+			div(style(toolStyle), graphic('pen', 40, 40), button(function() { tools.selectCamera(conversation) })),
+			div(style(toolStyle), graphic('pen', 40, 40), button(function() { tools.selectMicrophone(conversation) }))
 		)
 	)
 }
