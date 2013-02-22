@@ -1,5 +1,3 @@
-require('lib/raphael-2.1.0')
-require('globals/brand')
 style = require('tags/style')
 slice = require('std/slice')
 tags = require('tags')
