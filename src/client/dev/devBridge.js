@@ -26,6 +26,7 @@ var commandHandlers = {
 	'BTFiles.writeJsonCache': _writeJson,
 	'BTFiles.readJsonDocument': _readJson,
 	'BTFiles.readJsonCache': _readJson,
+	'BTFiles.clearAll': function(data, callback) { localStorage.clear(); callback() },
 	
 	'BTAddressBook.getAllEntries':function(data, callback) {
 		nextTick(function() { callback(null, { entries:[] }) })

@@ -179,12 +179,9 @@ toggleUnitGrid = function() {
 	unitGridShowing = !unitGridShowing
 }
 clearState = function() {
-	sessionInfo.clear(function(err) {
+	bridge.command('BTFiles.clearAll', function(err) {
 		if (err) { return error(err) }
-		Documents.write('viewStack', [], function(err) {
-			if (err) { return error(err) }
-			bridge.command('app.restart')
-		})
+		bridge.command('app.restart')
 	})
 }
 
