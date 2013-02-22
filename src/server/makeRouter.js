@@ -294,7 +294,7 @@ function setupRoutes(app, opts) {
 }
 
 function setupDev(app) {
-	var combine = require('combine')
+	var combine = require('scripts/combine')
 	var buildPage = require('website/build-page')
 	
 	app.get('/dev', sendFile('src/client/dev/devClient.html', 'text/html'))

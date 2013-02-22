@@ -1,6 +1,6 @@
 var fs = require('fs'),
 	exec = require('child_process').exec,
-	combine = require('combine'),
+	combine = require('scripts/combine'),
 	path = require('path')
 
 var dir = __dirname+'/../../build/dogo-ios-build'

@@ -1,7 +1,7 @@
 var fs = require('fs')
 var each = require('std/each')
 var options = require('std/options')
-var combine = require('combine')
+var combine = require('scripts/combine')
 var marked = require('marked')
 
 var basePath = 'template/websiteTemplate'

@@ -13,7 +13,7 @@ module.exports = {
 }
 
 function compileStylusPath(stylusPath, opts, callback) {
-	var filename = __dirname + stylusPath.replace('/stylus', '')
+	var filename = __dirname + '/../' + stylusPath.replace('/stylus', '')
 	if (!filename.match(/\.styl$/)) { filename += '.styl' }
 	opts.filename = filename
 	fs.readFile(filename, function(err, content) {
