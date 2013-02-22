@@ -66,7 +66,7 @@ function createAndRenderScroller() {
 }
 
 events.on('statusBar.wasTapped', function() {
-	$(gScroller.getCurrentView()).animate({ scrollTop:0 }, 300)
+	$(gScroller.getView()).animate({ scrollTop:0 }, 300)
 })
 
 var cornerSize = { width:48, height:44 }

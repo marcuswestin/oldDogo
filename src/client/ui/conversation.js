@@ -16,7 +16,7 @@ events.on('view.changing', function resetView() {
 	view = null
 	$ui = null
 	getMessagesList._list = null
-	gScroller.getCurrentView().off('scroll', onScroll)
+	gScroller.getView().off('scroll', onScroll)
 })
 
 function renderConversation(_view) {
@@ -31,7 +31,7 @@ function renderConversation(_view) {
 	
 	var messages = []
 	
-	gScroller.getCurrentView().on('scroll', onScroll)
+	gScroller.getView().on('scroll', onScroll)
 
 	return div({ id:'conversationView' },
 		div('personName', style({ padding:px(12 + spacing, 0, spacing * 2) }),  function() {
@@ -58,7 +58,7 @@ function getMessagesCacheId() {
 }
 
 function scrollDown(duration, amount) {
-	var $view = gScroller.getCurrentView()
+	var $view = gScroller.getView()
 	if (!amount) {
 		// default to the bottom of the view
 		amount = getMessagesList().height() - $view.scrollTop()
@@ -142,7 +142,7 @@ function onScroll() {
 
 function checkScrollBounds() {
 	// return
-	var $view = gScroller.getCurrentView()
+	var $view = gScroller.getView()
 	var scroll = $view.scrollTop()
 	var pics = $view.find('.messageBubble .pictureContent')
 	var viewHeight = $view.height()

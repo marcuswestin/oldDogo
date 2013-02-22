@@ -52,7 +52,7 @@ function renderBody(view) {
 
 function renderFoot(view) {
 	var toolStyle = { display:'inline-block', margin:px(unit/4) }
-	return div(
+	return div({ id:'conversationFoot' },
 		style({
 			margin:px(0, 1/2*unit), width:viewport.width()-unit, height:footHeight, background:'#fff',
 			boxShadow:'0 -1px 2px rgba(0,0,0,.55), -1px 0 1px rgba(0,0,0,.55), 1px 0 1px rgba(0,0,0,.55)'
@@ -91,7 +91,7 @@ function _renderMessage(message) {
 				person.name
 			),
 			div(style(unitMargin(1/4,0,0,0), unitPadding(0,0,1/2)),
-				message.payload.body + 'asdah alsiuda lsiudhlaisudhlaisuhd laiushdl iadh alsiuda lsiudhlaisudhlaisuhd laiushdl iadh'
+				message.payload.body
 			)
 		)
 		]

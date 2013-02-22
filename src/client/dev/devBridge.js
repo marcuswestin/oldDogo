@@ -15,6 +15,8 @@ function setupDevBridge() {
 	}
 }
 
+function justRespond(data, callback) { callback && nextTick(callback) }
+
 var commandHandlers = {
 	'app.show': function(data, callback) {
 		console.log('SHOW APP')
@@ -26,7 +28,10 @@ var commandHandlers = {
 	'BTFiles.writeJsonCache': _writeJson,
 	'BTFiles.readJsonDocument': _readJson,
 	'BTFiles.readJsonCache': _readJson,
-	'BTFiles.clearAll': function(data, callback) { localStorage.clear(); callback() },
+	'BTFiles.clearAll': function(data, callback) { localStorage.clear(); nextTick(callback) },
+	
+	'BTCamera.show': justRespond,
+	'BTCamera.hide': justRespond,
 	
 	'BTAddressBook.getAllEntries':function(data, callback) {
 		nextTick(function() { callback(null, { entries:[] }) })

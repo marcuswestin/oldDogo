@@ -1,54 +1,63 @@
 module.exports = {
-	selectText:selectText,
-	selectCamera:selectCamera
+	selectText:selectTool(_textTool),
+	selectCamera:selectTool(_cameraTool)
 }
 
 var duration = 300
 var conversation
-
-function selectText(_conversation) {
-	conversation = _conversation
-	var canvasHeight = unit * 2
-	$('#centerFrame')
-		.css(transition('-webkit-transform', duration))
-		.css(translate.y(-(canvasHeight + unit*4)))
-	$('#southFrame')
-		.css(transition('-webkit-transform', 0))
-		.css(translate.y(0))
-	nextTick(function() {
-		$('#southFrame')
-			.append(_renderText(canvasHeight))
-			.css(transition('-webkit-transform', duration))
-			.css(translate.y(-(canvasHeight + footHeight)))
-	})
+function selectTool(toolFn) {
+	return function(_conversation) {
+		conversation = _conversation
+		
+		var toolHeight = toolFn.getHeight()
+		var footHeight = $('#conversationFoot').height()
+		
+		$('#conversationFoot').css(translate.y(footHeight, duration))
+		$('#centerFrame').css(translate.y(-toolHeight, duration))
+		$('#southFrame').empty().css(translate.y(0, 0))
+		nextTick(function() {
+			$('#southFrame')
+				.append(toolFn(toolHeight, footHeight))
+				.css(translate.y(-(toolHeight + footHeight), duration))
+		})
+	}
 }
 
-function selectCamera(_conversation) {
-	conversation = _conversation
-	var camSize = viewport.width() - unit
+function _hideTool(extraHeight) {
+	$('#centerFrame').css(translate.y(0))
+	$('#southFrame').css(translate.y(extraHeight || 0))
+	$('#conversationFoot').css(translate.y(0))
+	after(duration, function() { $('#southFrame').empty() })
+}
+
+_cameraTool.getHeight = function() { return viewport.width() }
+function _cameraTool(toolHeight, barHeight) {
 	var camPad = unit/2
-	var toolsHeight = unit * 5
-	var height = viewport.width() + unit*6
-	$('#centerFrame, #southFrame').css(transition('-webkit-transform', duration)).css(translate.y(-(camSize + camPad*2 + toolsHeight)))
-	$('#southFrame').empty().css({ background:'transparent' }).append(
-		div('tools', style({ width:viewport.width(), height:toolsHeight, background:"#fff" }),
-			div('button', 'close', unitPadding(1), button(function() {
+	var camSize = viewport.width() - camPad*2
+	var barHeight = unit * 5
+	after(duration, function() {
+		bridge.command('BTCamera.show', { position:[unit/2, viewport.height()-camSize-camPad-20, camSize, camSize] })
+	})
+	return div('cameraTool',
+		div(style({ width:viewport.width(), height:barHeight, background:"#fff" }),
+			div('button', 'close', style(unitPadding(1)), button(function() {
 				bridge.command('BTCamera.hide', function() {
-					$('#centerFrame, #southFrame').css(translate.y(0))
+					_hideTool()
 				})
+			})),
+			div('button', 'Send', style(floatRight, unitPadding(1)), button(function() {
+				// nextTick(function() { alert("Todo: send pic") })
 			}))
 		),
 		div('overlay', style({ width:camSize, height:camSize, border:camPad+'px solid #fff' }),
 			div(style(translate(20,20)), 'Hi')
 		)
 	)
-	after(duration, function() {
-		bridge.command('BTCamera.show', { position:[unit/2, viewport.height()-camSize-camPad-20, camSize, camSize] })
-	})
 }
 
 var id
-function _renderText(canvasHeight) {
+_textTool.getHeight = function() { return unit*2 }
+function _textTool(toolHeight, barHeight) {
 	// setTimeout(_showTextFormatting, 400) // AUTOS
 	id = tags.id()
 	Documents.read('TextDraft-'+conversation.conversationId, function(err, data) {
@@ -65,12 +74,15 @@ function _renderText(canvasHeight) {
 			}
 		}) 
 	})
-	return div(style({ height:canvasHeight+keyboardHeight, background:'#fff' }),
-		div({ id:id, contentEditable:'true' }, style(unitPadding(1), scrollable.y, {
+	return div(style({ height:keyboardHeight + toolHeight, background:'#fff' }),
+		div({ id:id, contentEditable:'true' }, style(unitPadding(1), scrollable.y, transition('opacity', duration/2), {
 				position:'absolute', bottom:0, '-webkit-user-select':'auto', maxHeight:26*units,
 				width:viewport.width()-unit*2, background:'#fff', boxShadow:'0 -2px 3px -1px rgba(0,0,0,.5)',
+				opacity:0
 			})
 		),
+		
+		after(duration/2, function() { $('#'+id).css({ opacity:1 }) }),
 		
 		div(style({ height:unit*4, textAlign:'center' }, unitPadding(1/2), translate.y(-unit/4)),
 			div(style(floatLeft), graphic('close', 32, 32), button(_closeText)),
@@ -86,10 +98,8 @@ function _renderText(canvasHeight) {
 	
 	function _closeText() {
 		$('#'+id).blur()
-		$('#centerFrame').css(translate.y(0))
-		$('#southFrame').css(translate.y($('#'+id).height() + 2*unit))
-		after(duration, function() { $('#southFrame').empty() })
 		Documents.write('TextDraft-'+conversation.conversationId, { text:$('#'+id).text() }, error)
+		_hideTool(unit*6)
 	}
 	
 	function _sendText() {
