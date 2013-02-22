@@ -1,5 +1,6 @@
 tags = require('tags/tags')
 button = require('tags/button')
+sessionInfo = require('client/state/sessionInfo')
 
 require('../template/websiteTemplate')
 var trim = require('std/trim')
@@ -8,7 +9,7 @@ var api = require('client/api')
 $(function() {
 	button($('#getDogo'), function() {
 		setTimeout(function() {
-			var emailAddress = trim(prompt("There's a waiting list for Dogo. What's your email address?"))
+			var emailAddress = trim(prompt("Dogo is invite-only.\Add your email address to the waitlist:"))
 			if (!emailAddress) { return }
 			if (!emailAddress.match('@.*\\.')) {
 				return setTimeout(function() {
