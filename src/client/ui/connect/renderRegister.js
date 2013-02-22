@@ -214,13 +214,13 @@ events.on('app.didOpenUrl', function(info) {
 	}
 	
 	function _doVerify(password, onVerified) {
-		if (gState.getSessionInfo('authToken')) {
+		if (sessionInfo.authToken) {
 			// adding address
 		} else {
-			api.post('api/register/withAddressVerification', { password:verificationInfo.password, verificationId:urlParams.i, verificationToken:urlParams.t }, function(err, res) {
-				if (err) { return error(err); }
+			api.post('api/register/withAddressVerification', { password:password, verificationId:urlParams.i, verificationToken:urlParams.t }, function(err, res) {
+				if (err) { return alert(api.error(err)) }
 				api.post('api/session', { address:address, password:verificationInfo.password }, function(err, res) {
-					if (err) { return error(err) }
+					if (err) { return alert(api.error(err)) }
 					overlay.hide()
 					onVerified()
 					sessionInfo.save(res.sessionInfo, error)
