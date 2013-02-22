@@ -23,7 +23,7 @@ function get(path, params, callback) {
 }
 
 function getAuth() {
-	return sessionInfo.authToken ? 'Basic '+base64.encode(sessionInfo.authToken) : null
+	return sessionInfo && sessionInfo.authToken ? 'Basic '+base64.encode(sessionInfo.authToken) : null
 }
 
 function getPath(path) {
