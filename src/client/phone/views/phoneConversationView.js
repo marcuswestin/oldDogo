@@ -58,7 +58,8 @@ function renderFoot(view) {
 			boxShadow:'0 -1px 2px rgba(0,0,0,.55), -1px 0 1px rgba(0,0,0,.55), 1px 0 1px rgba(0,0,0,.55)'
 		}),
 		div(
-			div(style(toolStyle), graphic('pen', 40, 40), button(function() { tools.selectText(conversation) }))
+			div(style(toolStyle), graphic('pen', 40, 40), button(function() { tools.selectText(conversation) })),
+			div(style(toolStyle), 'Cam', button(function() { tools.selectCamera(conversation) }))
 		)
 	)
 }

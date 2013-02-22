@@ -8,6 +8,7 @@
 #import "Base64.h"
 #import "BTCache.h"
 #import "BTAddressBook.h"
+#import "BTCamera.h"
 
 @implementation AppDelegate
 
@@ -19,6 +20,7 @@
     [BTAudio setup:self];
     [BTCache setup:self];
     [BTAddressBook setup:self];
+    [BTCamera setup:self];
 }
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
     if ([BTFacebook handleOpenURL:url]) { return YES; }
@@ -71,6 +73,10 @@
         BOOL isDev = [scheme isEqualToString:@"http:"];
         [self setupApp:!isDev];
         [self startApp];
+        
+        if (isDev) {
+            self.window.backgroundColor = [UIColor redColor];
+        }
         
         return YES;
     } else {

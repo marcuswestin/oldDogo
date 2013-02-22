@@ -10,6 +10,7 @@
 		2C1884961687C2830071A3CE /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1884951687C2830071A3CE /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2C1884981687C28D0071A3CE /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1884971687C28D0071A3CE /* Accounts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2C18849A1687C2950071A3CE /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1884991687C2950071A3CE /* Social.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		2C20FC7D16D6F6640098BB32 /* BTCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C20FC7C16D6F6640098BB32 /* BTCamera.m */; };
 		2C2153B416C9947F00255CFB /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 2C2153AA16C9947F00255CFB /* .gitignore */; };
 		2C2153B516C9947F00255CFB /* NSArray+HHFunctional.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2153AC16C9947F00255CFB /* NSArray+HHFunctional.m */; };
 		2C2153B616C9947F00255CFB /* NSArray+NSString+HHMakeStructs.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2153AE16C9947F00255CFB /* NSArray+NSString+HHMakeStructs.m */; };
@@ -88,6 +89,8 @@
 		2C1884951687C2830071A3CE /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		2C1884971687C28D0071A3CE /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		2C1884991687C2950071A3CE /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
+		2C20FC7B16D6F6640098BB32 /* BTCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTCamera.h; sourceTree = "<group>"; };
+		2C20FC7C16D6F6640098BB32 /* BTCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTCamera.m; sourceTree = "<group>"; };
 		2C2153AA16C9947F00255CFB /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		2C2153AB16C9947F00255CFB /* NSArray+HHFunctional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+HHFunctional.h"; sourceTree = "<group>"; };
 		2C2153AC16C9947F00255CFB /* NSArray+HHFunctional.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+HHFunctional.m"; sourceTree = "<group>"; };
@@ -296,6 +299,8 @@
 				2CF9B06616D408C100966C87 /* BTFiles.m */,
 				2CCE3DDD16D6866600538F39 /* BTAddressBook.h */,
 				2CCE3DDE16D6866700538F39 /* BTAddressBook.m */,
+				2C20FC7B16D6F6640098BB32 /* BTCamera.h */,
+				2C20FC7C16D6F6640098BB32 /* BTCamera.m */,
 			);
 			name = "blowtorch-ios-modules";
 			path = "../../dependencies/blowtorch/sdk/blowtorch-ios-modules";
@@ -667,6 +672,7 @@
 				2CF9B06716D408C100966C87 /* BTFiles.m in Sources */,
 				2CCE3DDA16D416B900538F39 /* BTCache.m in Sources */,
 				2CCE3DDF16D6866700538F39 /* BTAddressBook.m in Sources */,
+				2C20FC7D16D6F6640098BB32 /* BTCamera.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

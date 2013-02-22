@@ -1,5 +1,6 @@
 module.exports = {
-	selectText:selectText
+	selectText:selectText,
+	selectCamera:selectCamera
 }
 
 var duration = 300
@@ -19,6 +20,30 @@ function selectText(_conversation) {
 			.append(_renderText(canvasHeight))
 			.css(transition('-webkit-transform', duration))
 			.css(translate.y(-(canvasHeight + footHeight)))
+	})
+}
+
+function selectCamera(_conversation) {
+	conversation = _conversation
+	var camSize = viewport.width() - unit
+	var camPad = unit/2
+	var toolsHeight = unit * 5
+	var height = viewport.width() + unit*6
+	$('#centerFrame, #southFrame').css(transition('-webkit-transform', duration)).css(translate.y(-(camSize + camPad*2 + toolsHeight)))
+	$('#southFrame').empty().css({ background:'transparent' }).append(
+		div('tools', style({ width:viewport.width(), height:toolsHeight, background:"#fff" }),
+			div('button', 'close', unitPadding(1), button(function() {
+				bridge.command('BTCamera.hide', function() {
+					$('#centerFrame, #southFrame').css(translate.y(0))
+				})
+			}))
+		),
+		div('overlay', style({ width:camSize, height:camSize, border:camPad+'px solid #fff' }),
+			div(style(translate(20,20)), 'Hi')
+		)
+	)
+	after(duration, function() {
+		bridge.command('BTCamera.show', { position:[unit/2, viewport.height()-camSize-camPad-20, camSize, camSize] })
 	})
 }
 
