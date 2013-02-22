@@ -50,6 +50,9 @@ function _renderText(canvasHeight) {
 		div(style({ height:unit*4, textAlign:'center' }, unitPadding(1/2), translate.y(-unit/4)),
 			div(style(floatLeft), graphic('close', 32, 32), button(_closeText)),
 			div('button', style(floatRight), 'Send', button(_sendText)),
+			div('textColor', style({ color:'#333', display:'inline-block' }, unitPadding(1/2)), button(_showTextColor),
+				'Color'
+			),
 			div('textFormatting', style({ color:'#333', display:'inline-block' }, unitPadding(1/2)), button(_showTextFormatting),
 				span(style(bold), 'b'), span(style(italic), 'i'), span(style(underline), 'u')
 			)
@@ -74,7 +77,7 @@ function _renderText(canvasHeight) {
 	function _showTextFormatting() {
 		tooltip.show({ width:unit*25, height:unit*5, element:'.textFormatting', offset:[0,unit*4] }, function() {
 			var styles = { width:unit*5.5, margin:px(unit/2, unit/4) }
-			return div(style(fillWidth, fillHeight, radius(5), { background:'#fff', border:'1px solid #ccc' }),
+			return div(style(fillWidth, fillHeight, radius(5), { background:'#fff', border:'1px solid #ccc', textAlign:'center' }),
 				div('button', style(styles, bold), 'b', _textStyler('bold')),
 				div('button', style(styles, italic), 'i', _textStyler('italic')),
 				div('button', style(styles, underline), 'u', _textStyler('underline'))
@@ -87,6 +90,21 @@ function _renderText(canvasHeight) {
 				tooltip.hide()
 			})
 		}
+	}
+	
+	function _showTextColor() {
+		var textColors = [blues[0], teals[0], greens[0], yellows[0], oranges[0], reds[0], purples[0]]
+		tooltip.show({ element:'.textColor', width:unit*39, height:unit*5.5, offset:[unit*4,unit*4] }, function() {
+			var styles = { width:unit*3, margin:px(unit/2, unit/4), height:unit*2 }
+			return div(style(fillWidth, fillHeight, radius(5), { background:'#fff', border:'1px solid #ccc', textAlign:'center' }),
+				map(textColors, function(color) {
+					return div('button', style(styles, { background:rgb(color) }), button(function() {
+						document.execCommand('foreColor', false, rgb(color))
+						tooltip.hide()
+					}))
+				})
+			)
+		})
 	}
 }
 

@@ -44,7 +44,18 @@ api = require('client/api')
 bridge = require('client/bridge')
 face = require('client/ui/face')
 paint = require('client/ui/paint')
+
 colors = require('client/colors')
+rgb = colors.rgb
+rgba = colors.rgba
+blues = colors.blues
+teals = colors.teals
+greens = colors.greens
+yellows = colors.yellows
+oranges = colors.oranges
+reds = colors.reds
+purples = colors.purples
+
 
 Addresses = require('data/Addresses')
 Payloads = require('data/Payloads')
@@ -178,7 +189,7 @@ clearState = function() {
 }
 
 events.on('app.start', function() {
-	overlay.defaultElement = $('#viewport')
+	viewport.element = $('#viewport')
 	
 	listMenuArrow = div(graphics.graphic('listMenuArrow', 16, 16), style({ 'float':'right' }, translate(0, 3)))
 	connectButton = [style({ display:'block', padding:px(unit*1.5), margin:px(2*unit, 4*unit), border:'1px solid rgba(255,255,255,.5)' }), listMenuArrow]
