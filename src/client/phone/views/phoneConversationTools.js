@@ -5,61 +5,15 @@ module.exports = {
 
 var duration = 300
 var conversation
-function selectTool(toolFn) {
-	return function(_conversation) {
-		conversation = _conversation
-		
-		var toolHeight = toolFn.getHeight()
-		var footHeight = $('#conversationFoot').height()
-		
-		$('#conversationFoot').css(translate.y(footHeight, duration))
-		$('#centerFrame').css(translate.y(-toolHeight, duration))
-		$('#southFrame').empty().css(translate.y(0, 0))
-		nextTick(function() {
-			$('#southFrame')
-				.append(toolFn(toolHeight, footHeight))
-				.css(translate.y(-(toolHeight + footHeight), duration))
-		})
-	}
-}
 
-function _hideTool(extraHeight) {
-	$('#centerFrame').css(translate.y(0))
-	$('#southFrame').css(translate.y(extraHeight || 0))
-	$('#conversationFoot').css(translate.y(0))
-	after(duration, function() { $('#southFrame').empty() })
-}
-
-_cameraTool.getHeight = function() { return viewport.width() }
-function _cameraTool(toolHeight, barHeight) {
-	var camPad = unit/2
-	var camSize = viewport.width() - camPad*2
-	var barHeight = unit * 5
-	after(duration, function() {
-		bridge.command('BTCamera.show', { position:[unit/2, viewport.height()-camSize-camPad-20, camSize, camSize] })
-	})
-	return div('cameraTool',
-		div(style({ width:viewport.width(), height:barHeight, background:"#fff" }),
-			div('button', 'close', style(unitPadding(1)), button(function() {
-				bridge.command('BTCamera.hide', function() {
-					_hideTool()
-				})
-			})),
-			div('button', 'Send', style(floatRight, unitPadding(1)), button(function() {
-				// nextTick(function() { alert("Todo: send pic") })
-			}))
-		),
-		div('overlay', style({ width:camSize, height:camSize, border:camPad+'px solid #fff' }),
-			div(style(translate(20,20)), 'Hi')
-		)
-	)
-}
-
+/* Text tool
+ ***********/
 var id
 _textTool.getHeight = function() { return unit*2 }
 function _textTool(toolHeight, barHeight) {
 	// setTimeout(_showTextFormatting, 400) // AUTOS
 	id = tags.id()
+
 	Documents.read('TextDraft-'+conversation.conversationId, function(err, data) {
 		if (err) { return error(err) }
 		var text = (data && data.text) || ''
@@ -74,6 +28,7 @@ function _textTool(toolHeight, barHeight) {
 			}
 		}) 
 	})
+	
 	return div(style({ height:keyboardHeight + toolHeight, background:'#fff' }),
 		div({ id:id, contentEditable:'true' }, style(unitPadding(1), scrollable.y, transition('opacity', duration/2), {
 				position:'absolute', bottom:0, '-webkit-user-select':'auto', maxHeight:26*units,
@@ -99,7 +54,7 @@ function _textTool(toolHeight, barHeight) {
 	function _closeText() {
 		$('#'+id).blur()
 		Documents.write('TextDraft-'+conversation.conversationId, { text:$('#'+id).text() }, error)
-		_hideTool(unit*6)
+		_hideCurrentTool(unit*6)
 	}
 	
 	function _sendText() {
@@ -118,7 +73,6 @@ function _textTool(toolHeight, barHeight) {
 				div('button', style(styles, underline), 'u', _textStyler('underline'))
 			)
 		})
-		
 		function _textStyler(styleType) {
 			return button(function() {
 				document.execCommand(styleType, false, null)
@@ -143,16 +97,60 @@ function _textTool(toolHeight, barHeight) {
 	}
 }
 
-// var id = tags.id()
-// $('#viewport').append(
-// 	div({ id:id, contentEditable:'true' }, style(unitPadding(1), {
-// 		position:'absolute', bottom:canvasHeight, '-webkit-user-select':'auto', opacity:0,
-// 		width:viewport.width()-unit*2, background:'#fff', boxShadow:'0 -1px 2px rgba(0,0,0,.5)'
-// 	}))
-// )
-// after(duration, function() {
-// 	$('#'+id).focus()
-// })
+/* Camera tool
+ *************/
+_cameraTool.getHeight = function() { return viewport.width() }
+function _cameraTool(toolHeight, barHeight) {
+	var camPad = unit/2
+	var camSize = viewport.width() - camPad*2
+	var barHeight = unit * 5
+	after(duration, function() {
+		bridge.command('BTCamera.show', { position:[unit/2, viewport.height()-camSize-camPad-20, camSize, camSize] })
+	})
+	return div('cameraTool',
+		div(style({ width:viewport.width(), height:barHeight, background:"#fff" }),
+			div('button', 'close', style(unitPadding(1)), button(function() {
+				bridge.command('BTCamera.hide', function() {
+					_hideCurrentTool()
+				})
+			})),
+			div('button', 'Send', style(floatRight, unitPadding(1)), button(function() {
+				// nextTick(function() { alert("Todo: send pic") })
+			}))
+		),
+		div('overlay', style({ width:camSize, height:camSize, border:camPad+'px solid #fff' }),
+			div(style(translate(20,20)), 'Hi')
+		)
+	)
+}
+
+/* Utilities for the tools
+ *************************/
+function selectTool(toolFn) {
+	return function(_conversation) {
+		conversation = _conversation
+		
+		var toolHeight = toolFn.getHeight()
+		var footHeight = $('#conversationFoot').height()
+		
+		$('#conversationFoot').css(translate.y(footHeight, duration))
+		$('#centerFrame').css(translate.y(-toolHeight, duration))
+		$('#southFrame').empty().css(translate.y(0, 0))
+		nextTick(function() {
+			$('#southFrame')
+				.append(toolFn(toolHeight, footHeight))
+				.css(translate.y(-(toolHeight + footHeight), duration))
+		})
+	}
+}
+
+function _hideCurrentTool(extraHeight) {
+	$('#centerFrame').css(translate.y(0))
+	$('#southFrame').css(translate.y(extraHeight || 0))
+	$('#conversationFoot').css(translate.y(0))
+	after(duration, function() { $('#southFrame').empty() })
+}
+
 
 function sendMessage(type, messageData) {
 	sessionInfo.getClientUid(function(err, clientUid) {
