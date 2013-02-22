@@ -1,5 +1,6 @@
-require('globals/environment')
-require('globals/tags')
+tags = require('tags/tags')
+button = require('tags/button')
+
 require('../template/websiteTemplate')
 var trim = require('std/trim')
 var api = require('client/api')
