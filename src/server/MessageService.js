@@ -89,74 +89,62 @@ function _createConversation(personId, participation, callback) {
 		},
 		finish:function(err) {
 			if (err) { return callback(err) }
-			db.people(personId).selectOne(
-				'SELECT personId, name FROM person WHERE personId=?',
-				[personId],
-				function(err, personInfo) {
-					if (err) { return callback(err) }
-					var peopleJson = JSON.stringify([personInfo].concat(map(dogoPeople, function(d) {
-						return { personId:d.personId, name:d.name }
-					})))
-					_insertConversation(peopleJson, callback)
-				}
-			)
+			var sql = 'SELECT personId, name FROM person WHERE personId=?'
+			db.people(personId).selectOne(sql, [personId], function(err, personInfo) {
+				if (err) { return callback(err) }
+				var peopleJson = JSON.stringify([personInfo].concat(map(dogoPeople, function(d) {
+					return { personId:d.personId, name:d.name }
+				})))
+				_insertConversation(peopleJson, callback)
+			})
 		}
 	})
 	
 	function _insertConversation(peopleJson, callback) {
-		db.conversations.randomShard().insert(
-			'INSERT INTO conversation SET peopleJson=?, createdTime=?',
-			[peopleJson, db.time()],
-			function(err, conversationId) {
-				if (err) { return callback(err) }
-				parallel(_setParticipationsConversationId, _updateAddresses, function(err, _, _) {
-					log.debug('created conversation', conversationId)
-					callback(err, conversationId)
-				})
-				
-				function _setParticipationsConversationId(proceed) {
-					log.debug('set participations conversation id', personId, conversationId, participation.participationId)
-					db.people(personId).updateOne(
-						'UPDATE participation SET conversationId=? WHERE participationId=?',
-						[conversationId, participation.participationId],
-						function(err) {
-							if (err) { return proceed(err) }
-							asyncEach(dogoPeople, {
-								finish:proceed,
-								iterate:function(dogoPerson, next) {
-									db.people(dogoPerson.personId).insert(
-										'INSERT INTO participation SET conversationId=?, personId=?, peopleJson=?',
-										[conversationId, dogoPerson.personId, peopleJson],
-										next
-									)
-								}
-							})
-						}
-					)
-				}
-				
-				function _updateAddresses(proceed) {
-					log.debug('update addresses', otherAddresses)
-					asyncEach(otherAddresses, {
-						parallel:otherAddresses.length,
+		var sql = 'INSERT INTO conversation SET peopleJson=?, createdTime=?'
+		db.conversations.randomShard().insert(sql, [peopleJson, db.time()], function(err, conversationId) {
+			if (err) { return callback(err) }
+			parallel(_setParticipationsConversationId, _updateAddresses, function(err, _, _) {
+				log.debug('created conversation', conversationId)
+				callback(err, conversationId)
+			})
+			
+			function _setParticipationsConversationId(proceed) {
+				log.debug('set participations conversation id', personId, conversationId, participation.participationId)
+				var sql = 'UPDATE participation SET conversationId=? WHERE participationId=?'
+				db.people(personId).updateOne(sql, [conversationId, participation.participationId], function(err) {
+					if (err) { return proceed(err) }
+					asyncEach(dogoPeople, {
 						finish:proceed,
-						iterate:function(info, next) {
-							if (info.lookupInfo) {
-								var lookupInfo = info.lookupInfo
-								if (!lookupInfo.name) { lookupInfo.name = person.name }
-								lookupInfo.conversationIds.push(conversationId)
-								lookupService.updateAddressInfo(lookupInfo, next)
-							} else {
-								var person = info.person
-								var addrInfo = { addressType:person.addressType, addressId:person.addressId, name:person.name, conversationIds:[conversationId] }
-								lookupService.addUnclaimedAddress(addrInfo, next)
-							}
+						iterate:function(dogoPerson, next) {
+							var sql = 'INSERT INTO participation SET conversationId=?, personId=?, peopleJson=?'
+							db.people(dogoPerson.personId).insert(sql, [conversationId, dogoPerson.personId, peopleJson], next)
 						}
 					})
-				}
+				})
 			}
-		)
-	}
+			
+			function _updateAddresses(proceed) {
+				log.debug('update addresses', otherAddresses)
+				asyncEach(otherAddresses, {
+					parallel:otherAddresses.length,
+					finish:proceed,
+					iterate:function(info, next) {
+						if (info.lookupInfo) {
+							var lookupInfo = info.lookupInfo
+							if (!lookupInfo.name) { lookupInfo.name = person.name }
+							lookupInfo.conversationIds.push(conversationId)
+							lookupService.updateAddressInfo(lookupInfo, next)
+						} else {
+							var person = info.person
+							var addrInfo = { addressType:person.addressType, addressId:person.addressId, name:person.name, conversationIds:[conversationId] }
+							lookupService.addUnclaimedAddress(addrInfo, next)
+						}
+					}
+				})
+			}
+		}
+	)}
 }
 
 function _notifyParticipants(message, prodPush) {
@@ -282,20 +270,13 @@ function loadFacebookRequestId(facebookRequestId, callback) {
 
 function _selectMessages(conversationId, callback) {
 	log.debug('select messages', conversationId)
-	var selectMessageSql = [
-		'SELECT messageId, fromPersonId, clientUid, conversationId, type, sentTime, payloadJson',
-		'FROM message WHERE conversationId=? ORDER BY messageId DESC LIMIT 50'
-	].join('\n')
-	db.conversations(conversationId).select(
-		selectMessageSql,
-		[conversationId],
-		function(err, messages) {
-			if (err) { return callback(err) }
-			messages.reverse()
-			each(messages, _decodeMessage)
-			callback(null, messages)
-		}
-	)
+	var sql = 'SELECT messageId, fromPersonId, clientUid, conversationId, type, sentTime, payloadJson FROM message WHERE conversationId=? ORDER BY messageId DESC LIMIT 50'
+	db.conversations(conversationId).select(sql, [conversationId], function(err, messages) {
+		if (err) { return callback(err) }
+		messages.reverse()
+		each(messages, _decodeMessage)
+		callback(null, messages)
+	})
 
 	function _decodeMessage(message) {
 		message.type = Messages.types.reverse[message.type]
