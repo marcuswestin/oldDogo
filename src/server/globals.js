@@ -1,7 +1,5 @@
 require('node-color/color')
 
-_ = require('underscore')
-
 proto = require('std/proto')
 create = require('std/create')
 each = require('std/each')

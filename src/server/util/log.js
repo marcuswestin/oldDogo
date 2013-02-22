@@ -1,17 +1,17 @@
+var extend = require('std/extend')
+
 var log = module.exports = makeLog('Global')
 log.disable = disable
 log.makeLog = makeLog
 
 var disabled = false
 function disable() { disabled = true }
-
 function makeLog(name) {
 	var padLength = 20
 	var pad = new Array(padLength-name.length).join(' ')+'-'+' '
 	
 	function logDebug() { doLog(pad, name, 'dbug'.cyan, getArgsString(arguments).cyan) }
-	
-	return _.extend(logDebug, {
+	each({
 		info: function logInfo() { doLog(pad, name, 'info'.blue, getArgsString(arguments)) },
 		debug: logDebug,
 		warn: function logWarn() { doLog(pad, name, 'WARN'.pink, getArgsString(arguments).pink, true) },
@@ -22,7 +22,8 @@ function makeLog(name) {
 			require('server/fn/sendSms').alertAdmin(('ALERT! '+message).substr(0, 160))
 		},
 		getArgsString:getArgsString
-	})
+	}, function(fn, name) { logDebug[name] = fn })
+	return logDebug
 }
 
 function n(number) { return number < 10 ? '0'+number : number }
