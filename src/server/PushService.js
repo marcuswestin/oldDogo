@@ -62,13 +62,16 @@ function sendMessagePush(toPersonId, pushFromName, message, prodPush) {
 		
 		if (pushInfo.type != 'ios') { return log.warn('Unknown push type', pushInfo[0]) }
 		
-		var notification = new apns.Notification()
-		notification.device = new apns.Device(pushInfo.token)
-		notification.payload = push.encodeMessage({
+		var encodedPayload = push.encodeMessage({
 			message:message,
 			toPersonId:toPersonId,
 			fromFirstName:pushFromName
 		})
+		if (!encodedPayload) { return log.error("Could not encode payload", message, toPersonId, fromFirstName) }
+		
+		var notification = new apns.Notification()
+		notification.device = new apns.Device(pushInfo.token)
+		notification.payload = encodedPayload
 		
 		log.debug('do send', toPersonId)
 		var connection = prodPush ? apnsConnections.prod : apnsConnections.sandbox

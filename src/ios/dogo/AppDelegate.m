@@ -123,12 +123,17 @@
         [BTNet request:data responseCallback:responseCallback];
     }];
     
+    [self registerHandler:@"message.send" handler:^(id data, BTResponseCallback responseCallback) {
+        NSData* payload = [NSData dataWithContentsOfFile:[BTFiles documentPath:data[@"document"]]];
+        [self _send:data payload:payload responseCallback:responseCallback];
+    }];
+    
     [self registerHandler:@"text.send" handler:^(id data, BTResponseCallback responseCallback) {
         [self _send:data payload:nil responseCallback:responseCallback];
     }];
     
     [self registerHandler:@"audio.send" handler:^(id data, BTResponseCallback responseCallback) {
-        NSData* audioData = [NSData dataWithContentsOfURL:[NSURL URLWithString:[data objectForKey:@"audioLocation"]]];
+        NSData* audioData = [NSData dataWithContentsOfURL:[NSURL URLWithString:data[@"audioLocation"]]];
         [self _send:data payload:audioData responseCallback:responseCallback];
     }];
 

@@ -33,7 +33,7 @@ function encodeMessage(data) {
 	push[encodingMap.type] = Messages.types[message.type]
 
 	if (message.type == 'picture') {
-		push[encodingMap.payload] = Messages.payload[message.type].encode(message.payload)
+		push[encodingMap.payload] = Messages.payload.picture.encode(message.payload)
 		push.aps.alert = data.fromFirstName+' sent you a drawing' // NOTE Clients depend on "\w+ sent you a drawing"
 	} else if (message.type == 'text') {
 		var body = message.payload.body
@@ -50,6 +50,9 @@ function encodeMessage(data) {
 			push.aps.alert = data.fromFirstName+': '+body.substr(0, newBodyLength)
 			push[encodingMap.truncated] = 1
 		}
+	} else if (message.type == 'audio') {
+		push[encodingMap.payload] = Messages.payload.audio.encode(message.payload)
+		push.aps.alert = data.fromFirstName+' sent you a voice message'
 	} else {
 		return null
 	}

@@ -160,7 +160,7 @@ function _microphoneTool(toolHeight, barHeight) {
 					var sendDocName = 'AudioDocument'+conversation.conversationId+'.m4a'
 					bridge.command('BTAudio.readFromFileToFile', { fromDocument:docName, toDocument:sendDocName, pitch:_microphoneTool.pitch }, function(err) {
 						if (err) { return error(err) }
-						console.log("DONE RECORDING FROM TO")
+						sendMessage('audio', { document:sendDocName })
 					})
 				}))
 			)
@@ -227,15 +227,11 @@ function sendMessage(type, messageData) {
 		var commandData = { method:"POST", url:api.getUrl('api/message'), headers:api.getHeaders(), boundary: '________dgmltprtbndr', params:message }
 
 		if (type == 'audio') {
-			var filename = 'audio-'+time.now()+'.m4a'
-			bridge.command('audio.save', { filename:filename }, function(err, res) {
-				commandData.audioLocation = res.location
-				commandData.params.payload.duration = res.duration
-				bridge.command('audio.send', commandData, onResponse)
-
-				message.preview = { duration:res.duration }
-				events.fire('message.sending', message)
-			})
+			commandData.document = messageData.document
+			message.payload = { duration:duration }
+			message.preview = { document:messageData.document, duration:messageData.duration }
+			bridge.command('message.send', commandData, onResponse)
+			events.fire('message.sending', message)
 		} else if (type == 'picture') {
 			commandData.params.payload.width = messageData.width
 			commandData.params.payload.height = messageData.height
