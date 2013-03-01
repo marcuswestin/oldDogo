@@ -146,7 +146,7 @@ function _microphoneTool(toolHeight, barHeight) {
 					})
 				})),
 				div('button', 'Play', buttonStyles, button(function() {
-					bridge.command('BTAudio.playFromFileToSpeaker', { document:docName }, function() {
+					bridge.command('BTAudio.playFromFileToSpeaker', { document:docName, pitch:_microphoneTool.pitch }, function() {
 						console.log("Playing")
 					})
 				})),
@@ -166,7 +166,10 @@ function _microphoneTool(toolHeight, barHeight) {
 			)
 		),
 		div('overlay', style({ width:viewport.width()-pad*2, height:toolHeight-pad*2, border:pad+'px solid #fff' }),
-			div('button', 'Hold to Talk', style(translate(40,40)), button({
+			div('decibelMeter', style({ height:4*unit, width:viewport.width()-pad*4 }, unitPadding(1/2)),
+				div('volume', style({ background:'blue', height:'100%', width:0 }))
+			),
+			div('button', 'Hold to Talk', style(translate(60,20)), button({
 				start:function() {
 					bridge.command('BTAudio.recordFromMicrophoneToFile', { document:docName }, function() {
 						console.log("Recording")
@@ -182,6 +185,12 @@ function _microphoneTool(toolHeight, barHeight) {
 	)
 }
 
+
+events.on('BTAudio.decibelMeter', function(info) {
+	var level = info.decibelLevel // roughly [-100, 0]
+	var percentage = 100 + level
+	$('#microphoneTool .decibelMeter .volume').css({ width:percentage+'%' })
+})
 
 /* Utilities for the tools
  *************************/
