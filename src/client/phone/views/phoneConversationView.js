@@ -10,6 +10,7 @@ module.exports = {
  ******************/
 function renderHead(view) {
 	// setTimeout(function() { tools.selectText(view.conversation) }, 250) // AUTOS
+	// setTimeout(function() { tools.selectMicrophone(conversation) }, 250) // AUTOS
 	
 	return appHead(
 		div(style(), 'left', button(function() { gScroller.pop() })),
