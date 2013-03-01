@@ -54,19 +54,15 @@
 //        [WebViewJavascriptBridge enableLogging];
 #endif
         
-        NSDictionary* device = [NSDictionary dictionaryWithObjectsAndKeys:
-                                [[UIDevice currentDevice] systemVersion], @"systemVersion",
-                                [UIDevice currentDevice].model, @"model",
-                                [UIDevice currentDevice].name, @"name",
-                                [UIDeviceHardware platformString], @"platform",
-                                nil];
-        
         [self setServerScheme:scheme host:host port:port];
         
-        [self.config setValue:[self getCurrentVersion] forKey:@"currentVersion"];
-        [self.config setValue:device forKey:@"device"];
-        [self.config setValue:self.serverHost forKey:@"serverHost"];
-        [self.config setValue:self.serverUrl forKey:@"serverUrl"];
+        self.config[@"serverHost"] = self.serverHost;
+        self.config[@"serverUrl"] = self.serverUrl;
+        self.config[@"device"] = @{ @"systemVersion":[[UIDevice currentDevice] systemVersion],
+                                    @"model":[UIDevice currentDevice].model,
+                                    @"name":[UIDevice currentDevice].name,
+                                    @"platform":[UIDeviceHardware platformString]
+                                    };
 
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent animated:YES];
         
@@ -138,27 +134,27 @@
     }];
 
     [self registerHandler:@"picture.send" handler:^(id data, BTResponseCallback responseCallback) {
-        NSString* base64String = [[data objectForKey:@"base64Data"] stringByReplacingOccurrencesOfString:@"data:image/jpeg;base64," withString:@""];
+        NSString* base64String = [data[@"base64Data"] stringByReplacingOccurrencesOfString:@"data:image/jpeg;base64," withString:@""];
         
         NSData* pictureData = [NSData dataWithBase64EncodedString:base64String];
         UIImage* image = [UIImage imageWithData:pictureData];
         NSMutableDictionary* params = [NSMutableDictionary dictionaryWithDictionary:[data objectForKey:@"params"]];
-        [params setObject:[NSNumber numberWithFloat:image.size.width] forKey:@"width"];
-        [params setObject:[NSNumber numberWithFloat:image.size.height] forKey:@"height"];
+        params[@"width"] = [NSNumber numberWithFloat:image.size.width];
+        params[@"height"] = [NSNumber numberWithFloat:image.size.height];
         id _data = [NSMutableDictionary dictionaryWithDictionary:data];
-        [_data setObject:params forKey:@"params"];
+        _data[@"params"] = params;
         [self _send:_data payload:pictureData responseCallback:responseCallback];
     }];
 }
 
 - (void)_send:(NSDictionary*)data payload:(NSData*)payload responseCallback:(BTResponseCallback)responseCallback {
-    NSString* url = [data objectForKey:@"url"];
-    NSDictionary* headers = [data objectForKey:@"headers"];
-    NSDictionary* params = [data objectForKey:@"params"];
-    NSString* boundary = [data objectForKey:@"boundary"];
+    NSString* url = data[@"url"];
+    NSDictionary* headers = data[@"headers"];
+    NSDictionary* params = data[@"params"];
+    NSString* boundary = data[@"boundary"];
     NSDictionary* attachments = nil;
     if (payload) {
-        attachments = [NSDictionary dictionaryWithObject:payload forKey:@"payload"];
+        attachments = @{ @"payload":payload };
     }
     [BTNet post:url json:params attachments:attachments headers:headers boundary:boundary responseCallback:responseCallback];
 }
