@@ -130,27 +130,53 @@ function _cameraTool(toolHeight, barHeight) {
 _microphoneTool.getHeight = function() { return unit * 14 }
 function _microphoneTool(toolHeight, barHeight) {
 	var pad = unit/2
-	return div('microphoneTool',
+	var buttonStyles = style(unitMargin(1/2, 1/4))
+	var docName = 'AudioDraft'+conversation.conversationId+'.m4a'
+	_microphoneTool.pitch = 0;
+	return div({ id:'microphoneTool' },
 		div('bar', style({ width:viewport.width(), height:barHeight, background:'#fff' }),
-			div('button', 'Close', button(function() {
-				_hideCurrentTool()
-			})),
-			div('button', 'Hi', button(function() {
-				console.log("Hi pitch")
-			})),
-			div('button', 'Play', button(function() {
-				console.log("Play")
-			})),
-			div('button', 'Lo', button(function() {
-				console.log("Lo pitch")
-			})),
-			div('button', 'Send', style(floatRight), button(function() {
-				console.log("Play audio")
-			}))
+			div(style(unitPadding(0,1/4)),
+				div('button', 'Close', buttonStyles, button(function() {
+					_hideCurrentTool()
+				})),
+				div('button', 'Hi', buttonStyles, button(function() {
+					_microphoneTool.pitch = 0.4
+					bridge.command('BTAudio.setPitch', { pitch:_microphoneTool.pitch }, function() {
+						console.log('Pitch set')
+					})
+				})),
+				div('button', 'Play', buttonStyles, button(function() {
+					bridge.command('BTAudio.playFromFileToSpeaker', { document:docName }, function() {
+						console.log("Playing")
+					})
+				})),
+				div('button', 'Lo', buttonStyles, button(function() {
+					_microphoneTool.pitch = -0.4
+					bridge.command('BTAudio.setPitch', { pitch:_microphoneTool.pitch }, function() {
+						console.log('Pitch set')
+					})
+				})),
+				div('button', 'Send', style(floatRight), buttonStyles, button(function() {
+					var sendDocName = 'AudioDocument'+conversation.conversationId+'.m4a'
+					bridge.command('BTAudio.readFromFileToFile', { fromDocument:docName, toDocument:sendDocName, pitch:_microphoneTool.pitch }, function(err) {
+						if (err) { return error(err) }
+						console.log("DONE RECORDING FROM TO")
+					})
+				}))
+			)
 		),
 		div('overlay', style({ width:viewport.width()-pad*2, height:toolHeight-pad*2, border:pad+'px solid #fff' }),
-			div('button', 'Hold to Talk', style(translate(40,40)), button(function() {
-				console.log("Do record")
+			div('button', 'Hold to Talk', style(translate(40,40)), button({
+				start:function() {
+					bridge.command('BTAudio.recordFromMicrophoneToFile', { document:docName }, function() {
+						console.log("Recording")
+					})
+				},
+				end:function() {
+					bridge.command('BTAudio.stopRecordingFromMicrophoneToFile', function() {
+						console.log("Done recording")
+					})
+				}
 			}))
 		)
 	)

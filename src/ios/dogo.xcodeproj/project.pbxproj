@@ -7,15 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C093FF016DC0D33006E7F86 /* BTAudioGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C093FEF16DC0D33006E7F86 /* BTAudioGraph.m */; };
 		2C1884961687C2830071A3CE /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1884951687C2830071A3CE /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2C1884981687C28D0071A3CE /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1884971687C28D0071A3CE /* Accounts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2C18849A1687C2950071A3CE /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1884991687C2950071A3CE /* Social.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2C20FC7D16D6F6640098BB32 /* BTCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C20FC7C16D6F6640098BB32 /* BTCamera.m */; };
-		2C2153B416C9947F00255CFB /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 2C2153AA16C9947F00255CFB /* .gitignore */; };
 		2C2153B516C9947F00255CFB /* NSArray+HHFunctional.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2153AC16C9947F00255CFB /* NSArray+HHFunctional.m */; };
 		2C2153B616C9947F00255CFB /* NSArray+NSString+HHMakeStructs.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2153AE16C9947F00255CFB /* NSArray+NSString+HHMakeStructs.m */; };
 		2C2153B716C9947F00255CFB /* NSString+HHUriEncoding.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2153B016C9947F00255CFB /* NSString+HHUriEncoding.m */; };
-		2C2153B816C9947F00255CFB /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 2C2153B116C9947F00255CFB /* README.md */; };
 		2C2153B916C9947F00255CFB /* UIImage+HHImages.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2153B316C9947F00255CFB /* UIImage+HHImages.m */; };
 		2C2568AC16AE0DF9007C60B7 /* Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2568AB16AE0DF9007C60B7 /* Base64.m */; };
 		2C256F7C16B0BB4E007C60B7 /* UIColor+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C256F7B16B0BB4E007C60B7 /* UIColor+Util.m */; };
@@ -37,7 +36,6 @@
 		2C650CBC16A5E459000F381E /* BTState.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650C6F16A5E459000F381E /* BTState.m */; };
 		2C650CBD16A5E459000F381E /* BTViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650C7116A5E459000F381E /* BTViewController.m */; };
 		2C650CBE16A5E459000F381E /* NSString+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650C7416A5E459000F381E /* NSString+Util.m */; };
-		2C650CBF16A5E459000F381E /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 2C650C7616A5E459000F381E /* README.md */; };
 		2C650CC016A5E459000F381E /* UIImage+Alpha.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650C7816A5E459000F381E /* UIImage+Alpha.m */; };
 		2C650CC116A5E459000F381E /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650C7A16A5E459000F381E /* UIImage+Resize.m */; };
 		2C650CC216A5E459000F381E /* UIImage+RoundedCorner.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650C7C16A5E459000F381E /* UIImage+RoundedCorner.m */; };
@@ -86,6 +84,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2C093FEE16DC0D33006E7F86 /* BTAudioGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTAudioGraph.h; sourceTree = "<group>"; };
+		2C093FEF16DC0D33006E7F86 /* BTAudioGraph.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTAudioGraph.m; sourceTree = "<group>"; };
 		2C1884951687C2830071A3CE /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		2C1884971687C28D0071A3CE /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		2C1884991687C2950071A3CE /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
@@ -311,6 +311,8 @@
 			children = (
 				2C650ACF16A5DCAD000F381E /* BTAudio.h */,
 				2C650AD016A5DCAD000F381E /* BTAudio.m */,
+				2C093FEE16DC0D33006E7F86 /* BTAudioGraph.h */,
+				2C093FEF16DC0D33006E7F86 /* BTAudioGraph.m */,
 			);
 			path = BTAudio;
 			sourceTree = "<group>";
@@ -618,14 +620,11 @@
 				2C709420165A14F2007DDECD /* Default-568h@2x.png in Resources */,
 				2C70942A165A8965007DDECD /* logo@2x.png in Resources */,
 				2C650C4916A5DFD1000F381E /* FacebookSDKResources.bundle in Resources */,
-				2C650CBF16A5E459000F381E /* README.md in Resources */,
 				2C650CF216A5E50E000F381E /* WebViewJavascriptBridge.js.txt in Resources */,
 				2C650CF916A5E6CF000F381E /* app.html in Resources */,
 				2C650CFA16A5E6CF000F381E /* appCss.css in Resources */,
 				2C650CFB16A5E6CF000F381E /* appJs.html in Resources */,
 				2C650CFC16A5E6CF000F381E /* dev-hostname.txt in Resources */,
-				2C2153B416C9947F00255CFB /* .gitignore in Resources */,
-				2C2153B816C9947F00255CFB /* README.md in Resources */,
 				2C409AC116CB4EB6006C49F9 /* opensans-italic.ttf in Resources */,
 				2C409AC216CB4EB6006C49F9 /* opensans-light-italic.ttf in Resources */,
 				2C409AC316CB4EB6006C49F9 /* opensans-light.ttf in Resources */,
@@ -673,6 +672,7 @@
 				2CCE3DDA16D416B900538F39 /* BTCache.m in Sources */,
 				2CCE3DDF16D6866700538F39 /* BTAddressBook.m in Sources */,
 				2C20FC7D16D6F6640098BB32 /* BTCamera.m in Sources */,
+				2C093FF016DC0D33006E7F86 /* BTAudioGraph.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
