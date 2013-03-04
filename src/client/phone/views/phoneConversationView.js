@@ -93,12 +93,12 @@ function _renderMessage(message) {
 				person.name
 			),
 			div(style(unitMargin(1/4,0,0,0), unitPadding(0,0,1/2)),
-				message.payload.body
+				html(DogoText.getHtml(message.payload.body))
 			)
 		)
 		]
 		: div(style(unitMargin(0, 1), unitPadding(0,0,1/2,1), { background:'#f3f3f3' }),
-			message.payload.body
+			html(DogoText.getHtml(message.payload.body))
 		)
 	)
 }

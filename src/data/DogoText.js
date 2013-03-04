@@ -50,10 +50,10 @@ function getHtml(text) {
 			return '</'+stack.pop()+'>'+proceed()
 		} else if (chars[i] == L_ARROW) {
 			i += 1
-			return '&larr;'+proceed()
+			return '&lt;'+proceed()
 		} else if (chars[i] == R_ARROW) {
 			i += 1
-			return '&rarr;'+proceed()
+			return '&gt;'+proceed()
 		} else {
 			return chars[i++] + proceed()
 		}

@@ -81,12 +81,13 @@ link.defaultTarget = '_blank'
 
 div = tags('div')
 span = tags('span')
-br = function() { return { __tagHTML:'<br />' } }
 a = tags('a')
 input = tags('input')
 img = tags('img')
 canvas = tags('canvas')
 label = tags('label')
+br = tags.br
+html = tags.html
 
 translate = style.translate
 transition = style.transition

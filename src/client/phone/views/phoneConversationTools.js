@@ -52,15 +52,18 @@ function _textTool(toolHeight, barHeight) {
 		)
 	)
 	
+	function getDogoText() {
+		return trim(DogoText.fromNode($('#'+id)[0]))
+	}
+	
 	function _closeText() {
 		$('#'+id).blur()
-		var dogoText = DogoText.fromNode($('#'+id)[0])
-		Documents.write('TextDraft-'+conversation.conversationId, { dogoText:dogoText }, error)
+		Documents.write('TextDraft-'+conversation.conversationId, { dogoText:getDogoText() }, error)
 		_hideCurrentTool(unit*6)
 	}
 	
 	function _sendText() {
-		var text = trim($('#'+id).text())
+		var text = getDogoText()
 		if (!text) { return }
 		sendMessage('text', { body:text })
 		$('#'+id).text('').focus()
