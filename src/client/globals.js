@@ -59,6 +59,7 @@ purples = colors.purples
 
 Addresses = require('data/Addresses')
 Payloads = require('data/Payloads')
+DogoText = require('data/DogoText')
 
 graphics = require('client/graphics')
 graphic = graphics.graphic

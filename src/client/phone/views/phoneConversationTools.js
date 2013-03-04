@@ -17,12 +17,12 @@ function _textTool(toolHeight, barHeight) {
 
 	Documents.read('TextDraft-'+conversation.conversationId, function(err, data) {
 		if (err) { return error(err) }
-		var text = (data && data.text) || ''
-		$('#'+id).text(text)
+		function setDraft() { $('#'+id).html(DogoText.getHtml(data && data.dogoText)) }
+		setDraft()
 		$('#'+id).focus()
 		after(duration/2, function() {
-			if (text) {
-				$('#'+id).text(text)
+			if (data.dogoText) {
+				setDraft()
 			} else {
 				$('#'+id).text('.') // we do this again to update the cursor position
 				after(0, function() { $('#'+id).text('') })
@@ -54,7 +54,8 @@ function _textTool(toolHeight, barHeight) {
 	
 	function _closeText() {
 		$('#'+id).blur()
-		Documents.write('TextDraft-'+conversation.conversationId, { text:$('#'+id).text() }, error)
+		var dogoText = DogoText.fromNode($('#'+id)[0])
+		Documents.write('TextDraft-'+conversation.conversationId, { dogoText:dogoText }, error)
 		_hideCurrentTool(unit*6)
 	}
 	
