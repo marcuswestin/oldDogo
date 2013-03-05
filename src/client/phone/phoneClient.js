@@ -34,7 +34,7 @@ bridge.init()
 
 function startPhoneClient(appInfo) {
 	gAppInfo = appInfo
-	var background = radialGradient('50% -70px', '#90C7E8', '#007BC2', '300px')
+	var background = 'white'
 	$('#viewport')
 		.append(div({ id:'centerFrame' }, style(viewport.size(), { background:background })))
 		.append(div({ id:'southFrame' }, style({ width:viewport.width(), height:0, position:'absolute', top:viewport.height() })))
@@ -71,7 +71,7 @@ events.on('user.session', function renderSignedInApp(sessionInfo, viewStack) {
 	})
 	
 	$('#centerFrame').empty().append(
-		div({ id:'appBackground' }),
+		div({ id:'appBackground' }, style(absolute(0,0))),
 		div({ id:'appForeground' }, style(translate(0,0)), gScroller)
 	)
 })
@@ -79,7 +79,8 @@ events.on('user.session', function renderSignedInApp(sessionInfo, viewStack) {
 events.on('device.rotated', function() {})
 
 appHead = function(left, center, right) {
-	return div(style(absolute(0, 0), radius(1), { textAlign:'center', width:viewport.width(), height:unit*5.5, background:'rgba(0,0,244,0.5)' }),
+	var background = radialGradient('50% -70px', 'rgba(144, 199, 232, 0.6)', '#007BC2', '300px')
+	return div(style(absolute(0, 0), { textAlign:'center', width:viewport.width(), height:unit*5.5, background:background }),
 		div(style(floatLeft, radius(2), { width:unit*6, height:unit*4.5, margin:unit/2 }), left),
 		div(style(floatRight, radius(2), { width:unit*6, height:unit*4.5, margin:unit/2 }), right),
 		div(style({ textAlign:'center' }), center)

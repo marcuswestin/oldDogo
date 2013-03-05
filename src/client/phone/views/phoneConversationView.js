@@ -43,7 +43,7 @@ function renderBody(view) {
 			getItemId: _getMessageId,
 			renderEmpty:markFirstCall(_renderEmpty)
 		}),
-		div(style({ height:unit*5.5 }))
+		div(style({ height:unit*6.5 }))
 	)
 	
 	function _renderEmpty(firstCall) {

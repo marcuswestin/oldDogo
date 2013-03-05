@@ -9,15 +9,36 @@ module.exports = {
 
 /* Head, body & foot
  *******************/
+var backgroundShowing = false
 function renderHead() {
 	// after(0, function() { composeOverlay.show() }) // AUTOS
 	return appHead(
-		div(style(fullHeight, fullWidth, { background:'blue' })),
+		div(style(fullHeight, fullWidth), div(style({ display:'block' }, unitPadding(1, 1.5)), graphic('234-cloud', 26, 17)), button(toggleBackground)),
 		graphic('headLogoName', 80, 40),
 		div(style(fullHeight, fullWidth), div(style({ display:'block' }, unitPadding(1, 2)), graphic('216-compose', 23, 18)), button(function() {
 			composeOverlay.show()
 		}))
 	)
+	
+	function toggleBackground() {
+		var duration = 300
+		if (backgroundShowing) {
+			$('#appForeground').css(translate.x(0))
+			after(duration, function() {
+				$('#appBackground').empty()
+			})
+		} else {
+			var showing = unit*6
+			var offset = viewport.width() - showing
+			$('#appForeground').css(translate.x(offset, duration))
+			$('#appBackground').empty().append(
+				div(style({ width:viewport.width(), height:viewport.height(), background:'#fff' }),
+					div(style(absolute(offset, 0), { zIndex:2, width:showing, height:viewport.height() }), button(toggleBackground))
+				)
+			)
+		}
+		backgroundShowing = !backgroundShowing
+	}
 }
 
 var cardList
