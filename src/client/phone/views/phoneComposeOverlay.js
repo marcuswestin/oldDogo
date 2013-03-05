@@ -1,5 +1,12 @@
-module.exports = {
-	show:show
+var composeOverlay = module.exports = {
+	show:show,
+	headIcon:headIcon
+}
+
+function headIcon() {
+	return div(style(fullHeight, fullWidth), div(style({ display:'block' }, unitPadding(1, 2)), graphic('216-compose', 23, 18)), button(function() {
+		composeOverlay.show()
+	}))
 }
 
 function show() {

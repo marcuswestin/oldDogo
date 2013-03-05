@@ -1,4 +1,5 @@
 var tools = require('./phoneConversationTools')
+var composeOverlay = require('./phoneComposeOverlay')
 
 module.exports = {
 	renderHead:renderHead,
@@ -13,9 +14,9 @@ function renderHead(view) {
 	// setTimeout(function() { tools.selectMicrophone(conversation) }, 250) // AUTOS
 	
 	return appHead(
-		div(style(), 'left', button(function() { gScroller.pop() })),
-		div(style(unitPadding(1)), view.conversation.people[0].name),
-		div(style(), 'right', button(function() { console.log("Right") }))
+		div(style(unitPadding(3/4,1)), graphic('leftArrow', 20, 20), button(function() { gScroller.pop() })),
+		div(style(unitPadding(1), { color:'#fff', fontSize:19, marginTop:unit/4, textShadow:'0 1px 0 rgba(0,0,0,.3)' }), view.conversation.people[0].name),
+		composeOverlay.headIcon()
 	)
 }
 

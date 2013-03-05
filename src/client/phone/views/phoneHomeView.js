@@ -15,9 +15,7 @@ function renderHead() {
 	return appHead(
 		div(style(fullHeight, fullWidth), div(style({ display:'block' }, unitPadding(1, 1.5)), graphic('234-cloud', 26, 17)), button(toggleBackground)),
 		graphic('headLogoName', 80, 40),
-		div(style(fullHeight, fullWidth), div(style({ display:'block' }, unitPadding(1, 2)), graphic('216-compose', 23, 18)), button(function() {
-			composeOverlay.show()
-		}))
+		composeOverlay.headIcon()
 	)
 	
 	function toggleBackground() {
