@@ -11,7 +11,7 @@ function setupDevBridge() {
 		if (!commandHandlers[command]) {
 			return console.log("WARN", 'Unknown bridge command', command)
 		}
-		commandHandlers[command](data, callback)
+		commandHandlers[command](data, callback || function(){})
 	}
 }
 
@@ -32,6 +32,12 @@ var commandHandlers = {
 	
 	'BTCamera.show': justRespond,
 	'BTCamera.hide': justRespond,
+	
+	'BT.setStatusBar': function(data, callback) {
+		if (data.animation == 'slide') { $('#devClientStatusBar').css(translate(32, data.visible ? 0 : -20, 350)) }
+		else { $('#devClientStatusBar').css({ display:data.visible ? 'block' : 'none' }) }
+		nextTick(callback)
+	},
 	
 	'BTAddressBook.getAllEntries':function(data, callback) {
 		nextTick(function() { callback(null, { entries:[] }) })

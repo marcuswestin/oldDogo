@@ -43,10 +43,10 @@ function buildDevClient() {
 		.append(div(style({ position:'absolute', top:0, left:0, width:'100%' }),
 			div({ id:'mockPhone' }, style({ width:380, margin:'0 auto' }),
 				img({ src:'/graphics/mockPhone/iphone4-top.png' }, button(function(){}),
-					style({ display:'block', position:'relative', zIndex:1 })
+					style({ display:'block', position:'relative', zIndex:999 })
 				),
-				img({ src:'/graphics/mockPhone/iphoneStatusBar.png' }, button(function(){}),
-					style({ position:'absolute', zIndex:1, opacity:.6 }, translate.x(32))
+				img({ id:'devClientStatusBar', src:'/graphics/mockPhone/iphoneStatusBar.png' }, button(function(){}),
+					style({ position:'absolute', zIndex:998, opacity:.6 }, translate.x(32))
 				),
 				div({ id:'devClientViewportFrame' },
 					style(viewport.size(), translate.x(32), { position:'absolute', overflow:'hidden' }),

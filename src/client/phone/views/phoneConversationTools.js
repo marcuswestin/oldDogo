@@ -17,11 +17,12 @@ function _textTool(toolHeight, barHeight) {
 
 	Documents.read('TextDraft-'+conversation.conversationId, function(err, data) {
 		if (err) { return error(err) }
-		function setDraft() { $('#'+id).html(DogoText.getHtml(data && data.dogoText)) }
+		var dogoText = data && data.dogoText
+		function setDraft() { $('#'+id).html(DogoText.getHtml(dogoText)) }
 		setDraft()
 		$('#'+id).focus()
 		after(duration/2, function() {
-			if (data.dogoText) {
+			if (dogoText) {
 				setDraft()
 			} else {
 				$('#'+id).text('.') // we do this again to update the cursor position
@@ -104,16 +105,17 @@ function _textTool(toolHeight, barHeight) {
 
 /* Camera tool
  *************/
-_cameraTool.getHeight = function() { return viewport.width() }
+_cameraTool.getHeight = function() { return viewport.width()  }
 function _cameraTool(toolHeight, barHeight) {
 	var camPad = unit/2
 	var camSize = toolHeight - camPad*2
 	var barHeight = unit * 5
+	bridge.command('BT.setStatusBar', { visible:false, animation:'slide' })
 	after(duration, function() {
 		bridge.command('BTCamera.show', { position:[unit/2, viewport.height()-camSize-camPad-20, camSize, camSize] })
 	})
 	return div('cameraTool',
-		div('bar', style({ width:viewport.width(), height:barHeight, background:"#fff" }),
+		div('bar', style({ width:viewport.width(), height:barHeight + unit/2, background:"#fff" }),
 			div('button', 'close', style(unitPadding(1)), button(function() {
 				bridge.command('BTCamera.hide', function() {
 					_hideCurrentTool()

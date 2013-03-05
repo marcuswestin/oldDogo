@@ -1,4 +1,5 @@
 var permissionButtons = require('./phoneHomePermissionButtons')
+var composeOverlay = require('./phoneComposeOverlay')
 
 module.exports = {
 	renderHead:renderHead,
@@ -9,10 +10,13 @@ module.exports = {
 /* Head, body & foot
  *******************/
 function renderHead() {
+	// after(0, function() { composeOverlay.show() }) // AUTOS
 	return appHead(
 		div(style(fullHeight, fullWidth, { background:'blue' })),
 		graphic('headLogoName', 80, 40),
-		div(style(fullHeight, fullWidth, { background:'green' }))
+		div(style(fullHeight, fullWidth), div(style({ display:'block' }, unitPadding(1, 2)), graphic('216-compose', 23, 18)), button(function() {
+			composeOverlay.show()
+		}))
 	)
 }
 
@@ -22,13 +26,12 @@ function renderBody() {
 	Conversations.fetch(_addConversations)
 	function _addConversations(err, conversations) {
 		if (err) { return error(err) }
-		cardList.append(conversations.slice(0, 5))
+		cardList.append(conversations.slice(0, 10))
 	}
 
 	var drewLoading = false
-	return div(style({ paddingTop:unit*7.75 }),
+	return div(style({ paddingTop:unit*8 }),
 		div(permissionButtons),
-		div(style({ height:unit * 1.5 })),
 		cardList = makeList({
 			selectItem:_selectCard,
 			getItemId:_getCardId,
@@ -49,7 +52,7 @@ function renderFoot() {}
  *******/
 function _renderCard(convo) {
 	var person = convo.people[0]
-	return div(style(unitMargin(0, 3/4, 3/4), unitPadding(1/2), radius(2), { background:'white' }),
+	return div(style(unitPadding(1/2), { background:'white', borderBottom:'1px solid #ccc' }),
 		face(person, { size:unit*7 }, floatLeft),
 		div(style(floatLeft, unitPadding(0, 1)),
 			div(style(unitPadding(0, 0, 1/2), { fontWeight:600 }), person.name.split(' ')[0]),
@@ -71,5 +74,5 @@ function _getCardId(convo) {
  ********/
 events.on('conversations.new', function(info) {
 	if (!cardList) { return }
-	cardList.append(info.newConversations.slice(0, 5))
+	cardList.append(info.newConversations.slice(0, 10))
 })

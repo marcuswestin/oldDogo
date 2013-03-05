@@ -79,15 +79,16 @@ events.on('user.session', function renderSignedInApp(sessionInfo, viewStack) {
 events.on('device.rotated', function() {})
 
 appHead = function(left, center, right) {
-	return div(style(absolute(unit/2, unit*3), radius(1), { textAlign:'center', width:viewport.width() - unit, height:unit*5.5, background:'rgba(0,0,244,0.5)' }),
+	return div(style(absolute(0, 0), radius(1), { textAlign:'center', width:viewport.width(), height:unit*5.5, background:'rgba(0,0,244,0.5)' }),
 		div(style(floatLeft, radius(2), { width:unit*6, height:unit*4.5, margin:unit/2 }), left),
 		div(style(floatRight, radius(2), { width:unit*6, height:unit*4.5, margin:unit/2 }), right),
 		div(style({ textAlign:'center' }), center)
 	)
 }
 
+statusBarHeight = 20
 function renderHead(view) {
-	return getPhoneView(view).renderHead(view)
+	return div(style(absolute(0, statusBarHeight)), getPhoneView(view).renderHead(view))
 }
 
 function renderBody(view) {
