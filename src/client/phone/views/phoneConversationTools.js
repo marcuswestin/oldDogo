@@ -207,7 +207,6 @@ function selectTool(toolFn) {
 		var toolHeight = toolFn.getHeight()
 		var footHeight = $('#conversationFoot').height()
 		
-		$('#conversationFoot').css(translate.y(footHeight, duration))
 		$('#centerFrame').css(translate.y(-toolHeight, duration))
 		$('#southFrame').empty().css(translate.y(0, 0))
 		nextTick(function() {
@@ -219,9 +218,9 @@ function selectTool(toolFn) {
 }
 
 function _hideCurrentTool(extraHeight) {
+	bridge.command('BT.setStatusBar', { visible:true, animation:'slide' })
 	$('#centerFrame').css(translate.y(0))
 	$('#southFrame').css(translate.y(extraHeight || 0))
-	$('#conversationFoot').css(translate.y(0))
 	after(duration, function() { $('#southFrame').empty() })
 }
 
