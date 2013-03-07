@@ -68,7 +68,7 @@ function createUser(username, password, callback) {
 function _createDatabase(shardName, username, schema, callback) {
 	console.log('create database', shardName)
 	client.query('CREATE DATABASE IF NOT EXISTS '+shardName, function(err, res) {
-		var databaseAlreadyExisted = (res.warningCount == 1)
+		var databaseAlreadyExisted = (res && res.warningCount == 1)
 		if (databaseAlreadyExisted) {
 			console.log("Skip", shardName, '(already exists)')
 			callback()
