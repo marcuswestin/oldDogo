@@ -26,7 +26,7 @@ function renderHead() {
 				$('#appBackground').empty()
 			})
 		} else {
-			var showing = unit*6
+			var showing = unit*7
 			var offset = viewport.width() - showing
 			$('#appForeground').css(translate.x(offset, duration))
 			$('#appBackground').empty().append(
