@@ -9,6 +9,8 @@ run: run-databases secrets/dev
 	- killall node
 	dtach -n /tmp/dogo.dtach ${NODE} src/server/runServer.js --config=dev
 	tail -fn 100 output.log
+tail:
+	tail -fn 100 output.log
 
 debug: run-databases
 	${NODE} debug src/server/runServer.js --config=dev --debug=true
