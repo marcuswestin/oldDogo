@@ -43,7 +43,7 @@ function stop(name) {
 
 function report() {
 	return 'Time:'+(now() - this.t0)+'ms (' + map(this.timers, function(timer, name) {
-		return name + '*' + timer.count + ':' + timer.total + 'ms'
+		return name + '*' + timer.count + '=' + timer.total + 'ms'
 	}).join(', ')+')'
 }
 
