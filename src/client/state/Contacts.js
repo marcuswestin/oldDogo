@@ -27,7 +27,6 @@ function mergeInFacebookFriends(callback) {
 				var newContacts = []
 				var createdTime = now()
 				each(fbFriends, function(fbFriend) {
-					console.log("HERE", fbFriend)
 					_collectNewContacts(newContacts, knownAddresses, Addresses.typeEncoding.facebook, fbFriend.id, fbFriend.name, createdTime)
 				})
 				_storeNewContacts(newContacts, callback)

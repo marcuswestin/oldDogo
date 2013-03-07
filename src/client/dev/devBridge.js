@@ -68,7 +68,6 @@ var commandHandlers = {
 	},
 	'BTSql.query': function(data, callback) {
 		db.readTransaction(function(tx) {
-			console.log("HERE", data.sql, data.arguments)
 			tx.executeSql(data.sql, data.arguments, function(tx, dbResult) {
 				var rows = []
 				for (var i=0; i<dbResult.rows.length; i++) {
