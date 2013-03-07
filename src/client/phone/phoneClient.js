@@ -102,7 +102,7 @@ function renderSignedInApp(sessionInfo, viewStack) {
 events.on('device.rotated', function() {})
 
 appHead = function(left, center, right) {
-	var background = radialGradient('50% -70px', 'rgba(144, 199, 232, 0.6)', '#007BC2', '300px')
+	var background = radialGradient('50% -70px', 'rgba(144, 199, 232, 0.75)', '#007BC2', '300px')
 	return div(style(absolute(0, 0), { textAlign:'center', width:viewport.width(), height:unit*5.5, background:background }),
 		div(style(floatLeft, radius(2), { width:unit*6, height:unit*4.5, margin:unit/2 }), left),
 		div(style(floatRight, radius(2), { width:unit*6, height:unit*4.5, margin:unit/2 }), right),
