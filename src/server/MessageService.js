@@ -52,11 +52,11 @@ function sendMessage(personId, participationId, clientUid, type, payload, payloa
 		function _createMessage(conversationId, payload, callback) {
 			log.debug('create message', conversationId, payload)
 			var sql = 'INSERT INTO message SET sentTime=?, fromPersonId=?, clientUid=?, conversationId=?, type=?, payloadJson=?'
-			db.conversations(conversationId).insert(sql, [db.time(), personId, clientUid, conversationId, Messages.types[type], JSON.stringify(payload)], function(err, messageId) {
+			db.conversations(conversationId).insert(sql, [now(), personId, clientUid, conversationId, Messages.types[type], JSON.stringify(payload)], function(err, messageId) {
 				if (err) { return callback(err) }
 				var newMessage = {
 					id:messageId, fromPersonId:personId, conversationId:conversationId, clientUid:clientUid,
-					sentTime:db.time(), type:type, payload:payload
+					sentTime:now(), type:type, payload:payload
 				}
 				callback(null, newMessage)
 			})
@@ -102,7 +102,7 @@ function _createConversation(personId, participation, callback) {
 	
 	function _insertConversation(peopleJson, callback) {
 		var sql = 'INSERT INTO conversation SET peopleJson=?, createdTime=?'
-		db.conversations.randomShard().insert(sql, [peopleJson, db.time()], function(err, conversationId) {
+		db.conversations.randomShard().insert(sql, [peopleJson, now()], function(err, conversationId) {
 			if (err) { return callback(err) }
 			parallel(_setParticipationsConversationId, _updateAddresses, function(err, _, _) {
 				log.debug('created conversation', conversationId)
@@ -197,11 +197,11 @@ function _notifyParticipants(message, prodPush) {
 				}
 
 				var isMyParticipation = (personId == message.fromPersonId)
-				var lastReceivedTime = (isMyParticipation ? participation.lastReceivedTime : db.time())
+				var lastReceivedTime = (isMyParticipation ? participation.lastReceivedTime : now())
 				var recentJson = JSON.stringify(recent)
 				var picturesJson = JSON.stringify(pictures)
 				var sql = 'UPDATE participation SET lastMessageTime=?, lastReceivedTime=?, recentJson=?, picturesJson=? WHERE personId=? AND conversationId=?'
-				db.people(personId).updateOne(sql, [db.time(), lastReceivedTime, recentJson, picturesJson, personId, message.conversationId], function(err, res) {
+				db.people(personId).updateOne(sql, [now(), lastReceivedTime, recentJson, picturesJson, personId, message.conversationId], function(err, res) {
 					if (err) { log.error("Error updating participation", err, personId, message.conversationId) }
 				})
 			})
@@ -235,7 +235,7 @@ function getMessages(personId, participationId, conversationId, callback) {
 	function _updateParticipationLastRead(lastMessage) {
 		if (!lastMessage) { return }
 		var sql = 'UPDATE participation SET lastReadTime=? WHERE personId=? AND participationId=?'
-		db.people(participationId).updateOne(sql, [db.time(), personId, participationId], function(err) {
+		db.people(participationId).updateOne(sql, [now(), personId, participationId], function(err) {
 			if (err) { log.error('Could not update participation lastReadTime', personId, participationId, conversationId, err) }
 		})
 	}
@@ -246,7 +246,7 @@ function saveFacebookRequest(personId, facebookRequestId, toPersonId, conversati
 	// think through if this should go into lookupService, and what data is required
 	// db.shard(facebookRequestId).insert(this,
 	// 	'INSERT INTO facebookRequest SET createdTime=?, facebookRequestId=?, fromPersonId=?, toPersonId=?, conversationId=?',
-	// 	[this.db.time(), facebookRequestId, personId, toPersonId, conversationId], function(err, res) {
+	// 	[this.now(), facebookRequestId, personId, toPersonId, conversationId], function(err, res) {
 	// 		if (err) { return callback(err) }
 	// 		callback(null, 'OK')
 	// 	})

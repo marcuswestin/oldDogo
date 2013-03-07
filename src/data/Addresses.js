@@ -17,7 +17,10 @@ module.exports = {
 	phone:phone,
 	
 	isFacebookProxyEmail:isFacebookProxyEmail,
-	fromVerificationParams:fromVerificationParams
+	fromVerificationParams:fromVerificationParams,
+	
+	typeEncoding: { 'email':2, 'phone':3, 'facebook':4 },
+	typeDecoding: { 2:'email', 3:'phone', 4:'facebook' }
 }
 
 var types = ['phone', 'email', 'facebook']
@@ -36,13 +39,13 @@ function fromVerificationParams(params) {
 
 /* Normalization
  ***************/
-
 function normalizeEmail(email) {
 	return email.toLowerCase()
 }
 function normalizePhone(phone) {
 	phone = phone.replace(/[^\d\+]/g, '')
 	if (phone[0] != '+') { phone = '+1'+phone } // TODO localization
+	phone = phone.replace(/^\+1/, '1')
 	return phone
 }
 

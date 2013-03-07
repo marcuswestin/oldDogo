@@ -101,7 +101,7 @@ events.on('push.message', function(data) {
 	
 	var convo = find(gState.cache['conversations'], function(convo) { return convo.conversationId == pushMessage.conversationId })
 	convo.lastMessage = convo.lastReceivedMessage = pushMessage
-	if (!pushMessage.sentTime) { pushMessage.sentTime = time.now() }
+	if (!pushMessage.sentTime) { pushMessage.sentTime = now() }
 	
 	conversationsList.prepend(convo, { updateItems:true }) // put the conversation at the top of the conversations list
 })

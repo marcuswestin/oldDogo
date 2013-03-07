@@ -17,6 +17,8 @@ function setupDevBridge() {
 
 function justRespond(data, callback) { callback && nextTick(callback) }
 
+var db
+
 var commandHandlers = {
 	'app.show': function(data, callback) {
 		console.log('SHOW APP')
@@ -28,7 +30,12 @@ var commandHandlers = {
 	'BTFiles.writeJsonCache': _writeJson,
 	'BTFiles.readJsonDocument': _readJson,
 	'BTFiles.readJsonCache': _readJson,
-	'BTFiles.clearAll': function(data, callback) { localStorage.clear(); nextTick(callback) },
+	'BTFiles.clearAll': function(data, callback) {
+		localStorage.clear();
+		commandHandlers['BTSql.update']({ sql:'DROP TABLE contact' }, function(err) { callback(err) })
+	},
+	
+	'BTTextInput.setConfig':function(data, callback) { nextTick(callback) },
 	
 	'BTCamera.show': justRespond,
 	'BTCamera.hide': justRespond,
@@ -39,9 +46,7 @@ var commandHandlers = {
 		nextTick(callback)
 	},
 	
-	'BTAddressBook.getAllEntries':function(data, callback) {
-		nextTick(function() { callback(null, { entries:[] }) })
-	},
+	'BTAddressBook.getAllEntries':getAllAddressBookEntries,
 	
 	'facebook.connect': function(data, callback) {
 		var params = { scope:data.permissions.join(',') }
@@ -55,6 +60,48 @@ var commandHandlers = {
 		data.url = api.getUrl('api/messageDev')
 		api.sendRequest(data, callback)
 	},
+	
+	'BTSql.openDatabase': function(data, callback) {
+		var dbSize = 20*1024*1024 // 20 mb
+		db = window.openDatabase(data.name, '1.0', 'Dogo database', dbSize)
+		callback(db ? null : "Could not create database", null)
+	},
+	'BTSql.query': function(data, callback) {
+		db.readTransaction(function(tx) {
+			console.log("HERE", data.sql, data.arguments)
+			tx.executeSql(data.sql, data.arguments, function(tx, dbResult) {
+				var rows = []
+				for (var i=0; i<dbResult.rows.length; i++) {
+					rows.push(dbResult.rows.item(i))
+				}
+				callback(null, { rows:rows })
+			}, function onError(tx, err) { return callback(err, null) })
+		})
+	},
+	'BTSql.update': function(data, callback) {
+		db.transaction(function(tx) {
+			tx.executeSql(data.sql, data.arguments, onSuccess, onError)
+			function onSuccess(tx) { callback(null, null) }
+			function onError(tx, err) { callback(err, null) }
+		})
+	},
+    'BTSql.insertMultiple': function(data, callback) {
+		var CONSTRAINT_ERR = 6
+		db.transaction(function(tx) {
+			var i = -1
+			next()
+			function next() {
+				i += 1
+				if (i >= data.argumentsList.length) { return callback(null, null) }
+				tx.executeSql(data.sql, data.argumentsList[i], next, onError)
+			}
+			function onError(tx, err) {
+				if (err && data.ignoreDuplicates && err.code == CONSTRAINT_ERR) { return next() }
+				callback(err, null)
+			}
+		})
+	},
+	
 	
 	'_':function(){}
 	// 'push.register': function(data, callback) {
@@ -101,9 +148,6 @@ var commandHandlers = {
 	// 'textInput.hide': function(data, callback) {
 	// 	textInput.hide()
 	// },
-	// 'net.request': function(data, callback) {
-	// 	api.sendRequest({ url:data.path, params:data.params, method:data.method, headers:data.headers, callback:callback })
-	// },
 	// 'textInput.hideKeyboard': function(data, callback) {
 	// 	textInput.hideKeyboard()
 	// },
@@ -130,5 +174,15 @@ function _readJson(data, callback) {
 		var jsonValue
 		try { jsonValue = JSON.parse(localStorage[data.filename]) } catch(e) { jsonValue = null }
 		callback(null, jsonValue)
+	})
+}
+
+function getAllAddressBookEntries(data, callback) {
+	nextTick(function() {
+		var entries = [
+			{ name:'Marcus Westin', emailAddresses:['narcvs@gmail.com','marcus.westin@gmail.com'], phoneNumbers:['+1 (412) 423-8669','415-601-5654'] },
+			{ name:'Ashley Baker', emailAddresses:['ashleynkbaker@gmail.com'], phoneNumbers:['6319651971'] }
+		]
+		callback(null, { entries:entries })
 	})
 }

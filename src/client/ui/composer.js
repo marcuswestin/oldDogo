@@ -337,7 +337,7 @@ function selectPhoto() {
 		if (!res) { return }
 		var sources = ['libraryPhotos', 'camera'] // ,'cancel'
 		if (!sources[res.index]) { return }
-		bridge.command('media.pick', { source:sources[res.index], allowsEditing:true }, function(err, res) {
+		bridge.command('BTMedia.pick', { source:sources[res.index], allowsEditing:true }, function(err, res) {
 			if (!res.mediaId) { return }
 			selectDraw({
 				url: '/blowtorch/media/'+res.mediaId+'.jpg',

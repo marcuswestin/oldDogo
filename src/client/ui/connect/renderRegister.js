@@ -93,7 +93,7 @@ function renderProfile(view) {
 	)
 	
 	function _pickPhoto() {
-		bridge.command('media.pick', { source:'camera', cameraDevice:'front', allowsEditing:true }, function(err, res) {
+		bridge.command('BTMedia.pick', { source:'camera', cameraDevice:'front', allowsEditing:true }, function(err, res) {
 			if (!res.mediaId) { return }
 			var thisPictureSecretPromise = pictureSecretPromise = new Promise()
 			view.mediaId = res.mediaId
@@ -105,7 +105,7 @@ function renderProfile(view) {
 				boundary:'______webkit',
 				parts:{ picture:res.mediaId }
 			}
-			bridge.command('media.upload', params, function(err, res) {
+			bridge.command('BTMedia.upload', params, function(err, res) {
 				if (err) { error(err) }
 				thisPictureSecretPromise.fulfill(res && res.pictureSecret) // instead of view.pictureSecret as it may take a while for upload to finish
 			})

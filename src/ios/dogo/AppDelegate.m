@@ -9,6 +9,8 @@
 #import "BTCache.h"
 #import "BTAddressBook.h"
 #import "BTCamera.h"
+#import "BTSql.h"
+#import "BTNet.h"
 
 @implementation AppDelegate
 
@@ -21,6 +23,7 @@
     [BTCache setup:self];
     [BTAddressBook setup:self];
     [BTCamera setup:self];
+    [BTSql setup:self];
 }
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
     if ([BTFacebook handleOpenURL:url]) { return YES; }
@@ -115,9 +118,6 @@
 // Commands
 - (void)setupBridgeHandlers:(BOOL)useLocalBuild {
     [super setupBridgeHandlers:useLocalBuild];
-    [self registerHandler:@"net.request" handler:^(id data, BTResponseCallback responseCallback) {
-        [BTNet request:data responseCallback:responseCallback];
-    }];
     
     [self registerHandler:@"message.send" handler:^(id data, BTResponseCallback responseCallback) {
         NSData* payload = [NSData dataWithContentsOfFile:[BTFiles documentPath:data[@"document"]]];

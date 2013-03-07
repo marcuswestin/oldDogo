@@ -13,6 +13,8 @@ asyncEach = require('std/asyncEach')
 parallel = require('std/parallel')
 curry = require('std/curry')
 time = require('std/time')
+now = function() { return Math.floor(time.now() / time.second) }
+
 trim = require('std/trim')
 isArray = require('std/isArray')
 

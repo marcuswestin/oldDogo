@@ -9,9 +9,10 @@ function headIcon() {
 	}))
 }
 
+var list
 function show() {
 	var offsetTop = 20
-	var list = makeList({
+	list = makeList({
 		renderItem:renderItem,
 		selectItem:selectItem,
 		renderEmpty:function(){}
@@ -20,7 +21,7 @@ function show() {
 		if (err) { return error(err) }
 		list.append(slice(conversations, 0, 50))
 	})
-	overlay.show({ background:'white' }, function() {
+	overlay.show({ background:'#fff' }, function() {
 		bridge.command('BTTextInput.setConfig', { preventWebviewShift:true }, function() {
 			$('#searchInput').focus()
 		})
@@ -28,8 +29,10 @@ function show() {
 			style({ width:viewport.width(), height:viewport.height(), display:'inline-block' }),
 			div(style({ zIndex:1 }, absolute(0, statusBarHeight)),
 				appHead(
-					div(style(fullHeight, fullWidth), graphic('close', 32, 32), button(hide)),
-					input({ id:'searchInput' }, style({ display:'inline-block', height:27, width:182 }, unitMargin(1/2,0))),
+					div(style(fullHeight, fullWidth, { marginTop:unit*0.75 }), graphic('close', 20, 20), button(hide)),
+					input({ id:'searchInput' }, style(unitMargin(1/2,0), radius(20), {
+						display:'block', height:27, width:182, background:'#fff'
+					})),
 					div(style(fullHeight, fullWidth), div(style({ display:'block' }, unitPadding(1, 2)), graphic('216-compose', 23, 18)), button(function() {
 						
 					}))
@@ -43,9 +46,9 @@ function show() {
 		)
 	})
 	
-	function renderItem(convo) {
+	function renderItem(contact) {
 		return div(style({ padding:px(unit * 1.25), height:unit*3, background:'#fff', borderBottom:'1px solid #ccc' }), 
-			convo.people[0].name
+			contact.name + ' (' + contact.addressId + ')'
 		)
 	}
 	
@@ -54,6 +57,20 @@ function show() {
 		gScroller.push({ view:'conversation', conversation:convo })
 	}
 }
+
+events.on('app.start', function() {
+	$(document).on('keyup', '#searchInput', function() {
+		var $el = $(this)
+		nextTick(function() {
+			var input = trim($el.val())
+			if (!input) { return list.empty() }
+			Contacts.lookupByPrefix(input, function(err, contacts) {
+				if (err) { return error(err) }
+				list.empty().append(contacts)
+			})
+		})
+	})
+})
 
 function hide() {
 	bridge.command('BTTextInput.resetConfig')

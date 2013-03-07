@@ -31,7 +31,10 @@ function renderHead() {
 			$('#appForeground').css(translate.x(offset, duration))
 			$('#appBackground').empty().append(
 				div(style({ width:viewport.width(), height:viewport.height(), background:'#fff' }),
-					div(style(absolute(offset, 0), { zIndex:2, width:showing, height:viewport.height() }), button(toggleBackground))
+					div(style(absolute(offset, 0), { zIndex:2, width:showing, height:viewport.height() }), button(toggleBackground)),
+					div(style({ textAlign:'center' }),
+						div('button', 'Reset', button(clearState), style({ display:'inline-block', width:120 }, unitPadding(1,1.5), translate.y(200)))
+					)
 				)
 			)
 		}
@@ -41,12 +44,14 @@ function renderHead() {
 
 var cardList
 function renderBody() {
-	Conversations.read(_addConversations)
-	Conversations.fetch(_addConversations)
-	function _addConversations(err, conversations) {
+	Conversations.read(function(err, conversations) {
 		if (err) { return error(err) }
 		cardList.append(conversations.slice(0, 10))
-	}
+		Conversations.fetch(function(err, conversations) {
+			if (err) { return error(err) }
+			cardList.append(conversations.slice(0, 10))
+		})
+	})
 
 	var drewLoading = false
 	return div(style({ paddingTop:unit*8 }),

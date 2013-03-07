@@ -2,7 +2,7 @@ var each = require('std/each')
 var onlyCallOnce = require('std/once')
 
 // global
-module.exports = {
+events = {
 	on:on,
 	fire:fire,
 	once:once,

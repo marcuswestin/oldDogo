@@ -7,6 +7,8 @@ var uuid = require('uuid')
 var messageService = require('server/MessageService')
 var setPushAuth = require('server/fn/setPushAuth')
 var getConversations = require('server/fn/getConversations')
+var getContacts = require('server/fn/getContacts')
+var addContacts = require('server/fn/addContacts')
 var addAddresses = require('server/fn/addAddresses')
 var sendEmail = require('server/fn/sendEmail')
 var createSession = require('server/fn/createSession')
@@ -233,8 +235,14 @@ function setupRoutes(app, opts) {
 		createSession(req, params.address, params.password, curry(respond, req, res))
 	})
 	app.get('/api/conversations', filters.oldClientsAndSession, function handleGetConversations(req, res) {
-		getUrlParams(req) // for logging
 		getConversations(req, wrapRespond(req, res, 'conversations'))
+	})
+	app.get('/api/contacts', filters.oldClientsAndSession, function handleGetContacts(req, res) {
+		getUrlParams(req)
+		getContacts(req, curry(respond, req, res))
+	})
+	app.post('/api/contacts', filters.oldClientsAndSession, function handlePostContacts(req, res) {
+		addContacts(req, curry(respond, req, res))
 	})
 	app.post('/api/addresses', filters.oldClientsAndSession, function handleAddAddresses(req, res) {
 		var params = getJsonParams(req, 'newAddresses')
@@ -369,7 +377,7 @@ function setupDev(app) {
 	}
 }
 
-function getUrlParams(req) {
+getUrlParams = function(req) {
 	return logParams(req, _collectParams(arguments, function(argName) {
 		var param = req.param(argName)
 		return (param == 'null' ? null : param)
@@ -383,7 +391,7 @@ function getMultipartParams(req) {
 	}))
 }
 
-function getJsonParams(req) {
+getJsonParams = function(req) {
 	return logParams(req, _collectParams(arguments, function(argName) {
 		return req.param(argName)
 	}))

@@ -9,7 +9,7 @@ function getPerson(personId, callback) {
 function getPersonAndPasswordHash(personId, callback) {
 	var sql = 'SELECT facebookId, passwordHash, phoneNumbersJson, emailAddressesJson, name, personId, joinedTime FROM person WHERE personId=?'
 	return _selectPerson(sql, personId, function(err, person) {
-		if (err) { return callback(err) }
+		if (err || !person) { return callback(err) }
 		var passwordHash = remove(person, 'passwordHash')
 		callback(null, person, passwordHash)
 	})

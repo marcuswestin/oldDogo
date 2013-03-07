@@ -42,7 +42,7 @@ function _textTool(toolHeight, barHeight) {
 		after(duration/2, function() { $('#'+id).css({ opacity:1 }) }),
 		
 		div(style({ height:unit*4, textAlign:'center' }, unitPadding(1/2), translate.y(-unit/4)),
-			div(style(floatLeft), graphic('close', 32, 32), button(_closeText)),
+			div(style(floatLeft), graphic('close', 20, 20), button(_closeText)),
 			div('button', style(floatRight), 'Send', button(_sendText)),
 			div('textColor', style({ color:'#333', display:'inline-block' }, unitPadding(1/2)), button(_showTextColor),
 				'Color'

@@ -6,7 +6,7 @@ CREATE TABLE addressLookup (
 	conversationIdsJson VARCHAR(1024) DEFAULT NULL,
 	createdTime INT UNSIGNED NOT NULL,
 	claimedTime INT UNSIGNED DEFAULT NULL,
-	PRIMARY KEY (addressType, addressId)
+	PRIMARY KEY keyPrimary (addressType, addressId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE addressVerification (
@@ -20,5 +20,5 @@ CREATE TABLE addressVerification (
 	pictureRegion TINYINT UNSIGNED DEFAULT 1, -- s3 region. Using just one for now
 	createdTime INT UNSIGNED NOT NULL,
 	usedTime INT UNSIGNED DEFAULT NULL,
-	PRIMARY KEY (verificationId)
+	PRIMARY KEY keyPrimar (verificationId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

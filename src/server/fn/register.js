@@ -19,7 +19,7 @@ function withAddressVerification(verificationId, verificationToken, password, ca
 		var opts = {}
 		_createPersonWithVerifiedAddresses(verInfo.name, verInfo.passwordHash, pictureUrl, addresses, opts, function(err, person) {
 			if (err) { return callback(err) }
-			db.lookup().updateOne('UPDATE addressVerification SET usedTime=? WHERE verificationId=?', [db.time(), verInfo.verificationId], function(err) {
+			db.lookup().updateOne('UPDATE addressVerification SET usedTime=? WHERE verificationId=?', [now(), verInfo.verificationId], function(err) {
 				callback(err, { person:person, config:getClientConfig() })
 			})
 		})
@@ -103,7 +103,7 @@ function _createPersonWithVerifiedAddresses(name, passwordHash, pictureUrl, addr
 		var phoneNumbersJson = JSON.stringify(filter(addresses, Addresses.isPhone))
 		db.people.randomShard().insert(
 			'INSERT INTO person SET joinedTime=?, name=?, passwordHash=?, birthdate=?, locale=?, gender=?, facebookId=?, emailAddressesJson=?, phoneNumbersJson=?',
-			[db.time(), name, passwordHash, opts.birthdate, opts.locale, opts.gender, opts.facebookId, emailAddressesJson, phoneNumbersJson],
+			[now(), name, passwordHash, opts.birthdate, opts.locale, opts.gender, opts.facebookId, emailAddressesJson, phoneNumbersJson],
 			callback
 		)
 	}

@@ -25,12 +25,15 @@ var conversation
 function renderBody(view) {
 	conversation = view.conversation
 	if (conversation.conversationId) {
-		Conversations.readMessages(conversation, _addMessages)
-		Conversations.fetchMessages(conversation, _addMessages)
-		function _addMessages(err, messages) {
+		Conversations.readMessages(conversation, function(err, messages) {
 			if (err) { return error(err) }
 			list.append(messages)
-		}
+			// TODO Fetch since last fetched timestamp
+			Conversations.fetchMessages(conversation, function(err, messages) {
+				if (err) { return error(err) }
+				list.append(messages)
+			})
+		})
 	} else {
 		nextTick(function() {
 			list.empty().empty()

@@ -107,6 +107,8 @@ function error(err) {
 		return err.statusText
 	} else if (err.status) {
 		return err.status
+	} else if (err.message) {
+		return err.message
 	} else if (typeof err == 'string') {
 		return err
 	} else {

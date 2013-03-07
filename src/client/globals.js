@@ -1,4 +1,5 @@
 require('lib/jquery-1.8.1')
+require('client/events')
 
 tags = require('tags')
 require('tags/jquery-tags')
@@ -33,13 +34,16 @@ parallel = require('std/parallel')
 rand = require('std/rand')
 sum = require('std/sum')
 time = require('std/time')
+now = function() { return Math.floor(time.now() / time.second) }
 isArray = require('std/isArray')
+inverse = require('std/inverse')
 
-events = require('client/events')
 Documents = require('client/state/Documents')
 Caches = require('client/state/Caches')
 sessionInfo = require('client/state/sessionInfo')
 Conversations = require('client/state/Conversations')
+Contacts = require('client/state/Contacts')
+
 api = require('client/api')
 bridge = require('client/bridge')
 face = require('client/ui/face')
@@ -56,6 +60,7 @@ oranges = colors.oranges
 reds = colors.reds
 purples = colors.purples
 
+makeTimer = require('server/util/makeTimer')
 
 Addresses = require('data/Addresses')
 Payloads = require('data/Payloads')
@@ -117,15 +122,13 @@ BT = {
 error = function error(err) {
 	if (err == undefined) { return }
 	overlay.hide()
-	var margin = 0
-	var cornerSize = 40
 	var message = api.error(err)
 	if (!error.$tag) {
 		error.$tag = $(div({ id:'errorNotice' },
-			style({ position:'absolute', top:20+margin, left:cornerSize+margin, width:viewport.width() - cornerSize*2 - margin*4 }),
+			style({ position:'absolute', top:20, left:0, width:viewport.width() }),
 			div('content',
 				style({ maxHeight:240 }, scrollable.y),
-				div('close', style({ 'float':'right' }), 'X', button(function() { error.hide() })),
+				div('close', style({ position:'absolute', right:10 }), 'X', button(function() { error.hide() })),
 				div('message')
 			)
 		)).appendTo('#viewport')

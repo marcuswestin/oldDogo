@@ -32,24 +32,47 @@ events.on('app.start', startPhoneClient)
 
 bridge.init()
 
+clientDbName = 'DogoClientDb'
+var clientSchema = require('client/database/clientSchema')
 function startPhoneClient(appInfo) {
 	gAppInfo = appInfo
-	var background = 'white'
-	$('#viewport')
-		.append(div({ id:'centerFrame' }, style(viewport.size(), { background:background })))
-		.append(div({ id:'southFrame' }, style({ width:viewport.width(), height:0, position:'absolute', top:viewport.height() })))
-	
-	renderPhoneClient()
+	bridge.command('BTSql.openDatabase', { name:clientDbName }, function(err, res) {
+		if (err) { return error(err) }
+		Documents.read('DatabaseSchema', function(err, res) {
+			if (err) { return error(err) }
+			if (res && res.version == 1) {
+				// Schema migrations will happen here
+				renderPhoneClient()
+			} else {
+				firstTimeSetup()
+			}
+		})
+	})
+}
+
+function firstTimeSetup() {
+	bridge.command('BTSql.update', { sql:clientSchema.getSchema() }, function(err, res) {
+		if (err) { return error(err) }
+		Documents.write('DatabaseSchema', { version:clientSchema.version }, function(err, res) {
+			if (err) { return error(err) }
+			renderPhoneClient()
+		})
+	})
 }
 
 function renderPhoneClient() {
+	$('#viewport')
+		.append(div({ id:'centerFrame' }, style(viewport.size(), { background:'#fff' })))
+		.append(div({ id:'southFrame' }, style({ width:viewport.width(), height:0, position:'absolute', top:viewport.height() })))
+	
 	parallel(sessionInfo.load, curry(Documents.read, 'viewStack'), function(err, _, viewStack) {
 		if (err) { return error('There was an error starting the app. Please re-install it. Sorry.') }
 
 		if (sessionInfo.authToken) {
-			events.fire('user.session', sessionInfo, viewStack)
+			renderSignedInApp(sessionInfo, viewStack)
 		} else {
 			$('#centerFrame').empty().append(connect.render(viewStack))
+			events.on('user.session', renderSignedInApp)
 		}
 		bridge.command('app.show', { fade:.95 })
 	})
@@ -59,7 +82,7 @@ makeScroller.onViewChanging = function onViewChanging() {
 	Documents.write('viewStack', gScroller.stack)
 }
 
-events.on('user.session', function renderSignedInApp(sessionInfo, viewStack) {
+function renderSignedInApp(sessionInfo, viewStack) {
 	Payloads.configure(sessionInfo.config.payloads)
 	gScroller = makeScroller({
 		headHeight:0,
@@ -74,7 +97,7 @@ events.on('user.session', function renderSignedInApp(sessionInfo, viewStack) {
 		div({ id:'appBackground' }, style(absolute(0,0))),
 		div({ id:'appForeground' }, style(translate(0,0)), gScroller)
 	)
-})
+}
 
 events.on('device.rotated', function() {})
 

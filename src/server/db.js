@@ -9,8 +9,7 @@ var Database = module.exports = {
 	configure:configure,
 	people:getPersonShard,
 	conversations:getConversationShard,
-	lookup:getLookupShard,
-	time:getTime
+	lookup:getLookupShard
 }
 
 var shards = {}
@@ -123,18 +122,13 @@ var connectionBase = {
 			}
 			callback(err, null)
 		})
-	},
-	time:getTime
+	}
 }
 
 function onDbError(method, err, stackError, query, args) {
 	err.stack = stackError.stack // make it easy to see where the calling code came from
 	log.error(method, query, args, err.message || err)
 	return err
-}
-
-function getTime() {
-	return Math.floor(new Date().getTime() / 1000)
 }
 
 var Shard = proto(connectionBase,
@@ -225,7 +219,7 @@ var Shard = proto(connectionBase,
 var Transaction = proto(connectionBase,
 	function(db, conn) {
 		this.db = db
-		this._time = getTime()
+		this._time = now()
 		this._conn = conn
 		this._conn.query('START TRANSACTION')
 	}, {
@@ -271,7 +265,7 @@ var Transaction = proto(connectionBase,
 var Autocommit = proto(connectionBase,
 	function(db, conn) {
 		this.db = db
-		this._time = getTime()
+		this._time = now()
 		this._conn = conn
 	}, {
 		time: function() {

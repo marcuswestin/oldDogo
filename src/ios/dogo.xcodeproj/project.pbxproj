@@ -32,7 +32,6 @@
 		2C650CB816A5E459000F381E /* BTIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650C6716A5E459000F381E /* BTIndex.m */; };
 		2C650CB916A5E459000F381E /* BTModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650C6916A5E459000F381E /* BTModule.m */; };
 		2C650CBA16A5E459000F381E /* BTNet.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650C6B16A5E459000F381E /* BTNet.m */; };
-		2C650CBB16A5E459000F381E /* BTResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650C6D16A5E459000F381E /* BTResponse.m */; };
 		2C650CBC16A5E459000F381E /* BTState.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650C6F16A5E459000F381E /* BTState.m */; };
 		2C650CBD16A5E459000F381E /* BTViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650C7116A5E459000F381E /* BTViewController.m */; };
 		2C650CBE16A5E459000F381E /* NSString+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C650C7416A5E459000F381E /* NSString+Util.m */; };
@@ -53,6 +52,13 @@
 		2C70941E165A14EE007DDECD /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C70941D165A14EE007DDECD /* Default@2x.png */; };
 		2C709420165A14F2007DDECD /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C70941F165A14F2007DDECD /* Default-568h@2x.png */; };
 		2C70942A165A8965007DDECD /* logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2C709429165A8965007DDECD /* logo@2x.png */; };
+		2C88A88016E6CA980079D5CC /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C88A87616E6CA970079D5CC /* FMDatabase.m */; };
+		2C88A88116E6CA980079D5CC /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C88A87816E6CA970079D5CC /* FMDatabaseAdditions.m */; };
+		2C88A88216E6CA980079D5CC /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C88A87A16E6CA970079D5CC /* FMDatabasePool.m */; };
+		2C88A88316E6CA980079D5CC /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C88A87C16E6CA980079D5CC /* FMDatabaseQueue.m */; };
+		2C88A88516E6CA980079D5CC /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C88A87F16E6CA980079D5CC /* FMResultSet.m */; };
+		2C88A88816E6CAAE0079D5CC /* BTSql.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C88A88716E6CAAE0079D5CC /* BTSql.m */; };
+		2C88A88C16E7B2EC0079D5CC /* BTMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C88A88B16E7B2EC0079D5CC /* BTMedia.m */; };
 		2CAE30591556262500742518 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CAE30581556262500742518 /* AudioToolbox.framework */; };
 		2CC5C23E169FB874005050DB /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CC5C23D169FB874005050DB /* AVFoundation.framework */; };
 		2CCAFE691569EC1C002766A1 /* vibrate.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2CCAFE681569EC1C002766A1 /* vibrate.wav */; };
@@ -158,8 +164,6 @@
 		2C650C6916A5E459000F381E /* BTModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTModule.m; sourceTree = "<group>"; };
 		2C650C6A16A5E459000F381E /* BTNet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTNet.h; sourceTree = "<group>"; };
 		2C650C6B16A5E459000F381E /* BTNet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTNet.m; sourceTree = "<group>"; };
-		2C650C6C16A5E459000F381E /* BTResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTResponse.h; sourceTree = "<group>"; };
-		2C650C6D16A5E459000F381E /* BTResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTResponse.m; sourceTree = "<group>"; };
 		2C650C6E16A5E459000F381E /* BTState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTState.h; sourceTree = "<group>"; };
 		2C650C6F16A5E459000F381E /* BTState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTState.m; sourceTree = "<group>"; };
 		2C650C7016A5E459000F381E /* BTViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTViewController.h; sourceTree = "<group>"; };
@@ -191,6 +195,21 @@
 		2C70941D165A14EE007DDECD /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		2C70941F165A14F2007DDECD /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		2C709429165A8965007DDECD /* logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo@2x.png"; sourceTree = "<group>"; };
+		2C88A87516E6CA970079D5CC /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabase.h; sourceTree = "<group>"; };
+		2C88A87616E6CA970079D5CC /* FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabase.m; sourceTree = "<group>"; };
+		2C88A87716E6CA970079D5CC /* FMDatabaseAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseAdditions.h; sourceTree = "<group>"; };
+		2C88A87816E6CA970079D5CC /* FMDatabaseAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseAdditions.m; sourceTree = "<group>"; };
+		2C88A87916E6CA970079D5CC /* FMDatabasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabasePool.h; sourceTree = "<group>"; };
+		2C88A87A16E6CA970079D5CC /* FMDatabasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabasePool.m; sourceTree = "<group>"; };
+		2C88A87B16E6CA970079D5CC /* FMDatabaseQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseQueue.h; sourceTree = "<group>"; };
+		2C88A87C16E6CA980079D5CC /* FMDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseQueue.m; sourceTree = "<group>"; };
+		2C88A87E16E6CA980079D5CC /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
+		2C88A87F16E6CA980079D5CC /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
+		2C88A88616E6CAAE0079D5CC /* BTSql.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTSql.h; sourceTree = "<group>"; };
+		2C88A88716E6CAAE0079D5CC /* BTSql.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTSql.m; sourceTree = "<group>"; };
+		2C88A88916E7AFE80079D5CC /* BTTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BTTypes.h; sourceTree = "<group>"; };
+		2C88A88A16E7B2EC0079D5CC /* BTMedia.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTMedia.h; sourceTree = "<group>"; };
+		2C88A88B16E7B2EC0079D5CC /* BTMedia.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTMedia.m; sourceTree = "<group>"; };
 		2CAE30581556262500742518 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		2CC5C23D169FB874005050DB /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		2CCAFE681569EC1C002766A1 /* vibrate.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = vibrate.wav; sourceTree = "<group>"; };
@@ -287,6 +306,7 @@
 			isa = PBXGroup;
 			children = (
 				2C650ACE16A5DCAD000F381E /* BTAudio */,
+				2C88A87316E6CA970079D5CC /* BTSql */,
 				2CCE3DD816D416B900538F39 /* BTCache.h */,
 				2CCE3DD916D416B900538F39 /* BTCache.m */,
 				2C650AF516A5DCAD000F381E /* BTFacebook.h */,
@@ -297,6 +317,8 @@
 				2C650AFA16A5DCAD000F381E /* BTTextInput.m */,
 				2CF9B06516D408C100966C87 /* BTFiles.h */,
 				2CF9B06616D408C100966C87 /* BTFiles.m */,
+				2C88A88A16E7B2EC0079D5CC /* BTMedia.h */,
+				2C88A88B16E7B2EC0079D5CC /* BTMedia.m */,
 				2CCE3DDD16D6866600538F39 /* BTAddressBook.h */,
 				2CCE3DDE16D6866700538F39 /* BTAddressBook.m */,
 				2C20FC7B16D6F6640098BB32 /* BTCamera.h */,
@@ -359,6 +381,7 @@
 		2C650C6116A5E459000F381E /* blowtorch-ios-sdk */ = {
 			isa = PBXGroup;
 			children = (
+				2C88A88916E7AFE80079D5CC /* BTTypes.h */,
 				2C650C6216A5E459000F381E /* BTAppDelegate.h */,
 				2C650C6316A5E459000F381E /* BTAppDelegate.m */,
 				2C650C6616A5E459000F381E /* BTIndex.h */,
@@ -367,8 +390,6 @@
 				2C650C6916A5E459000F381E /* BTModule.m */,
 				2C650C6A16A5E459000F381E /* BTNet.h */,
 				2C650C6B16A5E459000F381E /* BTNet.m */,
-				2C650C6C16A5E459000F381E /* BTResponse.h */,
-				2C650C6D16A5E459000F381E /* BTResponse.m */,
 				2C650C6E16A5E459000F381E /* BTState.h */,
 				2C650C6F16A5E459000F381E /* BTState.m */,
 				2C650C7016A5E459000F381E /* BTViewController.h */,
@@ -458,6 +479,33 @@
 				2CCE3DDB16D44BD500538F39 /* phone */,
 			);
 			name = graphics;
+			sourceTree = "<group>";
+		};
+		2C88A87316E6CA970079D5CC /* BTSql */ = {
+			isa = PBXGroup;
+			children = (
+				2C88A87416E6CA970079D5CC /* fmdb */,
+				2C88A88616E6CAAE0079D5CC /* BTSql.h */,
+				2C88A88716E6CAAE0079D5CC /* BTSql.m */,
+			);
+			path = BTSql;
+			sourceTree = "<group>";
+		};
+		2C88A87416E6CA970079D5CC /* fmdb */ = {
+			isa = PBXGroup;
+			children = (
+				2C88A87516E6CA970079D5CC /* FMDatabase.h */,
+				2C88A87616E6CA970079D5CC /* FMDatabase.m */,
+				2C88A87716E6CA970079D5CC /* FMDatabaseAdditions.h */,
+				2C88A87816E6CA970079D5CC /* FMDatabaseAdditions.m */,
+				2C88A87916E6CA970079D5CC /* FMDatabasePool.h */,
+				2C88A87A16E6CA970079D5CC /* FMDatabasePool.m */,
+				2C88A87B16E6CA970079D5CC /* FMDatabaseQueue.h */,
+				2C88A87C16E6CA980079D5CC /* FMDatabaseQueue.m */,
+				2C88A87E16E6CA980079D5CC /* FMResultSet.h */,
+				2C88A87F16E6CA980079D5CC /* FMResultSet.m */,
+			);
+			path = fmdb;
 			sourceTree = "<group>";
 		};
 		2CCAFE671569EC1C002766A1 /* sounds */ = {
@@ -651,7 +699,6 @@
 				2C650CB816A5E459000F381E /* BTIndex.m in Sources */,
 				2C650CB916A5E459000F381E /* BTModule.m in Sources */,
 				2C650CBA16A5E459000F381E /* BTNet.m in Sources */,
-				2C650CBB16A5E459000F381E /* BTResponse.m in Sources */,
 				2C650CBC16A5E459000F381E /* BTState.m in Sources */,
 				2C650CBD16A5E459000F381E /* BTViewController.m in Sources */,
 				2C650CBE16A5E459000F381E /* NSString+Util.m in Sources */,
@@ -673,6 +720,13 @@
 				2CCE3DDF16D6866700538F39 /* BTAddressBook.m in Sources */,
 				2C20FC7D16D6F6640098BB32 /* BTCamera.m in Sources */,
 				2C093FF016DC0D33006E7F86 /* BTAudioGraph.m in Sources */,
+				2C88A88016E6CA980079D5CC /* FMDatabase.m in Sources */,
+				2C88A88116E6CA980079D5CC /* FMDatabaseAdditions.m in Sources */,
+				2C88A88216E6CA980079D5CC /* FMDatabasePool.m in Sources */,
+				2C88A88316E6CA980079D5CC /* FMDatabaseQueue.m in Sources */,
+				2C88A88516E6CA980079D5CC /* FMResultSet.m in Sources */,
+				2C88A88816E6CAAE0079D5CC /* BTSql.m in Sources */,
+				2C88A88C16E7B2EC0079D5CC /* BTMedia.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
