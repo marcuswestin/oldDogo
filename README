@@ -1,0 +1,20 @@
+Setup
+#####
+
+To get started:
+	
+	brew install node
+	brew install mysql
+	mysql_install_db --verbose --user=`whoami` --basedir="$(brew --prefix mysql)" --datadir=/usr/local/var/mysql --tmpdir=/tmp
+	brew install redis
+	brew install bcrypt
+
+	git clone git@github.com:marcuswestin/dogo.git
+	cd dogo
+	make setup
+	make run
+
+To deploy to prod:
+
+	sudo easy_install fabric
+	make push-api
