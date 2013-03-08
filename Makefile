@@ -115,7 +115,6 @@ setup-dev: setup-source setup-server setup-emojis
 	cd node_modules/require && npm install --production .
 	cd dependencies/blowtorch && make setup
 	cd dependencies/facebook-ios-sdk && scripts/build_framework.sh
-	cd node_modules/socket.io && npm install . --production
 	cd node_modules/stylus && npm install . --production
 
 setup-emojis:

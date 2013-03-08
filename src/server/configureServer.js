@@ -5,7 +5,7 @@ module.exports = function configureServer(config) {
 	var sendEmail = require('server/fn/sendEmail')
 	var sendSms = require('server/fn/sendSms')
 	var pushService = require('server/PushService')
-	var payloads = require('data/payloads')
+	var payloads = require('data/Payloads')
 	
 	db.configure(config.dbShards)
 	payloadService.configure(config.aws)

@@ -19,7 +19,7 @@ trim = require('std/trim')
 isArray = require('std/isArray')
 
 Addresses = require('data/Addresses')
-payloads = require('data/payloads')
+payloads = require('data/Payloads')
 
 makeTimer = require('server/util/makeTimer')
 log = require('server/util/log')
