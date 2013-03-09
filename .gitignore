@@ -14,3 +14,5 @@ secrets/dev.tar
 secrets/prod
 secrets/prod.tar
 output.log
+dogo-textmate.tmproj
+
