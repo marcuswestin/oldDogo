@@ -60,6 +60,9 @@ secrets/dev: secrets/dev.tar.bfe
 	bcrypt -r secrets/dev.tar.bfe
 	tar -xf secrets/dev.tar
 
+secrets/prod: secrets/prod.tar
+	tar -xf secrets/prod.tar
+
 encrypt-prod:
 	tar -cf secrets/prod.tar secrets/prod
 	bcrypt secrets/prod.tar # PROD PASSWORD
@@ -78,7 +81,7 @@ run-prod:
 push-api:
 	gitpush
 	make deploy-api
-deploy-api: secrets/dev.tar secrets/prod.tar ${FAB}
+deploy-api: secrets/dev.tar secrets/prod.tar secrets/dev secrets/prod ${FAB}
 	echo "BUILDING AND DEPLOYING ${GIT_REV}"
 	# Decrypt tar for transfer
 	fab -H ${HOSTNAMES} -P deploy_dogo_api:${GIT_REV}
