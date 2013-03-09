@@ -3,8 +3,8 @@ var composeOverlay = module.exports = {
 	headIcon:headIcon
 }
 
-function headIcon() {
-	return div(style(fullHeight, fullWidth), div(style({ display:'block' }, unitPadding(1, 2)), graphic('216-compose', 23, 18)), button(function() {
+function headIcon(onTap) {
+	return div(style(fullHeight, fullWidth), div(style({ display:'block' }, unitPadding(1, 2)), graphic('216-compose', 23, 18)), button(onTap || function() {
 		composeOverlay.show()
 	}))
 }
@@ -22,24 +22,26 @@ function show() {
 		list.append(slice(conversations, 0, 50))
 	})
 	overlay.show({ background:'#fff' }, function() {
-		bridge.command('BTTextInput.setConfig', { preventWebviewShift:true }, function() {
-			$('#searchInput').focus()
+		nextTick(function() {
+			bridge.command('BTTextInput.setConfig', { preventWebviewShift:true }, function() {
+				$('#searchInput').focus()
+			})
 		})
 		return div(
-			style({ width:viewport.width(), height:viewport.height(), display:'inline-block' }),
+			style(appBg, { width:viewport.width(), height:viewport.height(), display:'inline-block' }),
 			div(style({ zIndex:1 }, absolute(0, statusBarHeight)),
 				appHead(
 					div(style(fullHeight, fullWidth, { marginTop:unit*0.75 }), graphic('close', 20, 20), button(hide)),
 					input({ id:'searchInput' }, style(unitMargin(1/2,0), radius(20), {
 						display:'block', height:27, width:182, background:'#fff'
 					})),
-					div(style(fullHeight, fullWidth), div(style({ display:'block' }, unitPadding(1, 2)), graphic('216-compose', 23, 18)), button(function() {
+					headIcon(function() {
 						
-					}))
+					})
 				)
 			),
-			div(style({ height:viewport.height() - unit/2 }, scrollable.y),
-				div(style({ paddingTop:unit*9, textAlign:'left', color:'#222', textShadow:'none' }),
+			div({ id:'searchResults' }, style({ height:viewport.height() - keyboardHeight }, scrollable.y),
+				div(style({ paddingTop:unit*8, textAlign:'left', color:'#222', textShadow:'none' }),
 					list
 				)
 			)
@@ -76,3 +78,11 @@ function hide() {
 	bridge.command('BTTextInput.resetConfig')
 	overlay.hide()
 }
+
+events.on('keyboard.willShow', function() {
+	$('#searchResults').css(transition('height', keyboardAnimationDuration)).css({ height:viewport.height() - keyboardHeight })
+})
+
+events.on('keyboard.willHide', function() {
+	$('#searchResults').css(transition('height', keyboardAnimationDuration)).css({ height:viewport.height() })
+})

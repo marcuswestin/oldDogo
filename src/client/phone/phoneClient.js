@@ -61,8 +61,10 @@ function firstTimeSetup() {
 }
 
 function renderPhoneClient() {
+	appBg = graphics.background('background', 100, 100)
+	appBg.background = appBg.background.replace('no-repeat', 'repeat #fff')
 	$('#viewport')
-		.append(div({ id:'centerFrame' }, style(viewport.size(), { background:'#fff' })))
+		.append(div({ id:'centerFrame' }, style(viewport.size(), appBg)))
 		.append(div({ id:'southFrame' }, style({ width:viewport.width(), height:0, position:'absolute', top:viewport.height() })))
 	
 	parallel(sessionInfo.load, curry(Documents.read, 'viewStack'), function(err, _, viewStack) {
