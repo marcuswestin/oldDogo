@@ -23,7 +23,7 @@ function normalizeAddressId(addressType, addressId) {
 function claimVerifiedAddress(addrInfo, personId, name, callback) {
 	log.debug('claim verified address', addrInfo, personId, name)
 	var sql = 'UPDATE addressLookup SET name=?, personId=?, claimedTime=? WHERE addressId=? AND addressType=? AND claimedTime IS NULL'
-	var addressType = Addresses.typeEncoding[addrInfo.addressType]
+	var addressType = Addresses.types[addrInfo.addressType]
 	var addressId = normalizeAddressId(addrInfo.addressType, addrInfo.addressId)
 	db.lookup().updateOne(sql, [name, personId, now(), addressId, addrInfo.addressType], callback)
 }
