@@ -8,6 +8,7 @@ To get started:
 	mysql_install_db --verbose --user=`whoami` --basedir="$(brew --prefix mysql)" --datadir=/usr/local/var/mysql --tmpdir=/tmp
 	brew install redis
 	brew install bcrypt
+	brew install imagemagick
 
 	git clone git@github.com:marcuswestin/dogo.git
 	cd dogo
