@@ -4,12 +4,28 @@ module.exports = {
 	
 	// fetchFromServer:fetchFromServer,
 	// mergeFacebookFriends:mergeFacebookFriends,
-	lookupByPrefix:lookupByPrefix
+	lookupByPrefix:lookupByPrefix,
+	all:all
 }
 
-function lookupByPrefix(prefix, callback) {
+function all(callback) {
 	_whenInitialized(function() {
-		bridge.command('BTSql.query', { sql:"SELECT * FROM contact WHERE addressId LIKE ? OR name LIKE ? LIMIT 40", arguments:[prefix+'%', prefix+'%'] }, function(err, res) {
+		var sql = 'SELECT addressType, addressId, createdTime, name, localId, hasLocalImage, pictureUploadedTime FROM contact'
+		bridge.command('BTSql.query', { sql:sql }, function(err, res) {
+			callback(err, err ? null : res.rows)
+		})
+	})
+}
+
+function lookupByPrefix(prefix, opts, callback) {
+	opts = options(opts, { limit:null })
+	_whenInitialized(function() {
+		var limit = (typeof opts.limit == 'number' ? 'LIMIT '+opts.limit : '')
+		var sql = [
+			'SELECT addressType, addressId, createdTime, name, localId, hasLocalImage, pictureUploadedTime',
+			'FROM contact WHERE addressId LIKE ? OR name LIKE ? '+limit
+		].join('\n')
+		bridge.command('BTSql.query', { sql:sql, arguments:[prefix+'%', prefix+'%'] }, function(err, res) {
 			if (err) { return callback(err) }
 			callback(null, res.rows)
 		})
@@ -20,17 +36,15 @@ function mergeInFacebookFriends(callback) {
 	_updateFromServer(function(err) {
 		if (err) { return callback(err) }
 		overlay.show('Fetching friends from Facebook...')
-		_getFbFriends(function(err, fbFriends) {
+		parallel(_getFbFriends, _getKnownAddresses, function(err, fbFriends, knownAddresses) {
 			if (err) { return callback(err) }
-			_getKnownAddresses(function(err, knownAddresses) {
-				if (err) { return callback(err) }
-				var newContacts = []
-				var createdTime = now()
-				each(fbFriends, function(fbFriend) {
-					_collectNewContacts(newContacts, knownAddresses, Addresses.typeEncoding.facebook, fbFriend.id, fbFriend.name, createdTime)
-				})
-				_storeNewContacts(newContacts, callback)
+			overlay.show('Detecting duplicates...')
+			var newContacts = []
+			var createdTime = now()
+			each(fbFriends, function(fbFriend) {
+				_collectNewContacts(newContacts, knownAddresses, Addresses.types.facebook, [fbFriend.id], fbFriend.name, createdTime, null, 0)
 			})
+			_storeNewContacts(newContacts, callback)
 		})
 	})
 	
@@ -50,31 +64,31 @@ function mergeInAddressBook(callback) {
 	_updateFromServer(function(err) {
 		if (err) { return callback(err) }
 		overlay.show('Reading contacts from address book...')
-		bridge.command('BTAddressBook.getAllEntries', function(err, addressBookRes) {
+		parallel(_getAddressBookEntries, _getKnownAddresses, function(err, addressBookRes, knownAddresses) {
 			if (err) { return callback(err) }
-			_getKnownAddresses(function(err, knownAddresses) {
-				if (err) { return callback(err) }
-				
-				var newContacts = []
-				var createdTime = now()
-				each(addressBookRes.entries, function(entry) {
-					_collectNewContacts(newContacts, knownAddresses, Addresses.typeEncoding.phone, map(entry.phoneNumbers, Addresses.normalizePhone), entry.name, createdTime)
-					_collectNewContacts(newContacts, knownAddresses, Addresses.typeEncoding.email, map(entry.emailAddresses, Addresses.normalizeEmail), entry.name, createdTime)
-				})
-				_storeNewContacts(newContacts, callback)
+			overlay.show('Detecting duplicates...')
+			var newContacts = []
+			var createdTime = now()
+			each(addressBookRes.entries, function(entry) {
+				_collectNewContacts(newContacts, knownAddresses, Addresses.types.phone, map(entry.phoneNumbers, Addresses.normalizePhone), entry.name, createdTime, entry.recordId, entry.hasImage)
+				_collectNewContacts(newContacts, knownAddresses, Addresses.types.email, map(entry.emailAddresses, Addresses.normalizeEmail), entry.name, createdTime, entry.recordId, entry.hasImage)
 			})
+			_storeNewContacts(newContacts, callback)
 		})
 	})
+	
+	function _getAddressBookEntries(callback) {
+		bridge.command('BTAddressBook.getAllEntries', callback)
+	}
 }
 
 function _getKnownAddresses(callback) {
-	overlay.show('Detecting duplicates...')
 	bridge.command('BTSql.query', { sql:'SELECT addressType, addressId FROM contact' }, function(err, res) {
 		if (err) { return callback(err) }
-		var knownAddresses = {}
-		knownAddresses[Addresses.typeEncoding.phone] = {}
-		knownAddresses[Addresses.typeEncoding.email] = {}
-		knownAddresses[Addresses.typeEncoding.facebook] = {}
+		var knownAddresses = { count: res.rows.length }
+		knownAddresses[Addresses.types.phone] = {}
+		knownAddresses[Addresses.types.email] = {}
+		knownAddresses[Addresses.types.facebook] = {}
 		each(res.rows, function(row) { knownAddresses[row.addressType][row.addressId] = true })
 		callback(null, knownAddresses)
 	})
@@ -86,7 +100,7 @@ function _storeNewContacts(contactsList, callback) {
 	api.post('api/contacts', { contactsList:contactsList }, function(err, res) {
 		if (err) { return callback(err) }
 		overlay.show('Storing contacts locally...')
-		var sql = 'INSERT INTO contact (addressType, addressId, createdTime, name) VALUES (?,?,?,?)'
+		var sql = 'INSERT INTO contact (addressType, addressId, createdTime, name, localId, hasLocalImage) VALUES (?,?,?,?,?,?)'
 		bridge.command('BTSql.insertMultiple', { sql:sql, argumentsList:contactsList }, onDone)
 	})
 	function onDone(err) {
@@ -95,12 +109,12 @@ function _storeNewContacts(contactsList, callback) {
 	}
 }
 
-function _collectNewContacts(newContacts, knownAddresses, addressType, addressIds, name, createdTime) {
+function _collectNewContacts(newContacts, knownAddresses, addressType, addressIds, name, createdTime, localId, hasLocalImage) {
 	var knownAddressesByType = knownAddresses[addressType]
 	each(addressIds, function(addressId) {
 		if (knownAddressesByType[addressId]) { return }
 		knownAddressesByType[addressId] = true
-		newContacts.push([addressType, addressId, createdTime, name])
+		newContacts.push([addressType, addressId, createdTime, name, localId, hasLocalImage])
 	})
 }
 

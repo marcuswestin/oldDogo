@@ -179,8 +179,8 @@ function _readJson(data, callback) {
 function getAllAddressBookEntries(data, callback) {
 	nextTick(function() {
 		var entries = [
-			{ name:'Marcus Westin', emailAddresses:['narcvs@gmail.com','marcus.westin@gmail.com'], phoneNumbers:['+1 (412) 423-8669','415-601-5654'] },
-			{ name:'Ashley Baker', emailAddresses:['ashleynkbaker@gmail.com'], phoneNumbers:['6319651971'] }
+			{ recordId:'devBridge'+tags.id(), name:'Marcus Westin', emailAddresses:['narcvs@gmail.com','marcus.westin@gmail.com'], phoneNumbers:['+1 (412) 423-8669','415-601-5654'] },
+			{ recordId:'devBridge'+tags.id(), name:'Ashley Baker', emailAddresses:['ashleynkbaker@gmail.com'], phoneNumbers:['6319651971'] }
 		]
 		callback(null, { entries:entries })
 	})

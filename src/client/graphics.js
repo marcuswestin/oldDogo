@@ -1,6 +1,7 @@
 var graphics = module.exports = {
 	url:url,
 	background:background,
+	backgroundImage:backgroundImage,
 	graphic:graphic,
 	base:'/graphics/'
 }
@@ -14,12 +15,19 @@ function url(name, width, height) {
 	return graphics.base + name + size + scale + '.png'
 }
 
-function background(name, width, height, offsetX, offsetY) {
+function backgroundImage(url, width, height, opts) {
+	var opts = options(opts, { offsetX:0, offsetY:0, repeat:'no-repeat', background:'transparent' })
 	return {
-		background:'transparent '+(offsetX || 0)+'px '+(offsetY || 0)+'px no-repeat',
-		backgroundImage:'url('+graphics.url(name, width, height)+')',
-		backgroundSize:px(width, height)
+		background:opts.background+' '+opts.offsetX+'px '+opts.offsetY+'px '+opts.repeat,
+		backgroundImage:'url('+url+')',
+		backgroundSize:px(width, height),
+		width:width,
+		height:height
 	}
+}
+
+function background(name, width, height, opts) {
+	return graphics.backgroundImage(graphics.url(name, width, height), width, height, opts)
 }
 
 function graphic(name, width, height) {
@@ -29,9 +37,7 @@ function graphic(name, width, height) {
 	// if (paddingLeft == null) { paddingLeft = paddingRight }
 	var styles = slice(arguments, 3)
 	return div(style(graphics.background(name, width, height), {
-		display:'inline-block',
-		width:width,
-		height:height,
+		display:'inline-block'
 		// padding:px(paddingTop, paddingRight, paddingBottom, paddingLeft)
 	}), styles && style.apply(this, styles))
 }

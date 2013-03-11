@@ -24,23 +24,21 @@ function claimVerifiedAddress(addrInfo, personId, name, callback) {
 	log.debug('claim verified address', addrInfo, personId, name)
 	var sql = 'UPDATE addressLookup SET name=?, personId=?, claimedTime=? WHERE addressId=? AND addressType=? AND claimedTime IS NULL'
 	var addressType = Addresses.typeEncoding[addrInfo.addressType]
-	var addressId = normalizeAddressId(addressType, addrInfo.addressId)
-	db.lookup().updateOne(sql, [name, personId, now(), addressId, addressType], callback)
+	var addressId = normalizeAddressId(addrInfo.addressType, addrInfo.addressId)
+	db.lookup().updateOne(sql, [name, personId, now(), addressId, addrInfo.addressType], callback)
 }
 function createVerifiedAddress(addrInfo, personId, name, callback) {
 	log.debug('create verified address', addrInfo, personId, name)
 	var sql = 'INSERT INTO addressLookup SET name=?, personId=?, claimedTime=?, createdTime=?, addressId=?, addressType=?'
-	var addressType = Addresses.typeEncoding[addrInfo.addressType]
-	var addressId = normalizeAddressId(addressType, addrInfo.addressId)
-	db.lookup().insertIgnoreId(sql, [name, personId, now(), now(), addressId, addressType], callback)
+	var addressId = normalizeAddressId(addrInfo.addressType, addrInfo.addressId)
+	db.lookup().insertIgnoreId(sql, [name, personId, now(), now(), addressId, addrInfo.addressType], callback)
 }
 function createAddressVerification(passwordHash, name, addrInfo, pictureSecret, callback) {
 	log.debug('create address verification', addrInfo, name)
 	var verificationToken = uuid.v4()
 	var sql = 'INSERT INTO addressVerification SET verificationToken=?, passwordHash=?, name=?, addressId=?, addressType=?, pictureSecret=?, createdTime=?'
-	var addressType = Addresses.typeEncoding[addrInfo.addressType]
-	var addressId = normalizeAddressId(addressType, addrInfo.addressId)
-	var values = [verificationToken, passwordHash, name, addressId, addressType, pictureSecret, now()]
+	var addressId = normalizeAddressId(addrInfo.addressType, addrInfo.addressId)
+	var values = [verificationToken, passwordHash, name, addressId, addrInfo.addressType, pictureSecret, now()]
 	db.lookup().insert(sql, values, function(err, verificationId) {
 		callback(err, verificationId, verificationToken)
 	})
@@ -52,7 +50,6 @@ function getAddressVerification(verificationId, verificationToken, callback) {
 		if (err) { return callback(err) }
 		if (!verification) { return callback("I don't recognize this verification - please check that you have the right link.") }
 		if (verification.usedTime) { return callback('Sorry, this verification link has already been used') }
-		verification.addressType = Addresses.typeDecoding[verification.addressType]
 		callback(null, verification)
 	})
 }
@@ -62,13 +59,11 @@ function lookupEmail(email, callback) { _lookupByTypeAndAddress(Addresses.types.
 function _lookupByTypeAndAddress(addressType, addressId, callback) {
 	log.debug('lookup address', addressType, addressId)
 	var sql = 'SELECT addressType, addressId, personId, name, conversationIdsJson, createdTime, claimedTime FROM addressLookup WHERE addressType=? AND addressId=?'
-	addressType = Addresses.typeEncoding[addressType]
 	addressId = normalizeAddressId(addressType, addressId)
 	db.lookup().selectOne(sql, [addressType, addressId], function(err, addrInfo) {
 		if (err) { return callback(err, null) }
 		if (!addrInfo) { return callback(null, null) }
 		addrInfo.conversationIds = jsonList(remove(addrInfo, 'conversationIdsJson'))
-		addrInfo.addressType = Addresses.typeDecoding[remove(addrInfo, 'addressType')]
 		callback(err, addrInfo.personId, addrInfo)
 	})
 }
@@ -78,14 +73,12 @@ function _json(prop) { return prop ? JSON.stringify(prop) : null }
 function addUnclaimedAddress(addrInfo, callback) {
 	log.debug('add unclaimed address', addrInfo)
 	var sql = 'INSERT INTO addressLookup SET name=?, conversationIdsJson=?, addressId=?, addressType=?, createdTime=?'
-	var addressType = Addresses.typeEncoding[addrInfo.addressType]
-	var addressId = normalizeAddressId(addressType, addrInfo.addressId)
-	db.lookup().insertIgnoreId(sql, [addrInfo.name, _json(addrInfo.conversationIds), addressId, addressType, now()], callback)
+	var addressId = normalizeAddressId(addrInfo.addressType, addrInfo.addressId)
+	db.lookup().insertIgnoreId(sql, [addrInfo.name, _json(addrInfo.conversationIds), addressId, addrInfo.addressType, now()], callback)
 }
 function updateAddressInfo(addrInfo, callback) {
 	log.debug('update address', addrInfo)
 	var sql = 'UPDATE addressLookup SET name=?, conversationIdsJson=? WHERE addressType=? AND addressId=?'
-	var addressType = Addresses.typeEncoding[addrInfo.addressType]
-	var addressId = normalizeAddressId(addressType, addrInfo.addressId)
-	db.lookup().updateOne(sql, [addrInfo.name, _json(addrInfo.conversationIds), addressType, addressId], callback)
+	var addressId = normalizeAddressId(addrInfo.addressType, addrInfo.addressId)
+	db.lookup().updateOne(sql, [addrInfo.name, _json(addrInfo.conversationIds), addrInfo.addressType, addressId], callback)
 }

@@ -49,8 +49,18 @@ function show() {
 	})
 	
 	function renderItem(contact) {
-		return div(style({ padding:px(unit * 1.25), height:unit*3, background:'#fff', borderBottom:'1px solid #ccc' }), 
-			contact.name + ' (' + contact.addressId + ')'
+		var imageSize = unit * 4
+		var resize = imageSize*2+'x'+imageSize*2
+		if (contact.hasLocalImage) {
+			var imageParams = { mediaModule:'BTAddressBook', mediaId:contact.localId, resize:resize }
+		} else if (Addresses.isFacebook(contact)) {
+			var imageParams = { url:face.facebookUrl(contact), resize:resize }
+		}
+		
+		var imageStyle = imageParams ? graphics.backgroundImage(BT.url('BTImage', 'fetchImage', imageParams), imageSize, imageSize) : null
+		return div(style(unitPadding(1.25, .5), { height:unit*3, background:'#fff', borderBottom:'1px solid #ccc' }),
+			imageStyle && div(style(imageStyle, { display:'inline-block' })),
+			contact.name + ' (' + contact.addressType + ', '+contact.addressId + ')'
 		)
 	}
 	
@@ -66,7 +76,7 @@ events.on('app.start', function() {
 		nextTick(function() {
 			var input = trim($el.val())
 			if (!input) { return list.empty() }
-			Contacts.lookupByPrefix(input, function(err, contacts) {
+			Contacts.lookupByPrefix(input, { limit:40 }, function(err, contacts) {
 				if (err) { return error(err) }
 				list.empty().append(contacts)
 			})
@@ -79,10 +89,10 @@ function hide() {
 	overlay.hide()
 }
 
-events.on('keyboard.willShow', function() {
-	$('#searchResults').css(transition('height', keyboardAnimationDuration)).css({ height:viewport.height() - keyboardHeight })
+events.on('keyboard.willShow', function(info) {
+	$('#searchResults').css(transition('height', info.keyboardAnimationDuration)).css({ height:viewport.height() - keyboardHeight })
 })
 
-events.on('keyboard.willHide', function() {
-	$('#searchResults').css(transition('height', keyboardAnimationDuration)).css({ height:viewport.height() })
+events.on('keyboard.willHide', function(info) {
+	$('#searchResults').css(transition('height', info.keyboardAnimationDuration)).css({ height:viewport.height() })
 })

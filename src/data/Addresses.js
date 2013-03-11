@@ -1,4 +1,4 @@
-module.exports = {
+var Addresses = module.exports = {
 	verifyFormat:verifyFormat,
 	verifyEmailFormat:verifyEmailFormat,
 	verifyPhoneFormat:verifyPhoneFormat,
@@ -19,11 +19,8 @@ module.exports = {
 	isFacebookProxyEmail:isFacebookProxyEmail,
 	fromVerificationParams:fromVerificationParams,
 	
-	typeEncoding: { 'email':2, 'phone':3, 'facebook':4 },
-	typeDecoding: { 2:'email', 3:'phone', 4:'facebook' }
+	types: { 'email':2, 'phone':3, 'facebook':4 }
 }
-
-var types = ['phone', 'email', 'facebook']
 
 function isFacebookProxyEmail(email) {
 	return /@proxymail.facebook.com/.test(email)
@@ -31,9 +28,8 @@ function isFacebookProxyEmail(email) {
 
 function fromVerificationParams(params) {
 	// e.g /verify?i=123&t=abc&email=narcvs%40gmail.com or /verify?i=123&t=abc&phone=%2B14124238669
-	for (var i=0; i<types.length; i++) {
-		var type = types[i]
-		if (params[type]) { return address(type, params[type]) }
+	for (var typeName in Addresses.types) {
+		if (params[typeName]) { return address(Addresses.types[typeName], params[typeName]) }
 	}
 }
 
@@ -51,15 +47,15 @@ function normalizePhone(phone) {
 
 /* Type inquires
  ***************/
-function isPhone(address) { return address.addressType == 'phone' }
-function isEmail(address) { return address.addressType == 'email' }
-function isFacebook(address) { return address.addressType == 'facebook' }
+function isPhone(address) { return address.addressType == Addresses.types.phone }
+function isEmail(address) { return address.addressType == Addresses.types.email }
+function isFacebook(address) { return address.addressType == Addresses.types.facebook }
 
 /* Address makers
  ****************/
-function email(emailAddress, name) { return address('email', emailAddress, name) }
-function facebook(facebookId, name) { return address('facebook', facebookId, name) }
-function phone(phoneNumber, name) { return address('phone', phoneNumber, name) }
+function email(emailAddress, name) { return address(Addresses.types.email, emailAddress, name) }
+function facebook(facebookId, name) { return address(Addresses.types.facebook, facebookId, name) }
+function phone(phoneNumber, name) { return address(Addresses.types.phone, phoneNumber, name) }
 function address(addressType, addressId, name) {
 	var addrInfo = { addressType:addressType, addressId:addressId }
 	if (name) { addrInfo.name = name }
@@ -69,9 +65,9 @@ function address(addressType, addressId, name) {
 /* Address format checks.
  ************************/
 function verifyFormat(address) {
-	if (address.addressType == 'email') { return verifyEmailFormat(address.addressId) }
-	if (address.addressType == 'facebook') { return verifyFacebookFormat(address.addressId) }
-	if (address.addressType == 'phone') { return verifyPhoneFormat(address.addressId) }
+	if (address.addressType == Addresses.types.email) { return verifyEmailFormat(address.addressId) }
+	if (address.addressType == Addresses.types.facebook) { return verifyFacebookFormat(address.addressId) }
+	if (address.addressType == Addresses.types.phone) { return verifyPhoneFormat(address.addressId) }
 }
 
 var domainRegex = /^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}$/

@@ -68,7 +68,7 @@ function renderProfile(view) {
 	var insetShadow = 'inset 0 3px 4px -1px rgba(0,0,0,.27)'
 	return div('profileStep', style(fillWidth, { position:'absolute', bottom:0 }),
 		div(style({ margin:unit, padding:unit, background:'#fff', borderRadius:px(2) }),
-			img({ id:'picture' }, fbPic, button(_pickPhoto), style(graphics.background('listMenuPerson', 20, 20, unit*2-2, unit*2-2), {
+			img({ id:'picture' }, fbPic, button(_pickPhoto), style(graphics.background('listMenuPerson', 20, 20, { offsetX:unit*2-2, offsetY:unit*2-2 }), {
 				'float':'left', margin:px(0,unit,0,0), width:picSize, height:picSize,
 				borderRadius:px(2,0,0,2), boxShadow:insetShadow
 			})),
@@ -115,6 +115,8 @@ function renderProfile(view) {
 
 var verificationInfo = null
 function renderAccount(view) {
+	setTimeout(function() { $('#password').val(123123) }) // AUTOS
+	
 	if (view.fbMe && view.fbMe.email && !Addresses.isFacebookProxyEmail(view.fbMe.email)) {
 		var disable = true
 		var email = view.fbMe.email
