@@ -4,12 +4,17 @@ var sessionInfo = module.exports = {
 	generateClientUids:generateClientUids,
 	save:save,
 	clear:clear,
-	checkNewVersion:checkNewVersion
+	checkNewVersion:checkNewVersion,
+	myAddress:myAddress
 }
 
 var sessionInfoDocument = null
 var filename = 'DogoSessionInfo'
 var properties = ['authToken', 'person', 'clientUidBlock', 'config']
+
+function myAddress() {
+	return { addressType:Addresses.types.dogo, addressId:sessionInfoDocument.person.personId }
+}
 
 function load(callback) {
 	Documents.read(filename, function(err, document) {

@@ -4,10 +4,12 @@ var Addresses = module.exports = {
 	verifyPhoneFormat:verifyPhoneFormat,
 	verifyFacebookFormat:verifyFacebookFormat,
 	
+	isDogo:isDogo,
 	isEmail:isEmail,
 	isFacebook:isFacebook,
 	isPhone:isPhone,
 	
+	normalize:normalize,
 	normalizeEmail:normalizeEmail,
 	normalizePhone:normalizePhone,
 	
@@ -18,8 +20,9 @@ var Addresses = module.exports = {
 	
 	isFacebookProxyEmail:isFacebookProxyEmail,
 	fromVerificationParams:fromVerificationParams,
+	equal:equal,
 	
-	types: { 'email':2, 'phone':3, 'facebook':4 }
+	types: { 'dogo':1, 'email':2, 'phone':3, 'facebook':4 }
 }
 
 function isFacebookProxyEmail(email) {
@@ -33,20 +36,31 @@ function fromVerificationParams(params) {
 	}
 }
 
+function equal(a, b) {
+	return a.addressType = b.addressType && a.addressId == b.addressId
+}
+
 /* Normalization
  ***************/
+var normalizers = {}
+normalizers[Addresses.types.email] = normalizeEmail
+normalizers[Addresses.types.phone] = normalizePhone
+function normalize(address) {
+	if (!normalizers[address.addressType]) { return }
+	address.addressId = normalizers[address.addressType](address.addressId)
+}
 function normalizeEmail(email) {
 	return email.toLowerCase()
 }
 function normalizePhone(phone) {
 	phone = phone.replace(/[^\d\+]/g, '')
-	if (phone[0] != '+') { phone = '+1'+phone } // TODO localization
-	phone = phone.replace(/^\+1/, '1')
+	if (phone[0] != '+') { return '+1'+phone }
 	return phone
 }
 
 /* Type inquires
  ***************/
+function isDogo(address) { return address.addressType == Addresses.types.dogo }
 function isPhone(address) { return address.addressType == Addresses.types.phone }
 function isEmail(address) { return address.addressType == Addresses.types.email }
 function isFacebook(address) { return address.addressType == Addresses.types.facebook }

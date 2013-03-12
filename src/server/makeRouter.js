@@ -15,6 +15,7 @@ var createSession = require('server/fn/createSession')
 var requestVerification = require('server/fn/requestVerification')
 var register = require('server/fn/register')
 var authenticateRequest = require('server/fn/authenticateRequest')
+var createConversation = require('server/fn/createConversation')
 
 var log = makeLog('Router')
 
@@ -247,6 +248,10 @@ function setupRoutes(app, opts) {
 	app.post('/api/addresses', filters.oldClientsAndSession, function handleAddAddresses(req, res) {
 		var params = getJsonParams(req, 'newAddresses')
 		addAddresses(req, params.newAddresses, curry(respond, req, res))
+	})
+	app.post('/api/conversation', filters.oldClientsAndSession, function handleCreateConversation(req, res) {
+		var params = getJsonParams(req, 'contacts')
+		createConversation(req, params.contacts, curry(respond, req, res))
 	})
 	app.post('/api/message', filters.oldClientsAndSession, function handleSendMessage(req, res) {
 		var params = getMultipartParams(req, 'toParticipationId', 'clientUid', 'type', 'payload')

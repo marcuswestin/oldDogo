@@ -49,18 +49,10 @@ function show() {
 	})
 	
 	function renderItem(contact) {
-		var imageSize = unit * 6
-		var resize = imageSize*2+'x'+imageSize*2
-		if (contact.hasLocalImage) {
-			var imageParams = { mediaModule:'BTAddressBook', mediaId:contact.localId, resize:resize }
-		} else if (Addresses.isFacebook(contact)) {
-			var imageParams = { url:face.facebookUrl(contact), resize:resize }
-		}
-		
-		var imageStyle = imageParams ? graphics.backgroundImage(BT.url('BTImage', 'fetchImage', imageParams), imageSize, imageSize) : null
+		var faceStyle = face.style(contact, { size:unit*6 })
 		var padding = unit/4
 		return div(style({ padding:padding, height:unit*6, background:'#fff', borderBottom:'1px solid #ccc' }),
-			imageStyle && div(style(imageStyle, { 'float':'left', marginRight:unit })),
+			faceStyle && div(style(faceStyle, { 'float':'left', marginRight:unit })),
 			div(style(translate.y(unit * 1.5), { overflow:'hidden', textOverflow:'ellipsis' }), contact.name + ' (' + contact.addressType + ', '+contact.addressId + ')')
 		)
 	}

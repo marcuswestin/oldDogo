@@ -138,7 +138,7 @@ function _storeNewContacts(newContacts, _callback) {
 
 var insertContactSql = 'INSERT INTO contact (contactUid, addressType, addressId, createdTime, name, pictureUploadedTime, localId, hasLocalImage) VALUES (?,?,?,?,?,?,?,?)'
 function _getContactAsList(c) {
-	return [c.contactUid, c.addressType, c.addressId, c.createdTime, c.name, c.pictureUploadedTime || null, c.localId || null, c.hasLocalImage ? 1 : 0]
+	return [c.contactUid, c.addressType, c.addressId, c.createdTime, c.name, c.pictureUploadedTime || null, c.localId || null, c.hasLocalImage || null]
 }
 
 function _updateFromServer(callback) {

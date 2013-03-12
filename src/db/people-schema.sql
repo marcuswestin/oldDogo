@@ -47,7 +47,6 @@ CREATE TABLE contact (
 CREATE TABLE participation (
 	participationId BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 	personId BIGINT UNSIGNED NOT NULL,
-	contactUid BIGINT UNSIGNED NOT NULL,
 	conversationId BIGINT UNSIGNED NOT NULL,
 	lastMessageTime INT UNSIGNED DEFAULT NULL,
 	lastReceivedTime INT UNSIGNED DEFAULT NULL,
@@ -56,7 +55,6 @@ CREATE TABLE participation (
 	recentJson VARCHAR(2048) DEFAULT NULL,
 	picturesJson VARCHAR(2048) DEFAULT NULL,
 	PRIMARY KEY participationIdKey (participationId),
-	CONSTRAINT participationContact FOREIGN KEY (personId, contactUid) REFERENCES contact(personId, contactUid),
 	CONSTRAINT participationPerson FOREIGN KEY (personId) REFERENCES person(personId),
 	UNIQUE KEY conversationIdKey (personId, conversationId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

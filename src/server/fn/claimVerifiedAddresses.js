@@ -4,10 +4,7 @@ module.exports = function claimVerifiedAddresses(addrInfos, personId, name, call
 		if (err) { return callback(err) }
 		asyncEach(addrInfos, {
 			parallel:addrInfos.length,
-			finish:function(err, res) {
-				log.debug('done claiming verified addresses', err, res)
-				callback(err, res)
-			},
+			finish:callback,
 			iterate:function(addrInfo, next) {
 				if (addrInfo.isNewAddress) {
 					lookupService.createVerifiedAddress(addrInfo, personId, name, next)

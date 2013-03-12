@@ -72,10 +72,15 @@ function renderBody() {
 
 function renderFoot() {}
 
+function notMe(people) {
+	var myAddress = sessionInfo.myAddress()
+	return filter(people, function(person) { return !Addresses.equal(myAddress, person) })
+}
+
 /* Cards
  *******/
 function _renderCard(convo) {
-	var person = convo.people[0]
+	var person = notMe(convo.people)[0]
 	return div(style(unitPadding(1/2), { background:'white', borderBottom:'1px solid #ccc' }),
 		face(person, { size:unit*7 }, floatLeft),
 		div(style(floatLeft, unitPadding(0, 1)),

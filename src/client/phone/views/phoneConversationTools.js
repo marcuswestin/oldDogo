@@ -228,41 +228,58 @@ function _hideCurrentTool(extraHeight) {
 
 
 function sendMessage(type, messageData) {
-	sessionInfo.getClientUid(function(err, clientUid) {
+	_withConversation(function(err) {
 		if (err) { return error(err) }
-		var message = { toParticipationId:conversation.participationId, fromPersonId:sessionInfo.person.personId, clientUid:clientUid, type:type }
-		var commandData = { method:"POST", url:api.getUrl('api/message'), headers:api.getHeaders(), boundary: '________dgmltprtbndr', params:message }
-		var preview = null
+		sessionInfo.getClientUid(function(err, clientUid) {
+			if (err) { return error(err) }
+			var message = { toParticipationId:view.conversation.participationId, fromPersonId:sessionInfo.person.personId, clientUid:clientUid, type:type }
+			var commandData = { method:"POST", url:api.getUrl('api/message'), headers:api.getHeaders(), boundary: '________dgmltprtbndr', params:message }
+			var preview = null
 
-		if (type == 'audio') {
-			commandData.document = messageData.document
-			message.payload = { duration:messageData.duration }
-			preview = { document:messageData.document, duration:messageData.duration }
-			bridge.command('message.send', commandData, onResponse)
+			if (type == 'audio') {
+				commandData.document = messageData.document
+				message.payload = { duration:messageData.duration }
+				preview = { document:messageData.document, duration:messageData.duration }
+				bridge.command('message.send', commandData, onResponse)
 
-		} else if (type == 'picture') {
-			commandData.base64Data = messageData.base64Data // the iOS proxy converts it to an octet stream
-			message.payload = { width:messageData.width, height:messageData.height }
-			preview = { width:messageData.width, height:messageData.height, base64Data:messageData.base64Data }
-			bridge.command('picture.send', commandData, onResponse)
+			} else if (type == 'picture') {
+				commandData.base64Data = messageData.base64Data // the iOS proxy converts it to an octet stream
+				message.payload = { width:messageData.width, height:messageData.height }
+				preview = { width:messageData.width, height:messageData.height, base64Data:messageData.base64Data }
+				bridge.command('picture.send', commandData, onResponse)
 
-		} else if (type == 'text') {
-			message.payload = { body:messageData.body }
-			preview = { body:messageData.body }
-			bridge.command('text.send', commandData, onResponse)
+			} else if (type == 'text') {
+				message.payload = { body:messageData.body }
+				preview = { body:messageData.body }
+				bridge.command('text.send', commandData, onResponse)
 
-		} else {
-			return error('Unknown message type ' + type)
+			} else {
+				return error('Unknown message type ' + type)
+			}
+
+			message.preview = preview // set message.preview after command has been sent to avoid sending the preview to the server
+			events.fire('message.sending', message)
+		})
+
+		function onResponse(err, res) {
+			if (err) { return error(err) }
+			// conversation.lastMessage = res.message
+			// conversation.lastSentMessage = res.message
+			// events.fire('message.sent', res, conversation)
 		}
-		
-		message.preview = preview // set message.preview after command has been sent to avoid sending the preview to the server
-		events.fire('message.sending', message)
 	})
 	
-	function onResponse(err, res) {
-		if (err) { return error(err) }
-		// conversation.lastMessage = res.message
-		// conversation.lastSentMessage = res.message
-		// events.fire('message.sent', res, conversation)
+	function _withConversation(callback) {
+		if (view.conversation) { return callback() }
+		overlay.show('Sending first message...')
+		var contacts = map([view.contact], function(c) {
+			return { addressType:c.addressType, addressId:c.addressId, name:c.name }
+		})
+		api.post('api/conversation', { contacts:contacts }, function(err, res) {
+			overlay.hide()
+			if (err) { return callback(err) }
+			view.conversation = res.conversation
+			callback()
+		})
 	}
 }

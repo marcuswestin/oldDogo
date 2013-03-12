@@ -12,7 +12,7 @@ function getSchema() {
 			'name VARCHAR(255) DEFAULT NULL,',
 			'createdTime INT UNSIGNED NOT NULL,',
 			'localId VARCHAR(255) DEFAULT NULL,',
-			'hasLocalImage BOOL NOT NULL,',
+			'hasLocalImage BOOL DEFAULT NULL,',
 			'pictureUploadedTime INT UNSIGNED DEFAULT NULL,',
 			'PRIMARY KEY (contactUid),',
 			'UNIQUE (addressType, addressId)',

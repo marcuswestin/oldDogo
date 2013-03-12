@@ -15,9 +15,11 @@ function renderHead(_view) {
 	// setTimeout(function() { tools.selectText(view.conversation) }, 250) // AUTOS
 	// setTimeout(function() { tools.selectMicrophone(conversation) }, 250) // AUTOS
 	
+	var name = view.conversation ? view.conversation.people[0].name : view.contact.name ? view.contact.name : view.contact.addressId
+	
 	return appHead(
 		div(style(unitPadding(3/4,1)), graphic('leftArrow', 20, 20), button(function() { gScroller.pop() })),
-		div(style(unitPadding(1), { color:'#fff', fontSize:19, marginTop:unit/4, textShadow:'0 1px 0 rgba(0,0,0,.3)' }), view.conversation.people[0].name),
+		div(style(unitPadding(1), { color:'#fff', fontSize:19, marginTop:unit/4, textShadow:'0 1px 0 rgba(0,0,0,.3)' }), name),
 		composeOverlay.headIcon()
 	)
 }
