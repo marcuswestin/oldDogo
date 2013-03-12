@@ -13,8 +13,8 @@ CREATE TABLE message (
 	clientUid BIGINT UNSIGNED NOT NULL,
 	type INT UNSIGNED NOT NULL,
 	payloadJson VARCHAR(2048) NOT NULL,
-	UNIQUE KEY keyPersonClientUid (fromPersonId, clientUid),
-	FOREIGN KEY keyConversationId (conversationId) REFERENCES conversation(conversationId),
+	UNIQUE KEY clientUidKey (fromPersonId, clientUid),
+	CONSTRAINT messageConversation FOREIGN KEY (conversationId) REFERENCES conversation(conversationId),
 	PRIMARY KEY (messageId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
