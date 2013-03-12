@@ -66,7 +66,11 @@ var commandHandlers = {
 		db = window.openDatabase(data.name, '1.0', 'Dogo database', dbSize)
 		callback(db ? null : "Could not create database", null)
 	},
-	'BTSql.query': function(data, callback) {
+	'BTSql.query': function(data, _callback) {
+		function callback(err, res) {
+			if (err) { err = new Error(err.message + '. Query: '+data.query) }
+			_callback(err, res)
+		}
 		db.readTransaction(function(tx) {
 			tx.executeSql(data.sql, data.arguments, function(tx, dbResult) {
 				var rows = []
@@ -77,14 +81,23 @@ var commandHandlers = {
 			}, function onError(tx, err) { return callback(err, null) })
 		})
 	},
-	'BTSql.update': function(data, callback) {
+	'BTSql.update': function(data, _callback) {
+		function callback(err, res) {
+			if (err) { err = new Error(err.message + '. Sql: '+data.sql) }
+			_callback(err, res)
+		}
 		db.transaction(function(tx) {
 			tx.executeSql(data.sql, data.arguments, onSuccess, onError)
 			function onSuccess(tx) { callback(null, null) }
 			function onError(tx, err) { callback(err, null) }
 		})
 	},
-    'BTSql.insertMultiple': function(data, callback) {
+    'BTSql.insertMultiple': function(data, _callback) {
+		function callback(err, res) {
+			if (err) { err = new Error(err.message + '. Sql: '+data.sql) }
+			_callback(err, res)
+		}
+		
 		var CONSTRAINT_ERR = 6
 		db.transaction(function(tx) {
 			var i = -1
