@@ -5,7 +5,6 @@ module.exports = {
 }
 
 var duration = 300
-var conversation
 
 /* Text tool
  ***********/
@@ -15,7 +14,7 @@ function _textTool(toolHeight, barHeight) {
 	// setTimeout(_showTextFormatting, 400) // AUTOS
 	id = tags.id()
 
-	Documents.read('TextDraft-'+conversation.conversationId, function(err, data) {
+	Documents.read('TextDraft-'+uniqueDraftId, function(err, data) {
 		if (err) { return error(err) }
 		var dogoText = data && data.dogoText
 		function setDraft() { $('#'+id).html(DogoText.getHtml(dogoText)) }
@@ -59,7 +58,7 @@ function _textTool(toolHeight, barHeight) {
 	
 	function _closeText() {
 		$('#'+id).blur()
-		Documents.write('TextDraft-'+conversation.conversationId, { dogoText:getDogoText() }, error)
+		Documents.write('TextDraft-'+uniqueDraftId, { dogoText:getDogoText() }, error)
 		_hideCurrentTool(unit*6)
 	}
 	
@@ -135,9 +134,9 @@ function _cameraTool(toolHeight, barHeight) {
  ************/
 _microphoneTool.getHeight = function() { return unit * 14 }
 function _microphoneTool(toolHeight, barHeight) {
+	var draftName = 'AudioDraft-'+uniqueDraftId+'.m4a'
 	var pad = unit/2
 	var buttonStyles = style(unitMargin(1/2, 1/4))
-	var docName = 'AudioDraft'+conversation.conversationId+'.m4a'
 	_microphoneTool.pitch = 0;
 	return div({ id:'microphoneTool' },
 		div('bar', style({ width:viewport.width(), height:barHeight, background:'#fff' }),
@@ -152,7 +151,7 @@ function _microphoneTool(toolHeight, barHeight) {
 					})
 				})),
 				div('button', 'Play', buttonStyles, button(function() {
-					bridge.command('BTAudio.playFromFileToSpeaker', { document:docName, pitch:_microphoneTool.pitch }, function() {
+					bridge.command('BTAudio.playFromFileToSpeaker', { document:draftName, pitch:_microphoneTool.pitch }, function() {
 						console.log("Playing")
 					})
 				})),
@@ -163,8 +162,8 @@ function _microphoneTool(toolHeight, barHeight) {
 					})
 				})),
 				div('button', 'Send', style(floatRight), buttonStyles, button(function() {
-					var sendDocName = 'AudioDocument'+conversation.conversationId+'.m4a'
-					bridge.command('BTAudio.readFromFileToFile', { fromDocument:docName, toDocument:sendDocName, pitch:_microphoneTool.pitch }, function(err) {
+					var sendDocName = 'AudioDocument-'+uniqueDraftId+'.m4a'
+					bridge.command('BTAudio.readFromFileToFile', { fromDocument:draftName, toDocument:sendDocName, pitch:_microphoneTool.pitch }, function(err) {
 						if (err) { return error(err) }
 						sendMessage('audio', { document:sendDocName })
 					})
@@ -177,7 +176,7 @@ function _microphoneTool(toolHeight, barHeight) {
 			),
 			div('button', 'Hold to Talk', style(translate(60,20)), button({
 				start:function() {
-					bridge.command('BTAudio.recordFromMicrophoneToFile', { document:docName }, function() {
+					bridge.command('BTAudio.recordFromMicrophoneToFile', { document:draftName }, function() {
 						console.log("Recording")
 					})
 				},
@@ -200,9 +199,12 @@ events.on('BTAudio.decibelMeter', function(info) {
 
 /* Utilities for the tools
  *************************/
+var uniqueDraftId
+var view
 function selectTool(toolFn) {
-	return function(_conversation) {
-		conversation = _conversation
+	return function(_view) {
+		view = _view
+		uniqueDraftId = view.conversation ? 'conv-'+view.conversation.conversationId : 'contact-'+view.contact.contactUid
 		
 		var toolHeight = toolFn.getHeight()
 		var footHeight = $('#conversationFoot').height()
@@ -228,30 +230,33 @@ function _hideCurrentTool(extraHeight) {
 function sendMessage(type, messageData) {
 	sessionInfo.getClientUid(function(err, clientUid) {
 		if (err) { return error(err) }
-		var message = { toParticipationId:conversation.participationId, fromPersonId:sessionInfo.person.personId, clientUid:clientUid, type:type, payload:{} }
+		var message = { toParticipationId:conversation.participationId, fromPersonId:sessionInfo.person.personId, clientUid:clientUid, type:type }
 		var commandData = { method:"POST", url:api.getUrl('api/message'), headers:api.getHeaders(), boundary: '________dgmltprtbndr', params:message }
+		var preview = null
 
 		if (type == 'audio') {
 			commandData.document = messageData.document
-			message.payload = { duration:duration }
-			message.preview = { document:messageData.document, duration:messageData.duration }
+			message.payload = { duration:messageData.duration }
+			preview = { document:messageData.document, duration:messageData.duration }
 			bridge.command('message.send', commandData, onResponse)
-			events.fire('message.sending', message)
+
 		} else if (type == 'picture') {
-			commandData.params.payload.width = messageData.width
-			commandData.params.payload.height = messageData.height
 			commandData.base64Data = messageData.base64Data // the iOS proxy converts it to an octet stream
+			message.payload = { width:messageData.width, height:messageData.height }
+			preview = { width:messageData.width, height:messageData.height, base64Data:messageData.base64Data }
 			bridge.command('picture.send', commandData, onResponse)
 
-			message.preview = { base64Data:messageData.base64Data, width:messageData.width, height:messageData.height }
-			events.fire('message.sending', message)
 		} else if (type == 'text') {
-			commandData.params.payload = { body:messageData.body } // for text messages, send the payload as part of the params
+			message.payload = { body:messageData.body }
+			preview = { body:messageData.body }
 			bridge.command('text.send', commandData, onResponse)
-			
-			message.preview = { body:messageData.body }
-			events.fire('message.sending', message)
+
+		} else {
+			return error('Unknown message type ' + type)
 		}
+		
+		message.preview = preview // set message.preview after command has been sent to avoid sending the preview to the server
+		events.fire('message.sending', message)
 	})
 	
 	function onResponse(err, res) {

@@ -10,7 +10,7 @@ module.exports = {
 
 function all(callback) {
 	_whenInitialized(function() {
-		var sql = 'SELECT addressType, addressId, createdTime, name, localId, hasLocalImage, pictureUploadedTime FROM contact'
+		var sql = 'SELECT contactUid, addressType, addressId, createdTime, name, pictureUploadedTime, localId, hasLocalImage FROM contact'
 		bridge.command('BTSql.query', { sql:sql }, function(err, res) {
 			callback(err, err ? null : res.rows)
 		})
@@ -22,7 +22,7 @@ function lookupByPrefix(prefix, opts, callback) {
 	_whenInitialized(function() {
 		var limit = (typeof opts.limit == 'number' ? 'LIMIT '+opts.limit : '')
 		var sql = [
-			'SELECT addressType, addressId, createdTime, name, localId, hasLocalImage, pictureUploadedTime',
+			'SELECT addressType, addressId, createdTime, name, pictureUploadedTime, localId, hasLocalImage',
 			'FROM contact WHERE addressId LIKE ? OR name LIKE ? '+limit
 		].join('\n')
 		bridge.command('BTSql.query', { sql:sql, arguments:[prefix+'%', prefix+'%'] }, function(err, res) {
@@ -41,10 +41,18 @@ function mergeInFacebookFriends(callback) {
 			overlay.show('Detecting duplicates...')
 			var newContacts = []
 			var createdTime = now()
-			each(fbFriends, function(fbFriend) {
-				_collectNewContacts(newContacts, knownAddresses, Addresses.types.facebook, [fbFriend.id], fbFriend.name, createdTime, null, 0)
+			sessionInfo.generateClientUids({
+				withGenerator:function(generateUid) {
+					console.log("HERE")
+					each(fbFriends, function(fbFriend) {
+						_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.facebook, [fbFriend.id], fbFriend.name, createdTime, null, 0)
+					})
+				},
+				onDone: function(err) {
+					if (err) { return callback(err) }
+					_storeNewContacts(newContacts, callback)
+				}
 			})
-			_storeNewContacts(newContacts, callback)
 		})
 	})
 	
@@ -69,17 +77,34 @@ function mergeInAddressBook(callback) {
 			overlay.show('Detecting duplicates...')
 			var newContacts = []
 			var createdTime = now()
-			each(addressBookRes.entries, function(entry) {
-				_collectNewContacts(newContacts, knownAddresses, Addresses.types.phone, map(entry.phoneNumbers, Addresses.normalizePhone), entry.name, createdTime, entry.recordId, entry.hasImage)
-				_collectNewContacts(newContacts, knownAddresses, Addresses.types.email, map(entry.emailAddresses, Addresses.normalizeEmail), entry.name, createdTime, entry.recordId, entry.hasImage)
+			sessionInfo.generateClientUids({
+				withGenerator:function(generateUid) {
+					each(addressBookRes.entries, function(entry) {
+						console.log("HERE", entry.hasImage)
+						_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.phone, map(entry.phoneNumbers, Addresses.normalizePhone), entry.name, createdTime, entry.recordId, entry.hasImage)
+						_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.email, map(entry.emailAddresses, Addresses.normalizeEmail), entry.name, createdTime, entry.recordId, entry.hasImage)
+					})
+				},
+				onDone:function(err) {
+					if (err) { return callback(err) }
+					_storeNewContacts(newContacts, callback)
+				}
 			})
-			_storeNewContacts(newContacts, callback)
 		})
 	})
 	
 	function _getAddressBookEntries(callback) {
 		bridge.command('BTAddressBook.getAllEntries', callback)
 	}
+}
+
+function _collectNewContacts(generateUid, newContacts, knownAddresses, addressType, addressIds, name, createdTime, localId, hasLocalImage) {
+	var knownAddressesByType = knownAddresses[addressType]
+	each(addressIds, function(addressId) {
+		if (knownAddressesByType[addressId]) { return }
+		knownAddressesByType[addressId] = true
+		newContacts.push({ contactUid:generateUid(), addressType:addressType, addressId:addressId, createdTime:createdTime, name:name, localId:localId, hasLocalImage:hasLocalImage })
+	})
 }
 
 function _getKnownAddresses(callback) {
@@ -94,28 +119,26 @@ function _getKnownAddresses(callback) {
 	})
 }
 
-function _storeNewContacts(contactsList, callback) {
-	if (!contactsList.length) { return onDone() }
-	overlay.show('Storing ' + contactsList.length + ' new contacts in cloud...')
+function _storeNewContacts(newContacts, _callback) {
+	function callback(err) {
+		overlay.hide()
+		_callback(err)
+	}
+	
+	if (!newContacts.length) { return callback() }
+	overlay.show('Storing ' + newContacts.length + ' new contacts in cloud...')
+	
+	var contactsList = map(newContacts, _getContactAsList)
 	api.post('api/contacts', { contactsList:contactsList }, function(err, res) {
 		if (err) { return callback(err) }
 		overlay.show('Storing contacts locally...')
-		var sql = 'INSERT INTO contact (addressType, addressId, createdTime, name, localId, hasLocalImage) VALUES (?,?,?,?,?,?)'
-		bridge.command('BTSql.insertMultiple', { sql:sql, argumentsList:contactsList }, onDone)
+		bridge.command('BTSql.insertMultiple', { sql:insertContactSql, argumentsList:contactsList }, callback)
 	})
-	function onDone(err) {
-		overlay.hide()
-		callback(err)
-	}
 }
 
-function _collectNewContacts(newContacts, knownAddresses, addressType, addressIds, name, createdTime, localId, hasLocalImage) {
-	var knownAddressesByType = knownAddresses[addressType]
-	each(addressIds, function(addressId) {
-		if (knownAddressesByType[addressId]) { return }
-		knownAddressesByType[addressId] = true
-		newContacts.push([addressType, addressId, createdTime, name, localId, hasLocalImage])
-	})
+var insertContactSql = 'INSERT INTO contact (contactUid, addressType, addressId, createdTime, name, pictureUploadedTime, localId, hasLocalImage) VALUES (?,?,?,?,?,?,?,?)'
+function _getContactAsList(c) {
+	return [c.contactUid, c.addressType, c.addressId, c.createdTime, c.name, c.pictureUploadedTime || null, c.localId || null, c.hasLocalImage ? 1 : 0]
 }
 
 function _updateFromServer(callback) {
@@ -131,16 +154,15 @@ function _updateFromServer(callback) {
 	})
 }
 
-function _insertContactsFromServer(serverResponse, callback) {
-	if (serverResponse.contacts.length == 0) { return onDone() }
-	var sql = 'INSERT INTO contact (addressType, addressId, createdTime, name) VALUES (?,?,?,?)'
-	var argumentsList = map(serverResponse.contacts, function(c) { return [c.addressType, c.addressId, c.createdTime, c.name] })
-	bridge.command('BTSql.insertMultiple', { sql:sql, argumentsList:argumentsList, ignoreDuplicates:true }, onDone)
-	
-	function onDone(err) {
-		if (err) { return callback(err) }
-		Documents.set('ContactsMeta', { lastUpdatedTime:serverResponse.readTime }, callback)
+function _insertContactsFromServer(serverResponse, _callback) {
+	function callback(err) {
+		if (err) { return _callback(err) }
+		Documents.set('ContactsMeta', { lastUpdatedTime:serverResponse.readTime }, _callback)
 	}
+	
+	if (serverResponse.contacts.length == 0) { return callback() }
+	var argumentsList = map(serverResponse.contacts, _getContactAsList)
+	bridge.command('BTSql.insertMultiple', { sql:insertContactSql, argumentsList:argumentsList, ignoreDuplicates:true }, callback)
 }
 
 var initializeQueue = []
@@ -149,7 +171,7 @@ function _whenInitialized(callback) {
 	initializeQueue.push(callback)
 }
 function _onInitialized() {
-	console.log('onInitialized')
+	console.log('Contacts initialized')
 	var callbacks = initializeQueue
 	initializeQueue = null
 	each(callbacks, function(callback) { callback() })

@@ -6,8 +6,8 @@ module.exports = function addContacts(req, callback) {
 		parallel:1,
 		finish:callback,
 		iterate:function(contact, next) {
-			var sql = 'INSERT INTO contact SET personId=?, addressType=?, addressId=?, createdTime=?, name=?'
-			db.people(personId).insert(sql, [personId, contact[0], contact[1], contact[2], contact[3]], next)
+			var sql = 'INSERT INTO contact SET personId=?, contactUid=?, addressType=?, addressId=?, createdTime=?, name=?'
+			db.people(personId).insertIgnoreId(sql, [personId, contact[0], contact[1], contact[2], contact[3], contact[4]], next)
 		}
 	})
 }

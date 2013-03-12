@@ -6,7 +6,8 @@ module.exports = function getContacts(req, callback) {
 	var readTime = now()
 	var createdSince = params.createdSince || 0
 	log('Get contacts created since', createdSince)
-	db.people(personId).select('SELECT name, addressType, addressId, createdTime FROM contact WHERE personId=? AND createdTime>?', [personId, createdSince], function(err, contacts) {
+	var sql = 'SELECT contactUid, addressType, addressId, name, createdTime, pictureUploadedTime FROM contact WHERE personId=? AND createdTime>?'
+	db.people(personId).select(sql, [personId, createdSince], function(err, contacts) {
 		if (err) { return callback(err) }
 		log('Got', contacts.length, 'contacts')
 		callback(null, { contacts:contacts, readTime:readTime })

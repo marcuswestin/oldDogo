@@ -9,7 +9,9 @@ module.exports = {
 
 /* Head, body, foot
  ******************/
-function renderHead(view) {
+var view
+function renderHead(_view) {
+	view = _view
 	// setTimeout(function() { tools.selectText(view.conversation) }, 250) // AUTOS
 	// setTimeout(function() { tools.selectMicrophone(conversation) }, 250) // AUTOS
 	
@@ -21,10 +23,9 @@ function renderHead(view) {
 }
 
 var list
-var conversation
-function renderBody(view) {
-	conversation = view.conversation
-	if (conversation.conversationId) {
+function renderBody() {
+	nextTick(function() {
+		if (!view.conversation) { return list.empty().empty() }
 		Conversations.readMessages(conversation, function(err, messages) {
 			if (err) { return error(err) }
 			list.append(messages)
@@ -34,11 +35,7 @@ function renderBody(view) {
 				list.append(messages)
 			})
 		})
-	} else {
-		nextTick(function() {
-			list.empty().empty()
-		})
-	}
+	})
 	
 	return div(style({ paddingTop:unit*9.5 }),
 		list = makeList({
@@ -50,8 +47,8 @@ function renderBody(view) {
 		div(style({ height:unit*6.5 }))
 	)
 	
-	function _renderEmpty(firstCall) {
-		return div('info', style({ paddingTop:19.5*unit }), firstCall ? 'Fetching messages...' : 'Start the conversation!')
+	function _renderEmpty(isFirstCall) {
+		return div('info', style({ paddingTop:19.5*unit }), isFirstCall ? 'Fetching messages...' : 'Start the conversation!')
 	}
 }
 
@@ -63,9 +60,9 @@ function renderFoot(view) {
 			boxShadow:'0 -1px 2px rgba(0,0,0,.55), -1px 0 1px rgba(0,0,0,.55), 1px 0 1px rgba(0,0,0,.55)'
 		}),
 		div(
-			div(style(toolStyle), graphic('pen', 40, 40), button(function() { tools.selectText(conversation) })),
-			div(style(toolStyle), graphic('pen', 40, 40), button(function() { tools.selectCamera(conversation) })),
-			div(style(toolStyle), graphic('pen', 40, 40), button(function() { tools.selectMicrophone(conversation) }))
+			div(style(toolStyle), graphic('pen', 40, 40), button(function() { tools.selectText(view) })),
+			div(style(toolStyle), graphic('pen', 40, 40), button(function() { tools.selectCamera(view) })),
+			div(style(toolStyle), graphic('pen', 40, 40), button(function() { tools.selectMicrophone(view) }))
 		)
 	)
 }
@@ -86,7 +83,7 @@ function _renderMessage(message) {
 	var isNewPerson = (lastPersonId != message.fromPersonId)
 	lastPersonId = message.fromPersonId
 	var isMe = (message.fromPersonId == sessionInfo.person.personId)
-	var person = (isMe ? sessionInfo.person : conversation.people[0])
+	var person = (isMe ? sessionInfo.person : view.conversation.people[0])
 	return (isNewPerson
 		? [div(style(unitMargin(1,1,0), unitPadding(1,1,0), { minHeight:unit*6, background:'#f3f3f3' }),
 			div(style(floatRight, { fontSize:12, marginRight:unit/2, color:'#fff', textShadow:'0 -1px 0 rgba(0,0,0,.25)' }),

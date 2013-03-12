@@ -41,7 +41,7 @@ function show() {
 				)
 			),
 			div({ id:'searchResults' }, style({ height:viewport.height() - keyboardHeight }, scrollable.y),
-				div(style({ paddingTop:unit*8, textAlign:'left', color:'#222', textShadow:'none' }),
+				div(style({ paddingTop:unit*8, textAlign:'left', color:'#222', textShadow:'none', whiteSpace:'nowrap' }),
 					list
 				)
 			)
@@ -49,7 +49,7 @@ function show() {
 	})
 	
 	function renderItem(contact) {
-		var imageSize = unit * 4
+		var imageSize = unit * 6
 		var resize = imageSize*2+'x'+imageSize*2
 		if (contact.hasLocalImage) {
 			var imageParams = { mediaModule:'BTAddressBook', mediaId:contact.localId, resize:resize }
@@ -58,15 +58,16 @@ function show() {
 		}
 		
 		var imageStyle = imageParams ? graphics.backgroundImage(BT.url('BTImage', 'fetchImage', imageParams), imageSize, imageSize) : null
-		return div(style(unitPadding(1.25, .5), { height:unit*3, background:'#fff', borderBottom:'1px solid #ccc' }),
-			imageStyle && div(style(imageStyle, { display:'inline-block' })),
-			contact.name + ' (' + contact.addressType + ', '+contact.addressId + ')'
+		var padding = unit/4
+		return div(style({ padding:padding, height:unit*6, background:'#fff', borderBottom:'1px solid #ccc' }),
+			imageStyle && div(style(imageStyle, { 'float':'left', marginRight:unit })),
+			div(style(translate.y(unit * 1.5), { overflow:'hidden', textOverflow:'ellipsis' }), contact.name + ' (' + contact.addressType + ', '+contact.addressId + ')')
 		)
 	}
 	
-	function selectItem(convo) {
+	function selectItem(contact) {
 		hide()
-		gScroller.push({ view:'conversation', conversation:convo })
+		gScroller.push({ view:'conversation', contact:contact })
 	}
 }
 

@@ -37,6 +37,7 @@ time = require('std/time')
 now = function() { return Math.floor(time.now() / time.second) }
 isArray = require('std/isArray')
 inverse = require('std/inverse')
+copy = require('std/copy')
 
 Documents = require('client/state/Documents')
 Caches = require('client/state/Caches')

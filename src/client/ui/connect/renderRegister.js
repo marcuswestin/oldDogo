@@ -146,7 +146,7 @@ function renderAccount(view) {
 				overlay.show('Uploading picture...')
 				pictureSecretPromise.add(_registerWithFacebookSession)
 			} else {
-				setTimeout(function() { // for the confirm call to be async to button.
+				nextTick(function() { // for the confirm call to be async to button.
 					if (!confirm('Is '+view.email+' correct?')) { return }
 					pictureSecretPromise.add(_requestAddressVerification)
 				})
