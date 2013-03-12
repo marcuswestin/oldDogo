@@ -66,7 +66,7 @@ function renderPhoneClient() {
 		.append(div({ id:'centerFrame' }, style(appBg, viewport.size())))
 		.append(div({ id:'southFrame' }, style({ width:viewport.width(), height:0, position:'absolute', top:viewport.height() })))
 	
-	parallel(sessionInfo.load, curry(Documents.read, 'viewStack'), function(err, _, viewStack) {
+	parallel(sessionInfo.load, loadViewStack, function(err, _, viewStack) {
 		if (err) { return error('There was an error starting the app. Please re-install it. Sorry.') }
 
 		if (sessionInfo.authToken) {
@@ -79,8 +79,16 @@ function renderPhoneClient() {
 	})
 }
 
+saveViewStack = function(callback) {
+	Documents.write('ViewStack', gScroller.stack, callback)
+}
+loadViewStack = function(callback) {
+	Documents.read('ViewStack', callback)
+}
+
 makeScroller.onViewChanging = function onViewChanging() {
-	Documents.write('viewStack', gScroller.stack)
+	saveViewStack()
+	events.fire('view.changing')
 }
 
 function renderSignedInApp(sessionInfo, viewStack) {

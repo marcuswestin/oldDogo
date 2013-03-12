@@ -17,10 +17,6 @@ function show() {
 		selectItem:selectItem,
 		renderEmpty:function(){}
 	})
-	Conversations.read(function(err, conversations) {
-		if (err) { return error(err) }
-		list.append(slice(conversations, 0, 50))
-	})
 	overlay.show({ background:'#fff' }, function() {
 		nextTick(function() {
 			bridge.command('BTTextInput.setConfig', { preventWebviewShift:true }, function() {

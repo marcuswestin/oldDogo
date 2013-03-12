@@ -9,10 +9,11 @@ var duration = 300
 /* Text tool
  ***********/
 var id
-_textTool.getHeight = function() { return unit*2 }
+_textTool.getHeight = function() { return unit*5.5 }
 function _textTool(toolHeight, barHeight) {
 	// setTimeout(_showTextFormatting, 400) // AUTOS
 	id = tags.id()
+	extraHeight = unit*6
 
 	Documents.read('TextDraft-'+uniqueDraftId, function(err, data) {
 		if (err) { return error(err) }
@@ -59,7 +60,7 @@ function _textTool(toolHeight, barHeight) {
 	function _closeText() {
 		$('#'+id).blur()
 		Documents.write('TextDraft-'+uniqueDraftId, { dogoText:getDogoText() }, error)
-		_hideCurrentTool(unit*6)
+		_hideCurrentTool()
 	}
 	
 	function _sendText() {
@@ -201,10 +202,12 @@ events.on('BTAudio.decibelMeter', function(info) {
  *************************/
 var uniqueDraftId
 var view
+var extraHeight
 function selectTool(toolFn) {
 	return function(_view) {
 		view = _view
 		uniqueDraftId = view.conversation ? 'conv-'+view.conversation.conversationId : 'contact-'+view.contact.contactUid
+		extraHeight = 0
 		
 		var toolHeight = toolFn.getHeight()
 		var footHeight = $('#conversationFoot').height()
@@ -219,12 +222,16 @@ function selectTool(toolFn) {
 	}
 }
 
-function _hideCurrentTool(extraHeight) {
+function _hideCurrentTool() {
+	if (!view) { return }
+	view = null
 	bridge.command('BT.setStatusBar', { visible:true, animation:'slide' })
 	$('#centerFrame').css(translate.y(0))
 	$('#southFrame').css(translate.y(extraHeight || 0))
 	after(duration, function() { $('#southFrame').empty() })
 }
+
+events.on('view.changing', _hideCurrentTool)
 
 
 function sendMessage(type, messageData) {
@@ -279,7 +286,7 @@ function sendMessage(type, messageData) {
 			overlay.hide()
 			if (err) { return callback(err) }
 			view.conversation = res.conversation
-			callback()
+			saveViewStack(callback)
 		})
 	}
 }

@@ -10,12 +10,24 @@ module.exports = {
 /* Head, body, foot
  ******************/
 var view
+var peopleById
+var lastPersonId
 function renderHead(_view) {
 	view = _view
-	// setTimeout(function() { tools.selectText(view.conversation) }, 250) // AUTOS
-	// setTimeout(function() { tools.selectMicrophone(conversation) }, 250) // AUTOS
+	lastPersonId = null
+	peopleById = {}
+
+	// setTimeout(function() { tools.selectText(view) }, 250) // AUTOS
+	// setTimeout(function() { tools.selectMicrophone(view) }, 250) // AUTOS
 	
-	var name = view.conversation ? view.conversation.people[0].name : view.contact.name ? view.contact.name : view.contact.addressId
+	if (view.conversation) {
+		var name = view.conversation.people[0].name
+		each(view.conversation.people, function(person) {
+			peopleById[person.addressId] = person
+		})
+	} else {
+		var name = view.contact.name || view.contact.addressId
+	}
 	
 	return appHead(
 		div(style(unitPadding(3/4,1)), graphic('leftArrow', 20, 20), button(function() { gScroller.pop() })),
@@ -28,18 +40,18 @@ var list
 function renderBody() {
 	nextTick(function() {
 		if (!view.conversation) { return list.empty().empty() }
-		Conversations.readMessages(conversation, function(err, messages) {
+		Conversations.readMessages(view.conversation, function(err, messages) {
 			if (err) { return error(err) }
 			list.append(messages)
 			// TODO Fetch since last fetched timestamp
-			Conversations.fetchMessages(conversation, function(err, messages) {
+			Conversations.fetchMessages(view.conversation, function(err, messages) {
 				if (err) { return error(err) }
 				list.append(messages)
 			})
 		})
 	})
 	
-	return div(style({ paddingTop:unit*9.5 }),
+	return div(style({ paddingTop:unit*7.5 }),
 		list = makeList({
 			selectItem:_selectMessage,
 			renderItem:_renderMessage,
@@ -79,16 +91,15 @@ function _selectMessage(message) {
 	console.log('Select', message)
 }
 
-var lastPersonId
 events.on('view.changing', function() { lastPersonId = null })
 function _renderMessage(message) {
 	var isNewPerson = (lastPersonId != message.fromPersonId)
 	lastPersonId = message.fromPersonId
-	var isMe = (message.fromPersonId == sessionInfo.person.personId)
-	var person = (isMe ? sessionInfo.person : view.conversation.people[0])
+	var person = peopleById[message.fromPersonId]
+	var bg = '#fff'
 	return (isNewPerson
-		? [div(style(unitMargin(1,1,0), unitPadding(1,1,0), { minHeight:unit*6, background:'#f3f3f3' }),
-			div(style(floatRight, { fontSize:12, marginRight:unit/2, color:'#fff', textShadow:'0 -1px 0 rgba(0,0,0,.25)' }),
+		? [div(style(unitMargin(1,1/2,0), unitPadding(1/2,1/2,0), { minHeight:unit*6, background:bg }),
+			div(style(floatRight, { fontSize:12, marginRight:unit/2, color:'rgb(25,161,219)', textShadow:'0 -1px 0 rgba(0,0,0,.25)' }),
 				time.ago.brief(message.sentTime * time.seconds)
 			),
 			face(person, { size:unit*5 }, floatLeft, unitMargin(0,1/2,0,0)),
@@ -96,14 +107,18 @@ function _renderMessage(message) {
 				person.name
 			),
 			div(style(unitMargin(1/4,0,0,0), unitPadding(0,0,1/2)),
-				html(DogoText.getHtml(message.payload.body))
+				renderContent(message)
 			)
 		)
 		]
-		: div(style(unitMargin(0, 1), unitPadding(0,0,1/2,1), { background:'#f3f3f3' }),
-			html(DogoText.getHtml(message.payload.body))
+		: div(style(unitMargin(0, 1/2), unitPadding(0,0,1/2,1/2), { background:bg }),
+			renderContent(message)
 		)
 	)
+}
+
+function renderContent(message) {
+	return html(DogoText.getHtml(message.payload.body))
 }
 
 /* Events
