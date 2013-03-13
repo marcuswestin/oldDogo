@@ -1,6 +1,7 @@
 module.exports = {
 	fromNode:fromNode,
 	getHtml:getHtml,
+	getText:getText,
 	getTextColors:getTextColors
 }
 /* Parse DOM -> dogo text
@@ -20,6 +21,10 @@ function fromNode(node) {
 		return '{s '+tagNameStyles[node.tagName]+' '+content+'}'
 	} else if (node.tagName == 'FONT') {
 		return '{c '+getIndexForColor(node.color)+' '+content+'}'
+	} else if (node.tagName == 'BR') {
+		return '\n'
+	} else if (node.tagName == 'DIV') {
+		return '\n' + content
 	} else {
 		return content
 	}
@@ -29,10 +34,38 @@ function _isTextNode(node) { return node.nodeType == 3 }
 
 /* Parse dogo text -> HTML
  *************************/
+var L_CURLY = '{', R_CURLY = '}'
+var L_ARROW = '<', R_ARROW = '>'
+function getText(text) {
+	if (!text) { return '' }
+	var chars = text.split('')
+	var i = 0
+	return proceed()
+	function proceed() {
+		if (!chars[i]) { return '' }
+		if (chars[i] == L_CURLY) {
+			if (chars[i+1] == L_CURLY) { i += 3; return L_CURLY + proceed() }
+			if (chars[i+1] == R_CURLY) { i += 3; return R_CURLY + proceed() }
+			i += 2
+			nextWord()
+			return proceed()
+		} else if (chars[i] == R_CURLY) {
+			i++
+			return proceed()
+		} else {
+			return chars[i++] + proceed()
+		}
+	}
+	
+	function nextWord() {
+		var word = ''
+		while (chars[i] && chars[i] != ' ') { word += chars[i++] }
+		return word
+	}
+}
+
 function getHtml(text) {
 	if (!text) { return '' }
-	var L_CURLY = '{', R_CURLY = '}'
-	var L_ARROW = '<', R_ARROW = '>'
 	var chars = text.split('')
 	var i = 0
 	var stack = []
@@ -66,6 +99,9 @@ function getHtml(text) {
 		} else if (chars[i] == R_ARROW) {
 			i += 1
 			return '&gt;'+proceed()
+		} else if (chars[i] == '\n') {
+			i += 1
+			return '<br/>'+proceed()
 		} else {
 			return chars[i++] + proceed()
 		}
