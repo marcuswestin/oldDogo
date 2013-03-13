@@ -13,13 +13,25 @@ asyncEach = require('std/asyncEach')
 parallel = require('std/parallel')
 curry = require('std/curry')
 time = require('std/time')
-now = function() { return Math.floor(time.now() / time.second) }
-
 trim = require('std/trim')
 isArray = require('std/isArray')
+inverse = require('std/inverse')
+now = function() { return Math.floor(time.now() / time.second) }
+
+colors = require('client/colors')
+rgb = colors.rgb
+rgba = colors.rgba
+blues = colors.blues
+teals = colors.teals
+greens = colors.greens
+yellows = colors.yellows
+oranges = colors.oranges
+reds = colors.reds
+purples = colors.purples
 
 Addresses = require('data/Addresses')
 payloads = require('data/Payloads')
+DogoText = require('data/DogoText')
 
 makeTimer = require('server/util/makeTimer')
 log = require('server/util/log')

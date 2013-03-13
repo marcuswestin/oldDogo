@@ -41,6 +41,9 @@ module.exports = {
 	},
 	facebook: secrets.facebook,
 	twilio: {
-		disabled: true
+		disableAlerts:true,
+		accountSid: secrets.twilio.accountSid,
+		authToken: secrets.twilio.authToken,
+		from: '+14155992671'
 	}
 }

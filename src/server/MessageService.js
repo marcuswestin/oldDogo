@@ -71,18 +71,16 @@ function _notifyParticipants(message, prodPush) {
 
 		var pushFromName
 		var people = jsonList(res.peopleJson)
-		var dogoRecipients = filter(people, function(person) {
-			if (!Addresses.isDogo(person)) { return false }
-			var isMe = (person.addressId == message.fromPersonId)
-			if (isMe) {
+		var recipients = filter(people, function(person) {
+			if (Addresses.isDogo(person) && (person.addressId == message.fromPersonId)) {
 				pushFromName = person.name.split(' ')[0]
 				return false
 			}
 			return true
 		})
-		log.debug('push notifications', dogoRecipients)
-		each(dogoRecipients, function(person) {
-			pushService.sendMessagePush(person.personId, pushFromName, message, prodPush)
+		log.debug('push notifications', recipients)
+		each(recipients, function(recipient) {
+			pushService.sendMessagePush(recipient, pushFromName, message, prodPush)
 		})
 		log.debug('update participation summaries', people)
 		_updateParticipations(people, message)
