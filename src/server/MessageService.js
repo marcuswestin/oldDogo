@@ -71,17 +71,17 @@ function _notifyParticipants(message, prodPush) {
 
 		var pushFromName
 		var people = jsonList(res.peopleJson)
-		var recipientPeople = filter(people, function(person) {
-			var isMe = (person.personId == message.fromPersonId)
+		var dogoRecipients = filter(people, function(person) {
+			if (!Addresses.isDogo(person)) { return false }
+			var isMe = (person.addressId == message.fromPersonId)
 			if (isMe) {
 				pushFromName = person.name.split(' ')[0]
 				return false
-			} else {
-				return true
 			}
+			return true
 		})
-		log.debug('push notifications', recipientPeople)
-		each(recipientPeople, function(person) {
+		log.debug('push notifications', dogoRecipients)
+		each(dogoRecipients, function(person) {
 			pushService.sendMessagePush(person.personId, pushFromName, message, prodPush)
 		})
 		log.debug('update participation summaries', people)

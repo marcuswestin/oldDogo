@@ -51,6 +51,7 @@ function _onApnsError() {
 function sendMessagePush(toPersonId, pushFromName, message, prodPush) {
 	log.info('send message push', toPersonId, pushFromName, message, prodPush)
 	if (disabled) { log.debug('(disabled - skipping message push)'); return }
+	if (!toPersonId) { return log.error('No person id', arguments) }
 	db.people(toPersonId).selectOne('SELECT pushJson FROM person WHERE personId=?', [toPersonId], function(err, res) {
 		if (err) {
 			log.error(err)
