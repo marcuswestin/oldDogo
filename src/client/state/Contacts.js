@@ -43,7 +43,6 @@ function mergeInFacebookFriends(callback) {
 			var createdTime = now()
 			sessionInfo.generateClientUids({
 				withGenerator:function(generateUid) {
-					console.log("HERE")
 					each(fbFriends, function(fbFriend) {
 						_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.facebook, [fbFriend.id], fbFriend.name, createdTime, null, 0)
 					})
@@ -80,7 +79,6 @@ function mergeInAddressBook(callback) {
 			sessionInfo.generateClientUids({
 				withGenerator:function(generateUid) {
 					each(addressBookRes.entries, function(entry) {
-						console.log("HERE", entry.hasImage)
 						_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.phone, map(entry.phoneNumbers, Addresses.normalizePhone), entry.name, createdTime, entry.recordId, entry.hasImage)
 						_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.email, map(entry.emailAddresses, Addresses.normalizeEmail), entry.name, createdTime, entry.recordId, entry.hasImage)
 					})
