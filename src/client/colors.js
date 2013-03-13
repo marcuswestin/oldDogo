@@ -24,7 +24,8 @@ colors.hsvToRgb = hsvToRgb
 colors.hslToRgb = hslToRgb
 colors.rgbToHsv = rgbToHsv
 colors.rgbToHsl = rgbToHsl
-
+colors.rgbToHex = rgbToHex
+colors.gexToRgb = hexToRgb
 
 function series() {
 	var colorIndex = rand(0, colors.length)
@@ -53,6 +54,16 @@ function rgba(color, alpha) {
 	if (alpha != undefined) { color[3] = alpha }
 	color.toString = rgba.string
 	return color
+}
+
+function rgbToHex(rgb) {
+	var num = ((rgb[2] | rgb[1] << 8 | rgb[0] << 16) | 1 << 24)
+	return '#'+num.toString(16).substr(1)
+}
+
+function hexToRgb(hexString) {
+	var num = parseInt(hexString[0] == '#' ? hexString.substr(1) : hexString, 16)
+	return [num >> 16 & 255, num >> 8 & 255, num & 255]
 }
 
 // http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript

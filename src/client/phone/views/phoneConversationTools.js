@@ -88,11 +88,10 @@ function _textTool(toolHeight, barHeight) {
 	}
 	
 	function _showTextColor() {
-		var textColors = [blues[0], teals[0], greens[0], yellows[0], oranges[0], reds[0], purples[0]]
 		tooltip.show({ element:'.textColor', width:unit*39, height:unit*5.5, offset:[unit*4,unit*4] }, function() {
 			var styles = { width:unit*3, margin:px(unit/2, unit/4), height:unit*2 }
 			return div(style(fillWidth, fillHeight, radius(5), { background:'#fff', border:'1px solid #ccc', textAlign:'center' }),
-				map(textColors, function(color) {
+				map(DogoText.getTextColors(), function(color) {
 					return div('button', style(styles, { background:rgb(color) }), button(function() {
 						document.execCommand('foreColor', false, rgb(color))
 						tooltip.hide()

@@ -1,6 +1,7 @@
 module.exports = {
 	fromNode:fromNode,
-	getHtml:getHtml
+	getHtml:getHtml,
+	getTextColors:getTextColors
 }
 /* Parse DOM -> dogo text
  ************************/
@@ -18,7 +19,7 @@ function fromNode(node) {
 	if (tagNameStyles[node.tagName]) {
 		return '{s '+tagNameStyles[node.tagName]+' '+content+'}'
 	} else if (node.tagName == 'FONT') {
-		return '{c '+node.color+' '+content+'}'
+		return '{c '+getIndexForColor(node.color)+' '+content+'}'
 	} else {
 		return content
 	}
@@ -51,10 +52,10 @@ function getHtml(text) {
 				return '<'+style+'>'+proceed()
 			} else if (command == 'c') {
 				i += 2
-				var color = nextWord()
+				var colorIndex = nextWord()
 				i += 1
 				stack.push('font')
-				return '<font color="'+color+'">'+proceed()
+				return '<font color="'+getColorForIndex(colorIndex)+'">'+proceed()
 			}
 		} else if (chars[i] == R_CURLY) {
 			i += 1
@@ -78,3 +79,26 @@ function getHtml(text) {
 }
 // getHtml('hello, h{s i o{{}w ar{}}e you< t{s b here }}{s b my d}ear?')
 // getHtml(fromNode($0))
+
+/* Util
+ ******/
+function getTextColors() {
+	return _getColors()
+}
+
+function getIndexForColor(hexColor) {
+	return _getColors().inverse[hexColor]
+}
+function getColorForIndex(colorIndex) {
+	return _getColors()[colorIndex]
+}
+
+function _getColors() {
+	if (!_getColors.colors) {
+		_getColors.colors = map([blues[0], teals[0], greens[0], yellows[0], oranges[0], reds[0], purples[0]], function(rgb) {
+			return colors.rgbToHex(rgb)
+		})
+		_getColors.colors.inverse = inverse(_getColors.colors)
+	}
+	return _getColors.colors
+}
