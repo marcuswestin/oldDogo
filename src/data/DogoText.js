@@ -10,17 +10,21 @@ var R_CURLY = '}'
 var CURLY_ESCAPES = { '{':'{{}', '}':'{}}' }
 var CURLY_REGEX = /[\{\}]/g
 function fromNode(node) {
-	if (isTextNode(node)) {
+	if (_isTextNode(node)) {
 		return node.textContent.replace(CURLY_REGEX, function(match) { return CURLY_ESCAPES[match] })
 	}
-	var styles = tagNameStyles[node.tagName] || ''
 	var content = filter(map(node.childNodes, fromNode)).join('')
-	// console.log("QWE", content+'.')
-	return styles ? '{s '+styles+' '+content+'}' : content
+	
+	if (tagNameStyles[node.tagName]) {
+		return '{s '+tagNameStyles[node.tagName]+' '+content+'}'
+	} else if (node.tagName == 'FONT') {
+		return '{c '+node.color+' '+content+'}'
+	} else {
+		return content
+	}
 }
-function isTextNode(node) {
-	return node.nodeType == 3
-}
+
+function _isTextNode(node) { return node.nodeType == 3 }
 
 /* Parse dogo text -> HTML
  *************************/
@@ -40,11 +44,18 @@ function getHtml(text) {
 			if (chars[i+1] == R_CURLY) { i += 3; return R_CURLY + proceed() }
 			// {s u content ... } for style underlined content
 			var command = chars[i += 1]
-			if (command != 's') { throw new Error("Unknown command "+command) }
-			var style = chars[i += 2]
-			i += 2 // whitespace
-			stack.push(style)
-			return '<'+style+'>'+proceed()
+			if (command == 's') {
+				var style = chars[i += 2]
+				i += 2 // whitespace
+				stack.push(style)
+				return '<'+style+'>'+proceed()
+			} else if (command == 'c') {
+				i += 2
+				var color = nextWord()
+				i += 1
+				stack.push('font')
+				return '<font color="'+color+'">'+proceed()
+			}
 		} else if (chars[i] == R_CURLY) {
 			i += 1
 			return '</'+stack.pop()+'>'+proceed()
@@ -57,6 +68,12 @@ function getHtml(text) {
 		} else {
 			return chars[i++] + proceed()
 		}
+	}
+	
+	function nextWord() {
+		var word = ''
+		while (chars[i] && chars[i] != ' ') { word += chars[i++] }
+		return word
 	}
 }
 // getHtml('hello, h{s i o{{}w ar{}}e you< t{s b here }}{s b my d}ear?')
