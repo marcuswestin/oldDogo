@@ -10,21 +10,16 @@ module.exports = {
 /* Head, body, foot
  ******************/
 var view
-var peopleById
 var lastPersonId
 function renderHead(_view) {
 	view = _view
 	lastPersonId = null
-	peopleById = {}
 
 	// setTimeout(function() { tools.selectText(view) }, 250) // AUTOS
 	// setTimeout(function() { tools.selectMicrophone(view) }, 250) // AUTOS
 	
 	if (view.conversation) {
-		var name = view.conversation.people[0].name
-		each(view.conversation.people, function(person) {
-			peopleById[person.addressId] = person
-		})
+		var name = view.conversation.people[1].name
 	} else {
 		var name = view.contact.name || view.contact.addressId
 	}
@@ -95,7 +90,7 @@ events.on('view.changing', function() { lastPersonId = null })
 function _renderMessage(message) {
 	var isNewPerson = (lastPersonId != message.fromPersonId)
 	lastPersonId = message.fromPersonId
-	var person = peopleById[message.fromPersonId]
+	var person = _getMessagePerson(message)
 	var bg = '#fff'
 	return (isNewPerson
 		? [div(style(unitMargin(1,1/2,0), unitPadding(1/2,1/2,0), { minHeight:unit*6, background:bg }),
@@ -116,6 +111,20 @@ function _renderMessage(message) {
 		)
 	)
 }
+
+var peopleById
+events.on('view.changing', function() { peopleById = null })
+function _getMessagePerson(message) {
+	if (!peopleById) {
+		peopleById = {}
+		each(view.conversation.people, function(person) {
+			if (!Addresses.isDogo(person)) { return }
+			peopleById[person.addressId] = person
+		})
+	}
+	return peopleById[message.fromPersonId]
+}
+
 
 function renderContent(message) {
 	return html(DogoText.getHtml(message.payload.body))
