@@ -1,5 +1,8 @@
+var getConversations = require('server/fn/getConversations')
+
 module.exports = function createConversation(req, contacts, callback) {
-	contacts.unshift({ addressType:Addresses.types.dogo, addressId:req.session.personId })
+	var personId = req.session.personId
+	contacts.unshift({ addressType:Addresses.types.dogo, addressId:personId })
 	_lookupContacts(contacts, function(err, dogoPeople, otherAddresses) {
 		if (err) { return callback(err) }
 		var otherContacts = map(otherAddresses, function(addrInfo) { return addrInfo.contact })
@@ -8,7 +11,10 @@ module.exports = function createConversation(req, contacts, callback) {
 			if (err) { return callback(err) }
 			parallel(doCreateParticipations, doUpdateOtherAddresses, function(err) {
 				if (err) { return callback(err) }
-				callback(null, conversationId)
+				getConversations.getOne(personId, conversationId, function(err, conversation) {
+					if (err) { return callback(err) }
+					callback(null, conversation)
+				})
 			})
 			
 			function doCreateParticipations(callback) {

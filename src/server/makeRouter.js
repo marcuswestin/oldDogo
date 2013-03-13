@@ -251,7 +251,7 @@ function setupRoutes(app, opts) {
 	})
 	app.post('/api/conversation', filters.oldClientsAndSession, function handleCreateConversation(req, res) {
 		var params = getJsonParams(req, 'contacts')
-		createConversation(req, params.contacts, curry(respond, req, res))
+		createConversation(req, params.contacts, wrapRespond(req, res, 'conversation'))
 	})
 	app.post('/api/message', filters.oldClientsAndSession, function handleSendMessage(req, res) {
 		var params = getMultipartParams(req, 'toParticipationId', 'clientUid', 'type', 'payload')
