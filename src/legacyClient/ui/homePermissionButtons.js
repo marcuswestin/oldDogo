@@ -77,9 +77,9 @@ function _addFacebookFriends(permissionsAsked) {
 		}
 
 		function _fetchFacebookFriends(callback) {
-			bridge.command('facebook.connect', { permissions:['friends_birthday'] }, function(err, data) {
+			bridge.command('BTFacebook.connect', { permissions:['friends_birthday'] }, function(err, data) {
 				if (err) { return error(err) }
-				bridge.command('facebook.request', { path:'/me/friends?fields=id,name,birthday' }, function(err, response) {
+				bridge.command('BTFacebook.request', { path:'/me/friends?fields=id,name,birthday' }, function(err, response) {
 					if (err) {
 						error("I'm sorry. I was unable to fetch your friends from Facebook.")
 						return callback(err)

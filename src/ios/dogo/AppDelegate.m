@@ -120,21 +120,21 @@
 - (void)setupBridgeHandlers:(BOOL)useLocalBuild {
     [super setupBridgeHandlers:useLocalBuild];
     
-    [self registerHandler:@"message.send" handler:^(id data, BTResponseCallback responseCallback) {
+    [self handleCommand:@"message.send" handler:^(id data, BTResponseCallback responseCallback) {
         NSData* payload = [NSData dataWithContentsOfFile:[BTFiles documentPath:data[@"document"]]];
         [self _send:data payload:payload responseCallback:responseCallback];
     }];
     
-    [self registerHandler:@"text.send" handler:^(id data, BTResponseCallback responseCallback) {
+    [self handleCommand:@"text.send" handler:^(id data, BTResponseCallback responseCallback) {
         [self _send:data payload:nil responseCallback:responseCallback];
     }];
     
-    [self registerHandler:@"audio.send" handler:^(id data, BTResponseCallback responseCallback) {
+    [self handleCommand:@"audio.send" handler:^(id data, BTResponseCallback responseCallback) {
         NSData* audioData = [NSData dataWithContentsOfURL:[NSURL URLWithString:data[@"audioLocation"]]];
         [self _send:data payload:audioData responseCallback:responseCallback];
     }];
 
-    [self registerHandler:@"picture.send" handler:^(id data, BTResponseCallback responseCallback) {
+    [self handleCommand:@"picture.send" handler:^(id data, BTResponseCallback responseCallback) {
         NSString* base64String = [data[@"base64Data"] stringByReplacingOccurrencesOfString:@"data:image/jpeg;base64," withString:@""];
         
         NSData* pictureData = [NSData dataWithBase64EncodedString:base64String];

@@ -357,7 +357,7 @@ function promptInvite(message) {
 				'Send via Facebook',
 				face(view.conversation.people[0], { size:faceSize, style:{ 'float':'right' } }),
 				button(function sendViaFacebook() {
-				// TODO events.on('facebook.dialogDidComplete', function() { ... })
+				// TODO events.on('BTFacebook.dialogDidComplete', function() { ... })
 				// https://developers.facebook.com/docs/reference/dialogs/requests/
 				// https://developers.facebook.com/docs/mobile/ios/build/
 				
@@ -369,7 +369,7 @@ function promptInvite(message) {
 					var text = name+' sent you a drawing. Reply in style with Dogo!'
 				}
 				
-				bridge.command('facebook.dialog', {
+				bridge.command('BTFacebook.dialog', {
 					dialog: 'apprequests',
 					params: {
 						message: text,
@@ -379,7 +379,7 @@ function promptInvite(message) {
 						// frictionless:'1'
 					}
 				})
-				events.once('facebook.dialogCompleteWithUrl', function facebookDialogCompleteWithUrl(info) {
+				events.once('BTFacebook.dialogCompleteWithUrl', function facebookDialogCompleteWithUrl(info) {
 					var url = parseUrl(info.url)
 					var params = { conversationId:conversation.conversationId, personId:conversation.people[0].personId, facebookRequestId:url.getSearchParam('request') }
 					api.post('api/facebookRequests', params, error.handler)

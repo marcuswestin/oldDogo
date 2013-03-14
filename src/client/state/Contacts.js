@@ -54,9 +54,9 @@ function mergeInFacebookFriends(callback) {
 	
 	
 	function _getFbFriends(callback) {
-		bridge.command('facebook.connect', { permissions:['friends_birthday'] }, function(err, data) {
+		bridge.command('BTFacebook.connect', { permissions:['friends_birthday'] }, function(err, data) {
 			if (err) { return callback(err) }
-			bridge.command('facebook.request', { path:'/me/friends?fields=id,name,birthday' }, function(err, response) {
+			bridge.command('BTFacebook.request', { path:'/me/friends?fields=id,name,birthday' }, function(err, response) {
 				if (err) { return callback("I'm sorry. I was unable to fetch your friends from Facebook.") }
 				callback(null, response.data)
 			})

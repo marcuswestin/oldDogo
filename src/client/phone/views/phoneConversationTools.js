@@ -173,9 +173,9 @@ function _microphoneTool(toolHeight, barHeight) {
 				})),
 				div('button', 'Send', style(floatRight), buttonStyles, button(function() {
 					var sendDocName = 'AudioDocument-'+uniqueDraftId+'.m4a'
-					bridge.command('BTAudio.readFromFileToFile', { fromDocument:draftName, toDocument:sendDocName, pitch:_microphoneTool.pitch }, function(err) {
+					bridge.command('BTAudio.readFromFileToFile', { fromDocument:draftName, toDocument:sendDocName, pitch:_microphoneTool.pitch }, function(err, res) {
 						if (err) { return error(err) }
-						sendMessage(Messages.types.audio, { document:sendDocName })
+						sendMessage(Messages.types.audio, { document:sendDocName, duration:res.duration })
 					})
 				}))
 			)

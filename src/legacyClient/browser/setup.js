@@ -18,23 +18,23 @@ function setupBrowserDebugMode() {
 			case 'push.register':
 				callback(null)
 				break
-			case 'facebook.connect':
+			case 'BTFacebook.connect':
 				FB.login(function(response) {
 					callback(null, { facebookSession:response.authResponse })
 				}, { scope:data.permissions.join(',') })
 				break
-			case 'facebook.request':
+			case 'BTFacebook.request':
 				FB.api(data.path, function(response) {
 					callback(null, response)
 				})
 				break
-			case 'facebook.dialog':
+			case 'BTFacebook.dialog':
 				var params = data.params
 				FB.ui({ method:data.dialog, message:params.message, data:params.data, title:params.title, to:parseInt(params.to) }, function(res) {
-					events.fire('facebook.dialogCompleteWithUrl', { url:'fake_fbconnect://success?request='+res.request })
+					events.fire('BTFacebook.dialogCompleteWithUrl', { url:'fake_fbconnect://success?request='+res.request })
 				})
 				break
-			case 'facebook.clear':
+			case 'BTFacebook.clear':
 				callback(null)
 				break
 			case 'app.restart':

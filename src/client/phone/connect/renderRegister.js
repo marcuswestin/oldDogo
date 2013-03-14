@@ -28,14 +28,14 @@ function renderFacebook(view) {
 			listMenuContent('listMenuFacebook', 'Speed up Registration'),
 			button(function() {
 				overlay.show('Loading...')
-				bridge.command('facebook.connect', { permissions:['email','friends_birthday'] }, function(err, data) {
+				bridge.command('BTFacebook.connect', { permissions:['email','friends_birthday'] }, function(err, data) {
 					if (err || !data.facebookSession || !data.facebookSession.accessToken) {
 						overlay.hide(function() {
 							return error('I was unable to connect to your Facebook')
 						})
 					}
 			
-					bridge.command('facebook.request', { path:'/me' }, function(err, fbMe) {
+					bridge.command('BTFacebook.request', { path:'/me' }, function(err, fbMe) {
 						overlay.hide(function() {
 							if (err) { return error('I was unable to connect to your Facebook') }
 					

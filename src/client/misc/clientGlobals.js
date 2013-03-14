@@ -30,6 +30,7 @@ asyncEach = require('std/asyncEach')
 asyncMap = require('std/asyncMap')
 repeat = require('std/repeat')
 last = require('std/last')
+round = require('std/round')
 
 Documents = require('client/state/Documents')
 Caches = require('client/state/Caches')

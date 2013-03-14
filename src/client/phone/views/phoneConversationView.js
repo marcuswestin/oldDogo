@@ -142,7 +142,10 @@ function renderContent(message) {
 		var deltaX = (messageWidth - displaySize[0]) / 2
 		return div(style(graphics.backgroundImage(url, displaySize[0], displaySize[1]), translate.x(deltaX)))
 	} else if (Messages.isAudio(message)) {
-		return 'audio'
+		var url = message.preview
+			? BT.url('BTFiles.getDocument', { document:message.preview.document, mimeType:Payloads.mimeTypes[message.type] })
+			: Payloads.url(message)
+		return html('Voice message: '+round(payload.duration / time.second, 1)+'s <audio src="'+url+'" controls="true">')
 	} else {
 		return 'Cannot display message. Please upgrade Dogo!'
 	}

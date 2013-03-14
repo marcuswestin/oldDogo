@@ -6,7 +6,7 @@ var state = module.exports = {
 	},
 	clear: function() {
 		state.cache = {}
-		bridge.command('facebook.clear', function() {
+		bridge.command('BTFacebook.clear', function() {
 			bridge.command('state.clear', function() {
 				bridge.command('app.restart')
 			})

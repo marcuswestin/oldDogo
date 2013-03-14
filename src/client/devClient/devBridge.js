@@ -66,12 +66,12 @@ var commandHandlers = {
 	
 	'BTAddressBook.getAllEntries':getAllAddressBookEntries,
 	
-	'facebook.connect': function(data, callback) {
+	'BTFacebook.connect': function(data, callback) {
 		var params = { scope:data.permissions.join(',') }
 		if (!window.FB) { return callback('devBridge FB unavailable') }
 		FB.login(function(response) { callback(null, { facebookSession:response.authResponse }) }, params)
 	},
-	'facebook.request': function(data, callback) {
+	'BTFacebook.request': function(data, callback) {
 		if (!window.FB) { return callback('devBridge FB unavailable') }
 		FB.api(data.path, function(response) { callback(null, response) })
 	},
@@ -141,18 +141,18 @@ var commandHandlers = {
 	// 'push.register': function(data, callback) {
 	// 	callback(null)
 	// },
-	// 'facebook.request': function(data, callback) {
+	// 'BTFacebook.request': function(data, callback) {
 	// 	FB.api(data.path, function(response) {
 	// 		callback(null, response)
 	// 	})
 	// },
-	// 'facebook.dialog': function(data, callback) {
+	// 'BTFacebook.dialog': function(data, callback) {
 	// 	var params = data.params
 	// 	FB.ui({ method:data.dialog, message:params.message, data:params.data, title:params.title, to:parseInt(params.to) }, function(res) {
-	// 		events.fire('facebook.dialogCompleteWithUrl', { url:'fake_fbconnect://success?request='+res.request })
+	// 		events.fire('BTFacebook.dialogCompleteWithUrl', { url:'fake_fbconnect://success?request='+res.request })
 	// 	})
 	// },
-	// 'facebook.clear': function(data, callback) {
+	// 'BTFacebook.clear': function(data, callback) {
 	// 	callback(null)
 	// },
 	// 'app.restart': function(data, callback) {

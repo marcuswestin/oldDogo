@@ -88,6 +88,12 @@ function _sendEmailNotification(emailAddress, pushFromName, message) {
 			text:pushFromName+' sent you a picture with Dogo: '+convUrl,
 			html:pushFromName+' sent you a picture with Dogo: <a href="'+convUrl+'">'+convUrl+'</a><br><br><a href="'+convUrl+'"><img src="'+Payloads.url(message)+'"></a>'
 		}
+	} else if (Messages.isAudio(message)) {
+		content = {
+			subject:'A voice message.',
+			text:pushFromName+' sent you a voice message with Dogo: '+convUrl,
+			html:pushFromName+' sent you a voice message with Dogo: <a href="'+convUrl+'">'+convUrl+'</a><br><br><audio src="'+Payloads.url(message)+'" controls="true">'
+		}
 	} else {
 		return log.error("Unknown message type", message)
 	}
