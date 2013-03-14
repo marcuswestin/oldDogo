@@ -32,11 +32,10 @@ events.on('app.start', startPhoneClient)
 
 bridge.init()
 
-clientDbName = 'DogoClientDb'
 var clientSchema = require('client/database/clientSchema')
 function startPhoneClient(appInfo) {
 	gAppInfo = appInfo
-	bridge.command('BTSql.openDatabase', { name:clientDbName }, function(err, res) {
+	bridge.command('BTSql.openDatabase', { name:'DogoClientDb' }, function(err, res) {
 		if (err) { return error(err) }
 		Documents.read('DatabaseSchema', function(err, res) {
 			if (err) { return error(err) }

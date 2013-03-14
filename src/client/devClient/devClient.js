@@ -4,9 +4,6 @@ require('client/phone/phoneClient')
 var devBridge = require('./devBridge')
 var devButtons = require('./devButtons') 
 
-gHeadHeight = unit
-gKeyboardHeight = 216
-
 // In dev mode Fake the viewport width and height to be an iPhone
 viewport.height = function() { return 480 }
 viewport.width = function() { return 320 }
@@ -18,23 +15,11 @@ viewport.pos = function() {
 $(startDevClient)
 
 function startDevClient() {
-	
 	buildDevClient()
 	layoutDevClient()
 	$(window).resize(layoutDevClient)
-	setTimeout(loadFbSdk, 400)
-	
-	devBridge.setup()
+	setTimeout(loadFbSdk, 400)	
 	devButtons.setup()
-	
-	bridge.eventHandler('app.start', {
-		client:'0.98.0-browser',
-		config: {
-			device: { platform:'Chrome' },
-			serverHost:location.hostname,
-			serverUrl:'http://'+location.host
-		}
-	})
 }
 
 function buildDevClient() {
@@ -50,7 +35,7 @@ function buildDevClient() {
 				),
 				div({ id:'devClientViewportFrame' },
 					style(viewport.size(), translate.x(32), { position:'absolute', overflow:'hidden' }),
-					div({ id:'viewport' }, style(viewport.size()))
+					iframe({ id:'clientWindow', src:'/phone', frameBorder:'0' }, style(viewport.size()))
 				),
 				img({ src:'/graphics/mockPhone/iphone4-middle.png' }, button(function(){}),
 					style({ margin:'0px auto', display:'block' })
@@ -60,6 +45,21 @@ function buildDevClient() {
 				)
 			)
 		))
+	nextTick(checkClientWindow)
+	function checkClientWindow() {
+		var win = $('#clientWindow')[0].contentWindow
+		if (!win) { return after(50, checkClientWindow) }
+		devBridge.setup(win, function() {
+			devBridge.notify('app.start', {
+				client:'0.98.0-browser',
+				config: {
+					device: { platform:'Chrome' },
+					serverHost:location.hostname,
+					serverUrl:'http://'+location.host
+				}
+			})
+		})
+	}
 }
 
 layoutDevClient.top = function() { return Math.max(20, $(window).height() / 2 - viewport.height()/2) }

@@ -9,8 +9,12 @@ function setupDevButtons() {
 	// $buttons.append(div(padded, 'Run Usage tests', button(runUsageTests)))
 	// $buttons.append(div(padded, 'Run Connect tests', button(runConnectTests)))
 	// $buttons.append(div(padded, 'Toggle Splash Screen', button(toggleSplashScreen)))
-	$buttons.append(div(padded, 'Toggle 2xUnit Grid', button(toggleUnitGrid)))
-	$buttons.append(div(padded, 'Clear state', button(clearState)))
+	$buttons.append(div(padded, 'Toggle 2xUnit Grid', button(function() {
+		$('#clientWindow')[0].contentWindow.toggleUnitGrid()
+	})))
+	$buttons.append(div(padded, 'Clear state', button(function() {
+		$('#clientWindow')[0].contentWindow.clearState()
+	})))
 	// $buttons.append(div(padded, div(null, 'Add email address', button(addEmailAddress), input({ id:'addEmailAddress' }))))
 	$('body').append($buttons)
 }

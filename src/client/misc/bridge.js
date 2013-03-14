@@ -1,10 +1,10 @@
 module.exports = {
 	init:init,
-	command:sendCommandToObjC,
-	eventHandler:eventHandler
+	command:sendCommandToObjC
 }
 
 var webViewJavascriptBridge
+var queue = []
 
 function init() {
 	if (window.WebViewJavascriptBridge) {
@@ -20,15 +20,19 @@ function init() {
 			// we only expect lifecycle events to be sent from ObjC to JS (since all the business logic lives in JS)
 			// all other communication from ObjC -> JS will be in response to a message sent from JS -> ObjC
 			if (message.event) {
-				eventHandler(message.event, message.info)
+				events.fire(message.event, message.info)
 			} else {
 				alert('Received unknown message')
 			}
 		})
+		var _queue = queue
+		queue = null
+		each(_queue, function(args) { sendCommandToObjC.apply(this, args) })
 	}
 }
 
 function sendCommandToObjC(command, data, responseHandler) {
+	if (queue) { return queue.push(arguments) }
 	if (!responseHandler && typeof data == 'function') {
 		responseHandler = data
 		data = null
@@ -38,8 +42,4 @@ function sendCommandToObjC(command, data, responseHandler) {
 			responseHandler(response.error, response.responseData)
 		}
 	})
-}
-
-function eventHandler(name, info) {
-	events.fire(name, info)
 }

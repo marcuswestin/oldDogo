@@ -1,24 +1,37 @@
 module.exports = {
-	setup:setupDevBridge
+	setup:setupDevBridge,
+	notify:notify
 }
 
-function setupDevBridge() {
-	bridge.command = function onBridgeCommand(command, data, callback) {
-		if (!callback && typeof data == 'function') {
-			callback = data
-			data = null
+function notify(event, info) {
+	messageHandler({ event:event, info:info })
+}
+
+var messageHandler
+function setupDevBridge(win, onSetup) {
+	win.WebViewJavascriptBridge = {
+		init:function(_messageHandler) {
+			messageHandler = _messageHandler
+			onSetup()
+		},
+		callHandler:function(command, data, callback) {
+			if (!callback && typeof data == 'function') {
+				callback = data
+				data = null
+			}
+			if (!commandHandlers[command]) {
+				return console.log("WARN", 'Unknown bridge command', command)
+			}
+			commandHandlers[command](data, function(error, responseData) {
+				callback({ error:error, responseData:responseData })
+			})
 		}
-		if (!commandHandlers[command]) {
-			return console.log("WARN", 'Unknown bridge command', command)
-		}
-		commandHandlers[command](data, callback || function(){})
 	}
 }
 
 function justRespond(data, callback) { callback && nextTick(callback) }
 
 var db
-
 var commandHandlers = {
 	'app.show': function(data, callback) {
 		console.log('SHOW APP')
@@ -55,9 +68,11 @@ var commandHandlers = {
 	
 	'facebook.connect': function(data, callback) {
 		var params = { scope:data.permissions.join(',') }
+		if (!window.FB) { return callback('devBridge FB unavailable') }
 		FB.login(function(response) { callback(null, { facebookSession:response.authResponse }) }, params)
 	},
 	'facebook.request': function(data, callback) {
+		if (!window.FB) { return callback('devBridge FB unavailable') }
 		FB.api(data.path, function(response) { callback(null, response) })
 	},
 	'push.register': function(data, callback) { callback(null, { deviceToken:'DEV_BRIDGE_FAKE_TOKEN' }) },

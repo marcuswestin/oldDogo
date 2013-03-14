@@ -81,6 +81,7 @@ canvas = tags('canvas')
 label = tags('label')
 br = tags.br
 html = tags.html
+iframe = tags('iframe')
 
 translate = style.translate
 transition = style.transition
