@@ -107,7 +107,7 @@ ul = function() { return ulTag(map(arguments, function(content) { return liTag('
 spacing = 8
 remove = function(obj, prop) { var val = obj[prop]; delete obj[prop]; return val }
 after = function(duration, fn) { setTimeout(fn, duration) }
-gConfigure = function(config) { payloads.configure(config.payloads) }
+gConfigure = function(config) { Payloads.configure(config.Payloads) }
 
 listMenuIcon = function(graphicName) {
 	return graphic(graphicName, 20, 20, translate.y(2), { 'float':'left', margin:px(0,unit/2) })

@@ -9,7 +9,7 @@ error = function(err) {
 ;(function() {
 	
 	api.setHeaders({ 'x-dogo-client':'0.91.0-facebook_canvas' })
-	payloads.bucket = null
+	Payloads.bucket = null
 	
 	var requestIds = parseUrl(location).getSearchParam('request_ids')
 	viewport.fit($('#viewport'))

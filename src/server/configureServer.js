@@ -5,11 +5,11 @@ module.exports = function configureServer(config) {
 	var sendEmail = require('server/fn/sendEmail')
 	var sendSms = require('server/fn/sendSms')
 	var pushService = require('server/PushService')
-	var payloads = require('data/Payloads')
+	var Payloads = require('data/Payloads')
 	
 	db.configure(config.dbShards)
 	payloadService.configure(config.aws)
-	payloads.configure(config.aws.s3)
+	Payloads.configure(config.aws.s3)
 	sendEmail.configure(config.aws)
 	sendSms.configure(config.twilio)
 	pushService.configure(config.push)

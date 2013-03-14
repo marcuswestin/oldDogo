@@ -1,6 +1,6 @@
 var Messages = require('data/Messages')
 
-var payloads = module.exports = {
+var Payloads = module.exports = {
 	url:url,
 	path:path,
 	personPicturePath:personPicturePath,
@@ -20,8 +20,8 @@ function _getMimeTypes() {
 }
 
 function configure(config) {
-	payloads.bucket = config.bucket
-	payloads.region = config.region
+	Payloads.bucket = config.bucket
+	Payloads.region = config.region
 }
 
 var extensions = {}
@@ -38,9 +38,9 @@ function path(personId, secret, type) {
 }
 
 function url(personId, type, payload) {
-	return base(payload.bucket, payload.region) + payloads.path(personId, payload.secret, type)
+	return base(payload.bucket, payload.region) + Payloads.path(personId, payload.secret, type)
 }
 
 function base(bucket, region) {
-	return 'http://'+(bucket || payloads.bucket)+'.s3-website-'+(region || payloads.region)+'.amazonaws.com'
+	return 'http://'+(bucket || Payloads.bucket)+'.s3-website-'+(region || Payloads.region)+'.amazonaws.com'
 }

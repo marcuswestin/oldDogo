@@ -9,7 +9,7 @@ function displayUrl(message, opts) {
 		resize:null,
 		crop:null
 	})
-	var url = payloads.url(message.fromPersonId, message.type, message.payload)
+	var url = Payloads.url(message.fromPersonId, message.type, message.payload)
 	var params = {
 		url:url,
 		cache:'yes',
@@ -21,7 +21,7 @@ function displayUrl(message, opts) {
 	if (opts.crop) {
 		params.crop = fixSize(opts.crop).join('x')
 	}
-	return BT.url('BTImage', 'fetchImage', params)
+	return BT.url('BTImage.fetchImage', params)
 }
 
 function fixSize(size) {

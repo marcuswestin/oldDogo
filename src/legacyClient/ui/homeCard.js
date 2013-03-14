@@ -93,7 +93,7 @@ function _getCollageBackground(width, conversation) {
 	var rects = _divideRect(halves[0], otherAxis, numFirstHalf).concat(_divideRect(halves[1], otherAxis, numSecondHalf))
 
 	var picUrls = map(pictures, function(cardPic) {
-		return payloads.url(cardPic.fromPersonId, 'picture', cardPic.payload)
+		return Payloads.url(cardPic.fromPersonId, 'picture', cardPic.payload)
 	})
 
 	var contents = picUrls.concat(map(new Array(clip(numRects - pictures.length, 0, numRects)), function() {
@@ -102,7 +102,7 @@ function _getCollageBackground(width, conversation) {
 
 	// return _drawRects(rects)
 	return style({
-		background:'url('+BT.url('BTImage', 'collage', {
+		background:'url('+BT.url('BTImage.collage', {
 			rects:map(rects, function(r) { return r.join(':') }), // x1:y1,x2.y2,x3.y3
 			contents:contents, // http://example.com/image.jpg or r.g.b
 			size:width+':'+collageHeight,

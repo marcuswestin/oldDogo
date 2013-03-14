@@ -23,7 +23,7 @@ function configure(awsConf) {
 
 var emptyBuffer = new Buffer(0)
 function makeRedirect(fromPath, toUrl, callback) {
-	log.debug('redirect from', payloads.base()+fromPath, 'to', toUrl)
+	log.debug('redirect from', Payloads.base()+fromPath, 'to', toUrl)
 	var headers = { 'x-amz-website-redirect-location':toUrl }
 	if (disabled) { log.debug('(disabled - skipping payload redirect)'); return callback() }
 	s3.putBuffer(fromPath, emptyBuffer, s3PersmissionAcl, headers, callback)
@@ -31,19 +31,19 @@ function makeRedirect(fromPath, toUrl, callback) {
 
 function uploadPayload(personId, type, payloadFile, callback) {
 	var secret = uuid.v4()
-	var path = payloads.path(personId, secret, type)
+	var path = Payloads.path(personId, secret, type)
 	_doUpload(type, path, payloadFile, function(err) { callback(err, secret) })
 }
 
 function uploadPersonPicture(pictureFile, callback) {
 	if (!pictureFile) { return callback('Missing picture') }
 	var secret = uuid.v4()
-	var path = payloads.underlyingPersonPicturePath(secret)
+	var path = Payloads.underlyingPersonPicturePath(secret)
 	_doUpload('picture', path, pictureFile, function(err) { callback(err, secret) })
 }
 
 function _doUpload(type, path, file, callback) {
-	var uploadHeaders = { 'content-type':payloads.mimeTypes[type], 'content-length':file.size }
+	var uploadHeaders = { 'content-type':Payloads.mimeTypes[type], 'content-length':file.size }
 	log.debug('uploading', file.path+' -> '+path, uploadHeaders)
 	if (disabled) { log.debug('(disabled - skipping payload upload)'); return callback() }
 	s3.putFile(path, file.path, s3PersmissionAcl, uploadHeaders, function(err, headers) {

@@ -15,7 +15,7 @@ function withAddressVerification(verificationId, verificationToken, password, ca
 	_getMatchingVerification(function(err, verInfo) {
 		if (err) { return callback(err) }
 		var addresses = [{ addressId:verInfo.addressId, addressType:verInfo.addressType }]
-		var pictureUrl = payloads.underlyingPersonPictureUrl(verInfo.pictureSecret)
+		var pictureUrl = Payloads.underlyingPersonPictureUrl(verInfo.pictureSecret)
 		var opts = {}
 		_createPersonWithVerifiedAddresses(verInfo.name, verInfo.passwordHash, pictureUrl, addresses, opts, function(err, person) {
 			if (err) { return callback(err) }
@@ -53,7 +53,7 @@ function withFacebookSession(name, address, password, fbSession, pictureSecret, 
 			log.alert('Facebook register email mismatch', address, name, fbAccount)
 			return callback('Hmm... That email is not right. Are you trying to trick us? Why not join forces instead, ping us at jobs@dogo.co')
 		}
-		var pictureUrl = pictureSecret ? payloads.underlyingPersonPictureUrl(pictureSecret) : 'http://graph.facebook.com/'+fbAccount.id+'/picture?type=large'
+		var pictureUrl = pictureSecret ? Payloads.underlyingPersonPictureUrl(pictureSecret) : 'http://graph.facebook.com/'+fbAccount.id+'/picture?type=large'
 		var addresses = [address, Addresses.facebook(fbAccount.id)]
 		var opts = { birthdate:_getFbAccBirthdate(fbAccount.birthday), locale:fbAccount.locale, gender:fbAccount.gender, facebookId:fbAccount.id }
 		_createPersonWithVerifiedAddresses(name, passwordHash, pictureUrl, addresses, opts, callback)
@@ -92,7 +92,7 @@ function _createPersonWithVerifiedAddresses(name, passwordHash, pictureUrl, addr
 			getPerson(personId, callback)
 		}
 		function _createPictureRedirect(callback) {
-			payloadService.makeRedirect(payloads.personPicturePath(personId), pictureUrl, callback)
+			payloadService.makeRedirect(Payloads.personPicturePath(personId), pictureUrl, callback)
 		}
 		function _claimVerifiedAddresses(callback) {
 			claimVerifiedAddresses(addrInfos, personId, name, callback)

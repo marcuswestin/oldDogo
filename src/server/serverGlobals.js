@@ -19,7 +19,7 @@ inverse = require('std/inverse')
 now = function() { return Math.floor(time.now() / time.second) }
 
 Addresses = require('data/Addresses')
-payloads = require('data/Payloads')
+Payloads = require('data/Payloads')
 DogoText = require('data/DogoText')
 Messages = require('data/Messages')
 

@@ -1,5 +1,5 @@
 var BT = module.exports = {
-	url:function(module, path, params) {
-		return gAppInfo.config.serverUrl+'/'+module+'/'+path+'?'+parseUrl.query.string(params)
+	url:function(request, params) {
+		return gAppInfo.config.serverUrl+'/'+request+'?'+parseUrl.query.string(params)
 	}
 }

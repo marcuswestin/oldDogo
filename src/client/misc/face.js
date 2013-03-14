@@ -31,7 +31,7 @@ face.style = function(contact, opts) {
 	
 	if (imageParams) {
 		imageParams.resize = opts.size*ratio+'x'+opts.size*ratio
-		return graphics.backgroundImage(BT.url('BTImage', 'fetchImage', imageParams), opts.size, opts.size)
+		return graphics.backgroundImage(BT.url('BTImage.fetchImage', imageParams), opts.size, opts.size)
 	} else {
 		return null
 	}
