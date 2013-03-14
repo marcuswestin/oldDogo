@@ -1,4 +1,4 @@
-var Colors = require('.//Colors')
+var Colors = require('./Colors')
 module.exports = {
 	fromNode:fromNode,
 	getHtml:getHtml,
@@ -47,7 +47,7 @@ function getPlainText(text) {
 		if (chars[i] == L_BRACKET) {
 			if (chars[i+1] == L_BRACKET) { i += 3; return L_BRACKET + proceed() }
 			if (chars[i+1] == R_BRACKET) { i += 3; return R_BRACKET + proceed() }
-			i += 2
+			i += 3
 			nextWord()
 			return proceed()
 		} else if (chars[i] == R_BRACKET) {
@@ -61,6 +61,7 @@ function getPlainText(text) {
 	function nextWord() {
 		var word = ''
 		while (chars[i] && chars[i] != ' ') { word += chars[i++] }
+		i += 1 // following space
 		return word
 	}
 }
@@ -87,7 +88,6 @@ function getHtml(text) {
 			} else if (command == 'c') {
 				i += 2
 				var colorIndex = nextWord()
-				i += 1
 				stack.push('font')
 				return '<font color="'+getColorForIndex(colorIndex)+'">'+proceed()
 			}
@@ -111,6 +111,7 @@ function getHtml(text) {
 	function nextWord() {
 		var word = ''
 		while (chars[i] && chars[i] != ' ') { word += chars[i++] }
+		i += 1 // following space
 		return word
 	}
 }
