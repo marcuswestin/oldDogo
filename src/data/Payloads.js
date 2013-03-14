@@ -37,8 +37,9 @@ function path(personId, secret, type) {
 	return '/people/'+(personId || 'guests')+'/payloads/'+secret+'.'+extensions[type]
 }
 
-function url(personId, type, payload) {
-	return base(payload.bucket, payload.region) + Payloads.path(personId, payload.secret, type)
+function url(message) {
+	var payload = message.payload
+	return base(payload.bucket, payload.region) + Payloads.path(message.fromPersonId, payload.secret, message.type)
 }
 
 function base(bucket, region) {

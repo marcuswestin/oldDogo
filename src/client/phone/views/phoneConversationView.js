@@ -134,9 +134,9 @@ function renderContent(message) {
 	if (Messages.isText(message)) {
 		return html(DogoText.getHtml(payload.body))
 	} else if (Messages.isPicture(message)) {
-		var picUrl = Payloads.url(message.fromPersonId, message.type, payload)
-		var url = BT.url('BTImage.fetchImage', { url:picUrl })
-		return div(style(graphics.backgroundImage(url, payload.width, payload.height)))
+		var url = BT.url('BTImage.fetchImage', { url:Payloads.url(message), cache:true })
+		var deltaX = (payload.width - viewport.width()) / 2
+		return div(style(graphics.backgroundImage(url, payload.width, payload.height), translate.x(deltaX)))
 	} else if (Messages.isAudio(message)) {
 		return 'audio'
 	} else {

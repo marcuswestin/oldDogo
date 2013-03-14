@@ -9,9 +9,8 @@ function displayUrl(message, opts) {
 		resize:null,
 		crop:null
 	})
-	var url = Payloads.url(message.fromPersonId, message.type, message.payload)
 	var params = {
-		url:url,
+		url:Payloads.url(message),
 		cache:'yes',
 		mimeType:'image/jpg'
 	}

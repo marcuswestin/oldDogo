@@ -71,11 +71,28 @@ function _sendPhoneNotification(phoneNumber, pushFromName, message) {
 }
 
 function _sendEmailNotification(emailAddress, pushFromName, message) {
-	var dogoText = message.payload.body
-	var text = DogoText.getPlainText(dogoText)
-	var html = DogoText.getHtml(dogoText)
-	var subject = text.length > 40 ? text.substr(0, 40) + '...' : text
-	sendEmail(pushFromName + ' - via Dogo <no-reply@dogo.co>', emailAddress, subject, text, html, function(err) {
+	var convUrl = 'https://dogo.co/c/'+message.conversationId
+	var content = null
+	
+	if (Messages.isText(message)) {
+		var dogoText = message.payload.body
+		var plainText = DogoText.getPlainText(dogoText)
+		content = {
+			subject: plainText.length > 40 ? plainText.substr(0, 40) + '...' : plainText,
+			text:plainText,
+			html:DogoText.getHtml(dogoText)
+		}
+	} else if (Messages.isPicture(message)) {
+		content = {
+			subject:'A picture.',
+			text:pushFromName+' sent you a picture with Dogo: '+convUrl,
+			html:pushFromName+' sent you a picture with Dogo: <a href="'+convUrl+'">'+convUrl+'</a><br><br><a href="'+convUrl+'"><img src="'+Payloads.url(message)+'"></a>'
+		}
+	} else {
+		return log.error("Unknown message type", message)
+	}
+	
+	sendEmail(pushFromName + ' - via Dogo <no-reply@dogo.co>', emailAddress, content.subject, content.text, content.html, function(err) {
 		if (err) { return log.error('Could not send email', emailAddress, message) }
 		log('message email sent', emailAddress)
 	})

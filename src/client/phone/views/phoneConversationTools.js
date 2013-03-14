@@ -263,8 +263,8 @@ function sendMessage(type, data) {
 				bridge.command('message.send', commandData, onResponse)
 
 			} else if (Messages.isText(message)) {
-				message.payload = { body:messageData.body }
-				preview = { body:messageData.body }
+				message.payload = { body:data.body }
+				preview = { body:data.body }
 				bridge.command('text.send', commandData, onResponse)
 
 			} else {
