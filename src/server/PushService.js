@@ -1,6 +1,5 @@
 var apns = require('apn')
 var log = makeLog('PushService')
-var push = require('data/push')
 var sendEmail = require('server/fn/sendEmail')
 var sendSms = require('server/fn/sendSms')
 
@@ -64,7 +63,7 @@ function sendMessagePush(address, pushFromName, message, prodPush) {
 
 function _sendPhoneNotification(phoneNumber, pushFromName, message) {
 	// var dogoText = message.payload.body
-	// var text = DogoText.getText(dogoText)
+	// var text = DogoText.getPlainText(dogoText)
 	sendSms(phoneNumber, pushFromName+' sent you a '+message.type+' message.', function(err) {
 		if (err) { return log.error('Could not send sms', phoneNumber, message) }
 		log("message sms sent", phoneNumher)
@@ -73,10 +72,10 @@ function _sendPhoneNotification(phoneNumber, pushFromName, message) {
 
 function _sendEmailNotification(emailAddress, pushFromName, message) {
 	var dogoText = message.payload.body
-	var text = DogoText.getText(dogoText)
+	var text = DogoText.getPlainText(dogoText)
 	var html = DogoText.getHtml(dogoText)
 	var subject = text.length > 40 ? text.substr(0, 40) + '...' : text
-	sendEmail(pushFromName + ' (via Dogo) <no-reply@dogo.co>', emailAddress, subject, text, html, function(err) {
+	sendEmail(pushFromName + ' - via Dogo <no-reply@dogo.co>', emailAddress, subject, text, html, function(err) {
 		if (err) { return log.error('Could not send email', emailAddress, message) }
 		log('message email sent', emailAddress)
 	})
@@ -97,16 +96,12 @@ function _sendPushNotification(toPersonId, pushFromName, message, prodPush) {
 		
 		if (pushInfo.type != 'ios') { return log.warn('Unknown push type', pushInfo[0]) }
 		
-		var encodedPayload = push.encodeMessage({
-			message:message,
-			toPersonId:toPersonId,
-			fromFirstName:pushFromName
-		})
-		if (!encodedPayload) { return log.error("Could not encode payload", message, toPersonId, fromFirstName) }
+		var payload = Messages.encodeForPush(message, pushFromName)
+		if (!payload) { return log.error("Could not encode payload", message, toPersonId, pushFromName) }
 		
 		var notification = new apns.Notification()
 		notification.device = new apns.Device(pushInfo.token)
-		notification.payload = encodedPayload
+		notification.payload = payload
 		
 		log.debug('do send', toPersonId)
 		var connection = prodPush ? apnsConnections.prod : apnsConnections.sandbox

@@ -1,3 +1,5 @@
+var Messages = require('data/Messages')
+
 var payloads = module.exports = {
 	url:url,
 	path:path,
@@ -7,10 +9,14 @@ var payloads = module.exports = {
 	underlyingPersonPictureUrl:underlyingPersonPictureUrl,
 	base:base,
 	configure:configure,
-	mimeTypes: {
-		'picture':'image/jpg',
-		'audio':'audio/mp4a-latm'
-	}
+	mimeTypes:_getMimeTypes()
+}
+
+function _getMimeTypes() {
+	var mimeTypes = {}
+	mimeTypes[Messages.types.picture] = 'image/jpg'
+	mimeTypes[Messages.types.audio] = 'audio/mp4a-latm'
+	return mimeTypes
 }
 
 function configure(config) {
@@ -18,14 +24,13 @@ function configure(config) {
 	payloads.region = config.region
 }
 
-var extensions = {
-	'picture':'jpg',
-	'audio':'m4a'
-}
+var extensions = {}
+extensions[Messages.types.picture] = 'jpg'
+extensions[Messages.types.audio] = 'm4a'
 
 function personPicturePath(personId) { return '/people/'+personId+'/picture' }
 function personPictureUrl(personId) { return base() + personPicturePath(personId) }
-function underlyingPersonPicturePath(secret) { return '/people/pictures/'+secret+'.'+extensions['picture'] }
+function underlyingPersonPicturePath(secret) { return '/people/pictures/'+secret+'.'+extensions[Messages.types.picture] }
 function underlyingPersonPictureUrl(secret) { return base() + underlyingPersonPicturePath(secret) }
 
 function path(personId, secret, type) {

@@ -38,11 +38,7 @@ function renderBody() {
 		Conversations.readMessages(view.conversation, function(err, messages) {
 			if (err) { return error(err) }
 			list.append(messages)
-			// TODO Fetch since last fetched timestamp
-			Conversations.fetchMessages(view.conversation, function(err, messages) {
-				if (err) { return error(err) }
-				list.append(messages)
-			})
+			fetchMessages()
 		})
 	})
 	
@@ -59,6 +55,13 @@ function renderBody() {
 	function _renderEmpty(isFirstCall) {
 		return div('info', style({ paddingTop:19.5*unit }), isFirstCall ? 'Fetching messages...' : 'Start the conversation!')
 	}
+}
+
+function fetchMessages() {
+	Conversations.fetchMessages(view.conversation, function(err, messages) {
+		if (err) { return error(err) }
+		list.append(messages)
+	})
 }
 
 function renderFoot(view) {
@@ -137,5 +140,12 @@ events.on('app.start', function() {
 })
 
 events.on('message.sending', function(message) {
+	list.append(message)
+})
+
+events.on('push.message', function(message, info) {
+	if (!view) { return }
+	if (message.conversationId != view.conversation.conversationId) { return }
+	if (!message.payload) { return fetchMessages() } // payload did not fit
 	list.append(message)
 })

@@ -38,6 +38,10 @@ now = function() { return Math.floor(time.now() / time.second) }
 isArray = require('std/isArray')
 inverse = require('std/inverse')
 copy = require('std/copy')
+asyncEach = require('std/asyncEach')
+asyncMap = require('std/asyncMap')
+repeat = require('std/repeat')
+last = require('std/last')
 
 Documents = require('client/state/Documents')
 Caches = require('client/state/Caches')
@@ -66,9 +70,12 @@ makeTimer = require('server/util/makeTimer')
 Addresses = require('data/Addresses')
 Payloads = require('data/Payloads')
 DogoText = require('data/DogoText')
+Messages = require('data/Messages')
 
 graphics = require('client/graphics')
 graphic = graphics.graphic
+
+remove = function(obj, prop) { var val = obj[prop]; delete obj[prop]; return val }
 
 gradient = function gradient(from, to) {
 	return '-webkit-linear-gradient('+from+', '+to+')'
@@ -129,7 +136,7 @@ error = function error(err) {
 			style({ position:'absolute', top:20, left:0, width:viewport.width() }),
 			div('content',
 				style({ maxHeight:240 }, scrollable.y),
-				div('close', style({ position:'absolute', right:10 }), 'X', button(function() { error.hide() })),
+				div('close', style({ position:'absolute', right:10, padding:unit }), 'X', button(function() { error.hide() })),
 				div('message')
 			)
 		)).appendTo('#viewport')

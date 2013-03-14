@@ -1,27 +1,39 @@
 var isArray = require('std/isArray')
 
-var makeEncoder = module.exports = function makeEncoder(fields) {
+var makeEncoder = module.exports = function makeEncoder(allFields) {
+	var reversedFields = reverseFields(allFields)
+	
 	return {
-		encode: doMakeEncoder(fields),
-		decode: doMakeEncoder(reverseFields(fields))
+		encode: encode,
+		addTo: addTo,
+		removeFrom: removeFrom,
+		decode: decode
 	}
-}
-makeEncoder.reverseFields = reverseFields
-
-function doMakeEncoder(allFields) {
-	return function encode(data) {
-		return doEncode(data, allFields)
+	
+	function encode(data) {
+		return _add({}, data, allFields)
 	}
-
-	function doEncode(data, fields) {
-		var result = {}
+	
+	function decode(data) {
+		return _add({}, data, reversedFields)
+	}
+	
+	function addTo(result, data) {
+		_add(result, data, allFields)
+	}
+	
+	function removeFrom(result, field) {
+		delete result[allFields[field]]
+	}
+	
+	function _add(result, data, fields) {
 		for (var key in fields) {
 			var encoding = fields[key]
 			if (isArray(encoding)) {
 				result[encoding[0]] = map(data[key], function(datum) {
-					return doEncode(datum, encoding[1])
+					return _add(result, datum, encoding[1])
 				})
-			} else {
+			} else if (data[key] != undefined) {
 				result[encoding] = data[key]
 			}
 		}

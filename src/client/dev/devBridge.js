@@ -32,7 +32,12 @@ var commandHandlers = {
 	'BTFiles.readJsonCache': _readJson,
 	'BTFiles.clearAll': function(data, callback) {
 		localStorage.clear();
-		commandHandlers['BTSql.update']({ sql:'DROP TABLE contact' }, function(err) { callback(err) })
+		asyncEach(['contact', 'message'], {
+			finish:callback,
+			iterate:function(table, callback) {
+				commandHandlers['BTSql.update']({ sql:'DROP TABLE IF EXISTS '+table }, callback)
+			}
+		})
 	},
 	
 	'BTTextInput.setConfig':function(data, callback) { nextTick(callback) },
@@ -68,7 +73,7 @@ var commandHandlers = {
 	},
 	'BTSql.query': function(data, _callback) {
 		function callback(err, res) {
-			if (err) { err = new Error(err.message + '. Query: '+data.query) }
+			if (err) { err = new Error(err.message + '. '+JSON.stringify(data)) }
 			_callback(err, res)
 		}
 		db.readTransaction(function(tx) {
@@ -83,22 +88,24 @@ var commandHandlers = {
 	},
 	'BTSql.update': function(data, _callback) {
 		function callback(err, res) {
-			if (err) { err = new Error(err.message + '. Sql: '+data.sql) }
+			if (err) { err = new Error(err.message + '. '+JSON.stringify(data)) }
 			_callback(err, res)
 		}
 		db.transaction(function(tx) {
 			tx.executeSql(data.sql, data.arguments, onSuccess, onError)
 			function onSuccess(tx) { callback(null, null) }
-			function onError(tx, err) { callback(err, null) }
+			function onError(tx, err) {
+				if (err && data.ignoreDuplicates && err.code == SQL_CONSTRAINT_ERROR) { err = null }
+				callback(err, null)
+			}
 		})
 	},
     'BTSql.insertMultiple': function(data, _callback) {
 		function callback(err, res) {
-			if (err) { err = new Error(err.message + '. Sql: '+data.sql) }
+			if (err) { err = new Error(err.message + '. '+JSON.stringify(data)) }
 			_callback(err, res)
 		}
 		
-		var CONSTRAINT_ERR = 6
 		db.transaction(function(tx) {
 			var i = -1
 			next()
@@ -108,7 +115,7 @@ var commandHandlers = {
 				tx.executeSql(data.sql, data.argumentsList[i], next, onError)
 			}
 			function onError(tx, err) {
-				if (err && data.ignoreDuplicates && err.code == CONSTRAINT_ERR) { return next() }
+				if (err && data.ignoreDuplicates && err.code == SQL_CONSTRAINT_ERROR) { return next() }
 				callback(err, null)
 			}
 		})
@@ -174,6 +181,8 @@ var commandHandlers = {
 	// 	api.sendRequest(data, callback)
 	// }
 }
+
+var SQL_CONSTRAINT_ERROR = 6
 
 function _writeJson(data, callback) {
 	nextTick(function() {

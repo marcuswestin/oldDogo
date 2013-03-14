@@ -32,6 +32,7 @@ purples = colors.purples
 Addresses = require('data/Addresses')
 payloads = require('data/Payloads')
 DogoText = require('data/DogoText')
+Messages = require('data/Messages')
 
 makeTimer = require('server/util/makeTimer')
 log = require('server/util/log')

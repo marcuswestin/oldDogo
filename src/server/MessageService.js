@@ -7,16 +7,14 @@ var log = makeLog('MessageService')
 
 module.exports = {
 	sendMessage: sendMessage,
-	getMessages: getMessages,
 	saveFacebookRequest: saveFacebookRequest,
 	loadFacebookRequestId: loadFacebookRequestId
 }
 
 function sendMessage(personId, participationId, clientUid, type, payload, payloadFile, prodPush, callback) {
 	log.debug('sendMessage', personId, participationId, clientUid, type, payload)
-	if (!Messages.types[type]) { return callback("I don't recognize that message type") }
 	
-	payload = Messages.payload.cleanForUpload(type, payload)
+	payload = Messages.cleanPayloadForUpload(type, payload)
 	if (!payload) { return callback('That message is malformed') }
 	
 	var sql = 'SELECT conversationId, peopleJson, participationId FROM participation WHERE personId=? AND participationId=?'
@@ -52,7 +50,7 @@ function sendMessage(personId, participationId, clientUid, type, payload, payloa
 		function _createMessage(conversationId, payload, callback) {
 			log.debug('create message', conversationId, payload)
 			var sql = 'INSERT INTO message SET sentTime=?, fromPersonId=?, clientUid=?, conversationId=?, type=?, payloadJson=?'
-			db.conversations(conversationId).insert(sql, [now(), personId, clientUid, conversationId, Messages.types[type], JSON.stringify(payload)], function(err, messageId) {
+			db.conversations(conversationId).insert(sql, [now(), personId, clientUid, conversationId, type, JSON.stringify(payload)], function(err, messageId) {
 				if (err) { return callback(err) }
 				var newMessage = {
 					id:messageId, fromPersonId:personId, conversationId:conversationId, clientUid:clientUid,
@@ -124,38 +122,6 @@ function _notifyParticipants(message, prodPush) {
 	}
 }
 
-function getMessages(personId, participationId, conversationId, callback) {
-	log.debug('get messages', personId, participationId, conversationId)
-	parallel(_checkPermission, _getMessages, function(err, _, messages) {
-		callback(err, messages)
-	})
-	
-	function _checkPermission(callback) {
-		var sql = 'SELECT conversationId FROM participation WHERE personId=? AND participationId=? AND conversationId=?'
-		db.people(participationId).selectOne(sql, [personId, participationId, conversationId], function(err, res) {
-			if (err) { return callback(err) }
-			if (!res) { return callback('Unknown conversation') }
-			callback(null, null)
-		})
-	}
-	
-	function _getMessages(callback) {
-		_selectMessages(conversationId, function(err, messages) {
-			if (err) { return callback(err) }
-			callback(null, messages)
-			_updateParticipationLastRead(messages[messages.length - 1])
-		})
-	}
-	
-	function _updateParticipationLastRead(lastMessage) {
-		if (!lastMessage) { return }
-		var sql = 'UPDATE participation SET lastReadTime=? WHERE personId=? AND participationId=?'
-		db.people(participationId).updateOne(sql, [now(), personId, participationId], function(err) {
-			if (err) { log.error('Could not update participation lastReadTime', personId, participationId, conversationId, err) }
-		})
-	}
-}
-
 function saveFacebookRequest(personId, facebookRequestId, toPersonId, conversationId, callback) {
 	callback('saveFacebookRequest is not implemented')
 	// think through if this should go into lookupService, and what data is required
@@ -181,20 +147,4 @@ function loadFacebookRequestId(facebookRequestId, callback) {
 	// 		})
 	// 	}
 	// )
-}
-
-function _selectMessages(conversationId, callback) {
-	log.debug('select messages', conversationId)
-	var sql = 'SELECT messageId, fromPersonId, clientUid, conversationId, type, sentTime, payloadJson FROM message WHERE conversationId=? ORDER BY messageId DESC LIMIT 50'
-	db.conversations(conversationId).select(sql, [conversationId], function(err, messages) {
-		if (err) { return callback(err) }
-		messages.reverse()
-		each(messages, _decodeMessage)
-		callback(null, messages)
-	})
-
-	function _decodeMessage(message) {
-		message.type = Messages.types.reverse[message.type]
-		message.payload = JSON.parse(remove(message, 'payloadJson'))
-	}
 }

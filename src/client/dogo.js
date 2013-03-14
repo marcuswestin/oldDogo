@@ -2,7 +2,6 @@ require('./globals')
 
 image.base += 'mobileApp/'
 
-var push = require('data/push')
 var connect = require('client/ui/connect/connect')
 var appScroller = require('client/ui/appScroller')
 var browserModeSetup = require('client/browser/setup')
@@ -38,15 +37,6 @@ events.on('push.notification', function onPushNotification(info) {
 	var data = push.decode(info.data)
 	if (!data) {
 		// could not decode...
-		return
-	}
-	if (data.toPersonId && data.toPersonId != gState.me().personId) {
-		// This can happen if a single device has been used to register multiple people
-		return
-	}
-	
-	if (data.truncated) {
-		// It will have to be fetched from the server
 		return
 	}
 	

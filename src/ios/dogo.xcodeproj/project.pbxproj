@@ -70,15 +70,12 @@
 		5FBD9A4016EAB31A00CDD218 /* Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FBD9A3316EAB31A00CDD218 /* Base64.m */; };
 		5FBD9A4116EAB31A00CDD218 /* NSString+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FBD9A3516EAB31A00CDD218 /* NSString+Util.m */; };
 		5FBD9A4216EAB31A00CDD218 /* UIColor+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FBD9A3716EAB31A00CDD218 /* UIColor+Util.m */; };
-		5FBD9A4316EAB31A00CDD218 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5FBD9A3916EAB31A00CDD218 /* README.md */; };
 		5FBD9A4416EAB31A00CDD218 /* UIImage+Alpha.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FBD9A3B16EAB31A00CDD218 /* UIImage+Alpha.m */; };
 		5FBD9A4516EAB31A00CDD218 /* UIImage+Resize.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FBD9A3D16EAB31A00CDD218 /* UIImage+Resize.m */; };
 		5FBD9A4616EAB31A00CDD218 /* UIImage+RoundedCorner.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FBD9A3F16EAB31A00CDD218 /* UIImage+RoundedCorner.m */; };
-		5FBD9A5216EAB32300CDD218 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 5FBD9A4816EAB32300CDD218 /* .gitignore */; };
 		5FBD9A5316EAB32300CDD218 /* NSArray+HHFunctional.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FBD9A4A16EAB32300CDD218 /* NSArray+HHFunctional.m */; };
 		5FBD9A5416EAB32300CDD218 /* NSArray+NSString+HHMakeStructs.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FBD9A4C16EAB32300CDD218 /* NSArray+NSString+HHMakeStructs.m */; };
 		5FBD9A5516EAB32300CDD218 /* NSString+HHUriEncoding.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FBD9A4E16EAB32300CDD218 /* NSString+HHUriEncoding.m */; };
-		5FBD9A5616EAB32300CDD218 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5FBD9A4F16EAB32300CDD218 /* README.md */; };
 		5FBD9A5716EAB32300CDD218 /* UIImage+HHImages.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FBD9A5116EAB32300CDD218 /* UIImage+HHImages.m */; };
 /* End PBXBuildFile section */
 
@@ -681,9 +678,6 @@
 				2C409AC316CB4EB6006C49F9 /* opensans-light.ttf in Resources */,
 				2C409AC416CB4EB6006C49F9 /* opensans.ttf in Resources */,
 				2CCE3DDC16D44BD500538F39 /* phone in Resources */,
-				5FBD9A4316EAB31A00CDD218 /* README.md in Resources */,
-				5FBD9A5216EAB32300CDD218 /* .gitignore in Resources */,
-				5FBD9A5616EAB32300CDD218 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

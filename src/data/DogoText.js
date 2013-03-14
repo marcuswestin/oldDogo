@@ -1,7 +1,7 @@
 module.exports = {
 	fromNode:fromNode,
 	getHtml:getHtml,
-	getText:getText,
+	getPlainText:getPlainText,
 	getTextColors:getTextColors
 }
 
@@ -36,7 +36,7 @@ function _isTextNode(node) { return node.nodeType == 3 }
 
 /* Parse dogo text -> HTML
  *************************/
-function getText(text) {
+function getPlainText(text) {
 	if (!text) { return '' }
 	var chars = text.split('')
 	var i = 0

@@ -66,7 +66,7 @@ function _textTool(toolHeight, barHeight) {
 	function _sendText() {
 		var text = getDogoText()
 		if (!text) { return }
-		sendMessage('text', { body:text })
+		sendMessage(Messages.types.text, { body:text })
 		$('#'+id).text('').focus()
 	}
 	
@@ -165,7 +165,7 @@ function _microphoneTool(toolHeight, barHeight) {
 					var sendDocName = 'AudioDocument-'+uniqueDraftId+'.m4a'
 					bridge.command('BTAudio.readFromFileToFile', { fromDocument:draftName, toDocument:sendDocName, pitch:_microphoneTool.pitch }, function(err) {
 						if (err) { return error(err) }
-						sendMessage('audio', { document:sendDocName })
+						sendMessage(Messages.types.audio, { document:sendDocName })
 					})
 				}))
 			)
@@ -242,19 +242,19 @@ function sendMessage(type, messageData) {
 			var commandData = { method:"POST", url:api.getUrl('api/message'), headers:api.getHeaders(), boundary: '________dgmltprtbndr', params:message }
 			var preview = null
 
-			if (type == 'audio') {
+			if (Messages.isAudio(message)) {
 				commandData.document = messageData.document
 				message.payload = { duration:messageData.duration }
 				preview = { document:messageData.document, duration:messageData.duration }
 				bridge.command('message.send', commandData, onResponse)
 
-			} else if (type == 'picture') {
+			} else if (Messages.isPicture(message)) {
 				commandData.base64Data = messageData.base64Data // the iOS proxy converts it to an octet stream
 				message.payload = { width:messageData.width, height:messageData.height }
 				preview = { width:messageData.width, height:messageData.height, base64Data:messageData.base64Data }
 				bridge.command('picture.send', commandData, onResponse)
 
-			} else if (type == 'text') {
+			} else if (Messages.isText(message)) {
 				message.payload = { body:messageData.body }
 				preview = { body:messageData.body }
 				bridge.command('text.send', commandData, onResponse)

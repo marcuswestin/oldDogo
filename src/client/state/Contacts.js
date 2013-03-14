@@ -10,7 +10,7 @@ module.exports = {
 
 function all(callback) {
 	_whenInitialized(function() {
-		var sql = 'SELECT contactUid, addressType, addressId, createdTime, name, pictureUploadedTime, localId, hasLocalImage FROM contact'
+		var sql = 'SELECT * FROM contact'
 		bridge.command('BTSql.query', { sql:sql }, function(err, res) {
 			callback(err, err ? null : res.rows)
 		})
@@ -21,10 +21,7 @@ function lookupByPrefix(prefix, opts, callback) {
 	opts = options(opts, { limit:null })
 	_whenInitialized(function() {
 		var limit = (typeof opts.limit == 'number' ? 'LIMIT '+opts.limit : '')
-		var sql = [
-			'SELECT addressType, addressId, createdTime, name, pictureUploadedTime, localId, hasLocalImage',
-			'FROM contact WHERE addressId LIKE ? OR name LIKE ? '+limit
-		].join('\n')
+		var sql = 'SELECT * FROM contact WHERE addressId LIKE ? OR name LIKE ? '+limit
 		bridge.command('BTSql.query', { sql:sql, arguments:[prefix+'%', prefix+'%'] }, function(err, res) {
 			if (err) { return callback(err) }
 			callback(null, res.rows)

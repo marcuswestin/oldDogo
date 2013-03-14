@@ -51,12 +51,17 @@ function startPhoneClient(appInfo) {
 }
 
 function firstTimeSetup() {
-	bridge.command('BTSql.update', { sql:clientSchema.getSchema() }, function(err, res) {
-		if (err) { return error(err) }
-		Documents.write('DatabaseSchema', { version:clientSchema.version }, function(err, res) {
+	asyncEach(clientSchema.getTableSchemas(), {
+		iterate:function(tableSchemaSql, callback) {
+			bridge.command('BTSql.update', { sql:tableSchemaSql }, callback)
+		},
+		finish:function(err) {
 			if (err) { return error(err) }
-			renderPhoneClient()
-		})
+			Documents.write('DatabaseSchema', { version:clientSchema.version }, function(err, res) {
+				if (err) { return error(err) }
+				renderPhoneClient()
+			})
+		}
 	})
 }
 
@@ -153,3 +158,33 @@ function getPhoneView(view) {
 		}
 	})
 }())
+
+
+events.on('push.notification', function onPushNotification(info) {
+	var message = Messages.decodeFromPush(info.data)
+	if (!message) {
+		log.error('Could not decode message from push', info)
+		return
+	}
+	
+	if (info.didBringAppIntoForeground) {
+		// Set convo
+	} else {
+		events.fire('push.message', message, info)
+		bridge.command('device.vibrate')
+	}
+	
+	// if (data.message) {
+	// 	var message = data.message
+	// 	if (info.didBringAppIntoForeground) {
+	// 		loadConversation(message.fromPersonId, function(convo) {
+	// 			var view = { conversation:convo }
+	// 			gScroller.set({ view:view, index:1, render:true, animate:false })
+	// 			events.fire('push.message', payload, info)
+	// 		})
+	// 	} else {
+	// 		events.fire('push.message', data, info)
+	// 		bridge.command('device.vibrate')
+	// 	}
+	// }
+})
