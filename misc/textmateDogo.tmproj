@@ -8,27 +8,39 @@
 			<key>filename</key>
 			<string>fabfile.py</string>
 			<key>lastUsed</key>
-			<date>2013-03-09T00:10:13Z</date>
-			<key>selected</key>
-			<true/>
+			<date>2013-03-09T00:12:53Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>Makefile</string>
+			<key>lastUsed</key>
+			<date>2013-03-14T16:06:30Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>README</string>
+			<key>lastUsed</key>
+			<date>2013-03-11T21:51:29Z</date>
 		</dict>
 		<dict>
 			<key>name</key>
-			<string>misc</string>
+			<string>blowtorch-node-sdk</string>
 			<key>regexFolderFilter</key>
 			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
 			<key>sourceDirectory</key>
-			<string>misc</string>
+			<string>dependencies/blowtorch/sdk/blowtorch-node-sdk</string>
 		</dict>
 		<dict>
+			<key>name</key>
+			<string>std</string>
+			<key>regexFolderFilter</key>
+			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>sourceDirectory</key>
+			<string>node_modules/std</string>
+		</dict>
+		<dict>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>src</string>
 			<key>regexFolderFilter</key>
@@ -44,6 +56,6 @@
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{210, 86}, {1230, 792}}</string>
+	<string>{{210, 4}, {1230, 874}}</string>
 </dict>
 </plist>

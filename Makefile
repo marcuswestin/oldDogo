@@ -5,7 +5,7 @@ greet:
 
 # Setup all dependencies
 setup: setup-server setup-dev reset-db	
-	cp misc/dogo-textmate.tmproj ./
+	cp misc/textmateDogo.tmproj ./
 
 # Run local server
 run: run-databases secrets/dev
