@@ -1,6 +1,6 @@
-var renderWelcome = require('client/ui/connect/renderWelcome')
-var renderLogin = require('client/ui/connect/renderLogin')
-var renderRegister = require('client/ui/connect/renderRegister')
+var renderWelcome = require('./renderWelcome')
+var renderLogin = require('./renderLogin')
+var renderRegister = require('./renderRegister')
 
 var welcomeDuration = 150
 

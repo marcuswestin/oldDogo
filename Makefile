@@ -1,5 +1,8 @@
 # Common commands 
 #################
+greet:
+	# Dogo! Try 'make setup' or 'make run'.
+
 # Setup all dependencies
 setup: setup-server setup-dev reset-db	
 	cp misc/dogo-textmate.tmproj ./

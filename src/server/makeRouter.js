@@ -309,7 +309,7 @@ function setupDev(app) {
 	var combine = require('scripts/combine')
 	var buildPage = require('website/build-page')
 	
-	app.get('/dev', sendFile('src/client/dev/devClient.html', 'text/html'))
+	app.get('/dev', sendFile('src/client/devClient/devClient.html', 'text/html'))
 	app.get('/phone', sendFile('src/client/phone/phoneClient.html', 'text/html'))
 	
 	app.get('/', sendPage('homepage'))

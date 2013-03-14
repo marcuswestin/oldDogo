@@ -5,7 +5,7 @@ process.stdout.write = process.stderr.write = function(data, encoding) {
 	lastWriteFlushed = output.write(data)
 }
 
-require('server/globals')
+require('server/serverGlobals')
 
 var log = makeLog('Run')
 

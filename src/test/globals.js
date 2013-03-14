@@ -1,4 +1,4 @@
-require('server/globals')
+require('server/serverGlobals')
 tinyTest = require('tinyTest/tinyTest')
 setup = tinyTest.setup
 then = tinyTest.then

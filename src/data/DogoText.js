@@ -1,3 +1,4 @@
+var Colors = require('.//Colors')
 module.exports = {
 	fromNode:fromNode,
 	getHtml:getHtml,
@@ -131,8 +132,8 @@ function getColorForIndex(colorIndex) {
 
 function _getColors() {
 	if (!_getColors.colors) {
-		_getColors.colors = map([blues[0], teals[0], greens[0], yellows[0], oranges[0], reds[0], purples[0]], function(rgb) {
-			return colors.rgbToHex(rgb)
+		_getColors.colors = map([Colors.blues[0], Colors.teals[0], Colors.greens[0], Colors.yellows[0], Colors.oranges[0], Colors.reds[0], Colors.purples[0]], function(rgb) {
+			return Colors.rgbToHex(rgb)
 		})
 		_getColors.colors.inverse = inverse(_getColors.colors)
 	}

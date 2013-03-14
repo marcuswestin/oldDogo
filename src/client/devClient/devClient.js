@@ -1,4 +1,4 @@
-require('client/globals')
+require('client/misc/clientGlobals')
 require('client/phone/phoneClient')
 
 var devBridge = require('./devBridge')

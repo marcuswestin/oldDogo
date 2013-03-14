@@ -5,9 +5,8 @@ var yellows = [[189,238,0],[233,239,0],[247,217,0]]
 var oranges = [[255,162,0],[255,124,0],[219,84,0]]
 var reds = [[173,73,45],[205,35,0],[255,106,218]]
 var purples = [[200,132,213],[151,108,221],[88,88,197]]
-var colors = blues.concat(teals).concat(greens).concat(yellows).concat(oranges).concat(reds).concat(purples)
 
-module.exports = colors
+var colors = module.exports = blues.concat(teals).concat(greens).concat(yellows).concat(oranges).concat(reds).concat(purples)
 
 colors.blues = blues
 colors.teals = teals
@@ -27,20 +26,25 @@ colors.rgbToHsl = rgbToHsl
 colors.rgbToHex = rgbToHex
 colors.gexToRgb = hexToRgb
 
+var global = this
+colors.exposeGlobals = function() {
+	global.rgb = colors.rgb
+	global.rgba = colors.rgba
+	global.blues = colors.blues
+	global.teals = colors.teals
+	global.greens = colors.greens
+	global.yellows = colors.yellows
+	global.oranges = colors.oranges
+	global.reds = colors.reds
+	global.purples = colors.purples
+}
+
 function series() {
 	var colorIndex = rand(0, colors.length)
 	return function next() {
 		colorIndex = (colorIndex + 1) % colors.length
 		return colors[colorIndex]
 	}
-}
-
-function getColors() {
-	colors.blues = blues
-	colors.purples = purples
-	colors.greens = greens
-	colors.oranges = oranges
-	return colors
 }
 
 rgb.string = function() { return 'rgb('+this[0]+','+this[1]+','+this[2]+')'}
