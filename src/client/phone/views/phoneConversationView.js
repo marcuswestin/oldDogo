@@ -130,7 +130,18 @@ function _getMessagePerson(message) {
 
 
 function renderContent(message) {
-	return html(DogoText.getHtml(message.payload.body))
+	var payload = message.payload
+	if (Messages.isText(message)) {
+		return html(DogoText.getHtml(payload.body))
+	} else if (Messages.isPicture(message)) {
+		var picUrl = Payloads.url(message.fromPersonId, message.type, payload)
+		var url = BT.url('BTImage.fetchImage', { url:picUrl })
+		return div(style(graphics.backgroundImage(url, payload.width, payload.height)))
+	} else if (Messages.isAudio(message)) {
+		return 'audio'
+	} else {
+		return 'Cannot display message. Please upgrade Dogo!'
+	}
 }
 
 /* Events

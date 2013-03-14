@@ -109,6 +109,8 @@ function _cameraTool(toolHeight, barHeight) {
 	var camPad = unit/2
 	var camSize = toolHeight - camPad*2
 	var barHeight = unit * 5
+	var file
+	var draftDoc = 'PictureDraft'+uniqueDraftId+'.jpg'
 	bridge.command('BT.setStatusBar', { visible:false, animation:'slide' })
 	after(duration, function() {
 		bridge.command('BTCamera.show', { position:[unit/2, viewport.height()-camSize-camPad-20, camSize, camSize] })
@@ -121,11 +123,17 @@ function _cameraTool(toolHeight, barHeight) {
 				})
 			})),
 			div('button', 'Send', style(floatRight, unitPadding(1)), button(function() {
-				console.log("Send pic")
+				sendMessage(Messages.types.picture, { document:draftDoc, width:camSize, height:camSize })
 			}))
 		),
-		div('overlay', style({ width:camSize, height:camSize, border:camPad+'px solid #fff' }),
-			div(style(translate(20,20)), 'Hi')
+		div('overlay', { id:'cameraOverlay' }, style({ width:camSize, height:camSize, textAlign:'center', border:camPad+'px solid #fff' }),
+			div('button', style(translate(0, camSize - 50), { opacity:.8, border:'1px solid #fff' }), 'Take Picture', button(function() {
+				bridge.command('BTCamera.capture', { document:draftDoc, format:'jpg', compressionQuality:0.80 }, function(err, res) {
+					if (err) { return callback(err) }
+					var url = BT.url('BTImage.fetchImage', { document:draftDoc })
+					$('#cameraOverlay').css(graphics.backgroundImage(url, camSize, camSize))
+				})
+			}))
 		)
 	)
 }
@@ -233,7 +241,7 @@ function _hideCurrentTool() {
 events.on('view.changing', _hideCurrentTool)
 
 
-function sendMessage(type, messageData) {
+function sendMessage(type, data) {
 	_withConversation(function(err) {
 		if (err) { return error(err) }
 		sessionInfo.getClientUid(function(err, clientUid) {
@@ -243,16 +251,16 @@ function sendMessage(type, messageData) {
 			var preview = null
 
 			if (Messages.isAudio(message)) {
-				commandData.document = messageData.document
-				message.payload = { duration:messageData.duration }
-				preview = { document:messageData.document, duration:messageData.duration }
+				commandData.document = data.document
+				preview = { document:data.document }
+				message.payload = { duration:data.duration }
 				bridge.command('message.send', commandData, onResponse)
 
 			} else if (Messages.isPicture(message)) {
-				commandData.base64Data = messageData.base64Data // the iOS proxy converts it to an octet stream
-				message.payload = { width:messageData.width, height:messageData.height }
-				preview = { width:messageData.width, height:messageData.height, base64Data:messageData.base64Data }
-				bridge.command('picture.send', commandData, onResponse)
+				commandData.document = data.document
+				preview = { document:data.document }
+				message.payload = { width:data.width, height:data.height }
+				bridge.command('message.send', commandData, onResponse)
 
 			} else if (Messages.isText(message)) {
 				message.payload = { body:messageData.body }
