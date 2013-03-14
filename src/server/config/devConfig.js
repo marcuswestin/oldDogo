@@ -11,6 +11,7 @@ module.exports = {
 	log:true,
 	dev:true,
 	port:9000,
+	protocol:'http:',
 	serverUrl:'http://'+require('os').hostname()+':9000',
 	aws: {
 		accessKeyId:secrets.aws.accessKeyId,

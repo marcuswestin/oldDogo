@@ -1,5 +1,9 @@
 module.exports = function() {
 	return {
-		payloads: { bucket:gConfig.aws.s3.bucket, region:gConfig.aws.s3.region }
+		payloads: {
+			protocol:gConfig.protocol,
+			bucket:gConfig.aws.s3.bucket,
+			region:gConfig.aws.s3.region
+		}
 	}
 }

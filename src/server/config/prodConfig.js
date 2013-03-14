@@ -11,6 +11,7 @@ module.exports = {
 	log:true,
 	dev:false,
 	port:9000,
+	protocol:'https:',
 	serverUrl:'https://dogo.co',
 	aws: {
 		accessKeyId:secrets.aws.accessKeyId,

@@ -20,6 +20,7 @@ function _getMimeTypes() {
 }
 
 function configure(config) {
+	Payloads.protocol = config.protocol
 	Payloads.bucket = config.bucket
 	Payloads.region = config.region
 }
@@ -43,5 +44,5 @@ function url(message) {
 }
 
 function base(bucket, region) {
-	return 'http://'+(bucket || Payloads.bucket)+'.s3-website-'+(region || Payloads.region)+'.amazonaws.com'
+	return Payloads.protocol+'//'+(bucket || Payloads.bucket)+'.s3-website-'+(region || Payloads.region)+'.amazonaws.com'
 }
