@@ -105,6 +105,7 @@ var liTag = tags('li')
 ul = function() { return ulTag(map(arguments, function(content) { return liTag('tags-ul-li', content) })) }
 
 spacing = 8
+resolution = window.devicePixelRatio
 remove = function(obj, prop) { var val = obj[prop]; delete obj[prop]; return val }
 after = function(duration, fn) { setTimeout(fn, duration) }
 gConfigure = function(config) { Payloads.configure(config.Payloads) }

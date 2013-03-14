@@ -44,21 +44,22 @@
         
 #define DEV
 #ifdef DEV
-        NSString* scheme = @"http:";
+        NSString* protocol = @"http:";
         NSString* port = @"9000";
         NSString* devHostFile = [[NSBundle mainBundle] pathForResource:@"dev-hostname" ofType:@"txt"];
         NSString* host = [NSString stringWithContentsOfFile:devHostFile encoding:NSUTF8StringEncoding error:nil];
         host = [host stringByReplacingOccurrencesOfString:@"\n" withString:@""];
         [WebViewJavascriptBridge enableLogging];
 #else
-        NSString* scheme = @"https:";
+        NSString* protocol = @"https:";
         NSString* port = nil;
         NSString* host = @"dogo.co";
 //        [WebViewJavascriptBridge enableLogging];
 #endif
         
-        [self setServerScheme:scheme host:host port:port];
+        [self setServerScheme:protocol host:host port:port];
         
+        self.config[@"protocol"] = protocol;
         self.config[@"serverHost"] = self.serverHost;
         self.config[@"serverUrl"] = self.serverUrl;
         self.config[@"device"] = @{ @"systemVersion":[[UIDevice currentDevice] systemVersion],
@@ -69,7 +70,7 @@
 
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleBlackTranslucent animated:YES];
         
-        BOOL isDev = [scheme isEqualToString:@"http:"];
+        BOOL isDev = [protocol isEqualToString:@"http:"];
         [self setupApp:!isDev];
         [self startApp];
         

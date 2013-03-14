@@ -108,6 +108,7 @@ _cameraTool.getHeight = function() { return viewport.width()  }
 function _cameraTool(toolHeight, barHeight) {
 	var camPad = unit/2
 	var camSize = toolHeight - camPad*2
+	var picSize = viewport.width() * 2
 	var barHeight = unit * 5
 	var file
 	var draftDoc = 'PictureDraft'+uniqueDraftId+'.jpg'
@@ -123,14 +124,15 @@ function _cameraTool(toolHeight, barHeight) {
 				})
 			})),
 			div('button', 'Send', style(floatRight, unitPadding(1)), button(function() {
-				sendMessage(Messages.types.picture, { document:draftDoc, width:camSize, height:camSize })
+				sendMessage(Messages.types.picture, { document:draftDoc, width:picSize, height:picSize })
 			}))
 		),
 		div('overlay', { id:'cameraOverlay' }, style({ width:camSize, height:camSize, textAlign:'center', border:camPad+'px solid #fff' }),
 			div('button', style(translate(0, camSize - 50), { opacity:.8, border:'1px solid #fff' }), 'Take Picture', button(function() {
-				bridge.command('BTCamera.capture', { document:draftDoc, format:'jpg', compressionQuality:0.80 }, function(err, res) {
-					if (err) { return callback(err) }
-					var url = BT.url('BTImage.fetchImage', { document:draftDoc })
+				var resize = [picSize, picSize]
+				bridge.command('BTCamera.capture', { document:draftDoc, format:'jpg', compressionQuality:0.80, saveToAlbum:true, resize:resize }, function(err, res) {
+					if (err) { return error(err) }
+					var url = BT.url('BTImage.fetchImage', { document:draftDoc, resize:resize })
 					$('#cameraOverlay').css(graphics.backgroundImage(url, camSize, camSize))
 				})
 			}))

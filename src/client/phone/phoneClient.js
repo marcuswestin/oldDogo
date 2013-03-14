@@ -34,7 +34,7 @@ bridge.init()
 
 var clientSchema = require('client/database/clientSchema')
 function startPhoneClient(appInfo) {
-	gAppInfo = appInfo
+	gConfig = appInfo.config
 	bridge.command('BTSql.openDatabase', { name:'DogoClientDb' }, function(err, res) {
 		if (err) { return error(err) }
 		Documents.read('DatabaseSchema', function(err, res) {

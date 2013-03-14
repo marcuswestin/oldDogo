@@ -6,9 +6,7 @@ var connect = require('client/ui/connect/connect')
 var appScroller = require('client/ui/appScroller')
 var browserModeSetup = require('client/browser/setup')
 
-gAppInfo = {}
-
-events.on('app.start', function onAppStart(info) {
+events.on('app.start', function onAppStart(appInfo) {
 	// var lightFontWeight = tags.isTouch ? 400 : 100
 	// var css = 'html, button, input, select, textarea, #viewport { font-weight:'+lightFontWeight+' }'
 	// var style = document.createElement('style')
@@ -17,8 +15,7 @@ events.on('app.start', function onAppStart(info) {
 	// else { style.appendChild(document.createTextNode(css)) }
 	// document.getElementsByTagName('head')[0].appendChild(style)
 	
-	gAppInfo = info
-	api.setHeaders({ 'x-dogo-mode':gAppInfo.config.mode, 'x-dogo-client':gAppInfo.client })
+	api.setHeaders({ 'x-dogo-mode':gConfig.mode, 'x-dogo-client':appInfo.client })
 	startApp(info)
 	
 	if (gIsDev) {

@@ -128,15 +128,19 @@ function _getMessagePerson(message) {
 	return peopleById[message.fromPersonId]
 }
 
-
 function renderContent(message) {
 	var payload = message.payload
 	if (Messages.isText(message)) {
 		return html(DogoText.getHtml(payload.body))
 	} else if (Messages.isPicture(message)) {
-		var url = BT.url('BTImage.fetchImage', { url:Payloads.url(message), cache:true })
-		var deltaX = (payload.width - viewport.width()) / 2
-		return div(style(graphics.backgroundImage(url, payload.width, payload.height), translate.x(deltaX)))
+		var url = BT.url('BTImage.fetchImage', message.preview
+			? { document:message.preview.document }
+			: { url:Payloads.url(message), cache:true }
+		)
+		var messageWidth = viewport.width() - unit*2
+		var displaySize = [Math.min(messageWidth, payload.width / resolution), Math.min(messageWidth, payload.height / resolution)]
+		var deltaX = (messageWidth - displaySize[0]) / 2
+		return div(style(graphics.backgroundImage(url, displaySize[0], displaySize[1]), translate.x(deltaX)))
 	} else if (Messages.isAudio(message)) {
 		return 'audio'
 	} else {

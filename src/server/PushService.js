@@ -92,7 +92,7 @@ function _sendEmailNotification(emailAddress, pushFromName, message) {
 		return log.error("Unknown message type", message)
 	}
 	
-	sendEmail(pushFromName + ' - via Dogo <no-reply@dogo.co>', emailAddress, content.subject, content.text, content.html, function(err) {
+	sendEmail('From '+pushFromName + ' via Dogo <no-reply@dogo.co>', emailAddress, content.subject, content.text, content.html, function(err) {
 		if (err) { return log.error('Could not send email', emailAddress, message) }
 		log('message email sent', emailAddress)
 	})

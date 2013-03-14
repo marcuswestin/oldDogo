@@ -92,7 +92,7 @@ var fillIn = proto(collectPointsPen, initPen, {
 			this.paint.line(layer, points[0], points[2]).stroke().fill()
 		} else {
 			// lots of points. Draw a smooth curve. iPhone 4S has much higher resolution than older phones. 
-			var everyNthPoint = gAppInfo.config.device.platform == 'iPhone 4S' ? 3 : 2
+			var everyNthPoint = gConfig.device.platform == 'iPhone 4S' ? 3 : 2
 			// the pruning could be made much more intelligent
 			var prunedPoints = points.length < 6 ? points : filter(points, function(point, i) {
 				return i % everyNthPoint == 0

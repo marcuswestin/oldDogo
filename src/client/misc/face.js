@@ -7,7 +7,7 @@ face.mine = function myFace(opts) {
 }
 
 face.facebookUrl = function(address) {
-	return 'https://graph.facebook.com/'+(address.addressId || address)+'/picture?type=large'
+	return '//graph.facebook.com/'+(address.addressId || address)+'/picture?type=large'
 }
 
 function renderFace(person, opts, styles) {
@@ -30,7 +30,7 @@ face.style = function(contact, opts) {
 	}
 	
 	if (imageParams) {
-		imageParams.resize = opts.size*ratio+'x'+opts.size*ratio
+		imageParams.resize = opts.size*ratio+','+opts.size*ratio
 		return graphics.backgroundImage(BT.url('BTImage.fetchImage', imageParams), opts.size, opts.size)
 	} else {
 		return null

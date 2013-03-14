@@ -54,6 +54,7 @@ function buildDevClient() {
 				client:'0.98.0-browser',
 				config: {
 					device: { platform:'Chrome' },
+					protocol: 'http:',
 					serverHost:location.hostname,
 					serverUrl:'http://'+location.host
 				}

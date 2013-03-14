@@ -15,10 +15,10 @@ function displayUrl(message, opts) {
 		mimeType:'image/jpg'
 	}
 	if (opts.resize) {
-		params.resize = fixSize(opts.resize).join('x') // e.g '200x300'
+		params.resize = fixSize(opts.resize).join(',') // e.g '200x300'
 	}
 	if (opts.crop) {
-		params.crop = fixSize(opts.crop).join('x')
+		params.crop = fixSize(opts.crop).join(',')
 	}
 	return BT.url('BTImage.fetchImage', params)
 }

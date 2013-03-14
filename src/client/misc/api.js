@@ -31,7 +31,7 @@ function getPath(path) {
 }
 
 function getUrl(path) {
-	return gAppInfo.config.serverUrl + getPath(path)
+	return gConfig.serverUrl + getPath(path)
 }
 
 function send(method, path, params, callback) {
