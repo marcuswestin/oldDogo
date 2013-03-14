@@ -4,23 +4,25 @@ module.exports = {
 	getText:getText,
 	getTextColors:getTextColors
 }
+
+var L_BRACKET = '[', R_BRACKET = ']'
+var L_ARROW = '<', R_ARROW = '>'
+var BRACKET_ESCAPES = { '[':'[[]', ']':'[]]' }
+var BRACKET_REGEX = /[\[\]]/g
+
 /* Parse DOM -> dogo text
  ************************/
 var tagNameStyles = { I:'i', U:'u', B:'b' }
-var L_CURLY = '{'
-var R_CURLY = '}'
-var CURLY_ESCAPES = { '{':'{{}', '}':'{}}' }
-var CURLY_REGEX = /[\{\}]/g
 function fromNode(node) {
 	if (_isTextNode(node)) {
-		return node.textContent.replace(CURLY_REGEX, function(match) { return CURLY_ESCAPES[match] })
+		return node.textContent.replace(BRACKET_REGEX, function(match) { return BRACKET_ESCAPES[match] })
 	}
 	var content = filter(map(node.childNodes, fromNode)).join('')
 	
 	if (tagNameStyles[node.tagName]) {
-		return '{s '+tagNameStyles[node.tagName]+' '+content+'}'
+		return '[s '+tagNameStyles[node.tagName]+' '+content+']'
 	} else if (node.tagName == 'FONT') {
-		return '{c '+getIndexForColor(node.color)+' '+content+'}'
+		return '[c '+getIndexForColor(node.color)+' '+content+']'
 	} else if (node.tagName == 'BR') {
 		return '\n'
 	} else if (node.tagName == 'DIV') {
@@ -34,8 +36,6 @@ function _isTextNode(node) { return node.nodeType == 3 }
 
 /* Parse dogo text -> HTML
  *************************/
-var L_CURLY = '{', R_CURLY = '}'
-var L_ARROW = '<', R_ARROW = '>'
 function getText(text) {
 	if (!text) { return '' }
 	var chars = text.split('')
@@ -43,13 +43,13 @@ function getText(text) {
 	return proceed()
 	function proceed() {
 		if (!chars[i]) { return '' }
-		if (chars[i] == L_CURLY) {
-			if (chars[i+1] == L_CURLY) { i += 3; return L_CURLY + proceed() }
-			if (chars[i+1] == R_CURLY) { i += 3; return R_CURLY + proceed() }
+		if (chars[i] == L_BRACKET) {
+			if (chars[i+1] == L_BRACKET) { i += 3; return L_BRACKET + proceed() }
+			if (chars[i+1] == R_BRACKET) { i += 3; return R_BRACKET + proceed() }
 			i += 2
 			nextWord()
 			return proceed()
-		} else if (chars[i] == R_CURLY) {
+		} else if (chars[i] == R_BRACKET) {
 			i++
 			return proceed()
 		} else {
@@ -72,10 +72,10 @@ function getHtml(text) {
 	return proceed()
 	function proceed() {
 		if (!chars[i]) { return '' }
-		if (chars[i] == L_CURLY) {
+		if (chars[i] == L_BRACKET) {
 			// "{{}" == "{" and "{}}" == "}"
-			if (chars[i+1] == L_CURLY) { i += 3; return L_CURLY + proceed() }
-			if (chars[i+1] == R_CURLY) { i += 3; return R_CURLY + proceed() }
+			if (chars[i+1] == L_BRACKET) { i += 3; return L_BRACKET + proceed() }
+			if (chars[i+1] == R_BRACKET) { i += 3; return R_BRACKET + proceed() }
 			// {s u content ... } for style underlined content
 			var command = chars[i += 1]
 			if (command == 's') {
@@ -90,7 +90,7 @@ function getHtml(text) {
 				stack.push('font')
 				return '<font color="'+getColorForIndex(colorIndex)+'">'+proceed()
 			}
-		} else if (chars[i] == R_CURLY) {
+		} else if (chars[i] == R_BRACKET) {
 			i += 1
 			return '</'+stack.pop()+'>'+proceed()
 		} else if (chars[i] == L_ARROW) {
@@ -113,7 +113,7 @@ function getHtml(text) {
 		return word
 	}
 }
-// getHtml('hello, h{s i o{{}w ar{}}e you< t{s b here }}{s b my d}ear?')
+// getHtml('hello, h[s i o[[]w ar[]]e you< t[s b here ]][s b my d]ear?')
 // getHtml(fromNode($0))
 
 /* Util
