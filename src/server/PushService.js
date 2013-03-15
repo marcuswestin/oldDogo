@@ -45,8 +45,18 @@ function _connect(opts) {
 	return new apns.Connection(opts)
 }
 
-function _onApnsError() {
-	log.error("WARNING apn error", arguments)
+var errorNames = {
+	1: 'Processing error',
+	2: 'Missing device token',
+	3: 'Missing topic',
+	4: 'Missing payload',
+	5: 'Invalid token size',
+	6: 'Invalid topic size',
+	7: 'Invalid payload size',
+	8: 'Invalid token'
+}
+function _onApnsError(errorCode, push) {
+	log.error("WARNING apn error", { error:{ code:errorCode, name:errorNames[errorCode] }, push:push })
 }
 
 function sendMessagePush(address, pushFromName, message, prodPush) {
@@ -114,10 +124,10 @@ function _sendPushNotification(toPersonId, pushFromName, message, prodPush) {
 			return
 		}
 		var pushInfoList = jsonList(res.pushJson)
-		var pushInfo = pushInfoList[0]
+		var pushInfo = last(pushInfoList)
 		if (!pushInfo) { return log.info('No push token for', toPersonId, message.messageId) }
 		
-		if (pushInfo.type != 'ios') { return log.warn('Unknown push type', pushInfo[0]) }
+		if (pushInfo.type != 'ios') { return log.warn('Unknown push type', pushInfo) }
 		
 		var payload = Messages.encodeForPush(message, pushFromName)
 		if (!payload) { return log.error("Could not encode payload", message, toPersonId, pushFromName) }

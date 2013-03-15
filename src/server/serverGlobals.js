@@ -16,6 +16,7 @@ time = require('std/time')
 trim = require('std/trim')
 isArray = require('std/isArray')
 inverse = require('std/inverse')
+last = require('std/last')
 now = function() { return Math.floor(time.now() / time.second) }
 
 Addresses = require('data/Addresses')
