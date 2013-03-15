@@ -7,7 +7,7 @@ face.mine = function myFace(opts) {
 }
 
 face.facebookUrl = function(address) {
-	return '//graph.facebook.com/'+(address.addressId || address)+'/picture?type=large'
+	return gConfig.protocol+'//graph.facebook.com/'+(address.addressId || address)+'/picture?type=large'
 }
 
 function renderFace(person, opts, styles) {

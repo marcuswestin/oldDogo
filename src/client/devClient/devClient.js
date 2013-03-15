@@ -1,5 +1,4 @@
 require('client/misc/clientGlobals')
-require('client/phone/phoneClient')
 
 var devBridge = require('./devBridge')
 var devButtons = require('./devButtons') 
@@ -23,6 +22,7 @@ function startDevClient() {
 }
 
 function buildDevClient() {
+	var client = location.hash.substr(1) || 'phone'
 	$('body')
 		.css({ background:gradient('#111', '#161616'), overflow:'hidden' })
 		.append(div(style({ position:'absolute', top:0, left:0, width:'100%' }),
@@ -35,7 +35,7 @@ function buildDevClient() {
 				),
 				div({ id:'devClientViewportFrame' },
 					style(viewport.size(), translate.x(32), { position:'absolute', overflow:'hidden' }),
-					iframe({ id:'clientWindow', src:'/phone', frameBorder:'0' }, style(viewport.size()))
+					iframe({ id:'clientWindow', src:'/'+client, frameBorder:'0' }, style(viewport.size()))
 				),
 				img({ src:'/graphics/mockPhone/iphone4-middle.png' }, button(function(){}),
 					style({ margin:'0px auto', display:'block' })
@@ -50,9 +50,22 @@ function buildDevClient() {
 		var win = $('#clientWindow')[0].contentWindow
 		if (!win) { return after(50, checkClientWindow) }
 		devBridge.setup(win, function() {
+			win.viewport.height = function() { return 480 }
+			win.viewport.width = function() { return 320 }
+			win.viewport.pos = function() {
+				var offset = $('#viewport').offset()
+				return tags.makePos(offset.left, offset.top)
+			}
+			
+			var link = win.document.createElement('link')
+			link.rel = "stylesheet"
+			link.type = "text/css"
+			link.href = "/stylus/styl/fonts/opensans-all.styl"
+			win.document.getElementsByTagName('head')[0].appendChild(link)
+			
 			devBridge.notify('app.start', {
 				client:'0.98.0-browser',
-				config: {
+				config: gConfig = {
 					device: { platform:'Chrome' },
 					protocol: 'http:',
 					serverHost:location.hostname,
