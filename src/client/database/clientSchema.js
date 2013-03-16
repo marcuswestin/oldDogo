@@ -22,7 +22,7 @@ function getTableSchemas() {
 			'messageId BIGINT UNSIGNED DEFAULT NULL',
 			'fromPersonId BIGINT UNSIGNED NOT NULL',
 			'conversationId BIGINT UNSIGNED NOT NULL',
-			'sentTime INT UNSIGNED NOT NULL',
+			'postedTime INT UNSIGNED NOT NULL',
 			'clientUid BIGINT UNSIGNED NOT NULL',
 			'type INT UNSIGNED NOT NULL',
 			'payloadJson VARCHAR(2048) NOT NULL',

@@ -72,16 +72,43 @@ function sendMessagePush(address, pushFromName, message, prodPush) {
 }
 
 function _sendPhoneNotification(phoneNumber, pushFromName, message) {
-	// var dogoText = message.payload.body
-	// var text = DogoText.getPlainText(dogoText)
-	sendSms(phoneNumber, pushFromName+' sent you a '+message.type+' message.', function(err) {
+	var url = ' '+_conversationUrl(message)
+	var maxLength = 160 - (gConfig.dev ? 'Sent from the Twilio Sandbox Number - '.length : 0)
+	var remaining = maxLength - pushFromName.length - url.length
+	if (remaining < 2) {  }
+	
+	var minBody = ' sent'
+	if (remaining < minBody.length) { return log.error('Could not construct sms', phoneNumber, pushFromName, message) }
+	
+	var body = null
+	if (Messages.isAudio(message)) {
+		body = ' sent you a voice message:'
+	} else if (Messages.isPicture(message)) {
+		body = ' sent you a picture:'
+	} else if (Messages.isText(message)) {
+		var plainText = DogoText.getPlainText(message.payload.body)
+		body = ': "'+plainText+'"'
+		var overflow = body.length - remaining
+		if (overflow > 0) {
+			var ellipsis = ' ...'
+			body = ': "'+plainText.substr(0, plainText.length - overflow - ellipsis.length)+ellipsis+'"'
+		}
+	}
+	
+	if (body.length > remaining) { body = minBody }
+	
+	var smsText = pushFromName+body+url
+	
+	log.info("sending sms", phoneNumber, smsText)
+	sendSms(phoneNumber, smsText, function(err) {
 		if (err) { return log.error('Could not send sms', phoneNumber, message) }
-		log("message sms sent", phoneNumher)
 	})
 }
 
+function _conversationUrl(message) { return gConfig.serverUrl+'/c/'+message.conversationId }
+
 function _sendEmailNotification(emailAddress, pushFromName, message) {
-	var convUrl = 'https://dogo.co/c/'+message.conversationId
+	var convUrl = _conversationUrl(message)
 	var content = null
 	
 	if (Messages.isText(message)) {

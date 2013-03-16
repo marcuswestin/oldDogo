@@ -49,8 +49,10 @@ function reverseFields(allFields) {
 		for (var key in fields) {
 			var encoding = fields[key]
 			if (isArray(encoding)) {
+				if (reversed[encoding[0]]) { throw new Error('Duplicate encoding: '+ encoding[0]) }
 				reversed[encoding[0]] = [key, doReverse(encoding[1])]
 			} else {
+				if (reversed[encoding]) { throw new Error('Duplicate encoding: '+ encoding) }
 				reversed[encoding] = key
 			}
 		}

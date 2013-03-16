@@ -38,26 +38,26 @@ function cleanPayloadForUpload(type, payload) {
 }
 
 var messagePushEncoder = makeEncoder({
-	fromPersonId: 'D',
+	fromPersonId: 'I',
 	conversationId: 'C',
 	clientUid: 'U',
-	sentTime: 'S',
+	postedTime: 'W',
 	type:'T',
-	payload: 'p'
+	payload: 'P'
 })
 
 var payloadEncoders = {
 	text: makeEncoder({
-		'body':'b'
+		'body':'B'
 	}),
 	picture: makeEncoder({
-		'secret':'s',
-		'width':'w',
-		'height':'h'
+		'secret':'S',
+		'width':'W',
+		'height':'H'
 	}),
 	audio: makeEncoder({
-		'secret':'s',
-		'duration':'d'
+		'secret':'S',
+		'duration':'D'
 	})
 }
 

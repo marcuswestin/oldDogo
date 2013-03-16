@@ -49,12 +49,12 @@ function sendMessage(personId, participationId, clientUid, type, payload, payloa
 		
 		function _createMessage(conversationId, payload, callback) {
 			log.debug('create message', conversationId, payload)
-			var sql = 'INSERT INTO message SET sentTime=?, fromPersonId=?, clientUid=?, conversationId=?, type=?, payloadJson=?'
+			var sql = 'INSERT INTO message SET postedTime=?, fromPersonId=?, clientUid=?, conversationId=?, type=?, payloadJson=?'
 			db.conversations(conversationId).insert(sql, [now(), personId, clientUid, conversationId, type, JSON.stringify(payload)], function(err, messageId) {
 				if (err) { return callback(err) }
 				var newMessage = {
 					id:messageId, fromPersonId:personId, conversationId:conversationId, clientUid:clientUid,
-					sentTime:now(), type:type, payload:payload
+					postedTime:now(), type:type, payload:payload
 				}
 				callback(null, newMessage)
 			})

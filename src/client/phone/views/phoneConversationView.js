@@ -98,9 +98,9 @@ function _renderMessage(message) {
 	return (isNewPerson
 		? [div(style(unitMargin(1,1/2,0), unitPadding(1/2,1/2,0), { minHeight:unit*6, background:bg }),
 			div(style(floatRight, { fontSize:12, marginRight:unit/2, color:'rgb(25,161,219)', textShadow:'0 -1px 0 rgba(0,0,0,.25)' }),
-				time.ago.brief(message.sentTime * time.seconds)
+				time.ago.brief(message.postedTime * time.seconds)
 			),
-			face(person, { size:unit*5 }, floatLeft, unitMargin(0,1/2,0,0)),
+			face(person, { size:unit*5.5 }, floatLeft, unitMargin(0,1/2,0,0)),
 			div(style(),
 				person.name
 			),

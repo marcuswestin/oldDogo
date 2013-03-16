@@ -7,9 +7,11 @@ CREATE TABLE conversation (
 
 CREATE TABLE message (
 	messageId BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-	fromPersonId BIGINT UNSIGNED NOT NULL,
 	conversationId BIGINT UNSIGNED NOT NULL,
-	sentTime INT UNSIGNED NOT NULL,
+	-- either fromPersonId or fromGuestIndex must be specified
+	fromPersonId BIGINT UNSIGNED DEFAULT NULL,
+	fromGuestIndex SMALLINT UNSIGNED DEFAULT NULL,
+	postedTime INT UNSIGNED NOT NULL,
 	clientUid BIGINT UNSIGNED NOT NULL,
 	type INT UNSIGNED NOT NULL,
 	payloadJson VARCHAR(2048) NOT NULL,

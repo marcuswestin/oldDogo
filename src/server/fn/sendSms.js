@@ -8,7 +8,7 @@ sendSms.alertAdmin = alertAdmin
 var url = null
 var from = null
 function configure(twilioConf) {
-	if (twilioConf.disableAlerts) { return disableAlert() }
+	if (twilioConf.disableAlerts) { disableAlert() }
 	url = 'https://'+twilioConf.accountSid+':'+twilioConf.authToken+'@api.twilio.com/2010-04-01/Accounts/'+twilioConf.accountSid+'/SMS/Messages.json'
 	from = twilioConf.from
 }

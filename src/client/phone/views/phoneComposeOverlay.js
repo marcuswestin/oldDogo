@@ -47,9 +47,10 @@ function show() {
 	function renderItem(contact) {
 		var faceStyle = face.style(contact, { size:unit*6 })
 		var padding = unit/4
+		var address = (contact.addressType == Addresses.types.facebook ? 'Facebook' : contact.addressId)
 		return div(style({ padding:padding, height:unit*6, background:'#fff', borderBottom:'1px solid #ccc' }),
 			faceStyle && div(style(faceStyle, { 'float':'left', marginRight:unit })),
-			div(style(translate.y(unit * 1.5), { overflow:'hidden', textOverflow:'ellipsis' }), contact.name + ' (' + contact.addressType + ', '+contact.addressId + ')')
+			div(style(translate.y(unit * 1.5), { overflow:'hidden', textOverflow:'ellipsis' }), contact.name + ' (' + address + ')')
 		)
 	}
 	
