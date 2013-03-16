@@ -65,9 +65,9 @@ function firstTimeSetup() {
 }
 
 function renderPhoneClient() {
-	appBg = graphics.background('background', 100, 100, { repeat:'repeat', background:'#fff' })
 	$('#viewport')
-		.append(div({ id:'centerFrame' }, style(appBg, viewport.size())))
+		.css(viewport.size()).css({ overflow:'hidden' })
+		.append(div({ id:'centerFrame' }, style(viewport.size())))
 		.append(div({ id:'southFrame' }, style({ width:viewport.width(), height:0, position:'absolute', top:viewport.height() })))
 	
 	parallel(sessionInfo.load, loadViewStack, function(err, _, viewStack) {
@@ -106,9 +106,10 @@ function renderSignedInApp(sessionInfo, viewStack) {
 		stack:viewStack
 	})
 	
+	appBg = { backgroundImage:'url('+graphics.url('background', 100, 100)+')' }
 	$('#centerFrame').empty().append(
-		div({ id:'appBackground' }, style(absolute(0,0))),
-		div({ id:'appForeground' }, style(translate(0,0)), gScroller)
+		div({ id:'appBackground' }, style(viewport.getSize(), absolute(0,0))),
+		div({ id:'appForeground' }, style(viewport.getSize(), appBg, translate(0,0)), gScroller)
 	)
 }
 
