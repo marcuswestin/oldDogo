@@ -20,7 +20,6 @@ face.style = function(contact, opts) {
 		radius:null
 	})
 
-	var ratio = window.devicePixelRatio || 1
 	if (Addresses.isDogo(contact)) {
 		var imageParams = { url:Payloads.personPictureUrl(contact.addressId) }
 	} else if (contact.hasLocalImage) {
@@ -30,10 +29,10 @@ face.style = function(contact, opts) {
 	}
 	
 	if (imageParams) {
-		imageParams.resize = opts.size*ratio+','+opts.size*ratio
+		imageParams.resize = opts.size*resolution+','+opts.size*resolution
 		return graphics.backgroundImage(BT.url('BTImage.fetchImage', imageParams), opts.size, opts.size)
 	} else {
-		return null
+		return { width:opts.size, height:opts.size, background:opts.background || 'rgb(220,237,246)' }
 	}
 }
 

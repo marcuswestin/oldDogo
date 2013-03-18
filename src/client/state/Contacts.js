@@ -46,7 +46,7 @@ function mergeInFacebookFriends(callback) {
 				},
 				onDone: function(err) {
 					if (err) { return callback(err) }
-					_storeNewContacts(newContacts, callback)
+					_storeNewContacts(newContacts, ' ('+newContacts.length+') ...', callback)
 				}
 			})
 		})
@@ -64,34 +64,57 @@ function mergeInFacebookFriends(callback) {
 	}
 }
 
-function mergeInAddressBook(callback) {
-	overlay.show('Reading contacts from cloud...')
-	_updateFromServer(function(err) {
+function mergeInAddressBook(_callback) {
+	var done = false
+	function callback(err, res) {
+		if (done) { return }
+		done = true
+		_callback(err, res)
+	}
+	overlay.show('')
+	bridge.command('BTAddressBook.countAllEntries', function(err, res) {
 		if (err) { return callback(err) }
-		overlay.show('Reading contacts from address book...')
-		parallel(_getAddressBookEntries, _getKnownAddresses, function(err, addressBookRes, knownAddresses) {
+		var index = 0
+		var count = res.count
+		var limit = 350
+		var now = time.now()
+		var seenError = null
+		overlay.show('Syncing with cloud...')
+		_updateFromServer(function(err) {
 			if (err) { return callback(err) }
-			overlay.show('Detecting duplicates...')
-			var newContacts = []
-			var now = time.now()
-			sessionInfo.generateClientUids({
-				withGenerator:function(generateUid) {
-					each(addressBookRes.entries, function(entry) {
-						_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.phone, map(entry.phoneNumbers, Addresses.normalizePhone), entry.name, now, entry.recordId, entry.hasImage)
-						_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.email, map(entry.emailAddresses, Addresses.normalizeEmail), entry.name, now, entry.recordId, entry.hasImage)
+			_getKnownAddresses(function(err, knownAddresses) {
+				if (err) { return callback(err) }
+				readNextChunk()
+				function readNextChunk() {
+					var progress = ' (' + index + '/' + count+') ...'
+					overlay.show('Reading address book'+progress)
+					bridge.command('BTAddressBook.getAllEntries', { index:index, limit:limit }, function(err, addressBookRes) {
+						if (err) { return callback(err) }
+						if (done) { return }
+						readNextChunk()
+						overlay.show('Detecting duplicates'+progress)
+						var newContacts = []
+						sessionInfo.generateClientUids({
+							withGenerator:function(generateUid) {
+								each(addressBookRes.entries, function(entry) {
+									_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.phone, map(entry.phoneNumbers, Addresses.normalizePhone), entry.name, now, entry.recordId, entry.hasImage)
+									_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.email, map(entry.emailAddresses, Addresses.normalizeEmail), entry.name, now, entry.recordId, entry.hasImage)
+								})
+							},
+							onDone:function(err) {
+								if (err) { return callback(err) }
+								_storeNewContacts(newContacts, progress, function(err, res) {
+									if (err) { return callback(err) }
+									index += limit
+									if (index >= count) { return callback() }
+								})
+							}
+						})
 					})
-				},
-				onDone:function(err) {
-					if (err) { return callback(err) }
-					_storeNewContacts(newContacts, callback)
 				}
 			})
 		})
 	})
-	
-	function _getAddressBookEntries(callback) {
-		bridge.command('BTAddressBook.getAllEntries', callback)
-	}
 }
 
 function _collectNewContacts(generateUid, newContacts, knownAddresses, addressType, addressIds, name, now, localId, hasLocalImage) {
@@ -115,21 +138,19 @@ function _getKnownAddresses(callback) {
 	})
 }
 
-function _storeNewContacts(newContacts, _callback) {
-	function callback(err) {
-		overlay.hide()
-		_callback(err)
-	}
-	
+function _storeNewContacts(newContacts, progress, callback) {
 	if (!newContacts.length) { return callback() }
-	overlay.show('Storing ' + newContacts.length + ' new contacts in cloud...')
+	overlay.show('Storing contacts'+progress)
 	
 	var contactsList = map(newContacts, _getContactAsList)
-	api.post('api/contacts', { contactsList:contactsList }, function(err, res) {
-		if (err) { return callback(err) }
-		overlay.show('Storing contacts locally...')
+	parallel(_storeInCloud, _storeLocally, callback)
+	
+	function _storeInCloud(callback) {
+		api.post('api/contacts', { contactsList:contactsList }, callback)
+	}
+	function _storeLocally(callback) {
 		bridge.command('BTSql.insertMultiple', { sql:insertContactSql, argumentsList:contactsList }, callback)
-	})
+	}
 }
 
 var insertContactSql = 'INSERT INTO contact (contactUid, addressType, addressId, createdTime, name, pictureUploadedTime, localId, hasLocalImage) VALUES (?,?,?,?,?,?,?,?)'

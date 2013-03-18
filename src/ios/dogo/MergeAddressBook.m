@@ -17,7 +17,7 @@ static MergeAddressBook* instance;
 - (void)setup:(BTAppDelegate *)app {
     instance = self;
     
-    [app handleCommand:@"mergeAddressBook" handler:^(id params, BTResponseCallback callback) {
+    [app handleCommand:@"mergeAddressBook" handler:^(id params, BTCallback callback) {
         [self mergeAddressBook:params callback:callback];
     }];
 }
@@ -28,7 +28,7 @@ static int ADDRESS_TYPE_EMAIL = 2;
 static int ADDRESS_TYPE_PHONE = 3;
 //static int ADDRESS_TYPE_FACEBOOK = 4;
 
-- (void) mergeAddressBook:(NSDictionary*)params callback:(BTResponseCallback)callback {
+- (void) mergeAddressBook:(NSDictionary*)params callback:(BTCallback)callback {
     [[BTSql getQueue] inDatabase:^(FMDatabase *db) {
         FMResultSet* resultSet = [db executeQuery:@"SELECT addressType, addressId FROM contact"];
         NSMutableSet* knownAddresses = [NSMutableSet set];

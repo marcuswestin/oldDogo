@@ -31,7 +31,7 @@ function init(conversationId, guestIndex, secret, callback) {
 		),
 		list,
 		div({ id:'southFrame' }, style({ position:'fixed', bottom:0, width:viewport.width(), height:80 })),
-		div(style({ position:'fixed', bottom:0, left:0, width:'100%', height:40 }),
+		div(style({ position:'fixed', bottom:0, left:0, width:'100%', zIndex:2, }),
 			div(style({ width:viewport.width(), margin:'0 auto' }),
 				phoneConversationTools.renderFoot({ conversation:{ conversationId:conversationId } }, { text:true })
 			)

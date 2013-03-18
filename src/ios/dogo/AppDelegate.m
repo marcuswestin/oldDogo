@@ -120,12 +120,12 @@
 - (void)setupBridgeHandlers:(BOOL)useLocalBuild {
     [super setupBridgeHandlers:useLocalBuild];
     
-    [self handleCommand:@"message.send" handler:^(id data, BTResponseCallback responseCallback) {
+    [self handleCommand:@"message.send" handler:^(id data, BTCallback responseCallback) {
         NSData* payload = data[@"document"] ? [NSData dataWithContentsOfFile:[BTFiles documentPath:data[@"document"]]] : nil;
         [self _send:data payload:payload responseCallback:responseCallback];
     }];
     
-    // [self handleCommand:@"picture.send" handler:^(id data, BTResponseCallback responseCallback) {
+    // [self handleCommand:@"picture.send" handler:^(id data, BTCallback responseCallback) {
     //     NSString* base64String = [data[@"base64Data"] stringByReplacingOccurrencesOfString:@"data:image/jpeg;base64," withString:@""];
     //     
     //     NSData* pictureData = [NSData dataWithBase64EncodedString:base64String];
@@ -139,7 +139,7 @@
     // }];
 }
 
-- (void)_send:(NSDictionary*)data payload:(NSData*)payload responseCallback:(BTResponseCallback)responseCallback {
+- (void)_send:(NSDictionary*)data payload:(NSData*)payload responseCallback:(BTCallback)responseCallback {
     NSString* url = data[@"url"];
     NSDictionary* headers = data[@"headers"];
     NSDictionary* params = data[@"params"];

@@ -61,17 +61,26 @@ function show() {
 }
 
 events.on('app.start', function() {
+	var nextInput
 	$(document).on('keyup', '#searchInput', function() {
 		var $el = $(this)
 		nextTick(function() {
-			var input = trim($el.val())
-			if (!input) { return list.empty() }
-			Contacts.lookupByPrefix(input, { limit:40 }, function(err, contacts) {
-				if (err) { return error(err) }
-				list.empty().append(contacts)
-			})
+			if (!nextInput) { nextTick(_doSearch) }
+			nextInput = trim($el.val())
 		})
 	})
+	function _doSearch() {
+		var input = nextInput
+		Contacts.lookupByPrefix(nextInput, { limit:40 }, function(err, contacts) {
+			if (err) { return error(err) }
+			list.empty().append(contacts)
+			if (input != nextInput) {
+				_doSearch()
+			} else {
+				nextInput = null
+			}
+		})
+	}
 })
 
 function hide() {

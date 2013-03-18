@@ -41,7 +41,6 @@ function _enableNotifications() {
 		api.post('api/pushAuth', { pushToken:info.deviceToken, pushType:'ios' }, function(err) {
 			if (err) { return error(err) }
 			_updatePermissions('pushNotifications')
-			overlay.hide()
 		})
 	})
 }
@@ -61,6 +60,7 @@ function _addFacebookFriends() {
 }
 
 function _updatePermissions(permission) {
+	overlay.hide()
 	permissionsAsked[permission] = new Date().getTime()
 	Documents.write(documentName, permissionsAsked)
 	_updateButtons(permissionsAsked)
