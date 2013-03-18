@@ -29,13 +29,13 @@ function authenticateDogoGuest(req, callback) {
 	var authToken = getAuthToken(req, authGuestRegex)
 	if (!authToken) { return callback('Bad auth') }
 	var parts = authToken.split(':')
-	if (parts.length != 2) { return callback('Bad auth') }
+	if (parts.length != 3) { return callback('Bad auth') }
 	var secret = parts[0]
 	var conversationId = parseInt(parts[1])
-	redis.get(createSession.guestPrefix+authToken, function(err, addressLookupIdStr) {
-		var addressLookupId = parseInt(addressLookupIdStr)
-		if (!addressLookupId) { return callback('Unauthorized') }
-		req.session = { addressLookupId:parseInt(addressLookupIdStr), conversationId:conversationId }
+	var guestIndex = parseInt(parts[2])
+	redis.get(createSession.guestPrefix+authToken, function(err, authorized) {
+		if (!authorized) { return callback('Unauthorized') }
+		req.session = { conversationId:conversationId, guestIndex:guestIndex }
 		callback()
 	})
 }

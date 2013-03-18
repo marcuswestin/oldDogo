@@ -45,7 +45,7 @@ function renderContent(message) {
 		var messageWidth = viewport.width() - unit*2
 		var displaySize = [Math.min(messageWidth, payload.width / resolution), Math.min(messageWidth, payload.height / resolution)]
 		var deltaX = (messageWidth - displaySize[0]) / 2
-		return div(style(graphics.backgroundImage(url, displaySize[0], displaySize[1]), translate.x(deltaX)))
+		return div(style(graphics.backgroundImage(url, displaySize[0], displaySize[1], { background:'#eee' }), translate.x(deltaX)))
 	} else if (Messages.isAudio(message)) {
 		var url = message.preview
 			? BT.url('BTFiles.getDocument', { document:message.preview.document, mimeType:Payloads.mimeTypes[message.type] })

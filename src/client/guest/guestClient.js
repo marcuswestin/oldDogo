@@ -26,7 +26,7 @@ function init(conversationId, guestIndex, secret, callback) {
 	})
 	var headBg = gradient.radial('50% -180px', 'rgba(144, 199, 232, 0.75)', '#007BC2', '300px')
 	$('#viewport').empty().append(
-		div(style(unitPadding(1, 4), { background:headBg, textAlign:'center', color:'#fff', fontSize:24 }),
+		div(style(unitPadding(1/2, 1), { background:headBg, textAlign:'center', color:'#fff', fontSize:24 }),
 			div(graphic('headLogoName', 80, 40))
 		),
 		list,
@@ -40,13 +40,11 @@ function init(conversationId, guestIndex, secret, callback) {
 	api.post('/api/guest/session', { conversationId:conversationId, guestIndex:guestIndex, secret:secret }, function(err, res) {
 		if (err) { return callback(err) }
 		gConfigure(res.sessionInfo.config)
-		sessionInfo.save(res.sessionInfo, function(err) {
+		_storePeople(res.people)
+		sessionInfo.set(res.sessionInfo)
+		api.get('/api/guest/messages', function(err, res) {
 			if (err) { return callback(err) }
-			api.get('/api/guest/conversation', function(err, res) {
-				if (err) { return callback(err) }
-				_storePeople(res.people)
-				list.append(res.messages)
-			})
+			list.append(res.messages)
 		})
 	})
 	

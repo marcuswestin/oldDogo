@@ -3,6 +3,7 @@ var sessionInfo = module.exports = {
 	getClientUid:getClientUid,
 	generateClientUids:generateClientUids,
 	save:save,
+	set:set,
 	clear:clear,
 	checkNewVersion:checkNewVersion,
 	myAddress:myAddress
@@ -18,6 +19,11 @@ var properties = ([
 
 function myAddress() {
 	return { addressType:Addresses.types.dogo, addressId:sessionInfoDocument.person.personId }
+}
+
+function set(document) {
+	_setDocument(document)
+	events.fire('user.session', document)
 }
 
 function load(callback) {

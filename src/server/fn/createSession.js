@@ -18,18 +18,22 @@ function createGuestSession(conversationId, guestIndex, secret, callback) {
 		var sql = 'SELECT peopleJson FROM conversation WHERE conversationId=?'
 		db.conversation(conversationId).selectOne(sql, [conversationId], function(err, res) {
 			if (err) { return callback(err) }
-			var person = JSON.parse(res.peopleJson)[guestIndex]
+			var people = JSON.parse(res.peopleJson)
+			var person = people[guestIndex]
 			lookupService.lookup(person, function(err, personId, addrInfo) {
 				if (err) { return callback(err) }
 				if (personId) { return callback('Please use your Dogo app') }
 				var expiration = 3 * time.days
-				var authToken = secret+':'+conversationId
-				redis.setex(createSession.guestPrefix+authToken, expiration, addrInfo.lookupId, function(err) {
+				var authToken = secret+':'+conversationId+':'+guestIndex
+				redis.setex(createSession.guestPrefix+authToken, expiration, 1, function(err) {
 					if (err) { return callback(err) }
 					callback(null, {
-						address:Addresses.address(addrInfo.addressType, addrInfo.addressId, addrInfo.name),
-						authorization:'DogoGuest '+authToken,
-						config:getClientConfig()
+						people:people,
+						sessionInfo: {
+							address:Addresses.address(addrInfo.addressType, addrInfo.addressId, addrInfo.name),
+							authorization:'DogoGuest '+authToken,
+							config:getClientConfig()
+						}
 					})
 				})
 			})
