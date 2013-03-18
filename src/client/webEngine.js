@@ -42,7 +42,7 @@ function start() {
 			data = null
 		}
 		if (!commandHandlers[command]) {
-			return console.log("WARN", 'Unknown bridge command', command)
+			return callback('Unknown command: '+command)
 		}
 		commandHandlers[command](data, function(error, responseData) {
 			callback({ error:error, responseData:responseData })
@@ -85,6 +85,7 @@ var commandHandlers = {
 		nextTick(callback)
 	},
 	
+	'BTAddressBook.countAllEntries':function(params, callback) { nextTick(function() { callback(null, { count:2 }) }) },
 	'BTAddressBook.getAllEntries':getAllAddressBookEntries,
 	
 	'BTFacebook.connect': function(data, callback) {
@@ -234,7 +235,7 @@ function _readJson(data, callback) {
 	})
 }
 
-function getAllAddressBookEntries(data, callback) {
+function getAllAddressBookEntries(params, callback) {
 	nextTick(function() {
 		var entries = [
 			{ recordId:'devBridge'+tags.id(), name:'Marcus Westin', emailAddresses:['narcvs@gmail.com','marcus.westin@gmail.com'], phoneNumbers:['+1 (412) 423-8669','415-601-5654'] },

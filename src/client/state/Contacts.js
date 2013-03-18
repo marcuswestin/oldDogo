@@ -46,7 +46,8 @@ function mergeInFacebookFriends(callback) {
 				},
 				onDone: function(err) {
 					if (err) { return callback(err) }
-					_storeNewContacts(newContacts, ' ('+newContacts.length+') ...', callback)
+					overlay.show('Storing '+newContacts.length+' contacts ...')
+					_storeNewContacts(newContacts, callback)
 				}
 			})
 		})
@@ -84,32 +85,42 @@ function mergeInAddressBook(_callback) {
 			if (err) { return callback(err) }
 			_getKnownAddresses(function(err, knownAddresses) {
 				if (err) { return callback(err) }
-				readNextChunk()
-				function readNextChunk() {
-					var progress = ' (' + index + '/' + count+') ...'
+				var chunks = []
+				readNextChunk(0)
+				function readNextChunk(index) {
+					var progress = ' (' + Math.min(index, count) + '/' + count+') ...'
 					overlay.show('Reading address book'+progress)
 					bridge.command('BTAddressBook.getAllEntries', { index:index, limit:limit }, function(err, addressBookRes) {
 						if (err) { return callback(err) }
 						if (done) { return }
-						readNextChunk()
-						overlay.show('Detecting duplicates'+progress)
-						var newContacts = []
-						sessionInfo.generateClientUids({
-							withGenerator:function(generateUid) {
-								each(addressBookRes.entries, function(entry) {
-									_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.phone, map(entry.phoneNumbers, Addresses.normalizePhone), entry.name, now, entry.recordId, entry.hasImage)
-									_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.email, map(entry.emailAddresses, Addresses.normalizeEmail), entry.name, now, entry.recordId, entry.hasImage)
-								})
-							},
-							onDone:function(err) {
-								if (err) { return callback(err) }
-								_storeNewContacts(newContacts, progress, function(err, res) {
-									if (err) { return callback(err) }
-									index += limit
-									if (index >= count) { return callback() }
-								})
+						chunks = chunks.concat(addressBookRes.entries)
+						var isLast = (index >= count)
+						processChunks(isLast)
+						if (!isLast) { readNextChunk(index + limit) }
+					})
+				}
+				function processChunks(isLast) {
+					if (!isLast) { overlay.show('Detecting duplicates ...') }
+					var newChunks = chunks
+					var newContacts = []
+					chunks = []
+					sessionInfo.generateClientUids({
+						withGenerator:function(generateUid) {
+							each(newChunks, function(entry) {
+								_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.phone, map(entry.phoneNumbers, Addresses.normalizePhone), entry.name, now, entry.recordId, entry.hasImage)
+								_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.email, map(entry.emailAddresses, Addresses.normalizeEmail), entry.name, now, entry.recordId, entry.hasImage)
+							})
+						},
+						onDone:function(err) {
+							if (err) { return callback(err) }
+							if (isLast) {
+								overlay.show('Storing new contacts ...')
 							}
-						})
+							_storeNewContacts(newContacts, function(err, res) {
+								if (err) { return callback(err) }
+								if (isLast) { return callback() }
+							})
+						}
 					})
 				}
 			})
@@ -138,9 +149,8 @@ function _getKnownAddresses(callback) {
 	})
 }
 
-function _storeNewContacts(newContacts, progress, callback) {
+function _storeNewContacts(newContacts, callback) {
 	if (!newContacts.length) { return callback() }
-	overlay.show('Storing contacts'+progress)
 	
 	var contactsList = map(newContacts, _getContactAsList)
 	parallel(_storeInCloud, _storeLocally, callback)
