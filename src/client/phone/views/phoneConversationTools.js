@@ -1,7 +1,23 @@
-module.exports = {
+var tools = module.exports = {
+	renderFoot:renderFoot,
 	selectText:selectTool(_textTool),
 	selectCamera:selectTool(_cameraTool),
 	selectMicrophone:selectTool(_microphoneTool)
+}
+
+function renderFoot(view, opts) {
+	var toolStyle = { display:'inline-block', margin:px(unit/4) }
+	return div({ id:'conversationFoot' },
+		style({
+			margin:px(0, 1/2*unit), width:viewport.width()-unit, height:opts.height, background:'#fff',
+			boxShadow:'0 -1px 2px rgba(0,0,0,.55), -1px 0 1px rgba(0,0,0,.55), 1px 0 1px rgba(0,0,0,.55)'
+		}),
+		div(
+			opts.text && div(style(toolStyle), graphic('pen', 40, 40), button(function() { tools.selectText(view) })),
+			opts.camera && div(style(toolStyle), graphic('pen', 40, 40), button(function() { tools.selectCamera(view) })),
+			opts.microphone && div(style(toolStyle), graphic('pen', 40, 40), button(function() { tools.selectMicrophone(view) }))
+		)
+	)
 }
 
 var duration = 300
@@ -9,7 +25,7 @@ var duration = 300
 /* Text tool
  ***********/
 var id
-_textTool.getHeight = function() { return unit*5.5 }
+_textTool.getHeight = function() { return unit*4.5 }
 function _textTool(toolHeight, barHeight) {
 	// setTimeout(_showTextFormatting, 400) // AUTOS
 	id = tags.id()
@@ -32,11 +48,13 @@ function _textTool(toolHeight, barHeight) {
 	})
 	
 	return div(style({ height:keyboardHeight + toolHeight, background:'#fff' }),
-		div({ id:id, contentEditable:'true' }, style(unitPadding(1), scrollable.y, transition('opacity', duration/2), {
-				position:'absolute', bottom:0, '-webkit-user-select':'auto', maxHeight:26*units,
-				width:viewport.width()-unit*2, background:'#fff', boxShadow:'0 -2px 3px -1px rgba(0,0,0,.5)',
-				opacity:0
-			})
+		div(style({ background:'#fff', paddingBottom:unit*2.5 }),
+			div({ id:id, contentEditable:'true' }, style(unitPadding(1), scrollable.y, transition('opacity', duration/2), {
+					position:'absolute', bottom:0, '-webkit-user-select':'auto', maxHeight:26*units,
+					width:viewport.width()-unit*2, background:'#fff', boxShadow:'0 -2px 3px -1px rgba(0,0,0,.5)',
+					opacity:0
+				})
+			)
 		),
 		
 		after(duration/2, function() { $('#'+id).css({ opacity:1 }) }),

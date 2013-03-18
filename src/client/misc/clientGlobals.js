@@ -31,6 +31,8 @@ repeat = require('std/repeat')
 last = require('std/last')
 round = require('std/round')
 
+webEngine = require('client/webEngine')
+
 sessionInfo = require('client/state/sessionInfo')
 Documents = require('client/state/Documents')
 Caches = require('client/state/Caches')
@@ -111,7 +113,7 @@ resolution = window.devicePixelRatio
 
 remove = function(obj, prop) { var val = obj[prop]; delete obj[prop]; return val }
 after = function(duration, fn) { setTimeout(fn, duration) }
-gConfigure = function(config) { Payloads.configure(config.Payloads) }
+gConfigure = function(config) { Payloads.configure(config.payloads) }
 
 listMenuIcon = function(graphicName) {
 	return graphic(graphicName, 20, 20, translate.y(2), { 'float':'left', margin:px(0,unit/2) })

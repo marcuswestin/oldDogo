@@ -1,5 +1,6 @@
 var tools = require('./phoneConversationTools')
 var composeOverlay = require('./phoneComposeOverlay')
+var renderMessage = require('client/renderMessage')
 
 module.exports = {
 	renderHead:renderHead,
@@ -10,10 +11,8 @@ module.exports = {
 /* Head, body, foot
  ******************/
 var view
-var lastMessage
 function renderHead(_view) {
 	view = _view
-	lastMessage = null
 
 	// setTimeout(function() { tools.selectText(view) }, 250) // AUTOS
 	// setTimeout(function() { tools.selectMicrophone(view) }, 250) // AUTOS
@@ -65,18 +64,12 @@ function fetchMessages() {
 }
 
 function renderFoot(view) {
-	var toolStyle = { display:'inline-block', margin:px(unit/4) }
-	return div({ id:'conversationFoot' },
-		style({
-			margin:px(0, 1/2*unit), width:viewport.width()-unit, height:footHeight, background:'#fff',
-			boxShadow:'0 -1px 2px rgba(0,0,0,.55), -1px 0 1px rgba(0,0,0,.55), 1px 0 1px rgba(0,0,0,.55)'
-		}),
-		div(
-			div(style(toolStyle), graphic('pen', 40, 40), button(function() { tools.selectText(view) })),
-			div(style(toolStyle), graphic('pen', 40, 40), button(function() { tools.selectCamera(view) })),
-			div(style(toolStyle), graphic('pen', 40, 40), button(function() { tools.selectMicrophone(view) }))
-		)
-	)
+	return tools.renderFoot(view, {
+		text:true,
+		camera:true,
+		microphone:true,
+		height:unit*5.5
+	})
 }
 
 /* Messages
@@ -89,34 +82,8 @@ function _selectMessage(message) {
 	console.log('Select', message)
 }
 
-events.on('view.changing', function() { lastMessage = null })
 function _renderMessage(message) {
-	var isNewPerson = !lastMessage || (lastMessage.fromPersonId != message.fromPersonId)
-	var isNewTime = !lastMessage || (Math.abs(lastMessage.postedTime - message.postedTime) > (3 * time.hours))
-	var makeNewCard = isNewPerson || isNewTime
-	
-	lastMessage = message
-	var person = _getMessagePerson(message)
-	var bg = '#fff'
-	
-	return (makeNewCard
-		? [div(style(unitMargin(1,1/2,0), unitPadding(1/2,1/2,0), { minHeight:unit*6, background:bg }),
-			div(style(floatRight, { fontSize:12, marginRight:unit/2, color:'rgb(25,161,219)', textShadow:'0 -1px 0 rgba(0,0,0,.25)' }),
-				time.ago.brief(message.postedTime)
-			),
-			face(person, { size:unit*5.5 }, floatLeft, unitMargin(0,1/2,0,0)),
-			div(style(),
-				person.name
-			),
-			div(style(unitMargin(1/4,0,0,0), unitPadding(0,0,1/2)),
-				renderContent(message)
-			)
-		)
-		]
-		: div(style(unitMargin(0, 1/2), unitPadding(0,0,1/2,1/2), { background:bg }),
-			renderContent(message)
-		)
-	)
+	return renderMessage(message, _getMessagePerson(message))
 }
 
 var peopleById
@@ -132,35 +99,8 @@ function _getMessagePerson(message) {
 	return peopleById[message.fromPersonId]
 }
 
-function renderContent(message) {
-	var payload = message.payload
-	if (Messages.isText(message)) {
-		return html(DogoText.getHtml(payload.body))
-	} else if (Messages.isPicture(message)) {
-		var url = BT.url('BTImage.fetchImage', message.preview
-			? { document:message.preview.document }
-			: { url:Payloads.url(message), cache:true }
-		)
-		var messageWidth = viewport.width() - unit*2
-		var displaySize = [Math.min(messageWidth, payload.width / resolution), Math.min(messageWidth, payload.height / resolution)]
-		var deltaX = (messageWidth - displaySize[0]) / 2
-		return div(style(graphics.backgroundImage(url, displaySize[0], displaySize[1]), translate.x(deltaX)))
-	} else if (Messages.isAudio(message)) {
-		var url = message.preview
-			? BT.url('BTFiles.getDocument', { document:message.preview.document, mimeType:Payloads.mimeTypes[message.type] })
-			: Payloads.url(message)
-		return html('Voice message: '+round(payload.duration, 1)+'s <audio src="'+url+'" controls="true">')
-	} else {
-		return 'Cannot display message. Please upgrade Dogo!'
-	}
-}
-
 /* Events
  ********/
-events.on('app.start', function() {
-	footHeight = unit*5.5
-})
-
 events.on('message.sending', function(message) {
 	list.append(message)
 })

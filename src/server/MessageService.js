@@ -16,40 +16,40 @@ function sendMessage(fromPersonId, participationId, clientUid, type, payload, pa
 	payload = Messages.cleanPayloadForUpload(type, payload)
 	if (!payload) { return callback('That message is malformed') }
 	
-	var sql = 'SELECT conversationId, peopleJson, participationId FROM participation WHERE personId=? AND participationId=?'
-	db.person(fromPersonId).selectOne(sql, [fromPersonId, participationId], function(err, participation) {
+	parallel(_getConversationId, _uploadPayload, function(err, conversationId, payload) {
 		if (err) { return callback(err) }
-		if (!participation) { return callback("I couldn't find that conversation") }
-		var conversationId = participation.conversationId
-		log.debug('create message with conversation and payload', conversationId, payload)
-		_createMessage(conversationId, payload, function(err, message) {
+		log.debug('create message', conversationId, payload)
+		var sql = 'INSERT INTO message SET postedTime=?, fromPersonId=?, clientUid=?, conversationId=?, type=?, payloadJson=?'
+		var now = time.now()
+		db.conversation(conversationId).insert(sql, [now, fromPersonId, clientUid, conversationId, type, JSON.stringify(payload)], function(err, messageId) {
 			if (err) { return callback(err) }
+			var message = {
+				id:messageId, fromPersonId:fromPersonId, conversationId:conversationId, clientUid:clientUid,
+				postedTime:now, type:type, payload:payload
+			}
 			callback(null, { message:message, promptInvite:false })
 			_notifyParticipants(message, prodPush)
 		})
-		
-		function _uploadPayload(next) {
-			if (type != Messages.types.picture && type != Messages.types.audio) { return next(null, payload) }
-			payloadService.uploadPayload(fromPersonId, type, payloadFile, function(err, secret) {
-				if (!err) { payload.secret = secret }
-				return next(err, payload)
-			})
-		}
-		
-		function _createMessage(conversationId, payload, callback) {
-			log.debug('create message', conversationId, payload)
-			var sql = 'INSERT INTO message SET postedTime=?, fromPersonId=?, clientUid=?, conversationId=?, type=?, payloadJson=?'
-			var now = time.now()
-			db.conversation(conversationId).insert(sql, [now, fromPersonId, clientUid, conversationId, type, JSON.stringify(payload)], function(err, messageId) {
-				if (err) { return callback(err) }
-				var newMessage = {
-					id:messageId, fromPersonId:fromPersonId, conversationId:conversationId, clientUid:clientUid,
-					postedTime:now, type:type, payload:payload
-				}
-				callback(null, newMessage)
-			})
-		}
 	})
+	
+	function _uploadPayload(callback) {
+		if (type != Messages.types.picture && type != Messages.types.audio) { return callback(null, payload) }
+		payloadService.uploadPayload(fromPersonId, type, payloadFile, function(err, secret) {
+			if (!err) { payload.secret = secret }
+			return callback(err, payload)
+		})
+	}
+	
+	function _getConversationId(callback) {
+		var sql = 'SELECT conversationId, peopleJson, participationId FROM participation WHERE personId=? AND participationId=?'
+		db.person(fromPersonId).selectOne(sql, [fromPersonId, participationId], function(err, participation) {
+			if (err) { return callback(err) }
+			if (!participation) { return callback("I couldn't find that conversation") }
+			var conversationId = participation.conversationId
+			log.debug('create message with conversation and payload', conversationId, payload)
+			callback(null, conversationId)
+		})
+	}
 }
 
 function _notifyParticipants(message, prodPush) {

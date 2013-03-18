@@ -179,8 +179,21 @@ function setupRoutes(app, opts) {
 		var params = getJsonParams(req, 'conversationId','guestIndex','secret')
 		createSession.forGuest(params.conversationId, params.guestIndex, params.secret, wrapRespond(req, res, 'sessionInfo'))
 	})
-	app.get('/api/guest/messages', filters.guestRequest, function handleGetGuestMessages(req, res) {
-		getMessages.forConversation(req.session.conversationId, 0, wrapRespond(req, res, 'messages'))
+	app.get('/api/guest/conversation', filters.guestRequest, function handleGetGuestConversation(req, res) {
+		var conversationId = req.session.conversationId
+		parallel(_getPeople, _getMessages, function(err, people, messages) {
+			if (err) { return respond(req, res, err) }
+			respond(req, res, null, { people:people, messages:messages })
+		})
+		function _getPeople(callback) {
+			db.conversation(conversationId).selectOne('SELECT peopleJson FROM conversation WHERE conversationId=?', [conversationId], function(err, res) {
+				if (err || !res) { return callback(err || 'Unknown conversation') }
+				callback(null, JSON.parse(res.peopleJson))
+			})
+		}
+		function _getMessages(callback) {
+			getMessages.forConversation(conversationId, 0, callback)
+		}
 	})
 	
 	app.post('/api/log/app/error', function handleLogAppError(req, res) {
