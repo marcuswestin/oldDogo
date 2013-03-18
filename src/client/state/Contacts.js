@@ -37,11 +37,11 @@ function mergeInFacebookFriends(callback) {
 			if (err) { return callback(err) }
 			overlay.show('Detecting duplicates...')
 			var newContacts = []
-			var createdTime = now()
+			var now = time.now()
 			sessionInfo.generateClientUids({
 				withGenerator:function(generateUid) {
 					each(fbFriends, function(fbFriend) {
-						_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.facebook, [fbFriend.id], fbFriend.name, createdTime, null, 0)
+						_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.facebook, [fbFriend.id], fbFriend.name, now, null, 0)
 					})
 				},
 				onDone: function(err) {
@@ -73,12 +73,12 @@ function mergeInAddressBook(callback) {
 			if (err) { return callback(err) }
 			overlay.show('Detecting duplicates...')
 			var newContacts = []
-			var createdTime = now()
+			var now = time.now()
 			sessionInfo.generateClientUids({
 				withGenerator:function(generateUid) {
 					each(addressBookRes.entries, function(entry) {
-						_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.phone, map(entry.phoneNumbers, Addresses.normalizePhone), entry.name, createdTime, entry.recordId, entry.hasImage)
-						_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.email, map(entry.emailAddresses, Addresses.normalizeEmail), entry.name, createdTime, entry.recordId, entry.hasImage)
+						_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.phone, map(entry.phoneNumbers, Addresses.normalizePhone), entry.name, now, entry.recordId, entry.hasImage)
+						_collectNewContacts(generateUid, newContacts, knownAddresses, Addresses.types.email, map(entry.emailAddresses, Addresses.normalizeEmail), entry.name, now, entry.recordId, entry.hasImage)
 					})
 				},
 				onDone:function(err) {
@@ -94,12 +94,12 @@ function mergeInAddressBook(callback) {
 	}
 }
 
-function _collectNewContacts(generateUid, newContacts, knownAddresses, addressType, addressIds, name, createdTime, localId, hasLocalImage) {
+function _collectNewContacts(generateUid, newContacts, knownAddresses, addressType, addressIds, name, now, localId, hasLocalImage) {
 	var knownAddressesByType = knownAddresses[addressType]
 	each(addressIds, function(addressId) {
 		if (knownAddressesByType[addressId]) { return }
 		knownAddressesByType[addressId] = true
-		newContacts.push({ contactUid:generateUid(), addressType:addressType, addressId:addressId, createdTime:createdTime, name:name, localId:localId, hasLocalImage:hasLocalImage })
+		newContacts.push({ contactUid:generateUid(), addressType:addressType, addressId:addressId, createdTime:now, name:name, localId:localId, hasLocalImage:hasLocalImage })
 	})
 }
 

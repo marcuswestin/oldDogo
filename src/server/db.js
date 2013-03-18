@@ -219,7 +219,7 @@ var Shard = proto(connectionBase,
 var Transaction = proto(connectionBase,
 	function(db, conn) {
 		this.db = db
-		this._time = now()
+		this._time = time.now()
 		this._conn = conn
 		this._conn.query('START TRANSACTION')
 	}, {
@@ -265,7 +265,7 @@ var Transaction = proto(connectionBase,
 var Autocommit = proto(connectionBase,
 	function(db, conn) {
 		this.db = db
-		this._time = now()
+		this._time = time.now()
 		this._conn = conn
 	}, {
 		time: function() {

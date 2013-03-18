@@ -18,13 +18,14 @@ function claimVerifiedAddress(addrInfo, personId, name, callback) {
 	log.debug('claim verified address', addrInfo, personId, name)
 	var sql = 'UPDATE addressLookup SET name=?, personId=?, claimedTime=? WHERE addressId=? AND addressType=? AND claimedTime IS NULL'
 	Addresses.normalize(addrInfo)
-	db.lookup().updateOne(sql, [name, personId, now(), addrInfo.addressId, addrInfo.addressType], callback)
+	db.lookup().updateOne(sql, [name, personId, time.now(), addrInfo.addressId, addrInfo.addressType], callback)
 }
 function createVerifiedAddress(addrInfo, personId, name, callback) {
 	log.debug('create verified address', addrInfo, personId, name)
 	var sql = 'INSERT INTO addressLookup SET name=?, personId=?, claimedTime=?, createdTime=?, addressId=?, addressType=?'
 	Addresses.normalize(addrInfo)
-	db.lookup().insertIgnoreId(sql, [name, personId, now(), now(), addrInfo.addressId, addrInfo.addressType], callback)
+	var now = time.now()
+	db.lookup().insertIgnoreId(sql, [name, personId, now, now, addrInfo.addressId, addrInfo.addressType], callback)
 }
 function createAddressVerification(passwordHash, name, addrInfo, pictureSecret, callback) {
 	log.debug('create address verification', addrInfo, name)
@@ -32,7 +33,7 @@ function createAddressVerification(passwordHash, name, addrInfo, pictureSecret, 
 		if (err) { return callback(err) }
 		var sql = 'INSERT INTO addressVerification SET verificationSecret=?, passwordHash=?, name=?, addressId=?, addressType=?, pictureSecret=?, createdTime=?'
 		Addresses.normalize(addrInfo)
-		var values = [verificationSecret, passwordHash, name, addrInfo.addressId, addrInfo.addressType, pictureSecret, now()]
+		var values = [verificationSecret, passwordHash, name, addrInfo.addressId, addrInfo.addressType, pictureSecret, time.now()]
 		db.lookup().insert(sql, values, function(err, verificationId) {
 			callback(err, verificationId, verificationSecret)
 		})
@@ -76,7 +77,7 @@ function addUnclaimedAddress(addrInfo, callback) {
 	log.debug('add unclaimed address', addrInfo)
 	var sql = 'INSERT INTO addressLookup SET name=?, conversationIdsJson=?, addressId=?, addressType=?, createdTime=?'
 	Addresses.normalize(addrInfo)
-	db.lookup().insertIgnoreId(sql, [addrInfo.name, _json(addrInfo.conversationIds), addrInfo.addressId, addrInfo.addressType, now()], callback)
+	db.lookup().insertIgnoreId(sql, [addrInfo.name, _json(addrInfo.conversationIds), addrInfo.addressId, addrInfo.addressType, time.now()], callback)
 }
 function updateAddressInfo(addrInfo, callback) {
 	log.debug('update address', addrInfo)

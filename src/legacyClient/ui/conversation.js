@@ -134,8 +134,8 @@ function refreshMessages(scrollToBottom) {
 var lastTime = 0
 function onScroll() {
 	if (!view) { return }
-	if (Math.abs(lastTime - time.now()) < 200) { return }
-	lastTime = time.now()
+	if (Math.abs(lastTime - time.now(time.milliseconds)) < 200) { return }
+	lastTime = time.now(time.milliseconds)
 	checkScrollBounds()
 }
 

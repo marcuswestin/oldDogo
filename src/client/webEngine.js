@@ -1,31 +1,52 @@
 module.exports = {
-	setup:setupDevBridge,
+	start:start,
 	notify:notify
 }
 
+var messageHandler
 function notify(event, info) {
 	messageHandler({ event:event, info:info })
 }
 
-var messageHandler
-function setupDevBridge(win, onSetup) {
-	win.WebViewJavascriptBridge = {
-		init:function(_messageHandler) {
-			messageHandler = _messageHandler
-			onSetup()
-		},
-		callHandler:function(command, data, callback) {
-			if (!callback && typeof data == 'function') {
-				callback = data
-				data = null
-			}
-			if (!commandHandlers[command]) {
-				return console.log("WARN", 'Unknown bridge command', command)
-			}
-			commandHandlers[command](data, function(error, responseData) {
-				callback({ error:error, responseData:responseData })
+function start() {
+	after(100, loadFbSdk)
+	
+	WebViewJavascriptBridge = {
+		init:initBridge,
+		callHandler:callHandler
+	}
+	
+	var readyEvent = document.createEvent('Events')
+	readyEvent.initEvent('WebViewJavascriptBridgeReady')
+	readyEvent.bridge = WebViewJavascriptBridge
+	document.dispatchEvent(readyEvent)
+	
+	function initBridge(_messageHandler) {
+		messageHandler = _messageHandler
+		nextTick(function() {
+			notify('app.start', {
+				client:'0.98.0-browser',
+				config: gConfig = {
+					device: { platform:'Chrome' },
+					protocol: 'http:',
+					serverHost:location.hostname,
+					serverUrl:'http://'+location.host
+				}
 			})
+		})
+	}
+
+	function callHandler(command, data, callback) {
+		if (!callback && typeof data == 'function') {
+			callback = data
+			data = null
 		}
+		if (!commandHandlers[command]) {
+			return console.log("WARN", 'Unknown bridge command', command)
+		}
+		commandHandlers[command](data, function(error, responseData) {
+			callback({ error:error, responseData:responseData })
+		})
 	}
 }
 
@@ -37,7 +58,7 @@ var commandHandlers = {
 		console.log('SHOW APP')
 	},
 	'app.restart': function(data, callback) {
-		nextTick(function() { location.reload() })
+		nextTick(function() { window.top.location = window.top.location })
 	},
 	'BTFiles.writeJsonDocument': _writeJson,
 	'BTFiles.writeJsonCache': _writeJson,
@@ -76,7 +97,7 @@ var commandHandlers = {
 		FB.api(data.path, function(response) { callback(null, response) })
 	},
 	'push.register': function(data, callback) { callback(null, { deviceToken:'DEV_BRIDGE_FAKE_TOKEN' }) },
-	'text.send': function(data, callback) {
+	'message.send': function(data, callback) {
 		data.url = api.getUrl('api/messageDev')
 		api.sendRequest(data, callback)
 	},
@@ -221,4 +242,23 @@ function getAllAddressBookEntries(data, callback) {
 		]
 		callback(null, { entries:entries })
 	})
+}
+
+function loadFbSdk() {
+	$(document.body).append(div({ id:'fb-root' }))
+	window.fbAsyncInit = function() {
+		FB.init({
+			appId      : '219049001532833', // App ID
+			status     : false, // check login status
+			cookie     : false, // enable cookies to allow the server to access the session
+			xfbml      : false  // parse XFBML
+		})
+	};
+
+	var d = document
+	var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+	if (d.getElementById(id)) {return;}
+	js = d.createElement('script'); js.id = id; js.async = true;
+	js.src = "//connect.facebook.net/en_US/all.js";
+	ref.parentNode.insertBefore(js, ref);
 }

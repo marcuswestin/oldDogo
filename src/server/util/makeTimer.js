@@ -1,11 +1,13 @@
 module.exports = makeTimer
 
+var time = require('std/time').inMilliseconds()
+
 function makeTimer(name) { return doMakeTimer(name) }
 
 var doMakeTimer = function(name) {
 	return {
 		name:name,
-		t0:now(),
+		t0:time.now(),
 		timers:{},
 		start:start,
 		stop:stop,
@@ -21,14 +23,12 @@ makeTimer.disable = function() {
 	doMakeTimer = function() { return makeTimer.dummy }
 }
 
-function now() { return new Date().getTime() }
-
 function start(name) {
 	var timers = this.timers
 	if (!timers[name]) {
 		timers[name] = { total:0, count:0 }
 	}
-	timers[name].start = now()
+	timers[name].start = time.now()
 	timers[name].count += 1
 	return this
 }
@@ -36,13 +36,13 @@ function start(name) {
 function stop(name) {
 	var timers = this.timers
 	if (!timers[name]) { console.log("WARNING timer.stop:", name); return this }
-	timers[name].total += now() - timers[name].start
+	timers[name].total += time.now() - timers[name].start
 	delete timers[name].start
 	return this
 }
 
 function report() {
-	return 'Time:'+(now() - this.t0)+'ms (' + map(this.timers, function(timer, name) {
+	return 'Time:'+(time.now() - this.t0)+'ms (' + map(this.timers, function(timer, name) {
 		return name + '*' + timer.count + '=' + timer.total + 'ms'
 	}).join(', ')+')'
 }

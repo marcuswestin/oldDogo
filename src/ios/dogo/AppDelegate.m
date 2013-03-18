@@ -121,31 +121,22 @@
     [super setupBridgeHandlers:useLocalBuild];
     
     [self handleCommand:@"message.send" handler:^(id data, BTResponseCallback responseCallback) {
-        NSData* payload = [NSData dataWithContentsOfFile:[BTFiles documentPath:data[@"document"]]];
+        NSData* payload = data[@"document"] ? [NSData dataWithContentsOfFile:[BTFiles documentPath:data[@"document"]]] : nil;
         [self _send:data payload:payload responseCallback:responseCallback];
     }];
     
-    [self handleCommand:@"text.send" handler:^(id data, BTResponseCallback responseCallback) {
-        [self _send:data payload:nil responseCallback:responseCallback];
-    }];
-    
-    [self handleCommand:@"audio.send" handler:^(id data, BTResponseCallback responseCallback) {
-        NSData* audioData = [NSData dataWithContentsOfURL:[NSURL URLWithString:data[@"audioLocation"]]];
-        [self _send:data payload:audioData responseCallback:responseCallback];
-    }];
-
-    [self handleCommand:@"picture.send" handler:^(id data, BTResponseCallback responseCallback) {
-        NSString* base64String = [data[@"base64Data"] stringByReplacingOccurrencesOfString:@"data:image/jpeg;base64," withString:@""];
-        
-        NSData* pictureData = [NSData dataWithBase64EncodedString:base64String];
-        UIImage* image = [UIImage imageWithData:pictureData];
-        NSMutableDictionary* params = [NSMutableDictionary dictionaryWithDictionary:[data objectForKey:@"params"]];
-        params[@"width"] = [NSNumber numberWithFloat:image.size.width];
-        params[@"height"] = [NSNumber numberWithFloat:image.size.height];
-        id _data = [NSMutableDictionary dictionaryWithDictionary:data];
-        _data[@"params"] = params;
-        [self _send:_data payload:pictureData responseCallback:responseCallback];
-    }];
+    // [self handleCommand:@"picture.send" handler:^(id data, BTResponseCallback responseCallback) {
+    //     NSString* base64String = [data[@"base64Data"] stringByReplacingOccurrencesOfString:@"data:image/jpeg;base64," withString:@""];
+    //     
+    //     NSData* pictureData = [NSData dataWithBase64EncodedString:base64String];
+    //     UIImage* image = [UIImage imageWithData:pictureData];
+    //     NSMutableDictionary* params = [NSMutableDictionary dictionaryWithDictionary:[data objectForKey:@"params"]];
+    //     params[@"width"] = [NSNumber numberWithFloat:image.size.width];
+    //     params[@"height"] = [NSNumber numberWithFloat:image.size.height];
+    //     id _data = [NSMutableDictionary dictionaryWithDictionary:data];
+    //     _data[@"params"] = params;
+    //     [self _send:_data payload:pictureData responseCallback:responseCallback];
+    // }];
 }
 
 - (void)_send:(NSDictionary*)data payload:(NSData*)payload responseCallback:(BTResponseCallback)responseCallback {

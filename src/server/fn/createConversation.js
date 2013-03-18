@@ -36,14 +36,14 @@ module.exports = function createConversation(req, contacts, callback) {
 }
 
 function _createGuestAccesses(externalAddressInfos, conversationId, callback) {
-	var currentTime = now()
+	var now = time.now()
 	asyncEach(externalAddressInfos, {
 		parallel:true,
 		finish:callback,
 		iterate:function(addrInfo, callback) {
 			makeUid(24, function(err, secret) {
 				var sql = 'INSERT INTO guestAccess SET conversationId=?, secret=?, createdTime=?, guestIndex=?'
-				db.conversation(conversationId).insertIgnoreId(sql, [conversationId, secret, currentTime, addrInfo.guestIndex], callback)
+				db.conversation(conversationId).insertIgnoreId(sql, [conversationId, secret, now, addrInfo.guestIndex], callback)
 			})
 		}
 	})
@@ -74,7 +74,7 @@ function _lookupContacts(contacts, callback) {
 
 function _createConversation(peopleJson, callback) {
 	var sql = 'INSERT INTO conversation SET peopleJson=?, createdTime=?'
-	db.conversation.randomShard().insert(sql, [peopleJson, now()], callback)
+	db.conversation.randomShard().insert(sql, [peopleJson, time.now()], callback)
 }
 
 function _createParticipations(dogoPeople, conversationId, peopleJson, callback) {

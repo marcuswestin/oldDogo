@@ -1,6 +1,5 @@
 require('client/misc/clientGlobals')
 
-var devBridge = require('./devBridge')
 var devButtons = require('./devButtons') 
 
 // In dev mode Fake the viewport width and height to be an iPhone
@@ -17,7 +16,6 @@ function startDevClient() {
 	buildDevClient()
 	layoutDevClient()
 	$(window).resize(layoutDevClient)
-	setTimeout(loadFbSdk, 400)	
 	devButtons.setup()
 }
 
@@ -48,30 +46,20 @@ function buildDevClient() {
 	nextTick(checkClientWindow)
 	function checkClientWindow() {
 		var win = $('#clientWindow')[0].contentWindow
-		if (!win) { return after(50, checkClientWindow) }
-		devBridge.setup(win, function() {
+		if (!win || !win.webEngine) { return after(50, checkClientWindow) }
+		var link = win.document.createElement('link')
+		link.rel = "stylesheet"
+		link.type = "text/css"
+		link.href = "/stylus/styl/fonts/opensans-all.styl"
+		win.document.getElementsByTagName('head')[0].appendChild(link)
+		
+		win.webEngine.start(function() {
 			win.viewport.height = function() { return 480 }
 			win.viewport.width = function() { return 320 }
 			win.viewport.pos = function() {
 				var offset = $('#viewport').offset()
 				return tags.makePos(offset.left, offset.top)
 			}
-			
-			var link = win.document.createElement('link')
-			link.rel = "stylesheet"
-			link.type = "text/css"
-			link.href = "/stylus/styl/fonts/opensans-all.styl"
-			win.document.getElementsByTagName('head')[0].appendChild(link)
-			
-			devBridge.notify('app.start', {
-				client:'0.98.0-browser',
-				config: gConfig = {
-					device: { platform:'Chrome' },
-					protocol: 'http:',
-					serverHost:location.hostname,
-					serverUrl:'http://'+location.host
-				}
-			})
 		})
 	}
 }
@@ -82,23 +70,4 @@ function layoutDevClient() {
 	var size = { width:$(window).width(), height:$(window).height() }
 	$('body').css(size)
 	$('#mockPhone').css({ marginTop:(viewportTop-155)+'px' })
-}
-
-function loadFbSdk() {
-	$(document.body).append(div({ id:'fb-root' }))
-	window.fbAsyncInit = function() {
-		FB.init({
-			appId      : '219049001532833', // App ID
-			status     : false, // check login status
-			cookie     : false, // enable cookies to allow the server to access the session
-			xfbml      : false  // parse XFBML
-		})
-	};
-
-	var d = document
-	var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-	if (d.getElementById(id)) {return;}
-	js = d.createElement('script'); js.id = id; js.async = true;
-	js.src = "//connect.facebook.net/en_US/all.js";
-	ref.parentNode.insertBefore(js, ref);
 }

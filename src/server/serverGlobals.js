@@ -12,12 +12,11 @@ asyncMap = require('std/asyncMap')
 asyncEach = require('std/asyncEach')
 parallel = require('std/parallel')
 curry = require('std/curry')
-time = require('std/time')
+time = require('std/time').inSeconds()
 trim = require('std/trim')
 isArray = require('std/isArray')
 inverse = require('std/inverse')
 last = require('std/last')
-now = function() { return Math.floor(time.now() / time.second) }
 makeUid = require('server/makeUid')
 
 Addresses = require('data/Addresses')

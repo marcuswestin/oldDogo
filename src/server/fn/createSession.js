@@ -22,7 +22,7 @@ function createGuestSession(conversationId, guestIndex, secret, callback) {
 			lookupService.lookup(person, function(err, personId, addrInfo) {
 				if (err) { return callback(err) }
 				if (personId) { return callback('Please use your Dogo app') }
-				var expiration = (3 * time.day) / time.seconds // expiration in seconds
+				var expiration = 3 * time.days
 				var authToken = secret+':'+conversationId
 				redis.setex(createSession.guestPrefix+authToken, expiration, addrInfo.lookupId, function(err) {
 					if (err) { return callback(err) }
@@ -61,7 +61,7 @@ function createSession(addrInfo, password, callback) {
 					var sql = 'INSERT INTO session SET personId=?, secret=?, clientInfoJson=?'
 					db.person(personId).insert(sql, [personId, secret, JSON.stringify(clientInfo)], function(err, sessionId) {
 						if (err) { return callback(err) }
-						var expiration = (1 * time.day) / time.seconds // expiration in seconds
+						var expiration = 1 * time.day
 						var authToken = secret+':'+sessionId
 						log('add session to redis')
 						redis.setex(createSession.personPrefix+authToken, expiration, personId, function(err) {

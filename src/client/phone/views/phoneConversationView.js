@@ -10,10 +10,10 @@ module.exports = {
 /* Head, body, foot
  ******************/
 var view
-var lastPersonId
+var lastMessage
 function renderHead(_view) {
 	view = _view
-	lastPersonId = null
+	lastMessage = null
 
 	// setTimeout(function() { tools.selectText(view) }, 250) // AUTOS
 	// setTimeout(function() { tools.selectMicrophone(view) }, 250) // AUTOS
@@ -89,16 +89,20 @@ function _selectMessage(message) {
 	console.log('Select', message)
 }
 
-events.on('view.changing', function() { lastPersonId = null })
+events.on('view.changing', function() { lastMessage = null })
 function _renderMessage(message) {
-	var isNewPerson = (lastPersonId != message.fromPersonId)
-	lastPersonId = message.fromPersonId
+	var isNewPerson = !lastMessage || (lastMessage.fromPersonId != message.fromPersonId)
+	var isNewTime = !lastMessage || (Math.abs(lastMessage.postedTime - message.postedTime) > (3 * time.hours))
+	var makeNewCard = isNewPerson || isNewTime
+	
+	lastMessage = message
 	var person = _getMessagePerson(message)
 	var bg = '#fff'
-	return (isNewPerson
+	
+	return (makeNewCard
 		? [div(style(unitMargin(1,1/2,0), unitPadding(1/2,1/2,0), { minHeight:unit*6, background:bg }),
 			div(style(floatRight, { fontSize:12, marginRight:unit/2, color:'rgb(25,161,219)', textShadow:'0 -1px 0 rgba(0,0,0,.25)' }),
-				time.ago.brief(message.postedTime * time.seconds)
+				time.ago.brief(message.postedTime)
 			),
 			face(person, { size:unit*5.5 }, floatLeft, unitMargin(0,1/2,0,0)),
 			div(style(),
@@ -145,7 +149,7 @@ function renderContent(message) {
 		var url = message.preview
 			? BT.url('BTFiles.getDocument', { document:message.preview.document, mimeType:Payloads.mimeTypes[message.type] })
 			: Payloads.url(message)
-		return html('Voice message: '+round(payload.duration / time.second, 1)+'s <audio src="'+url+'" controls="true">')
+		return html('Voice message: '+round(payload.duration, 1)+'s <audio src="'+url+'" controls="true">')
 	} else {
 		return 'Cannot display message. Please upgrade Dogo!'
 	}

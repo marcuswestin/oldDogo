@@ -1,5 +1,7 @@
 require('client/misc/clientGlobals')
 
+webEngine = require('client/webEngine')
+
 Conversations = require('client/state/Conversations')
 Contacts = require('client/state/Contacts')
 

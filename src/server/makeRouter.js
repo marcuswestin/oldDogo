@@ -180,7 +180,7 @@ function setupRoutes(app, opts) {
 		createSession.forGuest(params.conversationId, params.guestIndex, params.secret, wrapRespond(req, res, 'sessionInfo'))
 	})
 	app.get('/api/guest/messages', filters.guestRequest, function handleGetGuestMessages(req, res) {
-		getMessages.forConversation(req.session.conversationId, wrapRespond(req, res, 'messages'))
+		getMessages.forConversation(req.session.conversationId, 0, wrapRespond(req, res, 'messages'))
 	})
 	
 	app.post('/api/log/app/error', function handleLogAppError(req, res) {

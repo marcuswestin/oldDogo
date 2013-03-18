@@ -256,23 +256,21 @@ function sendMessage(type, data) {
 				commandData.document = data.document
 				preview = { document:data.document }
 				message.payload = { duration:data.duration }
-				bridge.command('message.send', commandData, onResponse)
 
 			} else if (Messages.isPicture(message)) {
 				commandData.document = data.document
 				preview = { document:data.document }
 				message.payload = { width:data.width, height:data.height }
-				bridge.command('message.send', commandData, onResponse)
 
 			} else if (Messages.isText(message)) {
 				message.payload = { body:data.body }
 				preview = { body:data.body }
-				bridge.command('text.send', commandData, onResponse)
 
 			} else {
 				return error('Unknown message type ' + type)
 			}
 
+			bridge.command('message.send', commandData, onResponse)
 			message.preview = preview // set message.preview after command has been sent to avoid sending the preview to the server
 			events.fire('message.sending', message)
 		})

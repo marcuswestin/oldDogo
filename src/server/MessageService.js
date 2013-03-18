@@ -39,11 +39,12 @@ function sendMessage(fromPersonId, participationId, clientUid, type, payload, pa
 		function _createMessage(conversationId, payload, callback) {
 			log.debug('create message', conversationId, payload)
 			var sql = 'INSERT INTO message SET postedTime=?, fromPersonId=?, clientUid=?, conversationId=?, type=?, payloadJson=?'
-			db.conversation(conversationId).insert(sql, [now(), fromPersonId, clientUid, conversationId, type, JSON.stringify(payload)], function(err, messageId) {
+			var now = time.now()
+			db.conversation(conversationId).insert(sql, [now, fromPersonId, clientUid, conversationId, type, JSON.stringify(payload)], function(err, messageId) {
 				if (err) { return callback(err) }
 				var newMessage = {
 					id:messageId, fromPersonId:fromPersonId, conversationId:conversationId, clientUid:clientUid,
-					postedTime:now(), type:type, payload:payload
+					postedTime:now, type:type, payload:payload
 				}
 				callback(null, newMessage)
 			})
@@ -118,13 +119,14 @@ function _notifyParticipants(message, prodPush) {
 							pictures.push(message)
 						}
 					}
-
+					
+					var now = time.now()
 					var isMyParticipation = (personId == message.fromPersonId)
-					var lastReceivedTime = (isMyParticipation ? participation.lastReceivedTime : now())
+					var lastReceivedTime = (isMyParticipation ? participation.lastReceivedTime : now)
 					var recentJson = JSON.stringify(recent)
 					var picturesJson = JSON.stringify(pictures)
 					var sql = 'UPDATE participation SET lastMessageTime=?, lastReceivedTime=?, recentJson=?, picturesJson=? WHERE personId=? AND conversationId=?'
-					db.person(personId).updateOne(sql, [now(), lastReceivedTime, recentJson, picturesJson, personId, message.conversationId], function(err, res) {
+					db.person(personId).updateOne(sql, [now, lastReceivedTime, recentJson, picturesJson, personId, message.conversationId], function(err, res) {
 						if (err) { return callback(err) }
 					})
 				})

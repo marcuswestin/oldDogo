@@ -19,7 +19,7 @@ function withAddressVerification(verificationId, verificationSecret, password, c
 		var opts = {}
 		_createPersonWithVerifiedAddresses(verInfo.name, verInfo.passwordHash, pictureUrl, addresses, opts, function(err, person) {
 			if (err) { return callback(err) }
-			db.lookup().updateOne('UPDATE addressVerification SET usedTime=? WHERE verificationId=?', [now(), verInfo.verificationId], function(err) {
+			db.lookup().updateOne('UPDATE addressVerification SET usedTime=? WHERE verificationId=?', [time.now(), verInfo.verificationId], function(err) {
 				callback(err, { person:person, config:getClientConfig() })
 			})
 		})
@@ -81,7 +81,7 @@ function withFacebookSession(name, email, password, fbSession, pictureSecret, ca
 }
 
 function _createPersonWithVerifiedAddresses(name, passwordHash, pictureUrl, addresses, opts, callback) {
-	var requestTime = now()
+	var requestTime = time.now()
 	log.debug('create person with verified addresses', name, passwordHash, pictureUrl, addresses, opts)
 	parallel(_lookupAddresses, _createPerson, function(err, addrInfos, personId) {
 		if (err) { return callback(err) }

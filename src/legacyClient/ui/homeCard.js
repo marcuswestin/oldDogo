@@ -36,7 +36,7 @@ function renderRecent(conversation) {
 			div('time', function() {
 				var id = tags.id()
 				setTimeout(function() {
-					time.ago.brief(conversation.lastMessageTime * time.seconds, function(timeStr) {
+					time.ago.brief(conversation.lastMessageTime, function(timeStr) {
 						$('#'+id).text(timeStr)
 					})
 				})
