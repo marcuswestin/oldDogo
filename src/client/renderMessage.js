@@ -6,6 +6,7 @@ function renderMessage(message, person) {
 	var isNewPerson = !lastMessage || (lastMessage.fromPersonId != message.fromPersonId)
 	var isNewTime = !lastMessage || (Math.abs(lastMessage.postedTime - message.postedTime) > (3 * time.hours))
 	var makeNewCard = isNewPerson || isNewTime
+	lastMessage = message
 	
 	var bg = '#fff'
 	

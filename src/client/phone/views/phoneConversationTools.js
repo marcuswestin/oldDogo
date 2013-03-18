@@ -25,7 +25,7 @@ var duration = 300
 /* Text tool
  ***********/
 var id
-_textTool.getHeight = function() { return unit*4.5 }
+_textTool.getHeight = function() { return unit*2.5 }
 function _textTool(toolHeight, barHeight) {
 	// setTimeout(_showTextFormatting, 400) // AUTOS
 	id = tags.id()
@@ -47,10 +47,11 @@ function _textTool(toolHeight, barHeight) {
 		}) 
 	})
 	
+	var textSpacing = unit*2
 	return div(style({ height:keyboardHeight + toolHeight, background:'#fff' }),
-		div(style({ background:'#fff', paddingBottom:unit*2.5 }),
+		div(style({ position:'absolute', top:-textSpacing, height:textSpacing, width:'100%', background:'#fff' }),
 			div({ id:id, contentEditable:'true' }, style(unitPadding(1), scrollable.y, transition('opacity', duration/2), {
-					position:'absolute', bottom:0, '-webkit-user-select':'auto', maxHeight:26*units,
+					position:'absolute', bottom:textSpacing, '-webkit-user-select':'auto', maxHeight:26*units,
 					width:viewport.width()-unit*2, background:'#fff', boxShadow:'0 -2px 3px -1px rgba(0,0,0,.5)',
 					opacity:0
 				})
