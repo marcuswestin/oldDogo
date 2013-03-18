@@ -24,7 +24,7 @@ function show() {
 			})
 		})
 		return div(
-			style(appBg, { width:viewport.width(), height:viewport.height(), display:'inline-block' }),
+			style({ width:viewport.width(), height:viewport.height(), display:'inline-block' }),
 			div(style({ zIndex:1 }, absolute(0, statusBarHeight)),
 				appHead(
 					div(style(fullHeight, fullWidth, { marginTop:unit*0.75 }), graphic('close', 20, 20), button(hide)),

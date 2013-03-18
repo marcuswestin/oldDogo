@@ -1,5 +1,3 @@
-var uuid = require('uuid')
-
 var log = makeLog('LookupService')
 
 module.exports = {
@@ -30,18 +28,20 @@ function createVerifiedAddress(addrInfo, personId, name, callback) {
 }
 function createAddressVerification(passwordHash, name, addrInfo, pictureSecret, callback) {
 	log.debug('create address verification', addrInfo, name)
-	var verificationToken = uuid.v4()
-	var sql = 'INSERT INTO addressVerification SET verificationToken=?, passwordHash=?, name=?, addressId=?, addressType=?, pictureSecret=?, createdTime=?'
-	Addresses.normalize(addrInfo)
-	var values = [verificationToken, passwordHash, name, addrInfo.addressId, addrInfo.addressType, pictureSecret, now()]
-	db.lookup().insert(sql, values, function(err, verificationId) {
-		callback(err, verificationId, verificationToken)
+	makeUid(36, function(err, verificationSecret) {
+		if (err) { return callback(err) }
+		var sql = 'INSERT INTO addressVerification SET verificationSecret=?, passwordHash=?, name=?, addressId=?, addressType=?, pictureSecret=?, createdTime=?'
+		Addresses.normalize(addrInfo)
+		var values = [verificationSecret, passwordHash, name, addrInfo.addressId, addrInfo.addressType, pictureSecret, now()]
+		db.lookup().insert(sql, values, function(err, verificationId) {
+			callback(err, verificationId, verificationSecret)
+		})
 	})
 }
-function getAddressVerification(verificationId, verificationToken, callback) {
-	var sql = 'SELECT verificationId, addressId, addressType, passwordHash, name, verificationToken, createdTime, usedTime, pictureSecret '
-		+ 'FROM addressVerification WHERE verificationId=? AND verificationToken=?'
-	db.lookup().selectOne(sql, [verificationId, verificationToken], function(err, verification) {
+function getAddressVerification(verificationId, verificationSecret, callback) {
+	var sql = 'SELECT verificationId, addressId, addressType, passwordHash, name, verificationSecret, createdTime, usedTime, pictureSecret '
+		+ 'FROM addressVerification WHERE verificationId=? AND verificationSecret=?'
+	db.lookup().selectOne(sql, [verificationId, verificationSecret], function(err, verification) {
 		if (err) { return callback(err) }
 		if (!verification) { return callback("I don't recognize this verification - please check that you have the right link.") }
 		if (verification.usedTime) { return callback('Sorry, this verification link has already been used') }
@@ -54,7 +54,7 @@ function lookup(addrInfo, callback) {
 	log('lookup address', addrInfo)
 	if (Addresses.isDogo(addrInfo)) { return lookupDogoPerson(addrInfo.addressId, callback) }
 	Addresses.normalize(addrInfo)
-	var sql = 'SELECT addressType, addressId, personId, name, conversationIdsJson, createdTime, claimedTime FROM addressLookup WHERE addressType=? AND addressId=?'
+	var sql = 'SELECT lookupId, addressType, addressId, personId, name, conversationIdsJson, createdTime, claimedTime FROM addressLookup WHERE addressType=? AND addressId=?'
 	db.lookup().selectOne(sql, [addrInfo.addressType, addrInfo.addressId], function(err, addrInfo) {
 		if (err) { return callback(err, null) }
 		if (!addrInfo) { return callback(null, null) }
@@ -64,7 +64,7 @@ function lookup(addrInfo, callback) {
 }
 function lookupDogoPerson(personId, callback) {
 	var sql = 'SELECT 1 as addressType, personId as addressId, personId, name, "[]" as conversationIdsJson, joinedTime as createdTime, joinedTime as claimedTime FROM person WHERE personId=?'
-	db.people(personId).selectOne(sql, [personId], function(err, person) {
+	db.person(personId).selectOne(sql, [personId], function(err, person) {
 		if (err) { return callback(err) }
 		callback(null, person.personId, person)
 	})

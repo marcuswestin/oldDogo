@@ -45,7 +45,7 @@ var url = require('std/url')
 				),
 				div('button', { id:'verifyButton' }, 'Verify My Address', button(function() {
 					var params = {
-						verificationToken: urlParams.t,
+						verificationSecret: urlParams.s,
 						verificationId: urlParams.i,
 						password:$('#password').val()
 					}

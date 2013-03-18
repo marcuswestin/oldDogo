@@ -3,10 +3,10 @@ var error = module.exports = function error(err) {
 	overlay.hide()
 	var message = api.error(err)
 	if (!error.$tag) {
-		error.$tag = $(div({ id:'errorNotice' },
+		error.$tag = $(div({ id:'errorNotice' }, style({ color:'#D8000C', zIndex:1, fontWeight:300 }),
 			style({ position:'absolute', top:20, left:0, width:viewport.width() }),
 			div('content',
-				style({ maxHeight:240 }, scrollable.y),
+				style({ maxHeight:240, background:'rgba(255,210,210,.0.92)', padding:12 }, scrollable.y),
 				div('close', style({ position:'absolute', right:10, padding:unit }), 'X', button(function() { error.hide() })),
 				div('message')
 			)

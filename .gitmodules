@@ -1,9 +1,6 @@
 [submodule "dependencies/facebook-ios-sdk"]
 	path = dependencies/facebook-ios-sdk
 	url = git://github.com/facebook/facebook-ios-sdk.git
-[submodule "node_modules/uuid"]
-	path = node_modules/uuid
-	url = https://github.com/broofa/node-uuid.git
 [submodule "node_modules/mysql"]
 	path = node_modules/mysql
 	url = https://github.com/felixge/node-mysql.git

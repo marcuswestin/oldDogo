@@ -9,7 +9,6 @@ module.exports = {
 	getHeaders:getHeaders,
 	setHeaders:setHeaders,
 	// refresh:refresh,
-	getPath:getPath,
 	getUrl:getUrl,
 	error:error
 }
@@ -23,15 +22,15 @@ function get(path, params, callback) {
 }
 
 function getAuth() {
-	return sessionInfo && sessionInfo.authToken ? 'Basic '+base64.encode(sessionInfo.authToken) : null
-}
-
-function getPath(path) {
-	return '/'+path
+	return sessionInfo ? sessionInfo.authorization : null
 }
 
 function getUrl(path) {
-	return gConfig.serverUrl + getPath(path)
+	return (gConfig.serverUrl || '') + getPath(path)
+}
+
+function getPath(path) {
+	return (path[0] == '/' ? path : '/'+path)
 }
 
 function send(method, path, params, callback) {
@@ -39,15 +38,14 @@ function send(method, path, params, callback) {
 		callback = params
 		delete params
 	}
-	var url = getPath(path)
 	var headers = getHeaders()
-	if (method == 'post' && params) {
+	if (method == 'POST' && params) {
 		params = JSON.stringify(params)
 		headers['Content-Type'] = 'application/json'
 	}
 	return sendRequest({
 		method:method,
-		url:url,
+		url:getPath(path),
 		headers:headers,
 		params:params,
 		callback:callback

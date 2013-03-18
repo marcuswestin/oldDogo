@@ -3,13 +3,14 @@ var getConversations = require('server/fn/getConversations')
 module.exports = function createConversation(req, contacts, callback) {
 	var personId = req.session.personId
 	contacts.unshift({ addressType:Addresses.types.dogo, addressId:personId })
-	_lookupContacts(contacts, function(err, dogoPeople, otherAddresses) {
+	_lookupContacts(contacts, function(err, dogoPeople, externalAddressInfos) {
 		if (err) { return callback(err) }
-		var otherContacts = map(otherAddresses, function(addrInfo) { return addrInfo.contact })
-		var peopleJson = JSON.stringify(dogoPeople.concat(otherContacts))
+		var peopleJson = JSON.stringify(dogoPeople.concat(map(externalAddressInfos, function(addrInfo) {
+			return addrInfo.contact
+		})))
 		_createConversation(peopleJson, function(err, conversationId) {
 			if (err) { return callback(err) }
-			parallel(doCreateParticipations, doUpdateOtherAddresses, function(err) {
+			parallel(doCreateParticipations, doCreateGuestAccesses, doUpdateOtherAddresses, function(err) {
 				if (err) { return callback(err) }
 				getConversations.getOne(personId, conversationId, function(err, conversation) {
 					if (err) { return callback(err) }
@@ -21,40 +22,59 @@ module.exports = function createConversation(req, contacts, callback) {
 				log('create participations for', dogoPeople, conversationId)
 				_createParticipations(dogoPeople, conversationId, peopleJson, callback)
 			}
+			function doCreateGuestAccesses(callback) {
+				if (!externalAddressInfos.length) { return callback() }
+				log('create guess access for', externalAddressInfos)
+				_createGuestAccesses(externalAddressInfos, conversationId, callback)
+			}
 			function doUpdateOtherAddresses(callback) {
-				log('update addresses', otherAddresses, conversationId)
-				_updateAddresses(otherAddresses, conversationId, callback)
+				log('update addresses', externalAddressInfos, conversationId)
+				_updateAddresses(externalAddressInfos, conversationId, callback)
 			}
 		})
 	})
 }
 
+function _createGuestAccesses(externalAddressInfos, conversationId, callback) {
+	var currentTime = now()
+	asyncEach(externalAddressInfos, {
+		parallel:true,
+		finish:callback,
+		iterate:function(addrInfo, callback) {
+			makeUid(24, function(err, secret) {
+				var sql = 'INSERT INTO guestAccess SET conversationId=?, secret=?, createdTime=?, guestIndex=?'
+				db.conversation(conversationId).insertIgnoreId(sql, [conversationId, secret, currentTime, addrInfo.guestIndex], callback)
+			})
+		}
+	})
+}
+
 function _lookupContacts(contacts, callback) {
 	var dogoPeople = []
-	var otherAddresses = []
+	var externalAddressInfos = []
 	asyncEach(contacts, {
 		parallel:contacts.length,
-		iterate:function(contact, callback) {
+		iterate:function(contact, index, callback) {
 			lookupService.lookup(contact, function(err, personId, lookupInfo) {
 				log('looked up', lookupInfo)
 				if (personId) {
 					dogoPeople.push({ addressType:Addresses.types.dogo, addressId:personId, name:lookupInfo.name })
 				} else {
-					otherAddresses.push({ contact:contact, lookupInfo:lookupInfo })
+					externalAddressInfos.push({ contact:contact, lookupInfo:lookupInfo, guestIndex:index })
 				}
 				callback()
 			})
 		},
 		finish:function(err) {
 			if (err) { return callback(err) }
-			callback(null, dogoPeople, otherAddresses)
+			callback(null, dogoPeople, externalAddressInfos)
 		}
 	})
 }
 
 function _createConversation(peopleJson, callback) {
 	var sql = 'INSERT INTO conversation SET peopleJson=?, createdTime=?'
-	db.conversations.randomShard().insert(sql, [peopleJson, now()], callback)
+	db.conversation.randomShard().insert(sql, [peopleJson, now()], callback)
 }
 
 function _createParticipations(dogoPeople, conversationId, peopleJson, callback) {
@@ -63,7 +83,7 @@ function _createParticipations(dogoPeople, conversationId, peopleJson, callback)
 		finish:callback,
 		iterate:function(dogoPerson, callback) {
 			var sql = 'INSERT INTO participation SET personId=?, conversationId=?, peopleJson=?'
-			db.people(dogoPerson.addressId).insert(sql, [dogoPerson.addressId, conversationId, peopleJson], callback)
+			db.person(dogoPerson.addressId).insert(sql, [dogoPerson.addressId, conversationId, peopleJson], callback)
 		}
 	})
 }

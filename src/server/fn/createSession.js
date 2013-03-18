@@ -2,11 +2,42 @@ var getPerson = require('server/fn/getPerson')
 var bumpClientUidBlock = require('server/fn/bumpClientUidBlock')
 var redis = require('server/redis')
 var checkPasswordAgainstHash = require('server/fn/checkPasswordAgainstHash')
-var uuid = require('uuid')
 var log = makeLog('createSession')
 var getClientConfig = require('server/fn/getClientConfig')
 
-module.exports = function createSession(addrInfo, password, callback) {
+module.exports = createSession
+createSession.forGuest = createGuestSession
+createSession.guestPrefix = 'g:'
+createSession.personPrefix = 'p:'
+
+function createGuestSession(conversationId, guestIndex, secret, callback) {
+	var sql = 'SELECT 1 FROM guestAccess WHERE conversationId=? AND guestIndex=? AND secret=?'
+	db.conversation(conversationId).selectOne(sql, [conversationId, guestIndex, secret], function(err, res) {
+		if (err) { return callback(err) }
+		if (!res) { return callback('Unknown conversation') }
+		var sql = 'SELECT peopleJson FROM conversation WHERE conversationId=?'
+		db.conversation(conversationId).selectOne(sql, [conversationId], function(err, res) {
+			if (err) { return callback(err) }
+			var person = JSON.parse(res.peopleJson)[guestIndex]
+			lookupService.lookup(person, function(err, personId, addrInfo) {
+				if (err) { return callback(err) }
+				if (personId) { return callback('Please use your Dogo app') }
+				var expiration = (3 * time.day) / time.seconds // expiration in seconds
+				var authToken = secret+':'+conversationId
+				redis.setex(createSession.guestPrefix+authToken, expiration, addrInfo.lookupId, function(err) {
+					if (err) { return callback(err) }
+					callback(null, {
+						address:Addresses.address(addrInfo.addressType, addrInfo.addressId, addrInfo.name),
+						authorization:'DogoGuest '+authToken,
+						config:getClientConfig()
+					})
+				})
+			})
+		})
+	})
+}
+
+function createSession(addrInfo, password, callback) {
 	if (!addrInfo || !addrInfo.addressId || !addrInfo.addressType) { return callback('Please give me an address') }
 	if (!password) { return callback('Please give me a password') }
 	log.debug('create session', addrInfo)
@@ -22,22 +53,32 @@ module.exports = function createSession(addrInfo, password, callback) {
 			}
 			checkPasswordAgainstHash(password, passwordHash, function(err) {
 				if (err) { return callback(err) }
-				log.debug('create session in redis')
-				var authToken = uuid.v4()
-				var expiration = (1 * time.day) / time.seconds // expiration in seconds
-				redis.setex('sess:'+authToken, expiration, personId, function(err) {
+				log('make uid')
+				makeUid(60, function(err, secret) {
 					if (err) { return callback(err) }
-					log.debug('bump client uid block')
-					bumpClientUidBlock(personId, function(err, clientUidBlock) {
+					log('insert session in db')
+					var clientInfo = { foo:'bar' }
+					var sql = 'INSERT INTO session SET personId=?, secret=?, clientInfoJson=?'
+					db.person(personId).insert(sql, [personId, secret, JSON.stringify(clientInfo)], function(err, sessionId) {
 						if (err) { return callback(err) }
-						var sessionInfo = {
-							authToken:authToken,
-							person:person,
-							clientUidBlock:clientUidBlock,
-							config:getClientConfig()
-						}
-						log.debug('session created', sessionInfo)
-						callback(null, sessionInfo)
+						var expiration = (1 * time.day) / time.seconds // expiration in seconds
+						var authToken = secret+':'+sessionId
+						log('add session to redis')
+						redis.setex(createSession.personPrefix+authToken, expiration, personId, function(err) {
+							if (err) { return callback(err) }
+							log.debug('bump client uid block')
+							bumpClientUidBlock(personId, function(err, clientUidBlock) {
+								if (err) { return callback(err) }
+								var sessionInfo = {
+									authorization:'DogoPerson '+authToken,
+									person:person,
+									clientUidBlock:clientUidBlock,
+									config:getClientConfig()
+								}
+								log.debug('session created', sessionInfo)
+								callback(null, sessionInfo)
+							})
+						})
 					})
 				})
 			})

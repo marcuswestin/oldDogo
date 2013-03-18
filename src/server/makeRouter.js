@@ -3,7 +3,6 @@ var fs = require('fs')
 var path = require('path')
 var http = require('http')
 var semver = require('semver')
-var uuid = require('uuid')
 var messageService = require('server/MessageService')
 var setPushAuth = require('server/fn/setPushAuth')
 var getConversations = require('server/fn/getConversations')
@@ -119,9 +118,9 @@ function setupProdProxy(app) {
 var filters = (function makeFilters() {
 	return {
 		oldClients:filterOldClients,
-		session:filterSession,
+		guestRequest:filterGuestRequest,
 		delay:delayRequest,
-		oldClientsAndSession: [filterOldClients, filterSession]
+		dogoApp:[filterOldClients, filterSession]
 	}
 	
 	function filterOldClients(req, res, next) {
@@ -138,19 +137,11 @@ var filters = (function makeFilters() {
 	}
 	
 	function filterSession(req, res, next) {
-		req.authorization = req.headers.authorization || req.param('authorization')
-		authenticateRequest(req, function(err, personId) {
-			if (err) {
-				log('bad auth', req.authorization, req.method, req.url)
-				return next(err)
-			}
-			if (!personId) {
-				log('unauthorized client', req.authorization)
-				return next('Unauthorized')
-			}
-			req.session = { personId:personId }
-			next()
-		})
+		return authenticateRequest.person(req, next)
+	}
+	
+	function filterGuestRequest(req, res, next) {
+		return authenticateRequest.guest(req, next)
 	}
 	
 	function delayRequest(amount) {
@@ -172,8 +163,8 @@ function setupRoutes(app, opts) {
 		requestVerification(params.address, params.name, params.password, params.pictureSecret, curry(respond, req, res))
 	})
 	app.post('/api/register/withAddressVerification', function handleRegisterWithAddressVerification(req, res) {
-		var params = getJsonParams(req, 'verificationId', 'verificationToken', 'password')
-		register.withAddressVerification(params.verificationId, params.verificationToken, params.password, curry(respond, req, res))
+		var params = getJsonParams(req, 'verificationId', 'verificationSecret', 'password')
+		register.withAddressVerification(params.verificationId, params.verificationSecret, params.password, curry(respond, req, res))
 	})
 	app.post('/api/register/withFacebookSession', function handleRegisterWithFacebookSession(req, res) {
 		var params = getJsonParams(req, 'address', 'name', 'password', 'fbSession', 'pictureSecret')
@@ -183,6 +174,15 @@ function setupRoutes(app, opts) {
 		var params = getJsonParams(req, 'address', 'password')
 		createSession(params.address, params.password, wrapRespond(req, res, 'sessionInfo'))
 	})
+	// Guest access
+	app.post('/api/guest/session', function handlePostGuestSession(req, res) {
+		var params = getJsonParams(req, 'conversationId','guestIndex','secret')
+		createSession.forGuest(params.conversationId, params.guestIndex, params.secret, wrapRespond(req, res, 'sessionInfo'))
+	})
+	app.get('/api/guest/messages', filters.guestRequest, function handleGetGuestMessages(req, res) {
+		getMessages.forConversation(req.session.conversationId, wrapRespond(req, res, 'messages'))
+	})
+	
 	app.post('/api/log/app/error', function handleLogAppError(req, res) {
 		var params = getJsonParams(req, 'message')
 		log.info("App error", params.message)
@@ -236,25 +236,25 @@ function setupRoutes(app, opts) {
 		if (params.facebookRequestId) { return respond(req, res, "Sessions for facebook requests is not ready yet. Sorry!") }
 		createSession(req, params.address, params.password, curry(respond, req, res))
 	})
-	app.get('/api/conversations', filters.oldClientsAndSession, function handleGetConversations(req, res) {
+	app.get('/api/conversations', filters.dogoApp, function handleGetConversations(req, res) {
 		getConversations(req, wrapRespond(req, res, 'conversations'))
 	})
-	app.get('/api/contacts', filters.oldClientsAndSession, function handleGetContacts(req, res) {
+	app.get('/api/contacts', filters.dogoApp, function handleGetContacts(req, res) {
 		getUrlParams(req)
 		getContacts(req, curry(respond, req, res))
 	})
-	app.post('/api/contacts', filters.oldClientsAndSession, function handlePostContacts(req, res) {
+	app.post('/api/contacts', filters.dogoApp, function handlePostContacts(req, res) {
 		addContacts(req, curry(respond, req, res))
 	})
-	app.post('/api/addresses', filters.oldClientsAndSession, function handleAddAddresses(req, res) {
+	app.post('/api/addresses', filters.dogoApp, function handleAddAddresses(req, res) {
 		var params = getJsonParams(req, 'newAddresses')
 		addAddresses(req, params.newAddresses, curry(respond, req, res))
 	})
-	app.post('/api/conversation', filters.oldClientsAndSession, function handleCreateConversation(req, res) {
+	app.post('/api/conversation', filters.dogoApp, function handleCreateConversation(req, res) {
 		var params = getJsonParams(req, 'contacts')
 		createConversation(req, params.contacts, wrapRespond(req, res, 'conversation'))
 	})
-	app.post('/api/message', filters.oldClientsAndSession, function handleSendMessage(req, res) {
+	app.post('/api/message', filters.dogoApp, function handleSendMessage(req, res) {
 		var params = getMultipartParams(req, 'toParticipationId', 'clientUid', 'type', 'payload')
 		var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
 		var payloadFile = req.files && req.files.payload
@@ -271,38 +271,38 @@ function setupRoutes(app, opts) {
 			}
 		)
 	})
-	app.get('/api/messages', filters.oldClientsAndSession, function handleGetConversationMessages(req, res) {
+	app.get('/api/messages', filters.dogoApp, function handleGetConversationMessages(req, res) {
 		var params = getUrlParams(req, 'participationId', 'conversationId', 'afterMessageId')
 		getMessages(req.session.personId, parseInt(params.participationId), parseInt(params.conversationId), params.afterMessageId, curry(respond, req, res))
 	})
-	app.post('/api/pushAuth', filters.oldClientsAndSession, function handlePostPushAuth(req, res) {
+	app.post('/api/pushAuth', filters.dogoApp, function handlePostPushAuth(req, res) {
 		var params = getJsonParams(req, 'pushToken', 'pushType')
 		setPushAuth(req.session.personId, params.pushToken, params.pushType,
 			curry(respond, req, res))
 	})
-	app.get('/api/version/info', filters.oldClientsAndSession, function handleGetVersionInfo(req, res) {
+	app.get('/api/version/info', filters.dogoApp, function handleGetVersionInfo(req, res) {
 		var url = null // 'http://marcus.local:9000/api/version/download/latest.tar'
 		respond(req, res, null, { url:url })
 	})
-	app.get('/api/version/download/*', filters.session, function handleDownloadVersion(req, res) {
-		res.writeHead(204)
-		res.end()
-		return
-		log('download version', req.url)
-		fs.readFile(__dirname+'/../../build/dogo-ios-build.tar', function(err, tar) {
-			if (err) { return respond(req, res, err) }
-			log("send download response", tar.length)
-			respond(req, res, null, tar, 'application/x-tar')
-		})
-	})
-	app.get('/api/facebookCanvas/conversation', function handleGetFacebookConversation(req, res) {
-		var params = getUrlParams(req, 'facebookRequestId')
-		messageService.loadFacebookRequestId(params.facebookRequestId, curry(respond, req, res))
-	})
-	app.post('/api/facebookRequests', filters.session, function handleSaveFacebookRequest(req, res) {
-		var params = getJsonParams(req, 'facebookRequestId', 'toPersonId', 'conversationId')
-		messageService.saveFacebookRequest(req.session.personId, params.facebookRequestId, params.toPersonId, params.conversationId, curry(respond, req, res))
-	})
+	// app.get('/api/version/download/*', filters.session, function handleDownloadVersion(req, res) {
+	// 	res.writeHead(204)
+	// 	res.end()
+	// 	return
+	// 	log('download version', req.url)
+	// 	fs.readFile(__dirname+'/../../build/dogo-ios-build.tar', function(err, tar) {
+	// 		if (err) { return respond(req, res, err) }
+	// 		log("send download response", tar.length)
+	// 		respond(req, res, null, tar, 'application/x-tar')
+	// 	})
+	// })
+	// app.get('/api/facebookCanvas/conversation', function handleGetFacebookConversation(req, res) {
+	// 	var params = getUrlParams(req, 'facebookRequestId')
+	// 	messageService.loadFacebookRequestId(params.facebookRequestId, curry(respond, req, res))
+	// })
+	// app.post('/api/facebookRequests', filters.session, function handleSaveFacebookRequest(req, res) {
+	// 	var params = getJsonParams(req, 'facebookRequestId', 'toPersonId', 'conversationId')
+	// 	messageService.saveFacebookRequest(req.session.personId, params.facebookRequestId, params.toPersonId, params.conversationId, curry(respond, req, res))
+	// })
 }
 
 function setupDev(app) {
@@ -319,8 +319,9 @@ function setupDev(app) {
 	app.get('/identity', sendPage('identity'))
 	app.get('/test', sendPage('test'))
 	app.get('/verify', sendPage('verifyAddress'))
-	
+
 	app.get('/app', sendFile('src/client/phone/phoneClient.html', 'text/html'))
+	app.get('/c/*', sendFile('src/client/guest/guestClient.html', 'text/html'))
 	app.get('/favicon.ico', sendFile('src/graphics/website/favicon.png', 'image/png'))
 		
 	app.get('/fonts/*', sendStatic('src'))
@@ -341,7 +342,7 @@ function setupDev(app) {
 		require('blowtorch-node-sdk/'+btModule).setup(app)
 	})
 	
-	app.post('/api/messageDev', filters.oldClientsAndSession, function postMessageDebug(req, res) {
+	app.post('/api/messageDev', filters.dogoApp, function postMessageDebug(req, res) {
 		var params = getJsonParams(req, 'toParticipationId', 'clientUid', 'type', 'payload')
 		messageService.sendMessage(req.session.personId, params.toParticipationId, params.clientUid, params.type, params.payload, null, false,
 			curry(respond, req, res)

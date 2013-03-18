@@ -10,7 +10,11 @@ var sessionInfo = module.exports = {
 
 var sessionInfoDocument = null
 var filename = 'DogoSessionInfo'
-var properties = ['authToken', 'person', 'clientUidBlock', 'config']
+var properties = ([
+	'authorization', 'config', // all clients
+	'person', 'clientUidBlock', // dogo client
+	'address' // guest client
+])
 
 function myAddress() {
 	return { addressType:Addresses.types.dogo, addressId:sessionInfoDocument.person.personId }

@@ -15,8 +15,15 @@ CREATE TABLE message (
 	clientUid BIGINT UNSIGNED NOT NULL,
 	type INT UNSIGNED NOT NULL,
 	payloadJson VARCHAR(2048) NOT NULL,
-	UNIQUE KEY clientUidKey (fromPersonId, clientUid),
 	CONSTRAINT messageConversation FOREIGN KEY (conversationId) REFERENCES conversation(conversationId),
 	PRIMARY KEY (messageId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE guestAccess (
+	conversationId BIGINT UNSIGNED NOT NULL,
+	secret VARCHAR(36) CHARACTER SET latin1 NOT NULL,
+	createdTime INT UNSIGNED NOT NULL,
+	guestIndex SMALLINT UNSIGNED NOT NULL,
+	PRIMARY KEY (conversationId, guestIndex),
+	CONSTRAINT guestAccessConversation FOREIGN KEY (conversationId) REFERENCES conversation(conversationId)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

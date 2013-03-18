@@ -11,9 +11,9 @@ module.exports = function requestVerification(address, name, password, pictureSe
 	
 	parallel(_lookupAddress, _hashPassword, function(err, addrInfo, passwordHash) {
 		if (err) { return callback(err) }
-		lookupService.createAddressVerification(passwordHash, name, address, pictureSecret, function(err, verificationId, verificationToken) {
+		lookupService.createAddressVerification(passwordHash, name, address, pictureSecret, function(err, verificationId, verificationSecret) {
 			if (err) { return callback(err) }
-			var verifyParams = { i:verificationId, t:verificationToken }
+			var verifyParams = { i:verificationId, s:verificationSecret }
 			verifyParams[address.addressType] = address.addressId
 			var verifyLink = gConfig.serverUrl+'/verify?'+url.query.string(verifyParams)
 			var text = 'Please verify your email address by visiting this link: '+verifyLink

@@ -219,7 +219,7 @@ events.on('app.didOpenUrl', function(info) {
 		if (sessionInfo.authToken) {
 			// adding address
 		} else {
-			api.post('api/register/withAddressVerification', { password:password, verificationId:urlParams.i, verificationToken:urlParams.t }, function(err, res) {
+			api.post('api/register/withAddressVerification', { password:password, verificationId:urlParams.i, verificationSecret:urlParams.t }, function(err, res) {
 				if (err) { return alert(api.error(err)) }
 				api.post('api/session', { address:address, password:verificationInfo.password }, function(err, res) {
 					if (err) { return alert(api.error(err)) }

@@ -59,20 +59,47 @@ function _onApnsError(errorCode, push) {
 	log.error("WARNING apn error", { error:{ code:errorCode, name:errorNames[errorCode] }, push:push })
 }
 
-function sendMessagePush(address, pushFromName, message, prodPush) {
-	if (Addresses.isDogo(address)) {
-		_sendPushNotification(address.addressId, pushFromName, message, prodPush)
-	} else if (Addresses.isEmail(address)) {
-		_sendEmailNotification(address.addressId, pushFromName, message)
-	} else if (Addresses.isPhone(address)) {
-		_sendPhoneNotification(address.addressId, pushFromName, message)
-	} else if (Addresses.isFacebook(address)) {
-		log.warn("TODO Fix send to facebook")
+function sendMessagePush(people, dogoRecipients, externalRecipients, pushFromName, message, prodPush, callback) {
+	parallel(_notifyDogoRecipients, _notifyExternalRecipients, callback)
+
+	function _notifyDogoRecipients(callback) {
+		asyncEach(dogoRecipients, {
+			parallel:true,
+			finish:callback,
+			iterate:function(personId, callback) {
+				_sendPushNotification(personId, pushFromName, message, prodPush, callback)
+			}
+		})
+	}
+
+	function _notifyExternalRecipients(callback) {
+		if (!externalRecipients.length) { return callback() }
+		log('send external message notifications', externalRecipients, message)
+		asyncEach(externalRecipients, {
+			parallel:true,
+			finish:function() { log('done sending external message notifications') },
+			iterate:function(addrInfo, callback) {
+				var sql = 'SELECT secret FROM guestAccess WHERE conversationId=? AND guestIndex=?'
+				db.conversation(message.conversationId).selectOne(sql, [message.conversationId, addrInfo.guestIndex], function(err, guestAccess) {
+					if (err) { return callback(err) }
+					var secret = guestAccess.secret
+					var toAddress = people[addrInfo.guestIndex]
+					if (Addresses.isEmail(toAddress)) {
+						_sendEmailNotification(toAddress.addressId, addrInfo.guestIndex, secret, pushFromName, message, callback)
+					} else if (Addresses.isPhone(toAddress)) {
+						_sendPhoneNotification(toAddress.addressId, addrInfo.guestIndex, secret, pushFromName, message, callback)
+					} else if (Addresses.isFacebook(toAddress)) {
+						log.warn("TODO Fix send to facebook")
+						return callback("Cant push to facebook yet")
+					}
+				})
+			}
+		})
 	}
 }
 
-function _sendPhoneNotification(phoneNumber, pushFromName, message) {
-	var url = ' '+_conversationUrl(message)
+function _sendPhoneNotification(phoneNumber, guestIndex, secret, pushFromName, message, callback) {
+	var url = ' '+_conversationUrl(message, guestIndex, secret)
 	var maxLength = 160 - (gConfig.dev ? 'Sent from the Twilio Sandbox Number - '.length : 0)
 	var remaining = maxLength - pushFromName.length - url.length
 	if (remaining < 2) {  }
@@ -100,15 +127,15 @@ function _sendPhoneNotification(phoneNumber, pushFromName, message) {
 	var smsText = pushFromName+body+url
 	
 	log.info("sending sms", phoneNumber, smsText)
-	sendSms(phoneNumber, smsText, function(err) {
-		if (err) { return log.error('Could not send sms', phoneNumber, message) }
-	})
+	sendSms(phoneNumber, smsText, callback)
 }
 
-function _conversationUrl(message) { return gConfig.serverUrl+'/c/'+message.conversationId }
+function _conversationUrl(message, guestIndex, secret) {
+	return [gConfig.serverUrl, 'c', message.conversationId, guestIndex, secret].join('/')
+}
 
-function _sendEmailNotification(emailAddress, pushFromName, message) {
-	var convUrl = _conversationUrl(message)
+function _sendEmailNotification(emailAddress, guestIndex, secret, pushFromName, message, callback) {
+	var convUrl = _conversationUrl(message, guestIndex, secret)
 	var content = null
 	
 	if (Messages.isText(message)) {
@@ -116,8 +143,8 @@ function _sendEmailNotification(emailAddress, pushFromName, message) {
 		var plainText = DogoText.getPlainText(dogoText)
 		content = {
 			subject: plainText.length > 40 ? plainText.substr(0, 40) + '...' : plainText,
-			text:plainText,
-			html:DogoText.getHtml(dogoText)
+			text:plainText + '\n' + convUrl,
+			html:DogoText.getHtml(dogoText) + '<br><a href="'+convUrl+'">' + convUrl + '</a>'
 		}
 	} else if (Messages.isPicture(message)) {
 		content = {
@@ -141,23 +168,26 @@ function _sendEmailNotification(emailAddress, pushFromName, message) {
 	})
 }
 
-function _sendPushNotification(toPersonId, pushFromName, message, prodPush) {
+function _sendPushNotification(toPersonId, pushFromName, message, prodPush, callback) {
 	log.info('send message push', toPersonId, pushFromName, message, prodPush)
 	if (disabled) { log.debug('(disabled - skipping message push)'); return }
 	if (!toPersonId) { return log.error('No person id', arguments) }
-	db.people(toPersonId).selectOne('SELECT pushJson FROM person WHERE personId=?', [toPersonId], function(err, res) {
-		if (err) {
-			log.error(err)
-			return
-		}
+	db.person(toPersonId).selectOne('SELECT pushJson FROM person WHERE personId=?', [toPersonId], function(err, res) {
+		if (err) { return callback(err) }
 		var pushInfoList = jsonList(res.pushJson)
 		var pushInfo = last(pushInfoList)
 		if (!pushInfo) { return log.info('No push token for', toPersonId, message.messageId) }
 		
-		if (pushInfo.type != 'ios') { return log.warn('Unknown push type', pushInfo) }
+		if (pushInfo.type != 'ios') {
+			log.error('unknown push type', pushInfo)
+			return callback('Unknown push type: ' + pushInfo.type)
+		}
 		
 		var payload = Messages.encodeForPush(message, pushFromName)
-		if (!payload) { return log.error("Could not encode payload", message, toPersonId, pushFromName) }
+		if (!payload) {
+			log.error('could not encode payload', message, toPersonId, pushFromName)
+			return callback("Could not encode payload")
+		}
 		
 		var notification = new apns.Notification()
 		notification.device = new apns.Device(pushInfo.token)
@@ -166,5 +196,7 @@ function _sendPushNotification(toPersonId, pushFromName, message, prodPush) {
 		log.debug('do send', toPersonId)
 		var connection = prodPush ? apnsConnections.prod : apnsConnections.sandbox
 		connection.sendNotification(notification)
+		
+		callback() // we don't get notified of success
 	})
 }

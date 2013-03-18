@@ -49,7 +49,7 @@ module.exports = function claimVerifiedAddresses(addrInfos, personId, name, call
 				},
 				function _getConversationSummary(proceed) {
 					var sql = 'SELECT lastMessageTime, recentJson, picturesJson FROM participation WHERE personId=? AND conversationId=?'
-					db.people(firstPersonId).selectOne(sql, [people[0].personId, conversationId], proceed)
+					db.person(firstPersonId).selectOne(sql, [people[0].personId, conversationId], proceed)
 				},
 				function finish(err, _, summary) {
 					if (err) { return callback(err) }
@@ -62,7 +62,7 @@ module.exports = function claimVerifiedAddresses(addrInfos, personId, name, call
 			
 			function _setConversationPeople(conversationId, peopleJson, callback) {
 				var sql = 'UPDATE conversation SET peopleJson=? WHERE conversationId=?'
-				db.conversations(conversationId).updateOne(sql, [peopleJson, conversationId], callback)
+				db.conversation(conversationId).updateOne(sql, [peopleJson, conversationId], callback)
 			}
 			function _setParticipationsPeopleJson(conversationId, people, peopleJson, callback) {
 				asyncEach(people, {
@@ -70,13 +70,13 @@ module.exports = function claimVerifiedAddresses(addrInfos, personId, name, call
 					finish:function(err) { callback(err) },
 					iterate:function(person, next) {
 						var sql = 'UPDATE participation SET peopleJson=? WHERE personId=? AND conversationId=?'
-						db.people(person.personId).updateOne(sql, [peopleJson, person.personId, conversationId], callback)
+						db.person(person.personId).updateOne(sql, [peopleJson, person.personId, conversationId], callback)
 					}
 				})
 			}
 			function _createParticipation(personId, conversationId, summary, peopleJson, callback) {
 				var lastTime = summary.lastMessageTime
-				db.people(personId).insertIgnoreDuplicate('INSERT INTO participation SET '+
+				db.person(personId).insertIgnoreDuplicate('INSERT INTO participation SET '+
 					'personId=?, conversationId=?, lastMessageTime=?, lastReceivedTime=?, recentJson=?, picturesJson=?, peopleJson=?',
 					[personId, conversationId, lastTime, lastTime, summary.recentJson, summary.picturesJson, peopleJson],
 					callback
@@ -87,7 +87,7 @@ module.exports = function claimVerifiedAddresses(addrInfos, personId, name, call
 	
 	function _getConversationPeople(conversationId, callback) {
 		var sql = 'SELECT peopleJson FROM conversation WHERE conversationId=?'
-		db.conversations(conversationId).selectOne(sql, [conversationId], function(err, conversation) {
+		db.conversation(conversationId).selectOne(sql, [conversationId], function(err, conversation) {
 			if (err) { return callback(err) }
 			callback(null, jsonList(remove(res, 'peopleJson'))) // [{ personId:personId, name:personName }, ...]
 		})

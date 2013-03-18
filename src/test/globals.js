@@ -15,8 +15,8 @@ clientUid._unique = new Date().getTime()
 
 var request = require('request')
 api = {
-	post: function(path, params, callback) { api.send('post', path, params, callback) },
-	get: function(path, params, callback) { api.send('get', path, params, callback) },
+	post: function(path, params, callback) { api.send('POST', path, params, callback) },
+	get: function(path, params, callback) { api.send('GET', path, params, callback) },
 	send: function(method, path, params, callback) {
 		if (!callback) {
 			callback = params

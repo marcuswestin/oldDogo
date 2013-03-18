@@ -1,16 +1,14 @@
 require('client/misc/clientGlobals')
 
+Conversations = require('client/state/Conversations')
+Contacts = require('client/state/Contacts')
+
+
 var connect = require('client/phone/connect/connect')
 var phoneViews = {
 	home: require('client/phone/views/phoneHomeView'),
 	conversation: require('client/phone/views/phoneConversationView')
 }
-
-units = unit = 8
-unit2 = unit*2
-unit3 = unit*3
-unit4 = unit*4
-unit5 = unit*5
 
 keyboardHeight = 216
 
@@ -29,7 +27,6 @@ $(document).on('touchstart', 'input', function() {
 })
 
 events.on('app.start', startPhoneClient)
-
 bridge.init()
 
 var clientSchema = require('client/database/clientSchema')
@@ -65,15 +62,16 @@ function firstTimeSetup() {
 }
 
 function renderPhoneClient() {
+	appBg = { backgroundImage:'url('+graphics.url('background', 100, 100)+')', backgroundSize:'50px 50px' }
 	$('#viewport')
 		.css(viewport.size()).css({ overflow:'hidden' })
-		.append(div({ id:'centerFrame' }, style(viewport.size())))
+		.append(div({ id:'centerFrame' }, style(appBg, viewport.size())))
 		.append(div({ id:'southFrame' }, style({ width:viewport.width(), height:0, position:'absolute', top:viewport.height() })))
 	
 	parallel(sessionInfo.load, loadViewStack, function(err, _, viewStack) {
 		if (err) { return error('There was an error starting the app. Please re-install it. Sorry.') }
 
-		if (sessionInfo.authToken) {
+		if (sessionInfo.person) {
 			renderSignedInApp(sessionInfo, viewStack)
 		} else {
 			$('#centerFrame').empty().append(connect.render(viewStack))
@@ -106,10 +104,9 @@ function renderSignedInApp(sessionInfo, viewStack) {
 		stack:viewStack
 	})
 	
-	appBg = { backgroundImage:'url('+graphics.url('background', 100, 100)+')' }
 	$('#centerFrame').empty().append(
 		div({ id:'appBackground' }, style(viewport.getSize(), absolute(0,0))),
-		div({ id:'appForeground' }, style(viewport.getSize(), appBg, translate(0,0)), gScroller)
+		div({ id:'appForeground' }, style(viewport.getSize(), translate(0,0)), gScroller)
 	)
 }
 

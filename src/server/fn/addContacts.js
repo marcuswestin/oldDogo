@@ -7,7 +7,7 @@ module.exports = function addContacts(req, callback) {
 		finish:callback,
 		iterate:function(contact, next) {
 			var sql = 'INSERT INTO contact SET personId=?, contactUid=?, addressType=?, addressId=?, createdTime=?, name=?'
-			db.people(personId).insertIgnoreId(sql, [personId, contact[0], contact[1], contact[2], contact[3], contact[4]], next)
+			db.person(personId).insertIgnoreId(sql, [personId, contact[0], contact[1], contact[2], contact[3], contact[4]], next)
 		}
 	})
 }

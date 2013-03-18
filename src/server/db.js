@@ -7,8 +7,8 @@ var each = require('std/each')
 
 var Database = module.exports = {
 	configure:configure,
-	people:getPersonShard,
-	conversations:getConversationShard,
+	person:getPersonShard,
+	conversation:getConversationShard,
 	lookup:getLookupShard
 }
 

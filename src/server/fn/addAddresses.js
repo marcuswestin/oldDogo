@@ -9,7 +9,7 @@ module.exports = function addAddresses(req, newAddresses, callback) {
 			}
 			var people = [newAddress]
 			var sql = 'INSERT INTO participation SET personId=?, peopleJson=?'
-			db.people(personId).insert(sql, [personId, JSON.stringify(people)], function(err, participationId) {
+			db.person(personId).insert(sql, [personId, JSON.stringify(people)], function(err, participationId) {
 				if (err) { return next(err) }
 				next(null, { participationId:participationId, people:people, recent:[], pictures:[] })
 			})

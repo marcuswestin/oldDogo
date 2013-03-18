@@ -32,11 +32,9 @@ repeat = require('std/repeat')
 last = require('std/last')
 round = require('std/round')
 
+sessionInfo = require('client/state/sessionInfo')
 Documents = require('client/state/Documents')
 Caches = require('client/state/Caches')
-sessionInfo = require('client/state/sessionInfo')
-Conversations = require('client/state/Conversations')
-Contacts = require('client/state/Contacts')
 
 api = require('client/misc/api')
 bridge = require('client/misc/bridge')
@@ -105,8 +103,13 @@ var ulTag = tags('ul')
 var liTag = tags('li')
 ul = function() { return ulTag(map(arguments, function(content) { return liTag('tags-ul-li', content) })) }
 
-spacing = 8
+units = unit = 8
+unit2 = unit*2
+unit3 = unit*3
+unit4 = unit*4
+unit5 = unit*5
 resolution = window.devicePixelRatio
+
 remove = function(obj, prop) { var val = obj[prop]; delete obj[prop]; return val }
 after = function(duration, fn) { setTimeout(fn, duration) }
 gConfigure = function(config) { Payloads.configure(config.Payloads) }
@@ -125,11 +128,11 @@ events.on('app.start', function() {
 	connectButton = [style({ display:'block', padding:px(unit*1.5), margin:px(2*unit, 4*unit), border:'1px solid rgba(255,255,255,.5)' }), listMenuArrow]
 
 	events.on('app.error', function(info) {
-		api.post('api/log/app/error', info, function(){})
+		api.post('/api/log/app/error', info, function(){})
 	})
 	var oldLog = console.log
 	console.log = function() {
 		oldLog.apply(console, arguments)
-		api.post('api/log/app/console', { args:slice(arguments, 0) }, function(){})
+		api.post('/api/log/app/console', { args:slice(arguments, 0) }, function(){})
 	}
 })

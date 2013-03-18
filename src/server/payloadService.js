@@ -1,5 +1,4 @@
 var aws2js = require('aws2js')
-var uuid = require('uuid')
 
 var log = makeLog('payloadService')
 
@@ -30,16 +29,20 @@ function makeRedirect(fromPath, toUrl, callback) {
 }
 
 function uploadPayload(personId, type, payloadFile, callback) {
-	var secret = uuid.v4()
-	var path = Payloads.path(personId, secret, type)
-	_doUpload(type, path, payloadFile, function(err) { callback(err, secret) })
+	makeUid(36, function(err, secret) {
+		if (err) { return callback(err) }
+		var path = Payloads.path(personId, secret, type)
+		_doUpload(type, path, payloadFile, function(err) { callback(err, secret) })
+	})
 }
 
 function uploadPersonPicture(pictureFile, callback) {
 	if (!pictureFile) { return callback('Missing picture') }
-	var secret = uuid.v4()
-	var path = Payloads.underlyingPersonPicturePath(secret)
-	_doUpload('picture', path, pictureFile, function(err) { callback(err, secret) })
+	makeUid(36, function(err, secret) {
+		if (err) { return callback(err) }
+		var path = Payloads.underlyingPersonPicturePath(secret)
+		_doUpload('picture', path, pictureFile, function(err) { callback(err, secret) })
+	})
 }
 
 function _doUpload(type, path, file, callback) {

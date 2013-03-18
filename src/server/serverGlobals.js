@@ -18,6 +18,7 @@ isArray = require('std/isArray')
 inverse = require('std/inverse')
 last = require('std/last')
 now = function() { return Math.floor(time.now() / time.second) }
+makeUid = require('server/makeUid')
 
 Addresses = require('data/Addresses')
 Payloads = require('data/Payloads')

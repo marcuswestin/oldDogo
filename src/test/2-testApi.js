@@ -38,7 +38,7 @@ setup('Email registration', function() {
 	})
 	then('register with verification', function(done) {
 		var verParams = url(devVerifyLink).getSearchParams()
-		api.post('api/register/withAddressVerification', { password:testPerson.password, verificationToken:verParams.t, verificationId:verParams.i }, function(err, res) {
+		api.post('api/register/withAddressVerification', { password:testPerson.password, verificationSecret:verParams.s, verificationId:verParams.i }, function(err, res) {
 			check(err)
 			has(res.person, { name:testPerson.name })
 			done()

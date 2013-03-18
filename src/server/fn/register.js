@@ -11,7 +11,7 @@ module.exports = {
 	withFacebookSession:withFacebookSession
 }
 
-function withAddressVerification(verificationId, verificationToken, password, callback) {
+function withAddressVerification(verificationId, verificationSecret, password, callback) {
 	_getMatchingVerification(function(err, verInfo) {
 		if (err) { return callback(err) }
 		var addresses = [{ addressId:verInfo.addressId, addressType:verInfo.addressType }]
@@ -26,7 +26,7 @@ function withAddressVerification(verificationId, verificationToken, password, ca
 	})
 	
 	function _getMatchingVerification(callback) {
-		lookupService.getAddressVerification(verificationId, verificationToken, function(err, verification) {
+		lookupService.getAddressVerification(verificationId, verificationSecret, function(err, verification) {
 			if (err) { return callback(err) }
 			checkPasswordAgainstHash(password, verification.passwordHash, function(err) {
 				if (err) { return callback(err) }
@@ -104,14 +104,14 @@ function _createPersonWithVerifiedAddresses(name, passwordHash, pictureUrl, addr
 				finish:callback,
 				iterate:function(address, callback) {
 					var sql = 'INSERT INTO address SET personId=?, addressType=?, addressId=?, createdTime=?, verifiedTime=?'
-					db.people(personId).insertIgnoreId(sql, [personId, address.addressType, address.addressId, requestTime, requestTime], callback)
+					db.person(personId).insertIgnoreId(sql, [personId, address.addressType, address.addressId, requestTime, requestTime], callback)
 				}
 			})
 		}
 	})
 	function _createPerson(callback) {
 		var sql = 'INSERT INTO person SET joinedTime=?, name=?, passwordHash=?, birthdate=?, locale=?, gender=?'
-		db.people.randomShard().insert(sql, [requestTime, name, passwordHash, opts.birthdate, opts.locale, opts.gender], callback)
+		db.person.randomShard().insert(sql, [requestTime, name, passwordHash, opts.birthdate, opts.locale, opts.gender], callback)
 	}
 	function _lookupAddresses(callback) {
 		asyncMap(addresses, {

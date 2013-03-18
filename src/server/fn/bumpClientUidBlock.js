@@ -1,6 +1,6 @@
 module.exports = function bumpClientUidBlock(personId, callback) {
 	var clientUidBlockSize = 100000
-	db.people(personId).transact(function(err, tx) {
+	db.person(personId).transact(function(err, tx) {
 		if (err) { return callback(err) }
 		callback = tx.wrapCallback(callback)
 		var sql = 'SELECT lastClientUidBlockStart AS start, lastClientUidBlockEnd AS end FROM person WHERE personId=?'

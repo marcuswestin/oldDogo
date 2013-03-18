@@ -65,6 +65,7 @@ function mergeInFacebookFriends(callback) {
 }
 
 function mergeInAddressBook(callback) {
+	overlay.show('Reading contacts from cloud...')
 	_updateFromServer(function(err) {
 		if (err) { return callback(err) }
 		overlay.show('Reading contacts from address book...')

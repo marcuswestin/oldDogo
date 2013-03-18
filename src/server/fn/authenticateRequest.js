@@ -1,31 +1,41 @@
 var redis = require('server/redis')
+var createSession = require('server/fn/createSession')
 
-module.exports = function authenticateRequest(req, callback) {
-	if (!req.authorization) { return callback('Unauthorized') }
+module.exports = {
+	person: authenticateDogoPerson,
+	guest: authenticateDogoGuest
+}
 
-	try {
-		var parts = req.authorization.split(' ')
-		if (parts.length != 2) {
-			log.warn('Saw bad auth', req.authorization)
-			return callback('Bad auth')
-		}
-		
-		var scheme = parts[0]
-		if (scheme != 'Basic') {
-			return callback('Unknown auth scheme - expected "Basic"')
-		}
-		
-		var authToken = new Buffer(parts[1], 'base64').toString()
-	} catch(e) {
-		log.warn(e)
-		return callback('Error parsing auth: '+ req.authorization)
-	}
-	
-	redis.get('sess:'+authToken, function(err, personIdStr) {
+function getAuthToken(req, authRegex) {
+	var authorization = req.headers.authorization || req.param('authorization')
+	if (!authorization) { return null }
+	if (!authRegex.test(authorization)) { return callback('Bad auth') }
+	return authorization.split(' ')[1]
+}
+
+var authPersonRegex = /^DogoPerson \S+/
+function authenticateDogoPerson(req, callback) {
+	var authToken = getAuthToken(req, authPersonRegex)
+	redis.get(createSession.personPrefix+authToken, function(err, personIdStr) {
 		if (err) { return callback(err) }
-		var personId = personIdStr && parseInt(personIdStr)
-		if (!personId) { return callback('Unauthorized') }
-		callback(null, personId)
+		req.session = { personId:parseInt(personIdStr) }
+		if (!req.session.personId) { return callback('Unauthorized') }
+		callback()
 	})
 }
 
+var authGuestRegex = /^DogoGuest \S+/
+function authenticateDogoGuest(req, callback) {
+	var authToken = getAuthToken(req, authGuestRegex)
+	if (!authToken) { return callback('Bad auth') }
+	var parts = authToken.split(':')
+	if (parts.length != 2) { return callback('Bad auth') }
+	var secret = parts[0]
+	var conversationId = parseInt(parts[1])
+	redis.get(createSession.guestPrefix+authToken, function(err, addressLookupIdStr) {
+		var addressLookupId = parseInt(addressLookupIdStr)
+		if (!addressLookupId) { return callback('Unauthorized') }
+		req.session = { addressLookupId:parseInt(addressLookupIdStr), conversationId:conversationId }
+		callback()
+	})
+}

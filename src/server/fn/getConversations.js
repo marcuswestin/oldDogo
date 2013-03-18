@@ -6,7 +6,7 @@ getConversations.getOne = getOneConversation
 function getConversations(req, callback) {
 	var personId = req.session.personId
 	var sql = selectParticipationsSql+' WHERE personId=? ORDER BY lastMessageTime DESC, conversationId DESC'
-	db.people(personId).select(sql, [personId], function(err, participations) {
+	db.person(personId).select(sql, [personId], function(err, participations) {
 		if (err) { return callback(err) }
 		each(participations, _fixParticipation)
 		callback(null, participations)
@@ -15,7 +15,7 @@ function getConversations(req, callback) {
 
 function getOneConversation(personId, conversationId, callback) {
 	var sql = selectParticipationsSql+' WHERE personId=? AND conversationId=?'
-	db.people(personId).selectOne(sql, [personId, conversationId], function(err, participation) {
+	db.person(personId).selectOne(sql, [personId, conversationId], function(err, participation) {
 		if (err) { return callback(err) }
 		_fixParticipation(participation)
 		callback(err, participation)

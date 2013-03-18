@@ -87,7 +87,7 @@ function startApp(info) {
 		if (gIsPhantom) {
 			// api.refresh('fa48a930-5e94-4f18-b180-998728a5fe85', startLoggedInApp)
 			bridge.command('app.show', { fade:0 })
-		} else if (gState.getSessionInfo('authToken')) {
+		} else if (gState.getSessionInfo('person')) {
 			bridge.command('app.show', { fade:.95 })
 			startLoggedInApp(gState.getSessionInfo())
 		} else {

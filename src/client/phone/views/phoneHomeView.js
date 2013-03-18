@@ -30,7 +30,7 @@ function renderHead() {
 			var offset = viewport.width() - showing
 			$('#appForeground').css(translate.x(offset, duration))
 			$('#appBackground').empty().append(
-				div(style({ width:viewport.width(), height:viewport.height(), background:'#fff' }),
+				div(style({ width:viewport.width(), height:viewport.height() }),
 					div(style(absolute(offset, 0), { zIndex:2, width:showing, height:viewport.height() }), button(toggleBackground)),
 					div(style({ textAlign:'center' }),
 						div('button', 'Reset', button(clearState), style({ display:'inline-block', width:120 }, unitPadding(1,1.5), translate.y(200)))

@@ -10,7 +10,7 @@ function getMessages(personId, participationId, conversationId, afterMessageId, 
 	
 	function _checkPermission(callback) {
 		var sql = 'SELECT conversationId FROM participation WHERE personId=? AND participationId=? AND conversationId=?'
-		db.people(participationId).selectOne(sql, [personId, participationId, conversationId], function(err, res) {
+		db.person(participationId).selectOne(sql, [personId, participationId, conversationId], function(err, res) {
 			if (err) { return callback(err) }
 			if (!res) { return callback('Unknown conversation') }
 			callback(null, null)
@@ -28,14 +28,14 @@ function getMessages(personId, participationId, conversationId, afterMessageId, 
 	function _updateParticipationLastRead(lastMessage) {
 		if (!lastMessage) { return }
 		var sql = 'UPDATE participation SET lastReadTime=? WHERE personId=? AND participationId=?'
-		db.people(participationId).updateOne(sql, [now(), personId, participationId], function(err) {
+		db.person(participationId).updateOne(sql, [now(), personId, participationId], function(err) {
 			if (err) { log.error('Could not update participation lastReadTime', personId, participationId, conversationId, err) }
 		})
 	}
 }
 
-function getMessagesForConversation(conversationId, afterMessageId, callback) {
+function getMessagesForConversation(conversationId, callback) {
 	log.debug('select messages', conversationId)
-	var sql = 'SELECT messageId, fromPersonId, clientUid, conversationId, type, postedTime, payloadJson FROM message WHERE conversationId=? AND messageId>? ORDER BY messageId'
-	db.conversations(conversationId).select(sql, [conversationId, afterMessageId || 0], callback)
+	var sql = 'SELECT messageId, fromPersonId, clientUid, conversationId, type, postedTime, payloadJson FROM message WHERE conversationId=? ORDER BY messageId'
+	db.conversation(conversationId).select(sql, [conversationId || 0], callback)
 }
