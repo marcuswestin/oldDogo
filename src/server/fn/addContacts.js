@@ -1,8 +1,6 @@
-module.exports = function addContacts(req, callback) {
-	var params = getJsonParams(req, 'contactsList')
-	var personId = req.session.personId
-	if (!params.contactsList) { return callback() }
-	asyncEach(params.contactsList, {
+module.exports = function addContacts(personId, contactsList, callback) {
+	if (!contactsList) { return callback() }
+	asyncEach(contactsList, {
 		parallel:1,
 		finish:callback,
 		iterate:function(contact, next) {

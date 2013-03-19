@@ -36,6 +36,6 @@ function getMessages(personId, participationId, conversationId, afterMessageId, 
 
 function getMessagesForConversation(conversationId, afterMessageId, callback) {
 	log.debug('select messages', conversationId)
-	var sql = 'SELECT messageId, fromPersonId, clientUid, conversationId, type, postedTime, payloadJson FROM message WHERE conversationId=? AND messageId>? ORDER BY messageId'
+	var sql = 'SELECT messageId, fromPersonId, clientUid, fromGuestIndex, conversationId, type, postedTime, payloadJson FROM message WHERE conversationId=? AND messageId>? ORDER BY messageId'
 	db.conversation(conversationId).select(sql, [conversationId, afterMessageId || 0], callback)
 }

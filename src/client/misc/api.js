@@ -47,7 +47,7 @@ function send(method, path, params, callback) {
 		method:method,
 		url:getPath(path),
 		headers:headers,
-		params:params,
+		jsonParams:params,
 		callback:callback
 	})
 }
@@ -57,7 +57,7 @@ function sendRequest(opts) {
 		type:opts.method,
 		url:opts.url,
 		headers:opts.headers,
-		data:opts.params,
+		data:opts.jsonParams,
 		success:function(res, textStatus, jqXhr) {
 			handleResponse(jqXhr, opts.url, opts.callback, null, res)
 		},

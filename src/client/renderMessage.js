@@ -3,6 +3,9 @@ module.exports = renderMessage
 var lastMessage
 events.on('view.changing', function() { lastMessage = null })
 function renderMessage(message, person) {
+	if (message.fromGuestIndex) {
+		return div(null, 'Guest message', message.fromGuestIndex)
+	}
 	var isNewPerson = !lastMessage || (lastMessage.fromPersonId != message.fromPersonId)
 	var isNewTime = !lastMessage || (Math.abs(lastMessage.postedTime - message.postedTime) > (3 * time.hours))
 	var makeNewCard = isNewPerson || isNewTime

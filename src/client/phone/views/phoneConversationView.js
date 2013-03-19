@@ -101,7 +101,7 @@ function _getMessagePerson(message) {
 
 /* Events
  ********/
-events.on('message.sending', function(message) {
+events.on('message.sending', function renderSendingMessage(message) {
 	list.append(message)
 })
 

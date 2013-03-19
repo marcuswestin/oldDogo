@@ -20,10 +20,11 @@ function getTableSchemas() {
 		,
 		'CREATE TABLE IF NOT EXISTS message (' + [
 			'messageId BIGINT UNSIGNED DEFAULT NULL',
-			'fromPersonId BIGINT UNSIGNED NOT NULL',
+			'fromPersonId BIGINT UNSIGNED DEFAULT NULL',
+			'clientUid BIGINT UNSIGNED DEFAULT NULL',
+			'fromGuestIndex TINYINT UNSIGNED DEFAULT NULL',
 			'conversationId BIGINT UNSIGNED NOT NULL',
 			'postedTime INT UNSIGNED NOT NULL',
-			'clientUid BIGINT UNSIGNED NOT NULL',
 			'type INT UNSIGNED NOT NULL',
 			'payloadJson VARCHAR(2048) NOT NULL',
 			'PRIMARY KEY (fromPersonId, clientUid)',

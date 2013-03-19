@@ -32,11 +32,12 @@ function init(conversationId, guestIndex, secret, callback) {
 			div(style(unitPadding(1/2, 1), { background:headBg, textAlign:'center', color:'#fff', fontSize:24 }),
 				div(graphic('headLogoName', 80, 40))
 			),
-			list
+			list,
+			div(style({ height:unit*10 })) // foot padding
 		),
 		
-		div({ id:'centerFrameFoot' }, style({ position:'fixed', bottom:0, left:0, zIndex:2, width:'100%' }),
-			phoneConversationTools.renderFoot({ conversation:{ conversationId:conversationId } }, { text:true, height:40 })
+		div({ id:'centerFrameFoot' }, style({ position:'fixed', bottom:0, zIndex:2, width:'100%' }),
+			phoneConversationTools.renderFoot({ conversation:{ conversationId:conversationId } }, { text:true, microphone:true, height:40 })
 		),
 		
 		div({ id:'southFrame' }, style({ position:'fixed', background:'#fff', zIndex:2 }))

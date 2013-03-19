@@ -142,13 +142,13 @@
 - (void)_send:(NSDictionary*)data payload:(NSData*)payload responseCallback:(BTCallback)responseCallback {
     NSString* url = data[@"url"];
     NSDictionary* headers = data[@"headers"];
-    NSDictionary* params = data[@"params"];
+    NSDictionary* jsonParams = data[@"jsonParams"];
     NSString* boundary = data[@"boundary"];
     NSDictionary* attachments = nil;
     if (payload) {
         attachments = @{ @"payload":payload };
     }
-    [BTNet post:url json:params attachments:attachments headers:headers boundary:boundary responseCallback:responseCallback];
+    [BTNet post:url jsonParams:jsonParams attachments:attachments headers:headers boundary:boundary responseCallback:responseCallback];
 }
 
 @end

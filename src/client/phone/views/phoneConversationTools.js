@@ -47,7 +47,7 @@ function _textTool(toolHeight, barHeight) {
 	})
 	
 	var textSpacing = unit*2
-	return div(style({ height:keyboardHeight + toolHeight, background:'#fff' }),
+	return div(style({ height:keyboardHeight + toolHeight + barHeight, background:'#fff' }),
 		div(style({ position:'absolute', top:-textSpacing, height:textSpacing, width:'100%', background:'#fff' }),
 			div({ id:textId, contentEditable:'true' }, style(unitPadding(1), scrollable.y, transition('opacity', duration/2), {
 					position:'absolute', bottom:textSpacing, '-webkit-user-select':'auto', maxHeight:26*units,
@@ -264,10 +264,19 @@ events.on('view.changing', _hideCurrentTool)
 function sendMessage(type, data) {
 	_withConversation(function(err) {
 		if (err) { return error(err) }
-		sessionInfo.getClientUid(function(err, clientUid) {
-			if (err) { return error(err) }
-			var message = { toParticipationId:view.conversation.participationId, fromPersonId:sessionInfo.person.personId, clientUid:clientUid, type:type }
-			var commandData = { method:"POST", url:api.getUrl('api/message'), headers:api.getHeaders(), boundary: '________dgmltprtbndr', params:message }
+		if (sessionInfo.person) {
+			sessionInfo.getClientUid(function(err, clientUid) {
+				if (err) { return error(err) }
+				doSend({ clientUid:clientUid, fromPersonId:sessionInfo.person.personId })
+			})
+		} else {
+			doSend({ fromGuestIndex:sessionInfo.guestIndex })
+		}
+		function doSend(message) {
+			message.type = type
+			message.conversationId = parseInt(view.conversation.conversationId)
+			var jsonParams = { message:message }
+			var commandData = { method:"POST", url:api.getUrl('api/message'), headers:api.getHeaders(), boundary: '________dgmltprtbndr', jsonParams:jsonParams }
 			var preview = null
 
 			if (Messages.isAudio(message)) {
@@ -287,11 +296,11 @@ function sendMessage(type, data) {
 			} else {
 				return error('Unknown message type ' + type)
 			}
-
+			
 			bridge.command('message.send', commandData, onResponse)
 			message.preview = preview // set message.preview after command has been sent to avoid sending the preview to the server
 			events.fire('message.sending', message)
-		})
+		}
 
 		function onResponse(err, res) {
 			if (err) { return error(err) }

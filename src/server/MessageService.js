@@ -10,22 +10,30 @@ module.exports = {
 	loadFacebookRequestId: loadFacebookRequestId
 }
 
-function sendMessage(fromPersonId, participationId, clientUid, type, payload, payloadFile, prodPush, callback) {
-	log.debug('sendMessage', fromPersonId, participationId, clientUid, type, payload)
+function sendMessage(session, messageData, payloadFile, prodPush, callback) {
+	log.debug('sendMessage', session, messageData)
+	
+	var fromPersonId = session.personId
+	var fromGuestIndex = session.guestIndex
+	var payload = messageData.payload
+	var type = messageData.type
+	var clientUid = messageData.clientUid
+	var conversationId = parseInt(messageData.conversationId)
 	
 	payload = Messages.cleanPayloadForUpload(type, payload)
 	if (!payload) { return callback('That message is malformed') }
 	
-	parallel(_getConversationId, _uploadPayload, function(err, conversationId, payload) {
+	parallel(_checkConversationAccess, _uploadPayload, function(err, _, payload) {
 		if (err) { return callback(err) }
 		log.debug('create message', conversationId, payload)
-		var sql = 'INSERT INTO message SET postedTime=?, fromPersonId=?, clientUid=?, conversationId=?, type=?, payloadJson=?'
+		var sql = 'INSERT INTO message SET postedTime=?, fromPersonId=?, fromGuestIndex=?, clientUid=?, conversationId=?, type=?, payloadJson=?'
 		var now = time.now()
-		db.conversation(conversationId).insert(sql, [now, fromPersonId, clientUid, conversationId, type, JSON.stringify(payload)], function(err, messageId) {
+		db.conversation(conversationId).insert(sql, [now, fromPersonId, fromGuestIndex, clientUid, conversationId, type, JSON.stringify(payload)], function(err, messageId) {
 			if (err) { return callback(err) }
 			var message = {
-				id:messageId, fromPersonId:fromPersonId, conversationId:conversationId, clientUid:clientUid,
-				postedTime:now, type:type, payload:payload
+				fromPersonId:fromPersonId, fromGuestIndex:fromGuestIndex,
+				conversationId:conversationId, clientUid:clientUid,
+				id:messageId, postedTime:now, type:type, payload:payload
 			}
 			callback(null, { message:message, promptInvite:false })
 			_notifyParticipants(message, prodPush)
@@ -40,14 +48,13 @@ function sendMessage(fromPersonId, participationId, clientUid, type, payload, pa
 		})
 	}
 	
-	function _getConversationId(callback) {
-		var sql = 'SELECT conversationId, peopleJson, participationId FROM participation WHERE personId=? AND participationId=?'
-		db.person(fromPersonId).selectOne(sql, [fromPersonId, participationId], function(err, participation) {
+	function _checkConversationAccess(callback) {
+		if (fromGuestIndex) { return callback(session.conversationId == conversationId ? null : 'Bad conversation id') }
+		var sql = 'SELECT 1 FROM participation WHERE personId=? AND conversationId=?'
+		db.person(fromPersonId).selectOne(sql, [fromPersonId, conversationId], function(err, row) {
 			if (err) { return callback(err) }
-			if (!participation) { return callback("I couldn't find that conversation") }
-			var conversationId = participation.conversationId
-			log.debug('create message with conversation and payload', conversationId, payload)
-			callback(null, conversationId)
+			if (!row) { return callback("I couldn't find that conversation") }
+			callback()
 		})
 	}
 }

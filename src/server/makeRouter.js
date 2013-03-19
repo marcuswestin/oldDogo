@@ -120,7 +120,8 @@ var filters = (function makeFilters() {
 		oldClients:filterOldClients,
 		guestRequest:filterGuestRequest,
 		delay:delayRequest,
-		dogoApp:[filterOldClients, filterSession]
+		dogoApp:[filterOldClients, filterSession],
+		appOrGuest:filterAppOrGuestRequest
 	}
 	
 	function filterOldClients(req, res, next) {
@@ -142,6 +143,10 @@ var filters = (function makeFilters() {
 	
 	function filterGuestRequest(req, res, next) {
 		return authenticateRequest.guest(req, next)
+	}
+	
+	function filterAppOrGuestRequest(req, res, next) {
+		return authenticateRequest.personOrGuest(req, next)
 	}
 	
 	function delayRequest(amount) {
@@ -244,7 +249,8 @@ function setupRoutes(app, opts) {
 		getContacts(req, curry(respond, req, res))
 	})
 	app.post('/api/contacts', filters.dogoApp, function handlePostContacts(req, res) {
-		addContacts(req, curry(respond, req, res))
+		var params = getJsonParams(req, 'contactsList')
+		addContacts(req.session.personId, params.contactsList, curry(respond, req, res))
 	})
 	app.post('/api/addresses', filters.dogoApp, function handleAddAddresses(req, res) {
 		var params = getJsonParams(req, 'newAddresses')
@@ -254,22 +260,18 @@ function setupRoutes(app, opts) {
 		var params = getJsonParams(req, 'contacts')
 		createConversation(req, params.contacts, wrapRespond(req, res, 'conversation'))
 	})
-	app.post('/api/message', filters.dogoApp, function handleSendMessage(req, res) {
-		var params = getMultipartParams(req, 'toParticipationId', 'clientUid', 'type', 'payload')
+	app.post('/api/message', filters.appOrGuest, function handleSendMessage(req, res) {
+		var params = getMultipartParams(req, 'message')
 		var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
 		var payloadFile = req.files && req.files.payload
-		messageService.sendMessage(req.session.personId,
-			params.toParticipationId, params.clientUid,
-			params.type, params.payload, payloadFile, prodPush,
-			function(err, result) {
-				if (payloadFile) {
-					fs.unlink(payloadFile.path, function(err) {
-						if (err) { log.warn('Unable to unlink data file', payloadFile, err) }
-					})
-				}
-				respond(req, res, err, result)
+		messageService.sendMessage(req.session, params.message, payloadFile, prodPush, function(err, result) {
+			if (payloadFile) {
+				fs.unlink(payloadFile.path, function(err) {
+					if (err) { log.warn('Unable to unlink data file', payloadFile, err) }
+				})
 			}
-		)
+			respond(req, res, err, result)
+		})
 	})
 	app.get('/api/messages', filters.dogoApp, function handleGetConversationMessages(req, res) {
 		var params = getUrlParams(req, 'participationId', 'conversationId', 'afterMessageId')
@@ -342,11 +344,9 @@ function setupDev(app) {
 		require('blowtorch-node-sdk/'+btModule).setup(app)
 	})
 	
-	app.post('/api/messageDev', filters.dogoApp, function postMessageDebug(req, res) {
-		var params = getJsonParams(req, 'toParticipationId', 'clientUid', 'type', 'payload')
-		messageService.sendMessage(req.session.personId, params.toParticipationId, params.clientUid, params.type, params.payload, null, false,
-			curry(respond, req, res)
-		)
+	app.post('/api/messageDev', filters.appOrGuest, function postMessageDebug(req, res) {
+		var params = getJsonParams(req, 'message')
+		messageService.sendMessage(req.session, params.message, null, false, curry(respond, req, res))
 	})
 	
 	function sendExperiment(req, res) {

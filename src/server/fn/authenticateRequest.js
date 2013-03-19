@@ -3,19 +3,28 @@ var createSession = require('server/fn/createSession')
 
 module.exports = {
 	person: authenticateDogoPerson,
-	guest: authenticateDogoGuest
+	guest: authenticateDogoGuest,
+	personOrGuest: personOrGuest
 }
 
 function getAuthToken(req, authRegex) {
 	var authorization = req.headers.authorization || req.param('authorization')
 	if (!authorization) { return null }
-	if (!authRegex.test(authorization)) { return callback('Bad auth') }
+	if (!authRegex.test(authorization)) { return null }
 	return authorization.split(' ')[1]
+}
+
+
+function personOrGuest(req, callback) {
+	if (authPersonRegex.test(req.headers.authorization)) { return authenticateDogoPerson(req, callback) }
+	else if (authGuestRegex.test(req.headers.authorization)) { return authenticateDogoGuest(req, callback) }
+	else { return callback('Unknown auth') }
 }
 
 var authPersonRegex = /^DogoPerson \S+/
 function authenticateDogoPerson(req, callback) {
 	var authToken = getAuthToken(req, authPersonRegex)
+	if (!authToken) { return callback('Bad auth') }
 	redis.get(createSession.personPrefix+authToken, function(err, personIdStr) {
 		if (err) { return callback(err) }
 		req.session = { personId:parseInt(personIdStr) }
