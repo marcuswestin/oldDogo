@@ -145,7 +145,8 @@ setup-source:
 ios-client:
 	# Blagh! It would be better to use ${NODE} src/scripts/build-client.js, but xcode doesn't take it :/
 	export NODE_PATH=`pwd`/src && /usr/local/bin/node src/scripts/build-client.js
-	hostname > build/dogo-ios-build/dev-hostname.txt
+	# hostname > build/dogo-ios-build/dev-hostname.txt
+	bash src/scripts/whatsMyDevIP.sh > build/dogo-ios-build/dev-hostname.txt
 
 fly-build: ios-client
 	rm -rf src/ios/build

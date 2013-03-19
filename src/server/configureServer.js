@@ -14,7 +14,6 @@ module.exports = function configureServer(config) {
 	sendSms.configure(config.twilio)
 	pushService.configure(config.push)
 	
-	var router = makeRouter({ log:config.log, dev:config.dev })
-	router.listen(config.port)
+	makeRouter({ log:config.log, dev:config.dev }).listen(config.port)
 }
 

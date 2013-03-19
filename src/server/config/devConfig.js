@@ -7,12 +7,22 @@ var shardAccess = {
 	user:"dogoApp"
 }
 
+var myIp
+each(require('os').networkInterfaces(), function(ifaces, name) {
+	each(ifaces, function(iface) {
+		if (iface.family != 'IPv4') { return }
+		if (iface.address == '127.0.0.1') { return }
+		myIp = iface.address
+	})
+})
+if (!myIp) { myIp = equire('os').hostname() } // fallback
+
 module.exports = {
 	log:true,
 	dev:true,
 	port:9000,
 	protocol:'http:',
-	serverUrl:'http://'+require('os').hostname()+':9000',
+	serverUrl:'http://'+myIp+':9000',
 	aws: {
 		accessKeyId:secrets.aws.accessKeyId,
 		accessKeySecret:secrets.aws.accessKeySecret,
