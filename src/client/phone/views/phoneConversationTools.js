@@ -24,25 +24,24 @@ var duration = 300
 
 /* Text tool
  ***********/
-var id
+var textId
 _textTool.getHeight = function() { return unit*2.5 }
 function _textTool(toolHeight, barHeight) {
 	// setTimeout(_showTextFormatting, 400) // AUTOS
-	id = tags.id()
+	textId = tags.id()
 	extraHeight = unit*6
 
 	Documents.read('TextDraft-'+uniqueDraftId, function(err, data) {
 		if (err) { return error(err) }
 		var dogoText = data && data.dogoText
-		function setDraft() { $('#'+id).html(DogoText.getHtml(dogoText)) }
+		function setDraft() { $('#'+textId).html(DogoText.getHtml(dogoText)) }
 		setDraft()
-		$('#'+id).focus()
 		after(duration/2, function() {
 			if (dogoText) {
 				setDraft()
 			} else {
-				$('#'+id).text('.') // we do this again to update the cursor position
-				after(0, function() { $('#'+id).text('') })
+				$('#'+textId).text('.') // we do this again to update the cursor position
+				after(0, function() { $('#'+textId).text('') })
 			}
 		}) 
 	})
@@ -50,7 +49,7 @@ function _textTool(toolHeight, barHeight) {
 	var textSpacing = unit*2
 	return div(style({ height:keyboardHeight + toolHeight, background:'#fff' }),
 		div(style({ position:'absolute', top:-textSpacing, height:textSpacing, width:'100%', background:'#fff' }),
-			div({ id:id, contentEditable:'true' }, style(unitPadding(1), scrollable.y, transition('opacity', duration/2), {
+			div({ id:textId, contentEditable:'true' }, style(unitPadding(1), scrollable.y, transition('opacity', duration/2), {
 					position:'absolute', bottom:textSpacing, '-webkit-user-select':'auto', maxHeight:26*units,
 					width:viewport.width()-unit*2, background:'#fff', boxShadow:'0 -2px 3px -1px rgba(0,0,0,.5)',
 					opacity:0
@@ -58,10 +57,10 @@ function _textTool(toolHeight, barHeight) {
 			)
 		),
 		
-		after(duration/2, function() { $('#'+id).css({ opacity:1 }) }),
+		after(duration/2, function() { $('#'+textId).css({ opacity:1 }) }),
 		
 		div(style({ height:unit*4, textAlign:'center' }, unitPadding(1/2), translate.y(-unit/4)),
-			div(style(floatLeft), graphic('close', 20, 20), button(_closeText)),
+			div(style(floatLeft), 'Close', graphic('close', 20, 20), button(_closeText)),
 			div('button', style(floatRight), 'Send', button(_sendText)),
 			div('textColor', style({ color:'#333', display:'inline-block' }, unitPadding(1/2)), button(_showTextColor),
 				'Color'
@@ -73,11 +72,11 @@ function _textTool(toolHeight, barHeight) {
 	)
 	
 	function getDogoText() {
-		return trim(DogoText.fromNode($('#'+id)[0]))
+		return trim(DogoText.fromNode($('#'+textId)[0]))
 	}
 	
 	function _closeText() {
-		$('#'+id).blur()
+		$('#'+textId).blur()
 		Documents.write('TextDraft-'+uniqueDraftId, { dogoText:getDogoText() }, error)
 		_hideCurrentTool()
 	}
@@ -86,7 +85,7 @@ function _textTool(toolHeight, barHeight) {
 		var text = getDogoText()
 		if (!text) { return }
 		sendMessage(Messages.types.text, { body:text })
-		$('#'+id).text('').focus()
+		$('#'+textId).text('').focus()
 	}
 	
 	function _showTextFormatting() {
