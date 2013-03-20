@@ -7,7 +7,7 @@ var tools = module.exports = {
 
 function renderFoot(view, opts) {
 	var toolStyle = { display:'inline-block', margin:px(unit/4) }
-	return div({ id:'conversationFoot' },
+	return div({ id:'conversationFoot' }, style(translate(0,0)),
 		style({
 			margin:px(0, 1/2*unit), width:viewport.width()-unit, height:opts.height, background:'#fff',
 			boxShadow:'0 -1px 2px rgba(0,0,0,.55), -1px 0 1px rgba(0,0,0,.55), 1px 0 1px rgba(0,0,0,.55)'
@@ -25,13 +25,10 @@ var duration = 300
 /* Text tool
  ***********/
 var textId
-_textTool.getHeight = function() { return unit*4.5 }
+_textTool.getHeight = function() { return unit*5.5 }
 function _textTool(toolHeight, barHeight) {
 	// setTimeout(_showTextFormatting, 400) // AUTOS
 	textId = tags.id()
-	extraHeight = unit*6
-	var textSpacing = unit*2
-
 	Documents.read('TextDraft-'+uniqueDraftId, function(err, data) {
 		if (err) { return error(err) }
 		var dogoText = data && data.dogoText
@@ -39,9 +36,11 @@ function _textTool(toolHeight, barHeight) {
 		$('#'+textId).html(DogoText.getHtml(dogoText))
 	})
 	
+	var webViewAccessoryHeight = tags.isMobileSafari ? 62 : 0
+	
 	$('#viewport').append(
-		div(style({ position:'absolute', bottom:toolHeight + barHeight, width:'100%' }),
-			div({ id:textId, contentEditable:'true' }, style(unitPadding(1), scrollable.y, transition('opacity', duration), {
+		div(style({ position:'absolute', bottom:toolHeight + barHeight - webViewAccessoryHeight, width:'100%' }),
+			div({ id:textId, contentEditable:'true' }, style(unitPadding(1), scrollable.y, transition('opacity', duration/2), {
 					'-webkit-user-select':'auto', maxHeight:26*units,
 					width:viewport.width()-unit*2, background:'#fff', boxShadow:'0 -2px 3px -1px rgba(0,0,0,.5)',
 					opacity:0
@@ -50,11 +49,10 @@ function _textTool(toolHeight, barHeight) {
 		)
 	)
 	
-	after(duration/2, function() { $('#'+textId).css({ opacity:1 }) })
+	nextTick(function() { $('#'+textId).css({ opacity:1 }) })
 	
-	return div(style({ height:keyboardHeight + toolHeight + barHeight, background:'#fff' }),
-		div(style({ background:'#fff', height:textSpacing })),
-		div(style({ height:unit*4, textAlign:'center' }, unitPadding(1/2), translate.y(-unit/4)),
+	return div(style({ height:toolHeight + barHeight, background:'#fff' }),
+		div(style({ height:unit*4, textAlign:'center' }, unitPadding(1/2)),
 			div(style(floatLeft), 'Close', graphic('close', 20, 20), button(_hideCurrentTool)),
 			div('button', style(floatRight), 'Send', button(_sendText)),
 			div('textColor', style({ color:'#333', display:'inline-block' }, unitPadding(1/2)), button(_showTextColor),
@@ -128,6 +126,7 @@ function _cameraTool(toolHeight, barHeight) {
 			})),
 			div('button', 'Send', style(floatRight, unitPadding(1)), button(function() {
 				sendMessage(Messages.types.picture, { document:draftDoc, width:picSize, height:picSize })
+				$('#cameraOverlay').css({ background:'transparent' })
 			}))
 		),
 		div('overlay', { id:'cameraOverlay' }, style({ width:camSize, height:camSize, textAlign:'center', border:camPad+'px solid #fff' }),
@@ -185,7 +184,7 @@ function _microphoneTool(toolHeight, barHeight) {
 		),
 		div('overlay', style({ width:viewport.width()-pad*2, height:toolHeight-pad*2, border:pad+'px solid #fff' }),
 			div('decibelMeter', style({ height:4*unit, width:viewport.width()-pad*4 }, unitPadding(1/2)),
-				div('volume', style({ background:'blue', height:'100%', width:0 }))
+				div('volume', style({ background:'#fff', height:'100%', width:0 }))
 			),
 			div('button', 'Hold to Talk', style(translate(60,20)), button({
 				start:function() {
@@ -214,26 +213,54 @@ events.on('BTAudio.decibelMeter', function(info) {
  *************************/
 var uniqueDraftId
 var view
-var extraHeight
+var extraHeight = 0
 var currentToolFn
+
 function selectTool(toolFn) {
 	return function(_view) {
 		currentToolFn = toolFn
 		view = _view
 		uniqueDraftId = view.conversation ? 'conv-'+view.conversation.conversationId : 'contact-'+view.contact.contactUid
-		extraHeight = 0
+		var thisDuration = duration
+		if (currentToolFn == _textTool) {
+			extraHeight = 34
+			if (tags.isMobileSafari) {
+				thisDuration = 0
+			}
+		} else {
+			extraHeight = 0
+		}
 		
 		var toolHeight = toolFn.getHeight()
 		var footHeight = $('#conversationFoot').height()
 		
-		$('#centerFrame').css(translate.y(-toolHeight, duration))
+		$('#centerFrame').css(translate.y(-(toolHeight + extraHeight), thisDuration))
 		$('#southFrame').empty().css(translate.y(0, 0))
 			.append(toolFn(toolHeight, footHeight))
-			.css(translate.y(-(toolHeight + footHeight), duration))
+			.css(translate.y(-(toolHeight + footHeight), thisDuration))
 		
-		$('#'+textId).focus().on('blur', _hideCurrentTool)
+		events.fire('tool.show')
 	}
 }
+
+function preventDefault($e) { $e.preventDefault() }
+function scrollToBottom() { window.scrollTo(0, 99999) }
+events.on('tool.show', function() {
+	$('#'+textId).focus().on('blur', _hideCurrentTool)
+	if (tags.isMobileSafari) {
+		$('#southFrame, #'+textId).on('touchmove', preventDefault)
+		after(duration, function() {
+			$(document).on('scroll', scrollToBottom)
+		})
+	}
+})
+events.on('tool.hide', function() {
+	$('#'+textId).off('blur', _hideCurrentTool)
+	if (tags.isMobileSafari) {
+		$('#southFrame, #'+textId).off('touchmove', preventDefault)
+		$(document).off('scroll', scrollToBottom)
+	}
+})
 
 events.on('view.changing', _hideCurrentTool)
 function _hideCurrentTool() {
@@ -241,8 +268,12 @@ function _hideCurrentTool() {
 	view = null
 	if (currentToolFn == _textTool) {
 		Documents.write('TextDraft-'+uniqueDraftId, { dogoText:getDogoText() }, error)
-		$('#'+textId).blur().remove()
+		$('#'+textId).blur().css({ opacity:0 })
+		after(duration, function() {
+			$('#'+textId).remove()
+		})
 	}
+	events.fire('tool.hide')
 	bridge.command('BT.setStatusBar', { visible:true, animation:'slide' })
 	$('#centerFrame').css(translate.y(0))
 	$('#southFrame').css(translate.y(extraHeight || 0))
@@ -299,6 +330,7 @@ function sendMessage(type, data) {
 			// conversation.lastMessage = res.message
 			// conversation.lastSentMessage = res.message
 			// events.fire('message.sent', res, conversation)
+			
 		}
 	})
 	

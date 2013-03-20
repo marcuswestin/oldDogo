@@ -5,12 +5,16 @@ var phoneConversationTools = require('client/phone/views/phoneConversationTools'
 graphics.base += 'guest/'
 keyboardHeight = 0
 
+function hideNavBar() { window.scrollTo(0, 1) }
+hideNavBar()
+after(100, hideNavBar)
+after(500, hideNavBar)
+after(1000, hideNavBar)
+
+
 $('body').css({ backgroundImage:'url('+graphics.url('background', 100, 100)+')', backgroundSize:'50px 50px' })
 
 $('#viewport').css({ margin:'0 auto', background:'#fff', overflow:'hidden' })
-viewport.react(function(size) {
-	$('#viewport').css({ width:size.width, height:size.height + 60 })
-})
 
 events.on('app.start', startGuestClient)
 bridge.init()
@@ -42,25 +46,28 @@ function init(conversationId, guestIndex, secret, callback) {
 		return div(
 			head,
 			list,
-			div(style({ height:unit*10 })) // foot padding
+			div(style({ height:unit*6 })) // foot padding
 		)
 	}
 	
 	function renderFoot() {
-		return phoneConversationTools.renderFoot({ conversation:{ conversationId:conversationId } }, { text:true, microphone:true, height:40 })
+		return phoneConversationTools.renderFoot({ conversation:{ conversationId:conversationId } }, { text:true, microphone:true, camera:true, height:40 })
 	}
 	
+	gScroller = makeScroller({
+		duration:300,
+		renderHead:renderHead,
+		renderBody:renderBody,
+		renderFoot:renderFoot
+	})
+	
 	$('#viewport').empty().append(
-		div({ id:'centerFrame' }, style(absolute(0,0)), makeScroller({
-			duration:300,
-			renderHead:renderHead,
-			renderBody:renderBody,
-			renderFoot:renderFoot
-		})),
+		div({ id:'centerFrame' }, style(absolute(0,0)), gScroller),
 		div({ id:'southFrame' }, style(absolute(0,0)))
 	)
 	
 	viewport.react(function(size) {
+		$('#viewport').css(size)
 		$('#centerFrame').css(size)
 		$('#southFrame').css({ top:size.height, width:size.width })
 	})
