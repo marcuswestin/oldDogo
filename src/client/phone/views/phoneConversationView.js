@@ -16,16 +16,21 @@ function renderHead(_view) {
 
 	// setTimeout(function() { tools.selectText(view) }, 250) // AUTOS
 	// setTimeout(function() { tools.selectMicrophone(view) }, 250) // AUTOS
-	
+	var name
 	if (view.conversation) {
-		var name = view.conversation.people[1].name
+		name = div('ellipsis', style(unitPadding(1, 0), { fontSize:19 }), view.conversation.people[1].name)
 	} else {
-		var name = view.contact.name || view.contact.addressId
+		var address = Addresses.isFacebook(view.contact) ? 'Facebook' : view.contact.addressId
+		 if (view.contact.name) {
+			name = div('ellipsis', style({ fontSize:19 }), view.contact.name, div('ellipsis', style({ fontSize:14 }), address))
+		} else {
+			name = div('ellipsis', style({ fontSize:19 }, unitPadding(1, 0)), view.contact.addressId)
+		}
 	}
 	
 	return appHead(
 		div(style(unitPadding(3/4,1)), graphic('leftArrow', 20, 20), button(function() { gScroller.pop() })),
-		div(style(unitPadding(1), { color:'#fff', fontSize:19, marginTop:unit/4, textShadow:'0 1px 0 rgba(0,0,0,.3)' }), name),
+		div(style({ margin:unit/4+'px auto', color:'#fff', textShadow:'0 1px 0 rgba(0,0,0,.3)', maxWidth:224 }), name),
 		composeOverlay.headIcon()
 	)
 }

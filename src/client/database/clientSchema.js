@@ -14,6 +14,7 @@ function getTableSchemas() {
 			'localId VARCHAR(255) DEFAULT NULL',
 			'hasLocalImage BOOL DEFAULT NULL',
 			'pictureUploadedTime INT UNSIGNED DEFAULT NULL',
+			'conversationId BIGINT UNSIGNED DEFAULT NULL',
 			'PRIMARY KEY (contactUid)',
 			'UNIQUE (addressType, addressId)',
 		].join(',\n') + '); \n'

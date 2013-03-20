@@ -42,14 +42,25 @@ function renderHead() {
 	}
 }
 
+SQL.query = function(sql, args, callback) {
+	if (arguments.length == 2) {
+		callback = args
+		args = null
+	}
+	bridge.command('BTSql.query', { sql:sql, arguments:args }, function(err, res) {
+		callback(err, err ? null : res.rows)
+	})
+}
+
 var cardList
 function renderBody() {
 	Conversations.read(function(err, conversations) {
 		if (err) { return error(err) }
-		cardList.append(conversations.slice(0, 10))
+		cardList.append(conversations)
 		Conversations.fetch(function(err, conversations) {
 			if (err) { return error(err) }
-			cardList.append(conversations.slice(0, 10))
+			cardList.append(conversations)
+			_renderNewPeople()
 		})
 	})
 
@@ -62,11 +73,34 @@ function renderBody() {
 			renderItem:_renderCard,
 			renderEmpty:markFirstCall(_renderEmpty)
 		}),
-		div(style({ height:1 }))
+		div('clear'),
+		div({ id:'newPeople' }, style({ minHeight:1 }))
 	)
 	
 	function _renderEmpty(firstCall) {
 		return div('info', style({ marginTop:19.5*unit }), firstCall ? "Fetching conversations..." : "Add your friends with the button above")
+	}
+	
+	function _renderNewPeople() {
+		var prefix = 'SELECT * FROM contact WHERE conversationId IS NULL '
+		var postfix = client.isChrome ? ' LIMIT 15' : ' ORDER BY RANDOM() LIMIT 15' // Not allowed to use RANDOM() in websql. Sigh.
+		SQL.query(prefix + 'AND hasLocalImage=1' + postfix, function(err, withLocalImage) {
+			if (err) { return error(err) }
+			SQL.query(prefix + 'AND addressType=?' + postfix, [Addresses.types.facebook], function(err, fbContacts) {
+				if (err) { return error(err) }
+				var newPeopleList = makeList({
+					items:(withLocalImage || []).concat(fbContacts || []),
+					getItemId:function(contact) { return contact.contactUid },
+					renderItem:function(contact) {
+						return div(style(floatLeft, { margin:px(1, 0, 0, 1) }), face(contact, { size:63 }))
+					},
+					selectItem:function(contact) {
+						gScroller.push({ view:'conversation', contact:contact })
+					}
+				})
+				$('#newPeople').empty().append(div(newPeopleList, div('clear', style({ height:1 }))))
+			})
+		})
 	}
 }
 

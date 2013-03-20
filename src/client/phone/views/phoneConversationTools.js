@@ -338,13 +338,17 @@ function sendMessage(type, data) {
 		if (view.conversation) { return callback() }
 		overlay.show('Sending first message...')
 		var contacts = map([view.contact], function(c) {
-			return { addressType:c.addressType, addressId:c.addressId, name:c.name }
+			return { addressType:c.addressType, addressId:c.addressId, name:c.name, contactUid:c.contactUid }
 		})
 		api.post('api/conversation', { contacts:contacts }, function(err, res) {
 			overlay.hide()
 			if (err) { return callback(err) }
-			view.conversation = res.conversation
-			saveViewStack(callback)
+			var sql = 'UPDATE contact SET conversationId=? WHERE contactUid=?'
+			bridge.command('BTSql.update', { sql:sql, arguments:[res.conversation.conversationId, view.contact.contactUid] }, function(err) {
+				if (err) { return callback(err) }
+				view.conversation = res.conversation
+				saveViewStack(callback)
+			})
 		})
 	}
 }

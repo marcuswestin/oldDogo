@@ -40,7 +40,9 @@ CREATE TABLE contact (
 	name VARCHAR(255) DEFAULT NULL,
 	createdTime INT UNSIGNED NOT NULL,
 	pictureUploadedTime INT UNSIGNED DEFAULT NULL,
-	-- UNIQUE KEY addressKey (personId, addressId, addressType), -- For development only
+	conversationId BIGINT UNSIGNED DEFAULT NULL,
+	-- UNIQUE KEY addressKey (personId, addressId, addressType), -- For development
+	-- UNIQUE KEY contactConversationKey (conversationId), -- For development
 	PRIMARY KEY (personId, contactUid),
 	CONSTRAINT contactPerson FOREIGN KEY (personId) REFERENCES person(personId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -163,9 +163,9 @@ function _storeNewContacts(newContacts, callback) {
 	}
 }
 
-var insertContactSql = 'INSERT INTO contact (contactUid, addressType, addressId, createdTime, name, pictureUploadedTime, localId, hasLocalImage) VALUES (?,?,?,?,?,?,?,?)'
+var insertContactSql = 'INSERT INTO contact (contactUid, addressType, addressId, createdTime, name, pictureUploadedTime, localId, hasLocalImage, conversationId) VALUES (?,?,?,?,?,?,?,?,?)'
 function _getContactAsList(c) {
-	return [c.contactUid, c.addressType, c.addressId, c.createdTime, c.name, c.pictureUploadedTime || null, c.localId || null, c.hasLocalImage || null]
+	return [c.contactUid, c.addressType, c.addressId, c.createdTime, c.name, c.pictureUploadedTime || null, c.localId || null, c.hasLocalImage || null, c.conversationId || null]
 }
 
 function _updateFromServer(callback) {

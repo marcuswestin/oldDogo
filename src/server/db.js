@@ -112,6 +112,14 @@ var connectionBase = {
 		})
 	},
 	
+	update:function(query, args, callback) {
+		var stackError = new Error()
+		this._query(query, args, function(err, info) {
+			if (err) { onDbError('update', err, stackError, query, args) }
+			callback(err, info)
+		})
+	},
+	
 	updateOne:function(query, args, callback) {
 		var stackError = new Error()
 		this._query(query, args, function(err, info) {

@@ -2,6 +2,7 @@ var getConversations = require('server/fn/getConversations')
 
 module.exports = function createConversation(req, contacts, callback) {
 	var personId = req.session.personId
+	var singleContact = (contacts.length == 1 ? contacts[0] : null)
 	contacts.unshift({ addressType:Addresses.types.dogo, addressId:personId })
 	_lookupContacts(contacts, function(err, dogoPeople, externalAddressInfos) {
 		if (err) { return callback(err) }
@@ -10,7 +11,7 @@ module.exports = function createConversation(req, contacts, callback) {
 		})))
 		_createConversation(peopleJson, function(err, conversationId) {
 			if (err) { return callback(err) }
-			parallel(doCreateParticipations, doCreateGuestAccesses, doUpdateOtherAddresses, function(err) {
+			parallel(doCreateParticipations, doCreateGuestAccesses, doUpdateOtherAddresses, doSetContactConvo, function(err) {
 				if (err) { return callback(err) }
 				getConversations.getOne(personId, conversationId, function(err, conversation) {
 					if (err) { return callback(err) }
@@ -18,6 +19,12 @@ module.exports = function createConversation(req, contacts, callback) {
 				})
 			})
 			
+			function doSetContactConvo(callback) {
+				if (!singleContact) { return callback() }
+				log('set contact conversation id', singleContact)
+				var sql = 'UPDATE contact SET conversationId=? WHERE personId=? AND contactUid=? AND conversationId IS NULL'
+				db.person(personId).update(sql, [conversationId, personId, singleContact.contactUid], callback)
+			}
 			function doCreateParticipations(callback) {
 				log('create participations for', dogoPeople, conversationId)
 				_createParticipations(dogoPeople, conversationId, peopleJson, callback)
