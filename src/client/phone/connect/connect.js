@@ -17,8 +17,7 @@ module.exports = {
 			alwaysBounce:false,
 			renderHead:renderHead,
 			renderBody:renderBody,
-			stack: viewStack,
-			headHeight:0
+			stack: viewStack
 		})
 		return div({ id:'connectView' },
 			div('center', style(absolute(0, 16*units), { width:viewport.width() }), graphic('logoName', 128, 64)),

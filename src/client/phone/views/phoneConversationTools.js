@@ -25,42 +25,37 @@ var duration = 300
 /* Text tool
  ***********/
 var textId
-_textTool.getHeight = function() { return unit*2.5 }
+_textTool.getHeight = function() { return unit*4.5 }
 function _textTool(toolHeight, barHeight) {
 	// setTimeout(_showTextFormatting, 400) // AUTOS
 	textId = tags.id()
 	extraHeight = unit*6
+	var textSpacing = unit*2
 
 	Documents.read('TextDraft-'+uniqueDraftId, function(err, data) {
 		if (err) { return error(err) }
 		var dogoText = data && data.dogoText
-		function setDraft() { $('#'+textId).html(DogoText.getHtml(dogoText)) }
-		setDraft()
-		after(duration/2, function() {
-			if (dogoText) {
-				setDraft()
-			} else {
-				$('#'+textId).text('.') // we do this again to update the cursor position
-				after(0, function() { $('#'+textId).text('') })
-			}
-		}) 
+		if (!dogoText) { return }
+		$('#'+textId).html(DogoText.getHtml(dogoText))
 	})
 	
-	var textSpacing = unit*2
-	return div(style({ height:keyboardHeight + toolHeight + barHeight, background:'#fff' }),
-		div(style({ position:'absolute', top:-textSpacing, height:textSpacing, width:'100%', background:'#fff' }),
-			div({ id:textId, contentEditable:'true' }, style(unitPadding(1), scrollable.y, transition('opacity', duration/2), {
-					position:'absolute', bottom:textSpacing, '-webkit-user-select':'auto', maxHeight:26*units,
+	$('#viewport').append(
+		div(style({ position:'absolute', bottom:toolHeight + barHeight, width:'100%' }),
+			div({ id:textId, contentEditable:'true' }, style(unitPadding(1), scrollable.y, transition('opacity', duration), {
+					'-webkit-user-select':'auto', maxHeight:26*units,
 					width:viewport.width()-unit*2, background:'#fff', boxShadow:'0 -2px 3px -1px rgba(0,0,0,.5)',
 					opacity:0
 				})
 			)
-		),
-		
-		after(duration/2, function() { $('#'+textId).css({ opacity:1 }) }),
-		
+		)
+	)
+	
+	after(duration/2, function() { $('#'+textId).css({ opacity:1 }) })
+	
+	return div(style({ height:keyboardHeight + toolHeight + barHeight, background:'#fff' }),
+		div(style({ background:'#fff', height:textSpacing })),
 		div(style({ height:unit*4, textAlign:'center' }, unitPadding(1/2), translate.y(-unit/4)),
-			div(style(floatLeft), 'Close', graphic('close', 20, 20), button(_closeText)),
+			div(style(floatLeft), 'Close', graphic('close', 20, 20), button(_hideCurrentTool)),
 			div('button', style(floatRight), 'Send', button(_sendText)),
 			div('textColor', style({ color:'#333', display:'inline-block' }, unitPadding(1/2)), button(_showTextColor),
 				'Color'
@@ -70,16 +65,6 @@ function _textTool(toolHeight, barHeight) {
 			)
 		)
 	)
-	
-	function getDogoText() {
-		return trim(DogoText.fromNode($('#'+textId)[0]))
-	}
-	
-	function _closeText() {
-		$('#'+textId).blur()
-		Documents.write('TextDraft-'+uniqueDraftId, { dogoText:getDogoText() }, error)
-		_hideCurrentTool()
-	}
 	
 	function _sendText() {
 		var text = getDogoText()
@@ -230,8 +215,10 @@ events.on('BTAudio.decibelMeter', function(info) {
 var uniqueDraftId
 var view
 var extraHeight
+var currentToolFn
 function selectTool(toolFn) {
 	return function(_view) {
+		currentToolFn = toolFn
 		view = _view
 		uniqueDraftId = view.conversation ? 'conv-'+view.conversation.conversationId : 'contact-'+view.contact.contactUid
 		extraHeight = 0
@@ -241,25 +228,30 @@ function selectTool(toolFn) {
 		
 		$('#centerFrame').css(translate.y(-toolHeight, duration))
 		$('#southFrame').empty().css(translate.y(0, 0))
-		nextTick(function() {
-			$('#southFrame')
-				.append(toolFn(toolHeight, footHeight))
-				.css(translate.y(-(toolHeight + footHeight), duration))
-		})
+			.append(toolFn(toolHeight, footHeight))
+			.css(translate.y(-(toolHeight + footHeight), duration))
+		
+		$('#'+textId).focus().on('blur', _hideCurrentTool)
 	}
 }
 
+events.on('view.changing', _hideCurrentTool)
 function _hideCurrentTool() {
 	if (!view) { return }
 	view = null
+	if (currentToolFn == _textTool) {
+		Documents.write('TextDraft-'+uniqueDraftId, { dogoText:getDogoText() }, error)
+		$('#'+textId).blur().remove()
+	}
 	bridge.command('BT.setStatusBar', { visible:true, animation:'slide' })
 	$('#centerFrame').css(translate.y(0))
 	$('#southFrame').css(translate.y(extraHeight || 0))
 	after(duration, function() { $('#southFrame').empty() })
 }
 
-events.on('view.changing', _hideCurrentTool)
-
+function getDogoText() {
+	return trim(DogoText.fromNode($('#'+textId)[0]))
+}
 
 function sendMessage(type, data) {
 	_withConversation(function(err) {

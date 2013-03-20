@@ -95,7 +95,6 @@ makeScroller.onViewChanging = function onViewChanging() {
 function renderSignedInApp(sessionInfo, viewStack) {
 	Payloads.configure(sessionInfo.config.payloads)
 	gScroller = makeScroller({
-		headHeight:0,
 		duration:300,
 		renderHead:renderHead,
 		renderBody:renderBody,

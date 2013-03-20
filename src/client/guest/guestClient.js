@@ -7,8 +7,10 @@ keyboardHeight = 0
 
 $('body').css({ backgroundImage:'url('+graphics.url('background', 100, 100)+')', backgroundSize:'50px 50px' })
 
-$('#viewport').css({ maxWidth:600, margin:'0 auto', background:'#fff' })
-viewport.width = function() { return $('#viewport').width() }
+$('#viewport').css({ margin:'0 auto', background:'#fff', overflow:'hidden' })
+viewport.react(function(size) {
+	$('#viewport').css({ width:size.width, height:size.height + 60 })
+})
 
 events.on('app.start', startGuestClient)
 bridge.init()
@@ -26,27 +28,41 @@ function init(conversationId, guestIndex, secret, callback) {
 		renderItem: _renderMessage,
 		renderEmpty:function() { return div(style({ textAlign:'center', paddingTop:unit*4 }), 'Loading...') }
 	})
+
 	var headBg = gradient.radial('50% -250px', 'rgba(144, 199, 232, 0.75)', '#007BC2', '450px')
-	$('#viewport').empty().append(
-		div({ id:'centerFrame' }, style(translate.x(0), { width:'100%' }),
-			div(style(unitPadding(1/2, 1), { background:headBg, textAlign:'center', color:'#fff', fontSize:24 }),
-				div(graphic('headLogoName', 80, 40))
-			),
+	var head = div(style(unitPadding(1/2, 1), { background:headBg, textAlign:'center', color:'#fff' }),
+		div(graphic('headLogoName', 80, 40))
+	)
+	
+	function renderHead() {
+		return null
+	}
+	
+	function renderBody() {
+		return div(
+			head,
 			list,
 			div(style({ height:unit*10 })) // foot padding
-		),
-		
-		div({ id:'centerFrameFoot' }, style({ position:'fixed', bottom:0, zIndex:2, width:'100%' }),
-			phoneConversationTools.renderFoot({ conversation:{ conversationId:conversationId } }, { text:true, microphone:true, height:40 })
-		),
-		
-		div({ id:'southFrame' }, style({ position:'fixed', background:'#fff', zIndex:2 }))
+		)
+	}
+	
+	function renderFoot() {
+		return phoneConversationTools.renderFoot({ conversation:{ conversationId:conversationId } }, { text:true, microphone:true, height:40 })
+	}
+	
+	$('#viewport').empty().append(
+		div({ id:'centerFrame' }, style(absolute(0,0)), makeScroller({
+			duration:300,
+			renderHead:renderHead,
+			renderBody:renderBody,
+			renderFoot:renderFoot
+		})),
+		div({ id:'southFrame' }, style(absolute(0,0)))
 	)
 	
 	viewport.react(function(size) {
-		$('#centerFrame').css({ width:size.width })
+		$('#centerFrame').css(size)
 		$('#southFrame').css({ top:size.height, width:size.width })
-		$('#centerFrameFoot').css({ width:size.width })
 	})
 	
 	api.post('/api/guest/session', { conversationId:conversationId, guestIndex:guestIndex, secret:secret }, function(err, res) {

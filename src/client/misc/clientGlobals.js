@@ -30,6 +30,7 @@ asyncMap = require('std/asyncMap')
 repeat = require('std/repeat')
 last = require('std/last')
 round = require('std/round')
+client = require('std/client')
 
 webEngine = require('client/webEngine')
 

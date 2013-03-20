@@ -17,7 +17,6 @@ var icons = icon.preload({
 
 function createAndRenderScroller() {
 	gScroller = makeScroller({
-		headHeight:gHeadHeight,
 		numViews:2,
 		onViewChanging:function onViewChanging() { events.fire('view.changing') },
 		duration:300,
