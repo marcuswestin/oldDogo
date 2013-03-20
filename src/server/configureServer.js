@@ -15,5 +15,7 @@ module.exports = function configureServer(config) {
 	pushService.configure(config.push)
 	
 	makeRouter({ log:config.log, dev:config.dev }).listen(config.port)
+	log.info(("listening on "+config.serverUrl).green, process.pid)
+	
 }
 

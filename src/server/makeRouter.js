@@ -62,7 +62,6 @@ module.exports = function makeRouter(opts) {
 	return {
 		listen:function(port) {
 			server.listen(port)
-			log.info('started', process.pid, ("listening on :"+port).green)
 			process.on('SIGINT', function() {
 				log.info('dogo-web closing down')
 				server.close()
