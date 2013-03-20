@@ -73,10 +73,7 @@
         BOOL isDev = [protocol isEqualToString:@"http:"];
         [self setupApp:!isDev];
         [self startApp];
-        
-        if (isDev) {
-            self.window.backgroundColor = [UIColor redColor];
-        }
+        self.window.backgroundColor = [UIColor whiteColor];
         
         return YES;
     } else {
