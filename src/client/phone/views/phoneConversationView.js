@@ -101,7 +101,7 @@ function _getMessagePerson(message) {
 			peopleById[person.addressId] = person
 		})
 	}
-	return peopleById[message.fromPersonId]
+	return (message.fromPersonId ? peopleById[message.fromPersonId] : view.conversation.people[message.fromGuestIndex])
 }
 
 /* Events

@@ -3,14 +3,21 @@ module.exports = renderMessage
 var lastMessage
 events.on('view.changing', function() { lastMessage = null })
 function renderMessage(message, person) {
-	if (message.fromGuestIndex) {
-		return div(null, 'Guest message', message.fromGuestIndex)
+	var isNewPerson, isNewTime
+	if (!lastMessage) {
+		isNewPerson = true
+		isNewTime = true
+	} else {
+		isNewTime = (Math.abs(lastMessage.postedTime - message.postedTime) > (3 * time.hours))
+		if (message.fromGuestIndex) {
+			isNewPerson = (message.fromGuestIndex != lastMessage.fromGuestIndex)
+		} else {
+			isNewPerson = (lastMessage.fromPersonId != message.fromPersonId)
+		}
 	}
-	var isNewPerson = !lastMessage || (lastMessage.fromPersonId != message.fromPersonId)
-	var isNewTime = !lastMessage || (Math.abs(lastMessage.postedTime - message.postedTime) > (3 * time.hours))
+
 	var makeNewCard = isNewPerson || isNewTime
 	lastMessage = message
-	
 	var bg = '#fff'
 	
 	return (makeNewCard

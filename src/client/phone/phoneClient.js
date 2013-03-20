@@ -122,7 +122,7 @@ appHead = function(left, center, right) {
 
 statusBarHeight = 20
 function renderHead(view) {
-	return div(style(absolute(0, statusBarHeight)), getPhoneView(view).renderHead(view))
+	return div(style(translate(0,0), absolute(0, statusBarHeight)), getPhoneView(view).renderHead(view))
 }
 
 function renderBody(view) {
