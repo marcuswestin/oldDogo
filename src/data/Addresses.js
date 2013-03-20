@@ -37,7 +37,7 @@ function fromVerificationParams(params) {
 }
 
 function equal(a, b) {
-	return a.addressType = b.addressType && a.addressId == b.addressId
+	return a.addressType == b.addressType && a.addressId == b.addressId
 }
 
 /* Normalization

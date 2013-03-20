@@ -32,6 +32,8 @@ function createGuestSession(conversationId, personIndex, secret, callback) {
 						sessionInfo: {
 							address:Addresses.address(addrInfo.addressType, addrInfo.addressId, addrInfo.name),
 							authorization:'DogoGuest '+authToken,
+							conversationId:conversationId,
+							personIndex:personIndex,
 							config:getClientConfig()
 						}
 					})

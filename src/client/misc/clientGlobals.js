@@ -83,6 +83,7 @@ label = tags('label')
 br = tags.br
 html = tags.html
 iframe = tags('iframe')
+audio = tags('audio')
 
 translate = style.translate
 transition = style.transition

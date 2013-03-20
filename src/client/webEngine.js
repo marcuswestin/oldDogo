@@ -97,7 +97,7 @@ var commandHandlers = {
 		if (!window.FB) { return callback('devBridge FB unavailable') }
 		FB.api(data.path, function(response) { callback(null, response) })
 	},
-	'push.register': function(data, callback) { callback(null, { deviceToken:'DEV_BRIDGE_FAKE_TOKEN' }) },
+	'push.register': function(data, callback) { callback(null, { pushToken:'DEV_BRIDGE_FAKE_TOKEN', pushType:'DEV_FAKE' }) },
 	'message.send': function(data, callback) {
 		data.url = api.getUrl('api/messageDev')
 		api.sendRequest(data, callback)

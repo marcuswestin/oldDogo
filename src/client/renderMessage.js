@@ -57,7 +57,7 @@ function renderContent(message) {
 		var url = message.preview
 			? BT.url('BTFiles.getDocument', { document:message.preview.document, mimeType:Payloads.mimeTypes[message.type] })
 			: Payloads.url(message)
-		return html('Voice message: '+round(payload.duration, 1)+'s <audio src="'+url+'" controls="true">')
+		return div(null, 'Voice message: ', round(payload.duration, 1), 's', audio({ src:url, controls:true }))
 	} else {
 		return 'Cannot display message. Please upgrade Dogo!'
 	}

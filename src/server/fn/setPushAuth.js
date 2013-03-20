@@ -1,6 +1,8 @@
 var log = makeLog('setPushAuth')
 
 module.exports = function setPushAuth(personId, pushToken, pushType, callback) {
+	if (pushType == 'DEV_FAKE') { return callback(null, 'ignoring DEV_FAKE push token') }
+	
 	if (!personId) { return callback('Missing person id') }
 	if (!pushToken) { return callback('Missing push token') }
 	if (!pushType) { return callback('Missing push type') }

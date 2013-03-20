@@ -107,39 +107,58 @@ function renderBody() {
 function renderFoot() {}
 
 function notMe(people) {
-	var myAddress = sessionInfo.myAddress()
-	return filter(people, function(person) { return !Addresses.equal(myAddress, person) })
+	return filter(people, function(person) { return !Addresses.equal(sessionInfo.person, person) })
 }
 
 /* Cards
  *******/
 function _renderCard(convo) {
-	var people = notMe(convo.people)
-	if (people.length == 1) {
-		var person = people[0]
-		return div(style(unitPadding(1/2), { background:'white', borderBottom:'1px solid #ccc' }),
-			people.length == 1 ? _renderPersonCard(convo, people[0]) : _renderGroupCard(convo, people),
-			div('clear')
-		)
-	}
-	function _renderPersonCard(convo, person) {
+	var people = convo.people
+	each(people, function(person) { if (!person.addressType) debugger })
+	return div(style(unitPadding(1/2), { background:'white', borderBottom:'1px solid #ccc' }),
+		people.length == 2 ? _renderPersonCard(convo, people) : _renderGroupCard(convo, people),
+		div('clear')
+	)
+	function _renderPersonCard(convo, people) {
+		var person = notMe(people)[0]
+		var lastIndex = Addresses.equal(people[0], person) ? 0 : 1// start with as if last message came from other person, as her/his photo is already showing
 		return div(
-			face(person, { size:unit*7 }, floatLeft),
-			div(style(floatLeft, unitPadding(0, 1)),
-				div(style(unitPadding(0, 0, 1/2), { fontWeight:600 }), person.name),
-				(convo.recent.length == 0
-					? div(style({ color:'#666' }), 'Start the conversation')
-					: div(map(convo.recent, function(message) {
-						return face(convo.people[message.personIndex], { size:25 })
-					}))
-				)
+			face(person, { size:unit*7 }, floatLeft, unitMargin(0, 1/2, 1/2, 0)),
+			div(style(unitPadding(0, 1)),
+				div(style(unitPadding(0, 0, 1/2), { fontWeight:600 }), person.name)
+			),
+			div(convo.recent.length == 0
+				? div(style({ color:'#666' }), 'Start the conversation')
+				: map(convo.recent, function(message) {
+					var isNewPerson = (message.personIndex != lastIndex)
+					lastIndex = message.personIndex
+					return div(
+						isNewPerson && face(convo.people[message.personIndex], { size:25 }, { display:'inline-block' }, floatLeft),
+						_renderContent(message),
+						div('clear')
+					)
+				})
 			)
 		)
+		
+		function _renderContent(message) {
+			if (Messages.isAudio(message)) {
+				var url = Payloads.url(message)
+				return div(null, round(payload.duration, 1), 's', audio({ src:url, controls:true }))
+			} else if (Messages.isText(message)) {
+				return div(style({ maxHeight:unit*4, overflow:'hidden' }), DogoText.getHtml(message.payload.body))
+			} else if (Messages.isPicture(message)) {
+				var size = [200, unit*4]
+				var url = BT.url('BTImage.fetchImage', { url:Payloads.url(message), cache:true, crop:[200, unit*4] })
+				return div(style(graphics.backgroundImage(url, size[0], size[1], { background:'#eee' })))
+			}
+		}
 	}
 	function _renderGroupCard(convo, people) {
+		var otherPeople = notMe(people)
 		return div(
-			map(people, function(person) { return face(person, { size:unit*7 }, floatLeft) }),
-			map(people, function(person) { return person.name }).join(', ')
+			map(otherPeople, function(person) { return face(person, { size:unit*7 }, floatLeft) }),
+			map(otherPeople, function(person) { return person.name }).join(', ')
 		)
 	}
 }
