@@ -27,7 +27,7 @@ function startGuestClient() {
 	})
 }
 
-function init(conversationId, guestIndex, secret, callback) {
+function init(conversationId, personIndex, secret, callback) {
 	var list = makeList({
 		renderItem: _renderMessage,
 		renderEmpty:function() { return div(style({ textAlign:'center', paddingTop:unit*4 }), 'Loading...') }
@@ -72,30 +72,23 @@ function init(conversationId, guestIndex, secret, callback) {
 		$('#southFrame').css({ top:size.height, width:size.width })
 	})
 	
-	api.post('/api/guest/session', { conversationId:conversationId, guestIndex:guestIndex, secret:secret }, function(err, res) {
+	var people
+	api.post('/api/guest/session', { conversationId:conversationId, personIndex:personIndex, secret:secret }, function(err, res) {
 		if (err) { return callback(err) }
 		gConfigure(res.sessionInfo.config)
-		_storePeople(res.people)
 		sessionInfo.set(res.sessionInfo)
+		people = res.people
 		api.get('/api/guest/messages', function(err, res) {
 			if (err) { return callback(err) }
+			each(res.messages, function(message) {
+				message.payload = JSON.parse(remove(message, 'payloadJson'))
+			})
 			list.append(res.messages)
 		})
 	})
 	
-	var dogoPeopleById = {}
-	var guestPeopleByIndex = null
-	function _storePeople(people) {
-		guestPeopleByIndex = people
-		each(people, function(person) {
-			if (!Addresses.isDogo(person)) { return }
-			dogoPeopleById[person.addressId] = person
-		})
-	}
-	
 	function _renderMessage(message) {
-		var person = (message.fromPersonId ? dogoPeopleById[message.fromPersonId] : guestPeopleByIndex[message.fromGuestIndex])
-		message.payload = JSON.parse(message.payloadJson)
+		var person = people[message.personIndex]
 		return renderMessage(message, person)
 	}
 }

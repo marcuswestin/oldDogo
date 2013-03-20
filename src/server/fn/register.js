@@ -62,6 +62,7 @@ function withFacebookSession(name, email, password, fbSession, pictureSecret, ca
 	function _getFacebookData(callback) {
 		log('_getFacebookData')
 		facebook.get('/me?fields=id,birthday,email', { access_token:fbSession.accessToken }, function(err, res) {
+			if (err && err.code == 'ETIMEDOUT') { return callback('Facebook is not responding. Please try again.') }
 			log.debug('_getFacebookData done')
 			callback(err, res)
 		})

@@ -10,21 +10,21 @@ createSession.forGuest = createGuestSession
 createSession.guestPrefix = 'g:'
 createSession.personPrefix = 'p:'
 
-function createGuestSession(conversationId, guestIndex, secret, callback) {
-	var sql = 'SELECT 1 FROM guestAccess WHERE conversationId=? AND guestIndex=? AND secret=?'
-	db.conversation(conversationId).selectOne(sql, [conversationId, guestIndex, secret], function(err, res) {
+function createGuestSession(conversationId, personIndex, secret, callback) {
+	var sql = 'SELECT 1 FROM guestAccess WHERE conversationId=? AND personIndex=? AND secret=?'
+	db.conversation(conversationId).selectOne(sql, [conversationId, personIndex, secret], function(err, res) {
 		if (err) { return callback(err) }
 		if (!res) { return callback('Unknown conversation') }
 		var sql = 'SELECT peopleJson FROM conversation WHERE conversationId=?'
 		db.conversation(conversationId).selectOne(sql, [conversationId], function(err, res) {
 			if (err) { return callback(err) }
 			var people = JSON.parse(res.peopleJson)
-			var person = people[guestIndex]
+			var person = people[personIndex]
 			lookupService.lookup(person, function(err, personId, addrInfo) {
 				if (err) { return callback(err) }
 				if (personId) { return callback('Please use your Dogo app') }
 				var expiration = 3 * time.days
-				var authToken = secret+':'+conversationId+':'+guestIndex
+				var authToken = secret+':'+conversationId+':'+personIndex
 				redis.setex(createSession.guestPrefix+authToken, expiration, 1, function(err) {
 					if (err) { return callback(err) }
 					callback(null, {

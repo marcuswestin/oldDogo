@@ -9,11 +9,7 @@ function renderMessage(message, person) {
 		isNewTime = true
 	} else {
 		isNewTime = (Math.abs(lastMessage.postedTime - message.postedTime) > (3 * time.hours))
-		if (message.fromGuestIndex) {
-			isNewPerson = (message.fromGuestIndex != lastMessage.fromGuestIndex)
-		} else {
-			isNewPerson = (lastMessage.fromPersonId != message.fromPersonId)
-		}
+		isNewPerson = message.personIndex != lastMessage.personIndex
 	}
 
 	var makeNewCard = isNewPerson || isNewTime

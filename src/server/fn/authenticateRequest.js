@@ -41,10 +41,10 @@ function authenticateDogoGuest(req, callback) {
 	if (parts.length != 3) { return callback('Bad auth') }
 	var secret = parts[0]
 	var conversationId = parseInt(parts[1])
-	var guestIndex = parseInt(parts[2])
+	var personIndex = parseInt(parts[2])
 	redis.get(createSession.guestPrefix+authToken, function(err, authorized) {
 		if (!authorized) { return callback('Unauthorized') }
-		req.session = { conversationId:conversationId, guestIndex:guestIndex }
+		req.session = { guest:true, conversationId:conversationId, personIndex:personIndex }
 		callback()
 	})
 }

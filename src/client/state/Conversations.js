@@ -5,9 +5,26 @@ var cacheName = 'ConversationsMeta'
 module.exports = {
 	read:readConversations,
 	fetch:fetchConversations,
+	create:createConversation,
 	readMessages:readMessages,
 	fetchMessages:fetchMessages,
 	addAddresses:addAddresses
+}
+
+function createConversation(contacts, callback) {
+	api.post('api/conversation', { contacts:contacts }, function(err, res) {
+		if (err) { return callback(err) }
+		var conversation = _fixConversation(res.conversation)
+		asyncEach(contacts, {
+			iterate:function(contact, callback) {
+				var sql = 'UPDATE contact SET conversationId=? WHERE contactUid=?'
+				bridge.command('BTSql.update', { sql:sql, arguments:[conversation.conversationId, contact.contactUid] }, callback)
+			},
+			finish:function(err) {
+				callback(err, conversation)
+			}
+		})
+	})
 }
 
 function readConversations(callback) {
@@ -18,10 +35,18 @@ function readConversations(callback) {
 	})
 }
 
+function _fixConversation(convo) {
+	convo.people = jsonList(remove(convo, 'peopleJson'))
+	convo.recent = jsonList(remove(convo, 'recentJson'))
+	convo.pictures = jsonList(remove(convo, 'picturesJson'))
+	return convo
+}
+
 function fetchConversations(callback) {
 	api.get('api/conversations', function apiGetConversations(err, res) {
 		if (err) { return callback(err) }
 		var conversations = res.conversations
+		each(conversations, _fixConversation)
 		if (conversations.length) {
 			Caches.write(cacheName, { conversations:conversations })
 		}

@@ -40,7 +40,7 @@ events.on('push.notification', function onPushNotification(info) {
 	if (data.message) {
 		var message = data.message
 		if (info.didBringAppIntoForeground) {
-			loadConversation(message.fromPersonId, function(convo) {
+			loadConversation(message.personId, function(convo) {
 				var view = { conversation:convo }
 				gScroller.set({ view:view, index:1, render:true, animate:false })
 				events.fire('push.message', payload, info)

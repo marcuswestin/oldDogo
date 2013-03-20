@@ -14,7 +14,7 @@ var filename = 'DogoSessionInfo'
 var properties = ([
 	'authorization', 'config', // all clients
 	'person', 'clientUidBlock', // dogo client
-	'guestIndex', 'address' // guest client
+	'personIndex', 'address' // guest client
 ])
 
 function myAddress() {

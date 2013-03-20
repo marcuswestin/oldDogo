@@ -13,8 +13,8 @@ module.exports = {
 function sendMessage(session, messageData, payloadFile, prodPush, callback) {
 	log.debug('sendMessage', session, messageData)
 	
-	var fromPersonId = session.personId
-	var fromGuestIndex = session.guestIndex
+	var personId = session.personId
+	var personIndex = messageData.personIndex
 	var payload = messageData.payload
 	var type = messageData.type
 	var clientUid = messageData.clientUid
@@ -26,12 +26,12 @@ function sendMessage(session, messageData, payloadFile, prodPush, callback) {
 	parallel(_checkConversationAccess, _uploadPayload, function(err, _, payload) {
 		if (err) { return callback(err) }
 		log.debug('create message', conversationId, payload)
-		var sql = 'INSERT INTO message SET postedTime=?, fromPersonId=?, fromGuestIndex=?, clientUid=?, conversationId=?, type=?, payloadJson=?'
+		var sql = 'INSERT INTO message SET postedTime=?, personId=?, personIndex=?, clientUid=?, conversationId=?, type=?, payloadJson=?'
 		var now = time.now()
-		db.conversation(conversationId).insert(sql, [now, fromPersonId, fromGuestIndex, clientUid, conversationId, type, JSON.stringify(payload)], function(err, messageId) {
+		db.conversation(conversationId).insert(sql, [now, personId, personIndex, clientUid, conversationId, type, JSON.stringify(payload)], function(err, messageId) {
 			if (err) { return callback(err) }
 			var message = {
-				fromPersonId:fromPersonId, fromGuestIndex:fromGuestIndex,
+				personId:personId, personIndex:personIndex,
 				conversationId:conversationId, clientUid:clientUid,
 				id:messageId, postedTime:now, type:type, payload:payload
 			}
@@ -42,20 +42,24 @@ function sendMessage(session, messageData, payloadFile, prodPush, callback) {
 	
 	function _uploadPayload(callback) {
 		if (type != Messages.types.picture && type != Messages.types.audio) { return callback(null, payload) }
-		payloadService.uploadPayload(fromPersonId, type, payloadFile, function(err, secret) {
+		payloadService.uploadPayload(conversationId, personIndex, type, payloadFile, function(err, secret) {
 			if (!err) { payload.secret = secret }
 			return callback(err, payload)
 		})
 	}
 	
 	function _checkConversationAccess(callback) {
-		if (fromGuestIndex) { return callback(session.conversationId == conversationId ? null : 'Bad conversation id') }
-		var sql = 'SELECT 1 FROM participation WHERE personId=? AND conversationId=?'
-		db.person(fromPersonId).selectOne(sql, [fromPersonId, conversationId], function(err, row) {
-			if (err) { return callback(err) }
-			if (!row) { return callback("I couldn't find that conversation") }
-			callback()
-		})
+		if (session.guest) {
+			var authorized = (conversationId == session.conversationId && personIndex == session.personIndex)
+			return callback(authorized ? null : 'Nice try! Why not work together rather than against each other? marcus@dogo.co')
+		} else {
+			var sql = 'SELECT 1 FROM participation WHERE personId=? AND conversationId=?'
+			db.person(personId).selectOne(sql, [personId, conversationId], function(err, row) {
+				if (err) { return callback(err) }
+				if (!row) { return callback("I couldn't find that conversation") }
+				callback()
+			})
+		}
 	}
 }
 
@@ -85,14 +89,13 @@ function _notifyParticipants(message, prodPush) {
 		var pushFromName
 		var dogoRecipients = []
 		var externalRecipients = []
-		each(people, function(address, index) {
-			if (!Addresses.isDogo(address)) {
-				externalRecipients.push({ address:address, guestIndex:index })
-			} else if (address.addressId == message.fromPersonId) {
-				// Dogo sender
-				pushFromName = address.name.split(' ')[0]
+		each(people, function(person, index) {
+			if (index == message.personIndex) {
+				pushFromName = person.name.split(' ')[0]
+			} else if (Addresses.isDogo(person)) {
+				dogoRecipients.push(person.addressId)
 			} else {
-				dogoRecipients.push(address.addressId)
+				externalRecipients.push({ address:person, personIndex:index })
 			}
 		})
 		pushService.sendMessagePush(people, dogoRecipients, externalRecipients, pushFromName, message, prodPush, callback)
@@ -105,8 +108,8 @@ function _notifyParticipants(message, prodPush) {
 			finish:callback,
 			iterate:function(person, callback) {
 				log.debug('update participation', person)
-				var personId = person.personId
-				if (!personId) { return }
+				if (!Addresses.isDogo(person)) { return }
+				var personId = person.addressId
 				var sql = "SELECT peopleJson, recentJson, picturesJson, lastReceivedTime FROM participation WHERE personId=? AND conversationId=?"
 				db.person(personId).selectOne(sql, [personId, message.conversationId], function(err, participation) {
 					if (err) { return callback(err) }

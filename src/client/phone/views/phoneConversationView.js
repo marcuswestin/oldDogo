@@ -80,7 +80,7 @@ function renderFoot(view) {
 /* Messages
  **********/
 function _getMessageId(message) {
-	return message.fromPersonId + '-' + message.clientUid
+	return message.personIndex + '-' + message.clientUid
 }
 
 function _selectMessage(message) {
@@ -88,20 +88,7 @@ function _selectMessage(message) {
 }
 
 function _renderMessage(message) {
-	return renderMessage(message, _getMessagePerson(message))
-}
-
-var peopleById
-events.on('view.changing', function() { peopleById = null })
-function _getMessagePerson(message) {
-	if (!peopleById) {
-		peopleById = {}
-		each(view.conversation.people, function(person) {
-			if (!Addresses.isDogo(person)) { return }
-			peopleById[person.addressId] = person
-		})
-	}
-	return (message.fromPersonId ? peopleById[message.fromPersonId] : view.conversation.people[message.fromGuestIndex])
+	return renderMessage(message, view.conversation.people[message.personIndex])
 }
 
 /* Events

@@ -71,7 +71,7 @@ function scrollDown(duration, amount) {
 	}
 }
 
-function getMessageId(message) { return message.fromPersonId + '-' + message.clientUid }
+function getMessageId(message) { return message.personIndex + ':' + message.clientUid }
 
 function getMessagesList() {
 	if (getMessagesList._list) { return getMessagesList._list }
@@ -179,9 +179,9 @@ gRenderMessageBubble = function(message, conversation, opts) {
 		maxHeight:null
 	})
 	var me = gState.me()
-	var isNewPerson = (lastMessageFromId != message.fromPersonId)
-	lastMessageFromId = message.fromPersonId
-	var fromMe = (message.fromPersonId == me.personId)
+	var isNewPerson = (lastMessageFromId != message.personId)
+	lastMessageFromId = message.personId
+	var fromMe = (message.personId == me.personId)
 	var classes = [message.type+'Message', fromMe ? 'fromMe' : 'fromThem']
 	var person = (fromMe ? me : conversation.people[0])
 	var floatRight = { 'float':'right' }

@@ -49,8 +49,8 @@ function _createGuestAccesses(externalAddressInfos, conversationId, callback) {
 		finish:callback,
 		iterate:function(addrInfo, callback) {
 			makeUid(24, function(err, secret) {
-				var sql = 'INSERT INTO guestAccess SET conversationId=?, secret=?, createdTime=?, guestIndex=?'
-				db.conversation(conversationId).insertIgnoreId(sql, [conversationId, secret, now, addrInfo.guestIndex], callback)
+				var sql = 'INSERT INTO guestAccess SET conversationId=?, secret=?, createdTime=?, personIndex=?'
+				db.conversation(conversationId).insertIgnoreId(sql, [conversationId, secret, now, addrInfo.personIndex], callback)
 			})
 		}
 	})
@@ -67,7 +67,7 @@ function _lookupContacts(contacts, callback) {
 				if (personId) {
 					dogoPeople.push({ addressType:Addresses.types.dogo, addressId:personId, name:lookupInfo.name })
 				} else {
-					externalAddressInfos.push({ contact:contact, lookupInfo:lookupInfo, guestIndex:index })
+					externalAddressInfos.push({ contact:contact, lookupInfo:lookupInfo, personIndex:index })
 				}
 				callback()
 			})

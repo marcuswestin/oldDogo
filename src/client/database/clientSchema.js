@@ -21,15 +21,17 @@ function getTableSchemas() {
 		,
 		'CREATE TABLE IF NOT EXISTS message (' + [
 			'messageId BIGINT UNSIGNED DEFAULT NULL',
-			'fromPersonId BIGINT UNSIGNED DEFAULT NULL',
+			'personId BIGINT UNSIGNED DEFAULT NULL',
 			'clientUid BIGINT UNSIGNED DEFAULT NULL',
-			'fromGuestIndex TINYINT UNSIGNED DEFAULT NULL',
+			'personIndex TINYINT UNSIGNED NOT NULL',
 			'conversationId BIGINT UNSIGNED NOT NULL',
 			'postedTime INT UNSIGNED NOT NULL',
 			'type INT UNSIGNED NOT NULL',
 			'payloadJson VARCHAR(2048) NOT NULL',
-			'PRIMARY KEY (fromPersonId, clientUid)',
+			'PRIMARY KEY (personIndex, clientUid)',
 			'UNIQUE (messageId)'
 		].join(',\n') + '); \n'
+		,
+		'CREATE INDEX messageConversationIndex ON message(conversationId); \n'
 	]
 }

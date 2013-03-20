@@ -114,15 +114,34 @@ function notMe(people) {
 /* Cards
  *******/
 function _renderCard(convo) {
-	var person = notMe(convo.people)[0]
-	return div(style(unitPadding(1/2), { background:'white', borderBottom:'1px solid #ccc' }),
-		face(person, { size:unit*7 }, floatLeft),
-		div(style(floatLeft, unitPadding(0, 1)),
-			div(style(unitPadding(0, 0, 1/2), { fontWeight:600 }), person.name.split(' ')[0]),
-			div(style({ color:'#666' }), 'Start the conversation')
-		),
-		div('clear')
-	)
+	var people = notMe(convo.people)
+	if (people.length == 1) {
+		var person = people[0]
+		return div(style(unitPadding(1/2), { background:'white', borderBottom:'1px solid #ccc' }),
+			people.length == 1 ? _renderPersonCard(convo, people[0]) : _renderGroupCard(convo, people),
+			div('clear')
+		)
+	}
+	function _renderPersonCard(convo, person) {
+		return div(
+			face(person, { size:unit*7 }, floatLeft),
+			div(style(floatLeft, unitPadding(0, 1)),
+				div(style(unitPadding(0, 0, 1/2), { fontWeight:600 }), person.name),
+				(convo.recent.length == 0
+					? div(style({ color:'#666' }), 'Start the conversation')
+					: div(map(convo.recent, function(message) {
+						return face(convo.people[message.personIndex], { size:25 })
+					}))
+				)
+			)
+		)
+	}
+	function _renderGroupCard(convo, people) {
+		return div(
+			map(people, function(person) { return face(person, { size:unit*7 }, floatLeft) }),
+			map(people, function(person) { return person.name }).join(', ')
+		)
+	}
 }
 
 function _selectCard(convo) {

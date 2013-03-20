@@ -372,7 +372,7 @@ function sendMessage(type, messageData) {
 	
 	var message = {
 		toParticipationId:conversation.participationId,
-		fromPersonId:gState.me().personId,
+		personId:gState.me().personId,
 		clientUid:clientUid,
 		type:type,
 		payload:{}

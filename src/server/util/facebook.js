@@ -8,7 +8,7 @@ module.exports = {
 }
 
 function send(method, path, qsParams, callback) {
-	request[method]({ url:'https://graph.facebook.com/' + path, qs:qsParams, timeout:3000 }, function(err, res) {
+	request[method]({ url:'https://graph.facebook.com/' + path, qs:qsParams, timeout:6000 }, function(err, res) {
 		if (err) { return callback(err) }
 		try {
 			if (res.headers['content-type'].match(/^text\/javascript/)) {

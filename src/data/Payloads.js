@@ -33,13 +33,13 @@ function personPictureUrl(personId) { return base() + personPicturePath(personId
 function underlyingPersonPicturePath(secret) { return '/people/pictures/'+secret+'.'+extensions[Messages.types.picture] }
 function underlyingPersonPictureUrl(secret) { return base() + underlyingPersonPicturePath(secret) }
 
-function path(personId, secret, type) {
-	return '/people/'+(personId || 'guests')+'/payloads/'+secret+'.'+extensions[type]
+function path(conversationId, personIndex, secret, type) {
+	return '/conv/'+conversationId+'/'+personIndex+'/'+secret+'.'+extensions[type]
 }
 
 function url(message) {
 	var payload = message.payload
-	return base(payload.bucket, payload.region) + Payloads.path(message.fromPersonId, payload.secret, message.type)
+	return base(payload.bucket, payload.region) + Payloads.path(message.conversationId, message.personIndex, payload.secret, message.type)
 }
 
 function base(bucket, region) {

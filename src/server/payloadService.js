@@ -28,10 +28,10 @@ function makeRedirect(fromPath, toUrl, callback) {
 	s3.putBuffer(fromPath, emptyBuffer, s3PersmissionAcl, headers, callback)
 }
 
-function uploadPayload(personId, type, payloadFile, callback) {
+function uploadPayload(conversationId, personIndex, type, payloadFile, callback) {
 	makeUid(36, function(err, secret) {
 		if (err) { return callback(err) }
-		var path = Payloads.path(personId, secret, type)
+		var path = Payloads.path(conversationId, personIndex, secret, type)
 		_doUpload(type, path, payloadFile, function(err) { callback(err, secret) })
 	})
 }

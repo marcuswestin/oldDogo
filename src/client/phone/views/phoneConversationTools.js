@@ -290,14 +290,13 @@ function sendMessage(type, data) {
 		if (sessionInfo.person) {
 			sessionInfo.getClientUid(function(err, clientUid) {
 				if (err) { return error(err) }
-				doSend({ clientUid:clientUid, fromPersonId:sessionInfo.person.personId })
+				doSend(myIndex(), clientUid)
 			})
 		} else {
-			doSend({ fromGuestIndex:sessionInfo.guestIndex })
+			doSend(sessionInfo.personIndex)
 		}
-		function doSend(message) {
-			message.type = type
-			message.conversationId = parseInt(view.conversation.conversationId)
+		function doSend(personIndex, clientUid) {
+			var message = { type:type, conversationId:parseInt(view.conversation.conversationId), personIndex:personIndex, clientUid:clientUid }
 			var jsonParams = { message:message }
 			var commandData = { method:"POST", url:api.getUrl('api/message'), headers:api.getHeaders(), boundary: '________dgmltprtbndr', jsonParams:jsonParams }
 			var preview = null
@@ -340,15 +339,21 @@ function sendMessage(type, data) {
 		var contacts = map([view.contact], function(c) {
 			return { addressType:c.addressType, addressId:c.addressId, name:c.name, contactUid:c.contactUid }
 		})
-		api.post('api/conversation', { contacts:contacts }, function(err, res) {
-			overlay.hide()
+		Conversations.create(contacts, function(err, conversation) {
 			if (err) { return callback(err) }
-			var sql = 'UPDATE contact SET conversationId=? WHERE contactUid=?'
-			bridge.command('BTSql.update', { sql:sql, arguments:[res.conversation.conversationId, view.contact.contactUid] }, function(err) {
-				if (err) { return callback(err) }
-				view.conversation = res.conversation
-				saveViewStack(callback)
-			})
+			overlay.hide()
+			view.conversation = conversation
+			saveViewStack(callback)
 		})
+	}
+}
+
+events.on('view.changing', function() { myIndex.cached = null })
+function myIndex() {
+	if (myIndex.cached) { return myIndex.cached }
+	var people = view.conversation.people
+	for (var index=0; index<people.length; index++) {
+		if (!Addresses.equal(people[index], sessionInfo.person)) { continue }
+		return myIndex.cached = index
 	}
 }

@@ -180,8 +180,8 @@ function setupRoutes(app, opts) {
 	})
 	// Guest access
 	app.post('/api/guest/session', function handlePostGuestSession(req, res) {
-		var params = getJsonParams(req, 'conversationId', 'guestIndex', 'secret')
-		createSession.forGuest(params.conversationId, params.guestIndex, params.secret, curry(respond, req, res))
+		var params = getJsonParams(req, 'conversationId', 'personIndex', 'secret')
+		createSession.forGuest(params.conversationId, params.personIndex, params.secret, curry(respond, req, res))
 	})
 	app.get('/api/guest/messages', filters.guestRequest, function handleGetGuestMessages(req, res) {
 		getMessages.forConversation(req.session.conversationId, 0, wrapRespond(req, res, 'messages'))

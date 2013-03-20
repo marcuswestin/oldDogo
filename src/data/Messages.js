@@ -38,7 +38,7 @@ function cleanPayloadForUpload(type, payload) {
 }
 
 var messagePushEncoder = makeEncoder({
-	fromPersonId: 'I',
+	personIndex: 'X',
 	conversationId: 'C',
 	clientUid: 'U',
 	postedTime: 'W',

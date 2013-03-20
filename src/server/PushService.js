@@ -79,15 +79,15 @@ function sendMessagePush(people, dogoRecipients, externalRecipients, pushFromNam
 			parallel:true,
 			finish:function() { log('done sending external message notifications') },
 			iterate:function(addrInfo, callback) {
-				var sql = 'SELECT secret FROM guestAccess WHERE conversationId=? AND guestIndex=?'
-				db.conversation(message.conversationId).selectOne(sql, [message.conversationId, addrInfo.guestIndex], function(err, guestAccess) {
+				var sql = 'SELECT secret FROM guestAccess WHERE conversationId=? AND personIndex=?'
+				db.conversation(message.conversationId).selectOne(sql, [message.conversationId, addrInfo.personIndex], function(err, guestAccess) {
 					if (err) { return callback(err) }
 					var secret = guestAccess.secret
-					var toAddress = people[addrInfo.guestIndex]
+					var toAddress = people[addrInfo.personIndex]
 					if (Addresses.isEmail(toAddress)) {
-						_sendEmailNotification(toAddress.addressId, addrInfo.guestIndex, secret, pushFromName, message, callback)
+						_sendEmailNotification(toAddress.addressId, addrInfo.personIndex, secret, pushFromName, message, callback)
 					} else if (Addresses.isPhone(toAddress)) {
-						_sendPhoneNotification(toAddress.addressId, addrInfo.guestIndex, secret, pushFromName, message, callback)
+						_sendPhoneNotification(toAddress.addressId, addrInfo.personIndex, secret, pushFromName, message, callback)
 					} else if (Addresses.isFacebook(toAddress)) {
 						log.warn("TODO Fix send to facebook")
 						return callback("Cant push to facebook yet")
@@ -98,8 +98,8 @@ function sendMessagePush(people, dogoRecipients, externalRecipients, pushFromNam
 	}
 }
 
-function _sendPhoneNotification(phoneNumber, guestIndex, secret, pushFromName, message, callback) {
-	var url = ' '+_conversationUrl(message, guestIndex, secret)
+function _sendPhoneNotification(phoneNumber, personIndex, secret, pushFromName, message, callback) {
+	var url = ' '+_conversationUrl(message, personIndex, secret)
 	var maxLength = 160 - (gConfig.dev ? 'Sent from the Twilio Sandbox Number - '.length : 0)
 	var remaining = maxLength - pushFromName.length - url.length
 	if (remaining < 2) {  }
@@ -130,12 +130,12 @@ function _sendPhoneNotification(phoneNumber, guestIndex, secret, pushFromName, m
 	sendSms(phoneNumber, smsText, callback)
 }
 
-function _conversationUrl(message, guestIndex, secret) {
-	return [gConfig.serverUrl, 'c', message.conversationId, guestIndex, secret].join('/')
+function _conversationUrl(message, personIndex, secret) {
+	return [gConfig.serverUrl, 'c', message.conversationId, personIndex, secret].join('/')
 }
 
-function _sendEmailNotification(emailAddress, guestIndex, secret, pushFromName, message, callback) {
-	var convUrl = _conversationUrl(message, guestIndex, secret)
+function _sendEmailNotification(emailAddress, personIndex, secret, pushFromName, message, callback) {
+	var convUrl = _conversationUrl(message, personIndex, secret)
 	var content = null
 	
 	if (Messages.isText(message)) {
@@ -193,7 +193,7 @@ function _sendPushNotification(toPersonId, pushFromName, message, prodPush, call
 		notification.device = new apns.Device(pushInfo.token)
 		notification.payload = payload
 		
-		log.debug('do send', toPersonId)
+		log.debug('do send', pushInfo, toPersonId)
 		var connection = prodPush ? apnsConnections.prod : apnsConnections.sandbox
 		connection.sendNotification(notification)
 		

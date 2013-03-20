@@ -38,25 +38,24 @@ function send(method, path, params, callback) {
 		callback = params
 		delete params
 	}
-	var headers = getHeaders()
-	if (method == 'POST' && params) {
-		params = JSON.stringify(params)
-		headers['Content-Type'] = 'application/json'
-	}
 	return sendRequest({
 		method:method,
 		url:getPath(path),
-		headers:headers,
 		jsonParams:params,
 		callback:callback
 	})
 }
 
 function sendRequest(opts) {
+	var headers = getHeaders()
+	if (opts.method == 'POST' && opts.jsonParams) {
+		opts.jsonParams = JSON.stringify(opts.jsonParams)
+		headers['Content-Type'] = 'application/json'
+	}
 	return $.ajax({
 		type:opts.method,
 		url:opts.url,
-		headers:opts.headers,
+		headers:headers,
 		data:opts.jsonParams,
 		success:function(res, textStatus, jqXhr) {
 			handleResponse(jqXhr, opts.url, opts.callback, null, res)
