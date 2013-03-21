@@ -61,7 +61,11 @@ function firstTimeSetup() {
 }
 
 function renderPhoneClient() {
-	appBg = graphics.backgroundImage(graphics.url('background/fabric_plaid'), 200, 200, { repeat:'repeat' })
+	// appBg = graphics.backgroundImage(graphics.url('background/light_wool'), 190, 191, { repeat:'repeat' })
+	appBg = graphics.backgroundImage(graphics.url('background/bright_squares'), 297, 297, { repeat:'repeat' })
+	// appBg = graphics.backgroundImage(graphics.url('background/whitey'), 654, 654, { repeat:'repeat' })
+	// appBg = graphics.backgroundImage(graphics.url('background/furley_bg'), 600, 600, { repeat:'repeat' })
+	// appBg = graphics.backgroundImage(graphics.url('background/fabric_plaid'), 200, 200, { repeat:'repeat' })
 
 	$('body').css(viewport.size()).css({ overflow:'hidden' })
 	$('#viewport')

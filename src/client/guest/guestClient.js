@@ -11,10 +11,12 @@ after(100, hideNavBar)
 after(500, hideNavBar)
 after(1000, hideNavBar)
 
+appBg = graphics.backgroundImage(graphics.url('background/bright_squares'), 297, 297, { repeat:'repeat' })
+$('body').css(appBg)
 
-$('body').css({ backgroundImage:'url('+graphics.url('background', 100, 100)+')', backgroundSize:'50px 50px' })
+viewport.width = function() { return clip($(window).width(), 0, 640) }
 
-$('#viewport').css({ margin:'0 auto', background:'#fff', overflow:'hidden' })
+$('#viewport').css({ margin:'0 auto', overflow:'hidden' })
 
 events.on('app.start', startGuestClient)
 bridge.init()
@@ -66,11 +68,13 @@ function init(conversationId, personIndex, secret, callback) {
 		div({ id:'southFrame' }, style(absolute(0,0)))
 	)
 	
-	viewport.react(function(size) {
+	viewport.react(layout)
+	function layout(size) {
 		$('#viewport').css(size)
-		$('#centerFrame').css(size)
 		$('#southFrame').css({ top:size.height, width:size.width })
-	})
+		$('#centerFrame').css(size)
+		$('#southFrame, #centerFrame').css({ left:Math.floor(($(window).width() - size.width) / 2) })
+	}
 	
 	var people
 	api.post('/api/guest/session', { conversationId:conversationId, personIndex:personIndex, secret:secret }, function(err, res) {
@@ -84,7 +88,17 @@ function init(conversationId, personIndex, secret, callback) {
 				message.payload = JSON.parse(remove(message, 'payloadJson'))
 			})
 			list.append(res.messages)
+			layout(viewport.size())
 		})
+	})
+	
+	function scrollToBottom() {
+		gScroller.getView()[0].scrollTop = 99999999
+	}
+	
+	events.on('message.sending', function(message) {
+		list.append(message)
+		scrollToBottom()
 	})
 	
 	function _renderMessage(message) {

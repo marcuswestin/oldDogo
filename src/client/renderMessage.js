@@ -1,5 +1,7 @@
 module.exports = renderMessage
 
+cardShadow = '0 2px 2px -1px rgba(0,0,25,.5)'
+
 var lastMessage
 events.on('view.changing', function() { lastMessage = null })
 function renderMessage(message, person) {
@@ -34,16 +36,17 @@ function renderMessage(message, person) {
 			)
 		)
 		]
-		: div(style(unitMargin(0, 1/2), unitPadding(0,0,1/2,1/2), { background:bg, boxShadow:cardShadow }),
+		: div(style(unitMargin(0, 1/2), { background:bg, boxShadow:cardShadow }),
 			renderContent(message)
 		)
 	)
 }
 
+var imageInsetShadow = 'inset 0 1px 1px rgba(0,0,0,.5), inset 0 -1px 2px 1px rgba(255,255,255,.25)'
 function renderContent(message) {
 	var payload = message.payload
 	if (Messages.isText(message)) {
-		return html(DogoText.getHtml(payload.body))
+		return div(style(unitPadding(0, 1, 1/2)), html(DogoText.getHtml(payload.body)))
 	} else if (Messages.isPicture(message)) {
 		var url = BT.url('BTImage.fetchImage', message.preview
 			? { document:message.preview.document }
@@ -51,8 +54,12 @@ function renderContent(message) {
 		)
 		var messageWidth = viewport.width() - unit*2
 		var displaySize = [Math.min(messageWidth, payload.width), Math.min(messageWidth, payload.height)]
-		var deltaX = (messageWidth - displaySize[0]) / 2
-		return div(style(graphics.backgroundImage(url, displaySize[0], displaySize[1], { background:'#eee' }), translate.x(deltaX), { width:displaySize[0], height:displaySize[1] }))
+		return div(style(unitPadding(0,0,1/2)),
+			div(style(
+				graphics.backgroundImage(url, displaySize[0], displaySize[1], { background:'#eee' }),
+				{ width:displaySize[0], height:displaySize[1], boxShadow:imageInsetShadow, margin:'0 auto' }
+			))
+		)
 	} else if (Messages.isAudio(message)) {
 		var url = message.preview
 			? BT.url('BTFiles.getDocument', { document:message.preview.document, mimeType:Payloads.mimeTypes[message.type] })

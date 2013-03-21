@@ -116,11 +116,9 @@ notMe = function(people) {
 	return filter(people, function(person) { return !Addresses.equal(sessionInfo.person, person) })
 }
 
-cardShadow = '0 2px 2px -1px rgba(0,0,25,.5)'
-
-
 /* Cards
  *******/
+var faceInsetShadow = 'inset 0 0 0 1px rgba(255,255,255,.75)'
 function _renderCard(convo) {
 	var people = convo.people
 	var cardWidth = (viewport.width() - unit*1.5)/2
@@ -149,7 +147,7 @@ function _renderCard(convo) {
 		}
 		
 		return div(style({ color:'#222' }),
-			Addresses.hasImage(person) && face(person, { width:contentWidth, height:round(contentWidth*0.85) }, unitMargin(0, 1/2, 1/2, 0)),
+			Addresses.hasImage(person) && face(person, { width:contentWidth, height:round(contentWidth*0.85) }, unitMargin(0, 1/2, 1/2, 0), { boxShadow:faceInsetShadow }),
 			div(style({ fontSize:17, whiteSpace:'nowrap' }, unitPadding(0,0,1/2,0)),
 				title
 			),
