@@ -111,7 +111,7 @@ unit2 = unit*2
 unit3 = unit*3
 unit4 = unit*4
 unit5 = unit*5
-resolution = window.devicePixelRatio
+resolution = window.devicePixelRatio || 1
 
 jsonList = function(jsonProperty) { return jsonProperty ? JSON.parse(jsonProperty) : [] }
 remove = function(obj, prop) { var val = obj[prop]; delete obj[prop]; return val }
