@@ -2,7 +2,12 @@ var tools = module.exports = {
 	renderFoot:renderFoot,
 	selectText:selectTool(_textTool),
 	selectCamera:selectTool(_cameraTool),
-	selectMicrophone:selectTool(_microphoneTool)
+	selectMicrophone:selectTool(_microphoneTool),
+	getHeight:getHeight
+}
+
+function getHeight() {
+	return currentToolFn ? currentToolFn.getHeight() : 0
 }
 
 function renderFoot(view, opts) {
@@ -120,13 +125,12 @@ function _cameraTool(toolHeight, barHeight) {
 	return div('cameraTool',
 		div('bar', style({ width:viewport.width(), height:barHeight + unit/2, background:"#fff" }),
 			div('button', 'close', style(unitPadding(1)), button(function() {
-				bridge.command('BTCamera.hide', function() {
-					_hideCurrentTool()
-				})
+				_hideCurrentTool()
 			})),
 			div('button', 'Send', style(floatRight, unitPadding(1)), button(function() {
-				sendMessage(Messages.types.picture, { document:draftDoc, width:picSize, height:picSize })
-				$('#cameraOverlay').css({ background:'transparent' })
+				sendMessage(Messages.types.picture, { document:draftDoc, width:picSize, height:picSize }, function() {
+					_hideCurrentTool()
+				})
 			}))
 		),
 		div('overlay', { id:'cameraOverlay' }, style({ width:camSize, height:camSize, textAlign:'center', border:camPad+'px solid #fff' }),
@@ -283,6 +287,7 @@ function _hideCurrentTool() {
 	$('#centerFrame').css(translate.y(0))
 	$('#southFrame').css(translate.y(extraHeight || 0))
 	after(duration, function() { $('#southFrame').empty() })
+	currentToolFn = null
 }
 
 function getDogoText() {

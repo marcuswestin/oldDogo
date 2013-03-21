@@ -19,7 +19,7 @@ function renderHead(_view) {
 	var title
 	if (people.length == 2) {
 		var person = notMe(people)[0]
-		var personFace = face(person, { size:unit*4.5 }, floatLeft)
+		var personFace = Addresses.hasImage(person) && face(person, { size:unit*4.5 }, floatLeft)
 		if (Addresses.isDogo(person)) {
 			title = div('ellipsis', style(unitPadding(1, 0), { fontSize:19 }), person.name)
 		} else if (person.name) {
@@ -52,6 +52,7 @@ function renderBody() {
 		Conversations.readMessages(view.conversation, function(err, messages) {
 			if (err) { return error(err) }
 			list.append(messages)
+			gScroller.getView()[0].scrollTop = list.height()
 			fetchMessages()
 		})
 	})
@@ -90,7 +91,7 @@ function renderFoot(view) {
 /* Messages
  **********/
 function _getMessageId(message) {
-	return message.personIndex + '-' + message.clientUid
+	return message.personIndex + ':' + message.clientUid
 }
 
 function _selectMessage(message) {
@@ -104,7 +105,15 @@ function _renderMessage(message) {
 /* Events
  ********/
 events.on('message.sending', function renderSendingMessage(message) {
+	var viewEl = gScroller.getView()[0]
+	var heightBeforeAppend = list.height()
+	var viewBottom = viewEl.scrollTop + viewEl.offsetHeight
+	var diff = heightBeforeAppend - viewBottom
+	var doScroll = diff < 30
 	list.append(message)
+	if (doScroll) {
+		viewEl.scrollTop += (list.height() - heightBeforeAppend)
+	}
 })
 
 events.on('push.message', function(message, info) {

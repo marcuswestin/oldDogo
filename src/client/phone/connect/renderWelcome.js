@@ -4,10 +4,10 @@ module.exports = function renderWelcome(view, welcomeDuration) {
 			$('#connectUI1').append(div(_fadeIn,
 				div('listMenu',
 					div('menuItem',
-						listMenuContent('listMenuPlus', 'Register'),
+						listMenuContent('listMenu/plus', 'Register'),
 						button(function() { gScroller.push({ step:'register' }) })),
 					div('menuItem',
-						listMenuContent('listMenuPerson', 'Sign in'),
+						listMenuContent('listMenu/person', 'Sign in'),
 						button(function() { gScroller.push({ step:'login' }) }))
 				),
 				

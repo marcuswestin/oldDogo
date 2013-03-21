@@ -61,7 +61,8 @@ function firstTimeSetup() {
 }
 
 function renderPhoneClient() {
-	appBg = { backgroundImage:'url('+graphics.url('background', 100, 100)+')', backgroundSize:'50px 50px' }
+	appBg = graphics.backgroundImage(graphics.url('background/fabric_plaid'), 200, 200, { repeat:'repeat' })
+
 	$('body').css(viewport.size()).css({ overflow:'hidden' })
 	$('#viewport')
 		.css(viewport.size()).css({ overflow:'hidden' })

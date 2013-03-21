@@ -11,11 +11,11 @@ module.exports = function renderLogin(view) {
 	return div('loginView', style(translate.y(310)),
 		div('listMenu',
 			div('menuItem',
-				listMenuIcon('listMenuPerson'),
+				listMenuIcon('listMenu/person'),
 				input('username', { id:'email', placeholder:'Email', type:'email', value:view.email })
 			),
 			div('menuItem',
-				listMenuIcon('listMenuLock'),
+				listMenuIcon('listMenu/lock'),
 				input('password', { id:'password', placeholder:'Password', type:'password', value:view.password })
 			)
 		),

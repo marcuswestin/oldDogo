@@ -129,7 +129,7 @@ listMenuContent = function(graphicName, label) {
 events.on('app.start', function() {
 	viewport.element = $('#viewport')
 	
-	listMenuArrow = div(graphic('listMenuArrow', 16, 16), style({ 'float':'right' }, translate(0, 3)))
+	listMenuArrow = div(graphic('listMenu/arrow', 16, 16), style({ 'float':'right' }, translate(0, 3)))
 	connectButton = [style({ display:'block', padding:px(unit*1.5), margin:px(2*unit, 4*unit), border:'1px solid rgba(255,255,255,.5)' }), listMenuArrow]
 
 	events.on('app.error', function(info) {

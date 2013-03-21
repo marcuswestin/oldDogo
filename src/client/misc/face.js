@@ -17,8 +17,12 @@ function renderFace(person, opts, styles) {
 face.style = function(contact, opts) {
 	opts = options(opts, {
 		size:unit * 6,
+		width:null,
+		height:null,
 		radius:null
 	})
+	if (!opts.width) { opts.width = opts.size }
+	if (!opts.height) { opts.height = opts.size }
 
 	if (Addresses.isDogo(contact)) {
 		var imageParams = { url:Payloads.personPictureUrl(contact.addressId) }
@@ -29,10 +33,10 @@ face.style = function(contact, opts) {
 	}
 	
 	if (imageParams) {
-		imageParams.resize = opts.size*resolution+','+opts.size*resolution
-		return graphics.backgroundImage(BT.url('BTImage.fetchImage', imageParams), opts.size, opts.size)
+		imageParams.resize = opts.width*resolution+','+opts.height*resolution
+		return $.extend(graphics.backgroundImage(BT.url('BTImage.fetchImage', imageParams), opts.width, opts.height, { background:'rgb(235,245,255)' }), { width:opts.width, height:opts.height })
 	} else {
-		return { width:opts.size, height:opts.size, background:opts.background || 'rgb(220,237,246)' }
+		return { width:opts.width, height:opts.height, background:opts.background || 'rgb(220,237,246)' }
 	}
 }
 

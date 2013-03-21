@@ -6,8 +6,8 @@ var graphics = module.exports = {
 	base:'/graphics/'
 }
 
-var ratio = 2//(window.devicePixelRatio || 1)
-var scale = ratio > 1 ? '@2x' : ''
+var resolution = (window.devicePixelRatio || 1)
+var scale = resolution > 1 ? '@2x' : ''
 
 function url(name, width, height) {
 	if (width && !height) { height = width }
@@ -16,13 +16,11 @@ function url(name, width, height) {
 }
 
 function backgroundImage(url, width, height, opts) {
-	var opts = options(opts, { offsetX:0, offsetY:0, repeat:'no-repeat', background:'transparent' })
+	var opts = options(opts, { offsetX:0, offsetY:0, repeat:'no-repeat', background:'transparent', resolution:resolution })
 	return {
 		background:opts.background+' '+opts.offsetX+'px '+opts.offsetY+'px '+opts.repeat,
 		backgroundImage:'url('+url+')',
-		backgroundSize:px(width, height),
-		width:width,
-		height:height
+		backgroundSize:px(width, height)
 	}
 }
 
@@ -37,7 +35,9 @@ function graphic(name, width, height) {
 	// if (paddingLeft == null) { paddingLeft = paddingRight }
 	var styles = slice(arguments, 3)
 	return div(style(graphics.background(name, width, height), {
-		display:'inline-block'
+		display:'inline-block',
+		width:width,
+		height:height
 		// padding:px(paddingTop, paddingRight, paddingBottom, paddingLeft)
 	}), styles && style.apply(this, styles))
 }

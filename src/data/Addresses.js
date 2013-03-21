@@ -22,7 +22,13 @@ var Addresses = module.exports = {
 	fromVerificationParams:fromVerificationParams,
 	equal:equal,
 	
-	types: { 'dogo':1, 'email':2, 'phone':3, 'facebook':4 }
+	types: { 'dogo':1, 'email':2, 'phone':3, 'facebook':4 },
+	
+	hasImage:hasImage
+}
+
+function hasImage(contact) {
+	return Addresses.isDogo(contact) || contact.hasLocalImage || Addresses.isFacebook(contact)
 }
 
 function isFacebookProxyEmail(email) {

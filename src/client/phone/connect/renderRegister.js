@@ -25,7 +25,7 @@ function renderFacebook(view) {
 		),
 		
 		div('listMenu', div('menuItem',
-			listMenuContent('listMenuFacebook', 'Speed up Registration'),
+			listMenuContent('listMenu/facebook', 'Speed up Registration'),
 			button(function() {
 				overlay.show('Loading...')
 				bridge.command('BTFacebook.connect', { permissions:['email','friends_birthday'] }, function(err, data) {
@@ -68,7 +68,7 @@ function renderProfile(view) {
 	var insetShadow = 'inset 0 3px 4px -1px rgba(0,0,0,.27)'
 	return div('profileStep', style(fillWidth, { position:'absolute', bottom:0 }),
 		div(style({ margin:unit, padding:unit, background:'#fff', borderRadius:px(2) }),
-			img({ id:'picture' }, fbPic, button(_pickPhoto), style(graphics.background('listMenuPerson', 20, 20, { offsetX:unit*2-2, offsetY:unit*2-2 }), {
+			img({ id:'picture' }, fbPic, button(_pickPhoto), style(graphics.background('listMenu/person', 20, 20, { offsetX:unit*2-2, offsetY:unit*2-2 }), {
 				'float':'left', margin:px(0,unit,0,0), width:picSize, height:picSize,
 				borderRadius:px(2,0,0,2), boxShadow:insetShadow
 			})),
@@ -125,8 +125,8 @@ function renderAccount(view) {
 	}
 	return div('accountStep', style({ position:'absolute', bottom:0 }),
 		div('listMenu',
-			div('menuItem', listMenuIcon('listMenuPerson'), input({ id:'email', value:email, placeholder:'Your Email', disabled:disable && !!email, type:'email' })),
-			div('menuItem', listMenuIcon('listMenuLock'), input({ id:'password', value:view.password, placeholder:'Pick a Password' }))
+			div('menuItem', listMenuIcon('listMenu/person'), input({ id:'email', value:email, placeholder:'Your Email', disabled:disable && !!email, type:'email' })),
+			div('menuItem', listMenuIcon('listMenu/lock'), input({ id:'password', value:view.password, placeholder:'Pick a Password' }))
 		),
 	
 		// ul('Text any email address', 'Safe account recovery'),

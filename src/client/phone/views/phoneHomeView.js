@@ -1,5 +1,6 @@
 var permissionButtons = require('./phoneHomePermissionButtons')
 var composeOverlay = require('./phoneComposeOverlay')
+var columnList = require('tags/columnList')
 
 module.exports = {
 	renderHead:renderHead,
@@ -54,12 +55,23 @@ SQL.query = function(sql, args, callback) {
 
 var cardList
 function renderBody() {
-	Conversations.read(function(err, conversations) {
+	Conversations.read(function(err, localConvs) {
 		if (err) { return error(err) }
-		cardList.append(conversations)
-		Conversations.fetch(function(err, conversations) {
+		// cardList.append(conversations)
+		Conversations.fetch(function(err, serverConvs) {
 			if (err) { return error(err) }
-			cardList.append(conversations)
+			var cardList = columnList({
+				items:localConvs.concat(serverConvs),
+				selectItem:_selectCard,
+				getItemId:_getCardId,
+				renderItem:_renderCard,
+				renderEmpty:markFirstCall(_renderEmpty),
+				toggleActive:function(el, active) { el.style.borderTop = active ? '1px solid transparent' : 'none' },
+				columnCount:2,
+				columnGap:unit/2,
+				width:viewport.width()-unit
+			})
+			$('#cardList').append(cardList)
 			_renderNewPeople()
 		})
 	})
@@ -67,14 +79,8 @@ function renderBody() {
 	var drewLoading = false
 	return div(style({ paddingTop:unit*8 }),
 		div(permissionButtons),
-		cardList = makeList({
-			selectItem:_selectCard,
-			getItemId:_getCardId,
-			renderItem:_renderCard,
-			renderEmpty:markFirstCall(_renderEmpty)
-		}),
-		div('clear'),
-		div({ id:'newPeople' }, style({ minHeight:1 }))
+		div({ id:'cardList' }, style(unitMargin(0,1/2))),
+		div({ id:'newPeople' }, style({ minHeight:1, marginTop:unit }))
 	)
 	
 	function _renderEmpty(firstCall) {
@@ -110,37 +116,49 @@ notMe = function(people) {
 	return filter(people, function(person) { return !Addresses.equal(sessionInfo.person, person) })
 }
 
+cardShadow = '0 2px 2px -1px rgba(0,0,25,.5)'
+
+
 /* Cards
  *******/
 function _renderCard(convo) {
 	var people = convo.people
-	return div(style(unitPadding(1/2), { background:'white', borderBottom:'1px solid #ccc' }),
-		people.length == 2 ? _renderPersonCard(convo, people) : _renderGroupCard(convo, people),
-		div('clear')
+	var cardWidth = (viewport.width() - unit*1.5)/2
+	var contentWidth = cardWidth - unit
+	
+	return div(style({ marginBottom:unit/2 }),
+		div('card', style(unitPadding(1/2), { background:'#fff', boxShadow:cardShadow }),
+			(people.length == 2
+				? _renderPersonCard(convo, people)
+				: _renderGroupCard(convo, people)
+			)
+		)
 	)
 	function _renderPersonCard(convo, people) {
 		var person = notMe(people)[0]
 		var lastIndex = Addresses.equal(people[0], person) ? 0 : 1// start with as if last message came from other person, as her/his photo is already showing
-		return div(
-			face(person, { size:unit*7 }, floatLeft, unitMargin(0, 1/2, 1/2, 0)),
-			div(style(unitPadding(0, 1)),
-				div(style(unitPadding(0, 0, 1/2), { fontWeight:600 }), person.name)
+		
+		var title
+		if (Addresses.isDogo(person)) {
+			title = div('ellipsis', person.name)
+		} else if (person.name) {
+			var addressDisplay = (Addresses.isFacebook(person) ? 'Facebook' : person.addressId)
+			title = [div('ellipsis', person.name), div('ellipsis', style({ fontSize:12 }), addressDisplay)]
+		} else {
+			title = div('ellipsis', person.addressId)
+		}
+		
+		return div(style({ color:'#222' }),
+			Addresses.hasImage(person) && face(person, { width:contentWidth, height:round(contentWidth*0.85) }, unitMargin(0, 1/2, 1/2, 0)),
+			div(style({ fontSize:17, whiteSpace:'nowrap' }, unitPadding(0,0,1/2,0)),
+				title
 			),
 			div(convo.recent.length == 0
-				? div(style({ color:'#666' }), 'Start the conversation')
+				? div('info', 'Start the conversation')
 				: [
-					map(convo.recent, function(message) {
-						var isNewPerson = (message.personIndex != lastIndex)
-						lastIndex = message.personIndex
-						return div(
-							isNewPerson && face(convo.people[message.personIndex], { size:25 }, { display:'inline-block' }, floatLeft),
-							_renderContent(message),
-							div('clear')
-						)
-					}),
+					_renderContent(convo.recent[0], true),
 					map(convo.pictures, function(message) {
-						var width = round((viewport.width() - unit) / 2) - unit/2
-						var size = [width, unit*10]
+						var size = [contentWidth, unit*10]
 						var url = BT.url('BTImage.fetchImage', { url:Payloads.url(message), cache:true, resize:[size[0] * resolution, size[1] * resolution] })
 						return div(style(graphics.backgroundImage()))
 					})
@@ -148,14 +166,17 @@ function _renderCard(convo) {
 			)
 		)
 		
-		function _renderContent(message) {
+		function _renderContent(message, showFace) {
 			if (Messages.isAudio(message)) {
 				var url = Payloads.url(message)
 				return div(null, round(payload.duration, 1), 's', audio({ src:url, controls:true }))
 			} else if (Messages.isText(message)) {
-				return div(style({ maxHeight:unit*4, overflow:'hidden' }), DogoText.getHtml(message.payload.body))
+				return div(style({ maxHeight:unit*8 }),
+					showFace && face(convo.people[message.personIndex], { size:18 }, floatLeft, { margin:px(2,3,0,0) }),
+					html(DogoText.getHtml(message.payload.body))
+				)
 			} else if (Messages.isPicture(message)) {
-				var size = [unit*30, unit*10]
+				var size = [contentWidth, unit*10]
 				var url = BT.url('BTImage.fetchImage', { url:Payloads.url(message), cache:true, resize:[size[0] * resolution, size[1] * resolution] })
 				return div(style(graphics.backgroundImage(url, size[0], size[1], { background:'#eee' })))
 			}

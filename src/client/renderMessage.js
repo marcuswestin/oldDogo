@@ -17,7 +17,7 @@ function renderMessage(message, person) {
 	var bg = '#fff'
 	
 	return (makeNewCard
-		? [div(style(unitMargin(1,1/2,0), unitPadding(1/2,1/2,0), { minHeight:unit*6, background:bg }),
+		? [div(style(unitMargin(1,1/2,0), unitPadding(1/2,1/2,0), { minHeight:unit*6, background:bg, boxShadow:cardShadow }),
 			div(style(floatRight, { fontSize:12, marginRight:unit/2, color:'rgb(25,161,219)', textShadow:'0 -1px 0 rgba(0,0,0,.25)' }),
 				time.ago.brief(message.postedTime)
 			),
@@ -34,7 +34,7 @@ function renderMessage(message, person) {
 			)
 		)
 		]
-		: div(style(unitMargin(0, 1/2), unitPadding(0,0,1/2,1/2), { background:bg }),
+		: div(style(unitMargin(0, 1/2), unitPadding(0,0,1/2,1/2), { background:bg, boxShadow:cardShadow }),
 			renderContent(message)
 		)
 	)
@@ -50,9 +50,9 @@ function renderContent(message) {
 			: { url:Payloads.url(message), cache:true }
 		)
 		var messageWidth = viewport.width() - unit*2
-		var displaySize = [Math.min(messageWidth, payload.width / resolution), Math.min(messageWidth, payload.height / resolution)]
+		var displaySize = [Math.min(messageWidth, payload.width), Math.min(messageWidth, payload.height)]
 		var deltaX = (messageWidth - displaySize[0]) / 2
-		return div(style(graphics.backgroundImage(url, displaySize[0], displaySize[1], { background:'#eee' }), translate.x(deltaX)))
+		return div(style(graphics.backgroundImage(url, displaySize[0], displaySize[1], { background:'#eee' }), translate.x(deltaX), { width:displaySize[0], height:displaySize[1] }))
 	} else if (Messages.isAudio(message)) {
 		var url = message.preview
 			? BT.url('BTFiles.getDocument', { document:message.preview.document, mimeType:Payloads.mimeTypes[message.type] })
