@@ -17,13 +17,14 @@ trim = require('std/trim')
 isArray = require('std/isArray')
 inverse = require('std/inverse')
 last = require('std/last')
-makeUid = require('server/makeUid')
+arrayToObject = require('std/arrayToObject')
 
 Addresses = require('data/Addresses')
 Payloads = require('data/Payloads')
 DogoText = require('data/DogoText')
 Messages = require('data/Messages')
 
+makeUid = require('server/makeUid')
 makeTimer = require('server/util/makeTimer')
 log = require('server/util/log')
 makeLog = log.makeLog

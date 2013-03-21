@@ -95,7 +95,7 @@ function renderBody() {
 						return div(style(floatLeft, { margin:px(1, 0, 0, 1) }), face(contact, { size:63 }))
 					},
 					selectItem:function(contact) {
-						gScroller.push({ view:'conversation', contact:contact })
+						gScroller.push({ view:'conversation', contacts:[sessionInfo.person, contact] })
 					}
 				})
 				$('#newPeople').empty().append(div(newPeopleList, div('clear', style({ height:1 }))))
@@ -106,7 +106,7 @@ function renderBody() {
 
 function renderFoot() {}
 
-function notMe(people) {
+notMe = function(people) {
 	return filter(people, function(person) { return !Addresses.equal(sessionInfo.person, person) })
 }
 
@@ -114,7 +114,6 @@ function notMe(people) {
  *******/
 function _renderCard(convo) {
 	var people = convo.people
-	each(people, function(person) { if (!person.addressType) debugger })
 	return div(style(unitPadding(1/2), { background:'white', borderBottom:'1px solid #ccc' }),
 		people.length == 2 ? _renderPersonCard(convo, people) : _renderGroupCard(convo, people),
 		div('clear')
@@ -129,15 +128,23 @@ function _renderCard(convo) {
 			),
 			div(convo.recent.length == 0
 				? div(style({ color:'#666' }), 'Start the conversation')
-				: map(convo.recent, function(message) {
-					var isNewPerson = (message.personIndex != lastIndex)
-					lastIndex = message.personIndex
-					return div(
-						isNewPerson && face(convo.people[message.personIndex], { size:25 }, { display:'inline-block' }, floatLeft),
-						_renderContent(message),
-						div('clear')
-					)
-				})
+				: [
+					map(convo.recent, function(message) {
+						var isNewPerson = (message.personIndex != lastIndex)
+						lastIndex = message.personIndex
+						return div(
+							isNewPerson && face(convo.people[message.personIndex], { size:25 }, { display:'inline-block' }, floatLeft),
+							_renderContent(message),
+							div('clear')
+						)
+					}),
+					map(convo.pictures, function(message) {
+						var width = round((viewport.width() - unit) / 2) - unit/2
+						var size = [width, unit*10]
+						var url = BT.url('BTImage.fetchImage', { url:Payloads.url(message), cache:true, resize:[size[0] * resolution, size[1] * resolution] })
+						return div(style(graphics.backgroundImage()))
+					})
+				]
 			)
 		)
 		
@@ -148,8 +155,8 @@ function _renderCard(convo) {
 			} else if (Messages.isText(message)) {
 				return div(style({ maxHeight:unit*4, overflow:'hidden' }), DogoText.getHtml(message.payload.body))
 			} else if (Messages.isPicture(message)) {
-				var size = [200, unit*4]
-				var url = BT.url('BTImage.fetchImage', { url:Payloads.url(message), cache:true, crop:[200, unit*4] })
+				var size = [unit*30, unit*10]
+				var url = BT.url('BTImage.fetchImage', { url:Payloads.url(message), cache:true, resize:[size[0] * resolution, size[1] * resolution] })
 				return div(style(graphics.backgroundImage(url, size[0], size[1], { background:'#eee' })))
 			}
 		}

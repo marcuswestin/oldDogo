@@ -119,7 +119,7 @@ function _notifyParticipants(message, prodPush) {
 					recent.push(message)
 
 					var pictures = jsonList(participation.picturesJson)
-					if (message.type == 'picture') {
+					if (Messages.isPicture(message)) {
 						if (pictures.length >= 6) {
 							var i = Math.floor(Math.random() * 7)
 							if (i != 7) { // 1 in 7 chance of skipping the picture

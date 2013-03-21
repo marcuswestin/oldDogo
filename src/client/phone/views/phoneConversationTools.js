@@ -36,7 +36,7 @@ function _textTool(toolHeight, barHeight) {
 		$('#'+textId).html(DogoText.getHtml(dogoText))
 	})
 	
-	var webViewAccessoryHeight = tags.isMobileSafari ? 62 : 0
+	var webViewAccessoryHeight = tags.isHandheldSafari ? 62 : 0
 	
 	$('#viewport').append(
 		div(style({ position:'absolute', bottom:toolHeight + barHeight - webViewAccessoryHeight, width:'100%' }),
@@ -220,11 +220,14 @@ function selectTool(toolFn) {
 	return function(_view) {
 		currentToolFn = toolFn
 		view = _view
-		uniqueDraftId = view.conversation ? 'conv-'+view.conversation.conversationId : 'contact-'+view.contact.contactUid
+		uniqueDraftId = (view.conversation
+			? 'conv:'+view.conversation.conversationId
+			: 'contacts:'+map(view.contacts, function(contact) { return contact.contactUid }).join(':')
+		)
 		var thisDuration = duration
 		if (currentToolFn == _textTool) {
 			extraHeight = 34
-			if (tags.isMobileSafari) {
+			if (tags.isIOSSafari) {
 				thisDuration = 0
 			}
 		} else {
@@ -247,7 +250,7 @@ function preventDefault($e) { $e.preventDefault() }
 function scrollToBottom() { window.scrollTo(0, 99999) }
 events.on('tool.show', function() {
 	$('#'+textId).focus().on('blur', _hideCurrentTool)
-	if (tags.isMobileSafari) {
+	if (tags.isIOSSafari) {
 		$('#southFrame, #'+textId).on('touchmove', preventDefault)
 		after(duration, function() {
 			$(document).on('scroll', scrollToBottom)
@@ -256,7 +259,7 @@ events.on('tool.show', function() {
 })
 events.on('tool.hide', function() {
 	$('#'+textId).off('blur', _hideCurrentTool)
-	if (tags.isMobileSafari) {
+	if (tags.isIOSSafari) {
 		$('#southFrame, #'+textId).off('touchmove', preventDefault)
 		$(document).off('scroll', scrollToBottom)
 	}
@@ -272,6 +275,8 @@ function _hideCurrentTool() {
 		after(duration, function() {
 			$('#'+textId).remove()
 		})
+	} else if (currentToolFn == _cameraTool) {
+		bridge.command('BTCamera.hide')
 	}
 	events.fire('tool.hide')
 	bridge.command('BT.setStatusBar', { visible:true, animation:'slide' })
@@ -284,7 +289,7 @@ function getDogoText() {
 	return trim(DogoText.fromNode($('#'+textId)[0]))
 }
 
-function sendMessage(type, data) {
+function sendMessage(type, data, callback) {
 	_withConversation(function(err) {
 		if (err) { return error(err) }
 		if (sessionInfo.person) {
@@ -322,6 +327,7 @@ function sendMessage(type, data) {
 			bridge.command('message.send', commandData, onResponse)
 			message.preview = preview // set message.preview after command has been sent to avoid sending the preview to the server
 			events.fire('message.sending', message)
+			callback && callback()
 		}
 
 		function onResponse(err, res) {
@@ -336,10 +342,7 @@ function sendMessage(type, data) {
 	function _withConversation(callback) {
 		if (view.conversation) { return callback() }
 		overlay.show('Sending first message...')
-		var contacts = map([view.contact], function(c) {
-			return { addressType:c.addressType, addressId:c.addressId, name:c.name, contactUid:c.contactUid }
-		})
-		Conversations.create(contacts, function(err, conversation) {
+		Conversations.create(view.contacts, function(err, conversation) {
 			if (err) { return callback(err) }
 			overlay.hide()
 			view.conversation = conversation

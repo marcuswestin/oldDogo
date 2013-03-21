@@ -56,7 +56,7 @@ function show() {
 	
 	function selectItem(contact) {
 		hide()
-		gScroller.push({ view:'conversation', contact:contact })
+		gScroller.push({ view:'conversation', contacts:[sessionInfo.person, contact] })
 	}
 }
 

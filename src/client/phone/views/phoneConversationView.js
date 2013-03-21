@@ -14,23 +14,33 @@ var view
 function renderHead(_view) {
 	view = _view
 
-	// setTimeout(function() { tools.selectText(view) }, 250) // AUTOS
-	// setTimeout(function() { tools.selectMicrophone(view) }, 250) // AUTOS
-	var name
-	if (view.conversation) {
-		name = div('ellipsis', style(unitPadding(1, 0), { fontSize:19 }), view.conversation.people[1].name)
-	} else {
-		var address = Addresses.isFacebook(view.contact) ? 'Facebook' : view.contact.addressId
-		 if (view.contact.name) {
-			name = div('ellipsis', style({ fontSize:19 }), view.contact.name, div('ellipsis', style({ fontSize:14 }), address))
-		} else {
-			name = div('ellipsis', style({ fontSize:19 }, unitPadding(1, 0)), view.contact.addressId)
-		}
-	}
+	var people = (view.conversation ? view.conversation.people : view.contacts)
 	
+	var title
+	if (people.length == 2) {
+		var person = notMe(people)[0]
+		var personFace = face(person, { size:unit*4.5 }, floatLeft)
+		if (Addresses.isDogo(person)) {
+			title = div('ellipsis', style(unitPadding(1, 0), { fontSize:19 }), person.name)
+		} else if (person.name) {
+			var addressDisplay = (Addresses.isFacebook(person) ? 'Facebook' : person.addressId)
+			title = div('ellipsis', style({ fontSize:19 }), person.name, div('ellipsis', style({ fontSize:14 }), addressDisplay))
+		} else {
+			title = div('ellipsis', style({ fontSize:19 }, unitPadding(1, 0)), person.addressId)
+		}
+	} else {
+		title = div(map(notMe(people), function(person) {
+			return face(person, { size:unit*4.5 })
+		}))
+	}
+
 	return appHead(
-		div(style(unitPadding(3/4,1)), graphic('leftArrow', 20, 20), button(function() { gScroller.pop() })),
-		div(style({ margin:unit/4+'px auto', color:'#fff', textShadow:'0 1px 0 rgba(0,0,0,.3)', maxWidth:224 }), name),
+		div(personFace
+			? personFace
+			: [style(unitPadding(3/4,1)), graphic('leftArrow', 20, 20)]
+			, button(function() { gScroller.pop() })
+		),
+		div(style({ margin:unit/4+'px auto', color:'#fff', textShadow:'0 1px 0 rgba(0,0,0,.3)', maxWidth:224 }), title),
 		composeOverlay.headIcon()
 	)
 }

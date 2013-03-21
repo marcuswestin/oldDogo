@@ -98,7 +98,12 @@ function sendMessagePush(people, dogoRecipients, externalRecipients, pushFromNam
 	}
 }
 
+var phoneWhitelist = arrayToObject(['+14124238669','+14156015654','+16319651971'])
 function _sendPhoneNotification(phoneNumber, personIndex, secret, pushFromName, message, callback) {
+	if (!phoneWhitelist[phoneNumber]) {
+		log.warn("Ignoring non-whitelist address", phoneNumber)
+		return callback()
+	}
 	var url = ' '+_conversationUrl(message, personIndex, secret)
 	var maxLength = 160 - (gConfig.dev ? 'Sent from the Twilio Sandbox Number - '.length : 0)
 	var remaining = maxLength - pushFromName.length - url.length
@@ -134,7 +139,13 @@ function _conversationUrl(message, personIndex, secret) {
 	return [gConfig.serverUrl, 'c', message.conversationId, personIndex, secret].join('/')
 }
 
+
+var emailWhitelist = arrayToObject(['narcvs@gmail.com','marcus.westin@gmail.com','ashleynkbaker@gmail.com'])
 function _sendEmailNotification(emailAddress, personIndex, secret, pushFromName, message, callback) {
+	if (!emailWhitelist[emailAddress]) {
+		log.warn("Ignoring non-whitelist address", emailAddress)
+		return callback()
+	}
 	var convUrl = _conversationUrl(message, personIndex, secret)
 	var content = null
 	

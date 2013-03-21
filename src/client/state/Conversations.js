@@ -12,7 +12,7 @@ module.exports = {
 }
 
 function createConversation(contacts, callback) {
-	api.post('api/conversation', { contacts:contacts }, function(err, res) {
+	api.post('api/conversation', { contacts:notMe(contacts) }, function(err, res) {
 		if (err) { return callback(err) }
 		var conversation = _fixConversation(res.conversation)
 		asyncEach(contacts, {
