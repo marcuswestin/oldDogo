@@ -22,7 +22,8 @@ events.on('app.start', startGuestClient)
 bridge.init()
 webEngine.start()
 
-function startGuestClient() {
+function startGuestClient(appInfo) {
+	gConfig = appInfo.config
 	var parts = parseUrl(location).pathname.split('/').slice(2) // /c/65538/1/gKHZy0G6cix9
 	init(parseInt(parts[0]), parseInt(parts[1]), parts[2], function(err) {
 		if (err) { return error(err) }

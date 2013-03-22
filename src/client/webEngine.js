@@ -26,11 +26,11 @@ function start() {
 		nextTick(function() {
 			notify('app.start', {
 				client:'0.98.0-browser',
-				config: gConfig = {
+				config: {
 					device: { platform:'Chrome' },
-					protocol: 'http:',
+					protocol: location.protocol,
 					serverHost:location.hostname,
-					serverUrl:'http://'+location.host
+					serverUrl:location.protocol+'//'+location.host
 				}
 			})
 		})
