@@ -15,10 +15,10 @@ exec('rm -rf '+dir, function() {
 				var html = fs.readFileSync('src/client/phone/phoneClient.html').toString()
 				var js = combine.compileJs('src/client/phone/phoneClient.js', { minify:minify })
 				
-				html = html.replace('<script src="/require/src/client/dogo"></script>',
+				html = html.replace('<script src="/require/src/client/phone/phoneClient"></script>',
 					'<script src="appJs.js"></script>')
 				
-				html = html.replace('<link rel="stylesheet" type="text/css" href="/stylus/client/dogo.styl" />',
+				html = html.replace('<link rel="stylesheet" type="text/css" href="/stylus/client/phone/phoneClient.styl" />',
 					'<link rel="stylesheet" type="text/css" href="appCss.css" />')
 				
 				fs.writeFileSync(dir+'/app.html', html)

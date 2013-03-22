@@ -322,7 +322,7 @@ function setupDev(app) {
 	app.get('/verify', sendPage('verifyAddress'))
 
 	app.get('/app', sendFile('src/client/phone/phoneClient.html', 'text/html'))
-	app.get('/c/*', sendFile('src/client/guest/guestClient.html', 'text/html'))
+	app.get('/c/*', sendPage('guest'))
 	app.get('/favicon.ico', sendFile('src/graphics/website/favicon.png', 'image/png'))
 		
 	app.get('/fonts/*', sendStatic('src'))

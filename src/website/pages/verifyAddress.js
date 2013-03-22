@@ -1,4 +1,4 @@
-require('client/globals')
+require('client/misc/clientGlobals')
 require('website/template/scrollToTop')
 
 var url = require('std/url')

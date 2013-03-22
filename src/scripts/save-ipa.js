@@ -13,4 +13,4 @@ var version = (function() {
 	}
 })();
 
-exec('mkdir -p ~/Desktop/dogo-builds; cp ~/Desktop/dogo.ipa ~/Desktop/dogo-builds/dogo-'+version+'.ipa')
+exec('mkdir -p ~/Desktop/dogo-builds; cp build/dogo.ipa ~/Desktop/dogo-builds/dogo-'+version+'.ipa')

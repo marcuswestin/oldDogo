@@ -152,7 +152,7 @@ fly-build: ios-client
 	rm -rf src/ios/build
 	xcodebuild -project src/ios/dogo.xcodeproj -sdk iphoneos GCC_PREPROCESSOR_DEFINITIONS="TESTFLIGHT" -configuration Release
 	# xcodebuild -project src/ios/dogo.xcodeproj -sdk iphonesimulator5.1 GCC_PREPROCESSOR_DEFINITIONS="TESTFLIGHT" -configuration Release
-	/usr/bin/xcrun -sdk iphoneos PackageApplication src/ios/build/Release-iphoneos/dogo.app -o ~/Desktop/dogo.ipa
+	/usr/bin/xcrun -sdk iphoneos PackageApplication src/ios/build/Release-iphoneos/dogo.app -o `pwd`/build/dogo.ipa
 	${NODE} src/scripts/save-ipa.js
 
 fly-nightly: bump-ios-patch fly-build
