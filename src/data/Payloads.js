@@ -4,7 +4,6 @@ var Payloads = module.exports = {
 	url:url,
 	path:path,
 	personPicturePath:personPicturePath,
-	personPictureUrl:personPictureUrl,
 	underlyingPersonPicturePath:underlyingPersonPicturePath,
 	underlyingPersonPictureUrl:underlyingPersonPictureUrl,
 	base:base,
@@ -29,7 +28,6 @@ extensions[Messages.types.picture] = 'jpg'
 extensions[Messages.types.audio] = 'm4a'
 
 function personPicturePath(personId) { return '/people/'+personId+'/picture' }
-function personPictureUrl(personId) { return base() + personPicturePath(personId) }
 function underlyingPersonPicturePath(secret) { return '/people/pictures/'+secret+'.'+extensions[Messages.types.picture] }
 function underlyingPersonPictureUrl(secret) { return base() + underlyingPersonPicturePath(secret) }
 
@@ -43,5 +41,6 @@ function url(message) {
 }
 
 function base(bucket, region) {
-	return gConfig.protocol+'//'+(bucket || Payloads.bucket)+'.s3-website-'+(region || Payloads.region)+'.amazonaws.com'
+	// return gConfig.protocol+'//'+(bucket || Payloads.bucket)+'.s3-website-'+(region || Payloads.region)+'.amazonaws.com' // the s3-website-(region) does not work for ssl
+	return gConfig.protocol+'//'+(bucket || Payloads.bucket)+'.s3.amazonaws.com'
 }

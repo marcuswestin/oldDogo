@@ -68,7 +68,7 @@ var url = require('std/url')
 		$('#verifyButton').replaceWith(
 			div('card',
 				div('person',
-					div('face', style({ width:80, height:80, background:'url('+Payloads.personPictureUrl(person.personId)+')', backgroundSize:'80px 80px' })),
+					div('face', style({ width:80, height:80, background:'url('+face.personUrl(person.personId)+')', backgroundSize:'80px 80px' })),
 					div('name', function() {
 						var names = person.name.split(' ')
 						return [div('first', names.shift()), div('rest', names.pop())]

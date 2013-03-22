@@ -22,7 +22,7 @@ function configure(awsConf) {
 
 var emptyBuffer = new Buffer(0)
 function makeRedirect(fromPath, toUrl, callback) {
-	log.debug('redirect from', Payloads.base()+fromPath, 'to', toUrl)
+	log.debug('redirect from', fromPath, 'to', toUrl)
 	var headers = { 'x-amz-website-redirect-location':toUrl }
 	if (disabled) { log.debug('(disabled - skipping payload redirect)'); return callback() }
 	s3.putBuffer(fromPath, emptyBuffer, s3PersmissionAcl, headers, callback)

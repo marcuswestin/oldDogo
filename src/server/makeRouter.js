@@ -16,6 +16,7 @@ var register = require('server/fn/register')
 var authenticateRequest = require('server/fn/authenticateRequest')
 var createConversation = require('server/fn/createConversation')
 var getMessages = require('server/fn/getMessages')
+var request = require('request')
 
 var log = makeLog('Router')
 
@@ -157,6 +158,12 @@ var filters = (function makeFilters() {
 
 
 function setupRoutes(app, opts) {
+	app.get('/api/person/picture', function handleGetPersonPicture(req, res) {
+		var params = getUrlParams(req, 'personId')
+		var url = 'http://dogo-co.s3-website-us-east-1.amazonaws.com'+Payloads.personPicturePath(params.personId)
+		request({ url:url, followRedirect:false }).pipe(res)
+	})
+
 	app.post('/api/address/verification/picture', function handleUploadVerificationPicture(req, res) {
 		var params = getMultipartParams(req, 'width', 'height')
 		var pictureFile = req.files && req.files.picture

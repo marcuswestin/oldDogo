@@ -53,7 +53,7 @@ function withFacebookSession(name, email, password, fbSession, pictureSecret, ca
 			log.alert('Facebook register email mismatch', email, name, fbAccount)
 			return callback('Hmm... That email is not right. Are you trying to trick us? Why not join forces instead, ping me at marcus@dogo.co')
 		}
-		var pictureUrl = pictureSecret ? Payloads.underlyingPersonPictureUrl(pictureSecret) : 'http://graph.facebook.com/'+fbAccount.id+'/picture?type=large'
+		var pictureUrl = pictureSecret ? Payloads.underlyingPersonPictureUrl(pictureSecret) : 'https://graph.facebook.com/'+fbAccount.id+'/picture?type=large'
 		var addresses = [email, Addresses.facebook(fbAccount.id)]
 		var opts = { birthdate:_getFbAccBirthdate(fbAccount.birthday), locale:fbAccount.locale, gender:fbAccount.gender }
 		_createPersonWithVerifiedAddresses(name, passwordHash, pictureUrl, addresses, opts, callback)
