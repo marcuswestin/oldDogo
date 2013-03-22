@@ -11,7 +11,7 @@ face.facebookUrl = function(address) {
 }
 
 face.personUrl = function(personId) {
-	return api.getUrl('api/person/picture?personId=?'+personId)
+	return api.getUrl('api/person/picture?personId='+personId)
 }
 
 function renderFace(person, opts, styles) {
@@ -29,7 +29,7 @@ face.style = function(contact, opts) {
 	if (!opts.height) { opts.height = opts.size }
 
 	if (Addresses.isDogo(contact)) {
-		var imageParams = { url:Payloads.personPictureUrl(contact.addressId) }
+		var imageParams = { url:face.personUrl(contact.addressId) }
 	} else if (contact.hasLocalImage) {
 		var imageParams = { mediaModule:'BTAddressBook', mediaId:contact.localId }
 	} else if (Addresses.isFacebook(contact)) {
@@ -46,8 +46,9 @@ face.style = function(contact, opts) {
 
 function getUrl(address) {
 	if (address.personId) {
-		return Payloads.personPictureUrl(address.personId)
+		return face.personUrl(address.personId)
 	} else if (Addresses.isFacebook(address)) {
 		return face.facebookUrl(address.addressId)
 	}
 }
+
