@@ -266,6 +266,10 @@ function setupRoutes(app, opts) {
 		var params = getJsonParams(req, 'contacts')
 		createConversation(req, params.contacts, wrapRespond(req, res, 'conversation'))
 	})
+	app.post('/api/web/message', filters.appOrGuest, function postWebMessage(req, res) {
+		var params = getJsonParams(req, 'message')
+		messageService.sendMessage(req.session, params.message, null, false, curry(respond, req, res))
+	})
 	app.post('/api/message', filters.appOrGuest, function handleSendMessage(req, res) {
 		var params = getMultipartParams(req, 'message')
 		var prodPush = (req.headers['x-dogo-mode'] == 'appstore')
@@ -349,12 +353,7 @@ function setupDev(app) {
 	each(['BTImage'], function(btModule) {
 		require('blowtorch-node-sdk/'+btModule).setup(app)
 	})
-	
-	app.post('/api/messageDev', filters.appOrGuest, function postMessageDebug(req, res) {
-		var params = getJsonParams(req, 'message')
-		messageService.sendMessage(req.session, params.message, null, false, curry(respond, req, res))
-	})
-	
+		
 	function sendExperiment(req, res) {
 		var experiment = req.url.replace(/\/experiments\/?/, '')
 		var html = experiment

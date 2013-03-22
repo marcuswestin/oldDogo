@@ -99,7 +99,7 @@ var commandHandlers = {
 	},
 	'push.register': function(data, callback) { callback(null, { pushToken:'DEV_BRIDGE_FAKE_TOKEN', pushType:'DEV_FAKE' }) },
 	'message.send': function(data, callback) {
-		data.url = api.getUrl('api/messageDev')
+		data.url = api.getUrl('api/web/message')
 		api.sendRequest(data, callback)
 	},
 	
