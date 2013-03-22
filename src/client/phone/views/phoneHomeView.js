@@ -80,7 +80,7 @@ function renderBody() {
 	return div(style({ paddingTop:unit*8 }),
 		div(permissionButtons),
 		div({ id:'cardList' }, style(unitMargin(0,1/2))),
-		div({ id:'newPeople' }, style({ minHeight:1, marginTop:unit }))
+		div({ id:'newPeople' }, style({ minHeight:1, margin:px(unit,0,0,1) }))
 	)
 	
 	function _renderEmpty(firstCall) {
@@ -98,7 +98,7 @@ function renderBody() {
 					items:(withLocalImage || []).concat(fbContacts || []),
 					getItemId:function(contact) { return contact.contactUid },
 					renderItem:function(contact) {
-						return div(style(floatLeft, { margin:px(1, 0, 0, 1) }), face(contact, { size:63 }))
+						return div(style(floatLeft, { margin:px(0,0,2,2) }), face(contact, { size:77 }))
 					},
 					selectItem:function(contact) {
 						gScroller.push({ view:'conversation', contacts:[sessionInfo.person, contact] })
