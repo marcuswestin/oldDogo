@@ -11,6 +11,8 @@ createSession.guestPrefix = 'g:'
 createSession.personPrefix = 'p:'
 
 function createGuestSession(conversationId, personIndex, secret, callback) {
+	if (typeof conversationId != 'number') { return callback('Bad conversation ID') }
+	if (typeof personIndex != 'number') { return callback('Bad person index') }
 	var sql = 'SELECT 1 FROM guestAccess WHERE conversationId=? AND personIndex=? AND secret=?'
 	db.conversation(conversationId).selectOne(sql, [conversationId, personIndex, secret], function(err, res) {
 		if (err) { return callback(err) }
