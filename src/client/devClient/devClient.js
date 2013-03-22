@@ -64,9 +64,9 @@ function buildDevClient() {
 	}
 }
 
-layoutDevClient.top = function() { return Math.max(20, $(window).height() / 2 - viewport.height()/2) }
+function getTop() { return Math.max(20, $(window).height() / 2 - viewport.height()/2) }
 function layoutDevClient() {
-	var viewportTop = layoutDevClient.top()
+	var viewportTop = getTop()
 	var size = { width:$(window).width(), height:$(window).height() }
 	$('body').css(size)
 	$('#mockPhone').css({ marginTop:(viewportTop-155)+'px' })

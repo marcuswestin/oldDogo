@@ -1,4 +1,3 @@
-require('lib/jquery-1.8.1')
 require('client/misc/events')
 
 options = require('std/options')

@@ -78,6 +78,7 @@
 		5FBD9A5416EAB32300CDD218 /* NSArray+NSString+HHMakeStructs.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FBD9A4C16EAB32300CDD218 /* NSArray+NSString+HHMakeStructs.m */; };
 		5FBD9A5516EAB32300CDD218 /* NSString+HHUriEncoding.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FBD9A4E16EAB32300CDD218 /* NSString+HHUriEncoding.m */; };
 		5FBD9A5716EAB32300CDD218 /* UIImage+HHImages.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FBD9A5116EAB32300CDD218 /* UIImage+HHImages.m */; };
+		5FF8A22516FCC31400824F86 /* jquery-1.8.1.min in Resources */ = {isa = PBXBuildFile; fileRef = 5FF8A22416FCC31400824F86 /* jquery-1.8.1.min */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -240,6 +241,7 @@
 		5FBD9A4F16EAB32300CDD218 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		5FBD9A5016EAB32300CDD218 /* UIImage+HHImages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+HHImages.h"; sourceTree = "<group>"; };
 		5FBD9A5116EAB32300CDD218 /* UIImage+HHImages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+HHImages.m"; sourceTree = "<group>"; };
+		5FF8A22416FCC31400824F86 /* jquery-1.8.1.min */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "jquery-1.8.1.min"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -416,6 +418,7 @@
 				2C650CF516A5E6CF000F381E /* app.html */,
 				2C650CF616A5E6CF000F381E /* appCss.css */,
 				2C650CF716A5E6CF000F381E /* appJs.html */,
+				5FF8A22416FCC31400824F86 /* jquery-1.8.1.min */,
 				2C650CF816A5E6CF000F381E /* dev-hostname.txt */,
 			);
 			name = "dogo-ios-build";
@@ -683,6 +686,7 @@
 				2C409AC316CB4EB6006C49F9 /* opensans-light.ttf in Resources */,
 				2C409AC416CB4EB6006C49F9 /* opensans.ttf in Resources */,
 				2CCE3DDC16D44BD500538F39 /* phone in Resources */,
+				5FF8A22516FCC31400824F86 /* jquery-1.8.1.min in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

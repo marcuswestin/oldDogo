@@ -24,6 +24,8 @@ exec('rm -rf '+dir, function() {
 				fs.writeFileSync(dir+'/app.html', html)
 				fs.writeFileSync(dir+'/appJs.html', js) // uh ios won't read file with .js extension
 				fs.writeFileSync(dir+'/appCss.css', css)
+				fs.writeFileSync(dir+'/jquery-1.8.1.min', fs.readFileSync('src/lib/jquery-1.8.1.min.js'))
+				
 				exec('cd '+dir+' && tar cf '+dir+'.tar *')
 			})
 		})
