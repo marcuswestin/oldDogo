@@ -6,7 +6,7 @@
 	url = https://github.com/felixge/node-mysql.git
 [submodule "node_modules/redis"]
 	path = node_modules/redis
-	url = git@github.com:marcuswestin/node_redis.git
+	url = https://github.com/marcuswestin/node-color.git
 [submodule "node_modules/request"]
 	path = node_modules/request
 	url = https://github.com/mikeal/request.git
@@ -18,16 +18,16 @@
 	url = https://github.com/visionmedia/nib.git
 [submodule "node_modules/require"]
 	path = node_modules/require
-	url = git@github.com:marcuswestin/require.git
+	url = https://github.com/marcuswestin/require.git
 [submodule "node_modules/std"]
 	path = node_modules/std
-	url = git@github.com:marcuswestin/std.js.git
+	url = https://github.com/marcuswestin/std.js.git
 [submodule "node_modules/optimist"]
 	path = node_modules/optimist
 	url = https://github.com/substack/node-optimist.git
 [submodule "node_modules/tags"]
 	path = node_modules/tags
-	url = git@github.com:marcuswestin/tags.js.git
+	url = https://github.com/marcuswestin/tags.js.git
 [submodule "node_modules/aws2js"]
 	path = node_modules/aws2js
 	url = https://github.com/marcuswestin/aws2js.git
@@ -36,7 +36,7 @@
 	url = https://github.com/visionmedia/express.git
 [submodule "dependencies/blowtorch"]
 	path = dependencies/blowtorch
-	url = git@github.com:marcuswestin/blowtorch.git
+	url = https://github.com/marcuswestin/blowtorch.git
 [submodule "node_modules/stylus"]
 	path = node_modules/stylus
 	url = https://github.com/LearnBoost/stylus.git
@@ -51,13 +51,10 @@
 	url = git://github.com/chjj/marked.git
 [submodule "node_modules/tinyTest"]
 	path = node_modules/tinyTest
-	url = git@github.com:marcuswestin/tinyTest.js.git
-[submodule "dependencies/emoji-extractor"]
-	path = dependencies/emoji-extractor
-	url = git@github.com:FlutterbyLabs/emoji-extractor.git
+	url = https://github.com/marcuswestin/tinyTest.js.git
 [submodule "node_modules/bcrypt"]
 	path = node_modules/bcrypt
 	url = git://github.com/ncb000gt/node.bcrypt.js.git
 [submodule "node_modules/node-color"]
 	path = node_modules/node-color
-	url = git@github.com:marcuswestin/node-color.git
+	url = https://github.com/marcuswestin/node-color.git

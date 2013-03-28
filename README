@@ -9,6 +9,8 @@ To get started:
 	brew install redis
 	brew install bcrypt
 	brew install imagemagick
+	brew install dtach
+	sudo easy_install fabric
 
 	git clone git@github.com:marcuswestin/dogo.git
 	cd dogo
@@ -17,5 +19,4 @@ To get started:
 
 To deploy to prod:
 
-	sudo easy_install fabric
 	make push-api
