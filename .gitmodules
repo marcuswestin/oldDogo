@@ -6,7 +6,7 @@
 	url = https://github.com/felixge/node-mysql.git
 [submodule "node_modules/redis"]
 	path = node_modules/redis
-	url = https://github.com/marcuswestin/node-color.git
+	url = https://github.com/marcuswestin/node_redis.git
 [submodule "node_modules/request"]
 	path = node_modules/request
 	url = https://github.com/mikeal/request.git
