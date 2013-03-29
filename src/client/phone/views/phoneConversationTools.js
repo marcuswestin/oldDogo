@@ -25,7 +25,7 @@ function renderFoot(view, opts) {
 	)
 }
 
-var duration = 1/3
+var duration = 1/4
 
 /* Text tool
  ***********/
@@ -241,10 +241,10 @@ function selectTool(toolFn) {
 		var toolHeight = toolFn.getHeight()
 		var footHeight = $('#conversationFoot').height()
 		
-		$('#centerFrame').css(translate.y(-(toolHeight + extraHeight), thisDuration))
+		$('#centerFrame').css(translate.y(-(toolHeight + extraHeight), thisDuration / time.milliseconds))
 		$('#southFrame').empty().css(translate.y(0, 0))
 			.append(toolFn(toolHeight, footHeight))
-			.css(translate.y(-(toolHeight + footHeight), thisDuration))
+			.css(translate.y(-(toolHeight + footHeight), thisDuration / time.milliseconds))
 		
 		events.fire('tool.show')
 	}
