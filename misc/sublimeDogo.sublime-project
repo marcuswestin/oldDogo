@@ -1,0 +1,22 @@
+{
+	"folders":
+	[
+		{
+			"path": "..",
+			"folder_exclude_patterns": ["dependencies", "node_modules", "recruiting", "secrets"],
+			"file_exclude_patterns": [".*"]
+		},
+		{
+			"path": "../node_modules/std",
+			"file_exclude_patterns": [".*"]
+		},
+		{
+			"path": "../node_modules/tags",
+			"file_exclude_patterns": [".*"]
+		}
+	],
+	"settings":
+	{
+		"tab_size": 4
+	}
+}
