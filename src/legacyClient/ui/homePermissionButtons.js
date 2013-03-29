@@ -7,14 +7,14 @@ function _updateButtons(permissionsAsked) {
 	if (!permissionsAsked) { permissionsAsked = {} }
 	var permissionButton
 	var buttonStyle = style({ margin:3, padding:px(6, 8, 8), fontSize:16, display:'block' })
-	if (!permissionButton && !permissionsAsked.facebookFriends) {
-		permissionButton = div('button', buttonStyle, 'Add FB Friends', button(_addFacebookFriends(permissionsAsked)))
-	}
 	if (!permissionButton && !permissionsAsked.pushNotifications) {
 		permissionButton = div('button', buttonStyle, 'Enable Notifications', button(_enableNotifications(permissionsAsked)))
 	}
-	// if (!permissionsAsked.addressBook) {
-	// 	buttons.push(div('button', buttonStyle, 'Add Phone Contacts', button(_addPhoneContacts(permissionsAsked))))
+	if (!permissionsAsked.addressBook) {
+		buttons.push(div('button', buttonStyle, 'Add Phone Contacts', button(_addPhoneContacts(permissionsAsked))))
+	}
+	// if (!permissionButton && !permissionsAsked.facebookFriends) {
+	// 	permissionButton = div('button', buttonStyle, 'Add FB Friends', button(_addFacebookFriends(permissionsAsked)))
 	// }
 	$('#permissionButtons').empty().append(permissionButton)
 }
