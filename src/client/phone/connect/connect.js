@@ -1,3 +1,4 @@
+var renderPermissions = require('./renderPermissions')
 var renderWelcome = require('./renderWelcome')
 var renderLogin = require('./renderLogin')
 var renderRegister = require('./renderRegister')
@@ -11,7 +12,7 @@ module.exports = {
 		// setTimeout(function() { gScroller.push({ step:'register', registerStep:'facebook' }) }) // AUTOS
 		// setTimeout(function() { gScroller.push({ step:'login' }) }) // AUTOS
 		
-		if (!viewStack || !viewStack.length) { viewStack = [{ step:'welcome' }] }
+		if (!viewStack || !viewStack.length) { viewStack = [{ step:'permissions', permissionStep:'addressBook' }] }
 		gScroller = makeScroller({
 			duration:400,
 			alwaysBounce:false,
@@ -43,6 +44,7 @@ module.exports = {
 			return div(div('stepView', _pickViewContent()))
 			function _pickViewContent() {
 				switch (view.step) {
+					case 'permissions': return renderPermissions(view)
 					case 'register': return renderRegister(view)
 					case 'login': return renderLogin(view)
 					case 'welcome':

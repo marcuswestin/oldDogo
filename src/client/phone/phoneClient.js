@@ -161,7 +161,7 @@ function getPhoneView(view) {
 }())
 
 
-events.on('push.notification', function onPushNotification(info) {
+events.on('BTNotifications.notification', function onPushNotification(info) {
 	var message = Messages.decodeFromPush(info.data)
 	if (!message) {
 		log.error('Could not decode message from push', info)
@@ -174,18 +174,4 @@ events.on('push.notification', function onPushNotification(info) {
 		events.fire('push.message', message, info)
 		bridge.command('device.vibrate')
 	}
-	
-	// if (data.message) {
-	// 	var message = data.message
-	// 	if (info.didBringAppIntoForeground) {
-	// 		loadConversation(message.fromPersonId, function(convo) {
-	// 			var view = { conversation:convo }
-	// 			gScroller.set({ view:view, index:1, render:true, animate:false })
-	// 			events.fire('push.message', payload, info)
-	// 		})
-	// 	} else {
-	// 		events.fire('push.message', data, info)
-	// 		bridge.command('device.vibrate')
-	// 	}
-	// }
 })

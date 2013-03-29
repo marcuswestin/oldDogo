@@ -36,7 +36,7 @@ function _updateButtons() {
 
 function _enableNotifications() {
 	ovarlay.show('Enabling notifications...')
-	bridge.command('push.register', function(err, res) {
+	bridge.command('BTNotifications.register', function(err, res) {
 		if (err) { return error('Please enable notifications for Dogo in the Settings App') }
 		api.post('api/pushAuth', { pushToken:res.pushToken, pushType:res.pushType }, function(err) {
 			if (err) { return error(err) }

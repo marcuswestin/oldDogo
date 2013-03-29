@@ -30,7 +30,7 @@ events.on('app.didBecomeActive', function onAppDidBecomeActive() {
 	bridge.command('app.setIconBadgeNumber', { number:0 })
 })
 
-events.on('push.notification', function onPushNotification(info) {
+events.on('BTNotifications.notification', function onPushNotification(info) {
 	var data = push.decode(info.data)
 	if (!data) {
 		// could not decode...

@@ -185,7 +185,7 @@ function renderPushNotifications(view, onDone) {
 	return div(style({ marginTop:300 }),
 		div('button', 'Enable Notifications', button(function() {
 			$(this).text('Enabling...').addClass('active')
-			bridge.command('push.register', function(err) { onDone() })
+			bridge.command('BTNotifications.register', function(err) { onDone() })
 		})),
 		link('noNotifications', 'no thanks', function() {
 			setTimeout(function() {

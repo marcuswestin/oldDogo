@@ -12,6 +12,7 @@
 		2C1884981687C28D0071A3CE /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1884971687C28D0071A3CE /* Accounts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2C18849A1687C2950071A3CE /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C1884991687C2950071A3CE /* Social.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2C20FC7D16D6F6640098BB32 /* BTCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C20FC7C16D6F6640098BB32 /* BTCamera.m */; };
+		2C37809F170614B1001F8409 /* BTNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C37809E170614B1001F8409 /* BTNotifications.m */; };
 		2C409AC116CB4EB6006C49F9 /* opensans-italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2C409ABD16CB4EB6006C49F9 /* opensans-italic.ttf */; };
 		2C409AC216CB4EB6006C49F9 /* opensans-light-italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2C409ABE16CB4EB6006C49F9 /* opensans-light-italic.ttf */; };
 		2C409AC316CB4EB6006C49F9 /* opensans-light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2C409ABF16CB4EB6006C49F9 /* opensans-light.ttf */; };
@@ -99,6 +100,8 @@
 		2C1884991687C2950071A3CE /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		2C20FC7B16D6F6640098BB32 /* BTCamera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTCamera.h; sourceTree = "<group>"; };
 		2C20FC7C16D6F6640098BB32 /* BTCamera.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTCamera.m; sourceTree = "<group>"; };
+		2C37809D170614B1001F8409 /* BTNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTNotifications.h; sourceTree = "<group>"; };
+		2C37809E170614B1001F8409 /* BTNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTNotifications.m; sourceTree = "<group>"; };
 		2C409ABD16CB4EB6006C49F9 /* opensans-italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "opensans-italic.ttf"; sourceTree = "<group>"; };
 		2C409ABE16CB4EB6006C49F9 /* opensans-light-italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "opensans-light-italic.ttf"; sourceTree = "<group>"; };
 		2C409ABF16CB4EB6006C49F9 /* opensans-light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "opensans-light.ttf"; sourceTree = "<group>"; };
@@ -374,6 +377,8 @@
 				2C650C7116A5E459000F381E /* BTViewController.m */,
 				2C650C7D16A5E459000F381E /* DebugUIWebView.h */,
 				2C650C7E16A5E459000F381E /* DebugUIWebView.m */,
+				2C37809D170614B1001F8409 /* BTNotifications.h */,
+				2C37809E170614B1001F8409 /* BTNotifications.m */,
 				5FBD9A4716EAB32300CDD218 /* HandyHelpers */,
 				5FBD9A3016EAB31A00CDD218 /* Categories */,
 				2C650C8216A5E459000F381E /* Light-Untar */,
@@ -737,6 +742,7 @@
 				5FBD9A5516EAB32300CDD218 /* NSString+HHUriEncoding.m in Sources */,
 				5FBD9A5716EAB32300CDD218 /* UIImage+HHImages.m in Sources */,
 				5FB50F5116F64DFD00619605 /* MergeAddressBook.m in Sources */,
+				2C37809F170614B1001F8409 /* BTNotifications.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

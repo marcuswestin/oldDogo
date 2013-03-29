@@ -97,7 +97,7 @@ var commandHandlers = {
 		if (!window.FB) { return callback('devBridge FB unavailable') }
 		FB.api(data.path, function(response) { callback(null, response) })
 	},
-	'push.register': function(data, callback) { callback(null, { pushToken:'DEV_BRIDGE_FAKE_TOKEN', pushType:'DEV_FAKE' }) },
+	'BTNotifications.register': function(data, callback) { callback(null, { pushToken:'DEV_BRIDGE_FAKE_TOKEN', pushType:'DEV_FAKE' }) },
 	'message.send': function(data, callback) {
 		data.url = api.getUrl('api/web/message')
 		data.method = 'POST'
@@ -161,9 +161,6 @@ var commandHandlers = {
 	
 	
 	'_':function(){}
-	// 'push.register': function(data, callback) {
-	// 	callback(null)
-	// },
 	// 'BTFacebook.request': function(data, callback) {
 	// 	FB.api(data.path, function(response) {
 	// 		callback(null, response)
