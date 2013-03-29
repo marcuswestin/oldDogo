@@ -25,7 +25,7 @@ function renderFoot(view, opts) {
 	)
 }
 
-var duration = 300
+var duration = 1/3
 
 /* Text tool
  ***********/

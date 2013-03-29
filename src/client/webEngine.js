@@ -9,7 +9,7 @@ function notify(event, info) {
 }
 
 function start() {
-	after(100, loadFbSdk)
+	after(100 * time.milliseconds, loadFbSdk)
 	
 	WebViewJavascriptBridge = {
 		init:initBridge,

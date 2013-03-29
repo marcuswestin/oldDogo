@@ -22,9 +22,9 @@ function _updateButtons() {
 	if (!permissionButton && !permissionsAsked.addressBook) {
 		permissionButton = div('button', buttonStyle, 'Add Address Book Contacts', button(_addPhoneContacts))
 	}
-	if (!permissionButton && !permissionsAsked.facebookFriends) {
-		permissionButton = div('button', buttonStyle, 'Add Facebook Friends', button(_addFacebookFriends))
-	}
+	// if (!permissionButton && !permissionsAsked.facebookFriends) {
+	// 	permissionButton = div('button', buttonStyle, 'Add Facebook Friends', button(_addFacebookFriends))
+	// }
 	$('#permissionButtonsSpace').empty()
 	$('#permissionButton').remove()
 	if (permissionButton) {

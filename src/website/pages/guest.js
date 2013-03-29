@@ -7,9 +7,9 @@ keyboardHeight = 0
 
 function hideNavBar() { window.scrollTo(0, 1) }
 hideNavBar()
-after(100, hideNavBar)
-after(500, hideNavBar)
-after(1000, hideNavBar)
+after(1/10, hideNavBar)
+after(1/2, hideNavBar)
+after(1, hideNavBar)
 
 appBg = graphics.backgroundImage(graphics.url('background/bright_squares'), 297, 297, { repeat:'repeat' })
 $('body').css(appBg)

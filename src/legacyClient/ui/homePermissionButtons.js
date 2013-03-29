@@ -49,7 +49,6 @@ function _addFacebookFriends(permissionsAsked) {
 			overlay.show('Adding friends...')
 			var fbFriendsById = {}
 			each(fbFriends, function(fbFriend) { fbFriendsById[fbFriend.id] = fbFriend })
-
 			each(conversations, function(convo) {
 				var soloPerson = (convo.people.length == 1 && convo.people[0])
 				if (soloPerson && soloPerson.facebookId) { delete fbFriendsById[soloPerson.facebookId] }

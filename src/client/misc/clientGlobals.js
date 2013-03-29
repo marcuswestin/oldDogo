@@ -115,7 +115,8 @@ resolution = window.devicePixelRatio || 1
 jsonList = function(jsonProperty) { return jsonProperty ? JSON.parse(jsonProperty) : [] }
 remove = function(obj, prop) { var val = obj[prop]; delete obj[prop]; return val }
 
-after = function(duration, fn) { setTimeout(fn, duration) }
+after = function(durationSec, fn) { return setTimeout(fn, durationSec / time.milliseconds) }
+every = function(intervalSec, fn) { return setInterval(fn, intervalSec / time.milliseconds) }
 gConfigure = function(config) { Payloads.configure(config.payloads) }
 
 listMenuIcon = function(graphicName) {

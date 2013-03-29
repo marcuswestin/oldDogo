@@ -46,7 +46,7 @@ function buildDevClient() {
 	nextTick(checkClientWindow)
 	function checkClientWindow() {
 		var win = $('#clientWindow')[0].contentWindow
-		if (!win || !win.webEngine) { return after(50, checkClientWindow) }
+		if (!win || !win.webEngine) { return after(50 * time.milliseconds, checkClientWindow) }
 		var link = win.document.createElement('link')
 		link.rel = "stylesheet"
 		link.type = "text/css"

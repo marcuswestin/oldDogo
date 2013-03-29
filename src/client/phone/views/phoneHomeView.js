@@ -20,10 +20,9 @@ function renderHead() {
 	)
 	
 	function toggleBackground() {
-		var duration = 300
 		if (backgroundShowing) {
 			$('#appForeground').css(translate.x(0))
-			after(duration, function() {
+			after(1/3, function() {
 				$('#appBackground').empty()
 			})
 		} else {

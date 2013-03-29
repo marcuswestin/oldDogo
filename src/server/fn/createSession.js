@@ -10,6 +10,13 @@ createSession.forGuest = createGuestSession
 createSession.guestPrefix = 'g:'
 createSession.personPrefix = 'p:'
 
+createGuestSession.expiration = 3 * time.hours
+createGuestSession.inRedis = function(conversationId, personIndex, secret, callback) {
+	var authToken = [secret, conversationId, personIndex].join(':')
+	redis.setex(createSession.guestPrefix+authToken, createGuestSession.expiration, 1, function(err) {
+		callback(err, authToken)
+	})
+}
 function createGuestSession(conversationId, personIndex, secret, callback) {
 	if (typeof conversationId != 'number') { return callback('Bad conversation ID') }
 	if (typeof personIndex != 'number') { return callback('Bad person index') }
@@ -25,9 +32,7 @@ function createGuestSession(conversationId, personIndex, secret, callback) {
 			lookupService.lookup(person, function(err, personId, addrInfo) {
 				if (err) { return callback(err) }
 				if (personId) { return callback('Please use your Dogo app') }
-				var expiration = 3 * time.days
-				var authToken = secret+':'+conversationId+':'+personIndex
-				redis.setex(createSession.guestPrefix+authToken, expiration, 1, function(err) {
+				createGuestSession.inRedis(conversationId, personIndex, secret, function(err, authToken) {
 					if (err) { return callback(err) }
 					callback(null, {
 						people:people,
@@ -45,6 +50,14 @@ function createGuestSession(conversationId, personIndex, secret, callback) {
 	})
 }
 
+createSession.expiration = 1 * time.days
+createSession.inRedis = function(secret, sessionId, personId, callback) {
+	log('add session to redis')
+	var authToken = [secret, sessionId, personId].join(':')
+	redis.setex(createSession.personPrefix+authToken, createSession.expiration, personId, function(err) {
+		callback(err, authToken)
+	})
+}
 function createSession(addrInfo, password, callback) {
 	if (!addrInfo || !addrInfo.addressId || !addrInfo.addressType) { return callback('Please give me an address') }
 	if (!password) { return callback('Please give me a password') }
@@ -69,10 +82,7 @@ function createSession(addrInfo, password, callback) {
 					var sql = 'INSERT INTO session SET personId=?, secret=?, clientInfoJson=?'
 					db.person(personId).insert(sql, [personId, secret, JSON.stringify(clientInfo)], function(err, sessionId) {
 						if (err) { return callback(err) }
-						var expiration = 1 * time.day
-						var authToken = secret+':'+sessionId
-						log('add session to redis')
-						redis.setex(createSession.personPrefix+authToken, expiration, personId, function(err) {
+						createSession.inRedis(secret, sessionId, personId, function(err, authToken) {
 							if (err) { return callback(err) }
 							log.debug('bump client uid block')
 							bumpClientUidBlock(personId, function(err, clientUidBlock) {

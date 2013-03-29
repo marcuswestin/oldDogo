@@ -21,8 +21,8 @@ CREATE TABLE message (
 CREATE TABLE guestAccess (
 	conversationId BIGINT UNSIGNED NOT NULL,
 	secret VARCHAR(36) CHARACTER SET latin1 NOT NULL,
-	createdTime INT UNSIGNED NOT NULL,
 	personIndex SMALLINT UNSIGNED NOT NULL,
+	createdTime INT UNSIGNED NOT NULL,
 	PRIMARY KEY (conversationId, personIndex),
 	CONSTRAINT guestAccessConversation FOREIGN KEY (conversationId) REFERENCES conversation(conversationId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

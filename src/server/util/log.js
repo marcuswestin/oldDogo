@@ -31,7 +31,7 @@ function doLog(pad, name, level, text, force) {
 	if (disabled && !force) { return }
 	var d = new Date()
 	var time = n(d.getDate())+'/'+n(d.getMonth()+1)+'/'+n(d.getFullYear())+' '+n(d.getHours())+':'+n(d.getMinutes())+':'+n(d.getSeconds())
-	console.log(level+' '+time+' '+name+pad, text)
+	process.stdout.write(level+' '+time+' '+name+pad + ' ' + text + '\n')
 }
 
 function getArgsString(args) {

@@ -1,8 +1,8 @@
 // Also see https://gist.github.com/pguillory/729616
-var output = require('fs').createWriteStream('output.log', { flags:'a' })
+var logOutput = require('fs').createWriteStream('output.log', { flags:'a' })
 var lastWriteFlushed
 process.stdout.write = process.stderr.write = function(data, encoding) {
-	lastWriteFlushed = output.write(data)
+	lastWriteFlushed = logOutput.write(data)
 }
 
 require('server/serverGlobals')
@@ -83,8 +83,7 @@ function runServer(config) {
 	log.info('starting', process.pid)
 	process.on('uncaughtException', function(err) {
 		log.error('Uncaught exception', err, '\n')
-		if (lastWriteFlushed) { process.exit(-1) }
-		else { output.on('drain', function() { process.exit(-1) }) }
+		logOutput.on('finish', function() { process.exit(-1) }).end()
 	})
 	require('server/configureServer')(config)
 }
